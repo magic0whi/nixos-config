@@ -18,8 +18,9 @@
       inherit ipv4 ipv6;
       et_ipv4 = "10.0.0.2";
       et_ipv6 = "fdfe:dcba:9877::2";
+      # Don't forget update the SOA Serial
       domains = {
-        A = ["@" "ns1"];
+        A = ["@" "ns1" "v4"];
         AAAA = ["@" "ns1"];
         CNAME = [
           "aria2"

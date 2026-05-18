@@ -109,7 +109,7 @@ in {
 
       bind = [
         # Add shortcut key for Leave Mode. Leave to main monitor for sunshine streaming
-        (builtins.concatStringsSep "" [
+        (lib.concatStrings [
           "$mainMod,Y,exec,"
           "hyprctl keyword monitor "
           "\"${builtins.head (lib.splitString "," secondary_monitor)},disable\""
@@ -118,7 +118,7 @@ in {
           "; notify-send \"Hyprland\" \"Leave mode: on\""
         ])
         # Restore the three monitors
-        (builtins.concatStringsSep "" [
+        (lib.concatStrings [
           "$mainMod SHIFT,Y,exec,"
           "hyprctl keyword monitor \"${secondary_monitor}\""
           ";hyprctl keyword monitor \"${third_monitor}\""
@@ -127,7 +127,7 @@ in {
       ];
       bindl = [
         # Going to dock mode if has external monitor connected
-        (builtins.concatStringsSep "" [
+        (lib.concatStrings [
           ",switch:on:Lid Switch,exec,"
           # Hyprland interprets commands starting with [ as window rules, change
           # it to `test`

@@ -140,7 +140,7 @@ in {
           };
           doh = {
             # Intercept standard DoH queries at the apex domain
-            rule = builtins.concatStringsSep "" [
+            rule = lib.concatStrings [
               "("
               "Host(`${myvars.domain}`)" # TODO: Current server cert lacks SAN for apex domain
               " || Host(`ns1.${myvars.domain}`)"

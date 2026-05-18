@@ -215,5 +215,11 @@
           (lib.filterAttrs (_: v: v ? ipv6) myvars.networking.hosts_addr));
       description = "Identify different instances on same host";
     };
+    debug_new_set = lib.mkOption {
+      type = lib.types.functionTo lib.types.attrs;
+      default = hosts:
+        builtins.mapAttrs (_: v: {ipv4 = v.et_ipv4;}) hosts;
+      description = "";
+    };
   };
 }
