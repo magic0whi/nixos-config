@@ -7,7 +7,7 @@
 }: let
   ## BEGIN Variables
   soa_parms = {
-    serial = "2026051807"; # Serial (YYYYMMDDNN)
+    serial = "2026051809"; # Serial (YYYYMMDDNN)
     refresh = "3600"; # Refresh (1 hour)
     retry = "1800"; # Retry (30 minutes)
     expire = "604800"; # Expire (1 week)
@@ -34,8 +34,8 @@
   # Usage example
   # exextract_attr_to "et_ipv4" "ipv4" {Proteus-NUC = {et_ipv4 = "10.0.0.2";};}
   # => {Proteus-NUC = {ipv4 = "10.0.0.2";};}
-  extract_attr_to = src_attr: dest_attr: hosts:
-    builtins.mapAttrs (_: v: {${dest_attr} = v.${src_attr};}) (lib.filterAttrs (_: v: v ? ${src_attr}) hosts);
+  rename_attr_to = src_attr: dest_attr: hosts:
+    builtins.mapAttrs (_: v: v // {${dest_attr} = v.${src_attr};}) (lib.filterAttrs (_: v: v ? ${src_attr}) hosts);
 
   # Usage example
   # gen_v4_records "et" {Proteus-Desktop = {ipv4 = "10.0.0.3";}; Proteus-NUC = {ipv4 = "10.0.0.2";};}
@@ -226,37 +226,60 @@
   # =========================================
   # Forward Zone (proteus.eu.org)
   # =========================================
-  proteus_zone_ts = pkgs.writeText "${myvars.domain}.zone" ((zone_head myvars.domain)
+  proteus_zone = pkgs.writeText "${myvars.domain}.zone" ((zone_head myvars.domain)
     + ''
       ; Grouped Host Records - IPv4
       ${gen_v4_records "" (lib.filterAttrs (_: v: v ? ipv4) myvars.networking.hosts_addr)}
+      ${gen_v4_records "" (rename_attr_to "et_ipv4" "ipv4" myvars.networking.hosts_addr)}
 
       ; Grouped Host Records - IPv6
       ${gen_v6_records "" (lib.filterAttrs (_: v: v ? ipv6) myvars.networking.hosts_addr)}
+      ${gen_v6_records "" (rename_attr_to "et_ipv6" "ipv6" myvars.networking.hosts_addr)}
 
-      ; Grouped Host Records - EasyTier IPv4
-      ${gen_v4_records "et" (extract_attr_to "et_ipv4" "ipv4" myvars.networking.hosts_addr)}
+      ; Grouped Host Records - Explicit EasyTier IPv4
+      ${gen_v4_records "et" (rename_attr_to "et_ipv4" "ipv4" myvars.networking.hosts_addr)}
 
-      ; Grouped Host Records - EasyTier IPv6
-      ${gen_v6_records "et" (extract_attr_to "et_ipv6" "ipv6" myvars.networking.hosts_addr)}
+      ; Grouped Host Records - Explicit EasyTier IPv6
+      ${gen_v6_records "et" (rename_attr_to "et_ipv6" "ipv6" myvars.networking.hosts_addr)}
 
       ; Subdomain Services
       ${gen_subdomain_records (lib.filterAttrs (_: v: v ? domains) myvars.networking.hosts_addr)}
+
+      ${gen_subdomain_records (lib.filterAttrs (_: v: v ? domains)
+        (builtins.mapAttrs
+          (_: host_val:
+            host_val
+            // (lib.optionalAttrs (host_val ? domains) {
+              domains =
+                builtins.mapAttrs
+                # Remove "@" in A and AAAA
+                (_: records: lib.remove "@" records)
+                (builtins.removeAttrs host_val.domains ["CNAME"]);
+            }))
+          (rename_attr_to "et_ipv6" "ipv6" (rename_attr_to "et_ipv4" "ipv4" myvars.networking.hosts_addr))))}
     '');
   # =========================================
   # IPv4 Reverse Zones
   # =========================================
-  reverse_v4_zones = builtins.mapAttrs (prefix: records:
+  reverse_v4_zones_ts = builtins.mapAttrs (prefix: records:
     pkgs.writeText "${prefix}.in-addr.arpa.zone" ''
       ${zone_head "${prefix}.in-addr.arpa"}
       ; PTR Records
       ${records}
     '')
   (gen_reverse_v4_records ts_depth myvars.domain (lib.filterAttrs (_: v: v ? ipv4) myvars.networking.hosts_addr));
+  reverse_v4_zones_et = builtins.mapAttrs (prefix: records:
+    pkgs.writeText "${prefix}.in-addr.arpa.zone" ''
+      ${zone_head "${prefix}.in-addr.arpa"}
+      ; PTR Records
+      ${records}
+    '')
+  (gen_reverse_v4_records et_depth myvars.domain (rename_attr_to "et_ipv4" "ipv4" myvars.networking.hosts_addr));
+
   # =========================================
   # IPv6 Reverse Zone
   # =========================================
-  reverse_v6_zones =
+  reverse_v6_zones_ts =
     builtins.mapAttrs (prefix: records:
       pkgs.writeText "${prefix}.ip6.arpa.zone" ''
         ${zone_head "${prefix}.ip6.arpa"}
@@ -265,22 +288,39 @@
       '')
     (gen_reverse_v6_records ts_prefix_len myvars.domain
       (lib.filterAttrs (_: v: v ? ipv6) myvars.networking.hosts_addr));
+  reverse_v6_zones_et = builtins.mapAttrs (prefix: records:
+    pkgs.writeText "${prefix}.ip6.arpa.zone" ''
+      ${zone_head "${prefix}.ip6.arpa"}
+      ; PTR Records
+      ${records}
+    '')
+  (gen_reverse_v6_records et_prefix_len myvars.domain (rename_attr_to "et_ipv6" "ipv6" myvars.networking.hosts_addr));
 in {
   networking.firewall = {
     allowedTCPPorts = [53];
     allowedUDPPorts = [53];
   };
   systemd.services.bind.preStart = lib.mkAfter ''
-    install -m 0644 ${proteus_zone_ts} ${config.services.bind.directory}/${proteus_zone_ts.name}
+    install -m 0644 ${proteus_zone} ${config.services.bind.directory}/${proteus_zone.name}
     ${
       lib.concatLines (lib.mapAttrsToList
         (_: zone_file: "install -m 0644 ${zone_file} ${config.services.bind.directory}/${zone_file.name}")
-        reverse_v4_zones)
+        reverse_v4_zones_ts)
     }
     ${
       lib.concatLines (lib.mapAttrsToList
         (_: zone_file: "install -m 0644 ${zone_file} ${config.services.bind.directory}/${zone_file.name}")
-        reverse_v6_zones)
+        reverse_v4_zones_et)
+    }
+    ${
+      lib.concatLines (lib.mapAttrsToList
+        (_: zone_file: "install -m 0644 ${zone_file} ${config.services.bind.directory}/${zone_file.name}")
+        reverse_v6_zones_ts)
+    }
+    ${
+      lib.concatLines (lib.mapAttrsToList
+        (_: zone_file: "install -m 0644 ${zone_file} ${config.services.bind.directory}/${zone_file.name}")
+        reverse_v6_zones_et)
     }
   '';
   services.resolved.settings.Resolve = {
@@ -289,8 +329,10 @@ in {
       [
         "~${myvars.domain}" # The '~' prefix makes this a routing domain
       ]
-      ++ (map (zone_file: "~${lib.removeSuffix ".zone" zone_file.name}") (builtins.attrValues reverse_v4_zones))
-      ++ (map (zone_file: "~${lib.removeSuffix ".zone" zone_file.name}") (builtins.attrValues reverse_v6_zones));
+      ++ (map (zone_file: "~${lib.removeSuffix ".zone" zone_file.name}") (builtins.attrValues reverse_v4_zones_ts))
+      ++ (map (zone_file: "~${lib.removeSuffix ".zone" zone_file.name}") (builtins.attrValues reverse_v4_zones_et))
+      ++ (map (zone_file: "~${lib.removeSuffix ".zone" zone_file.name}") (builtins.attrValues reverse_v6_zones_ts))
+      ++ (map (zone_file: "~${lib.removeSuffix ".zone" zone_file.name}") (builtins.attrValues reverse_v6_zones_et));
 
     DNS = ["${myvars.networking.hosts_addr.Proteus-NUC.ipv4}#${myvars.domain}"];
   };
@@ -309,8 +351,8 @@ in {
   # environment.etc."dnssec-trust-anchors.d/${lib.removeSuffix ".zone" reverse_v4_zones."192".name}.positive".text = ''
   #   ${lib.removeSuffix ".zone" reverse_v4_zones."192".name}. IN DS 25153 15 2 B5B5AC75FDCC85AACBDF747323AC5F7CA8D8FC482D03C848DEE4EFAD79F7CD50
   # '';
-  environment.etc."dnssec-trust-anchors.d/${lib.removeSuffix ".zone" reverse_v6_zones."0.e.1.a.c.5.1.1.a.7.d.f".name}.positive".text = ''
-    ${lib.removeSuffix ".zone" reverse_v6_zones."0.e.1.a.c.5.1.1.a.7.d.f".name}. IN DS 60960 15 2 DD09A9E95F7C7851FAC65FD39FDE55FAB2C001D5B37D744F98AA23C56FD63D16
+  environment.etc."dnssec-trust-anchors.d/${lib.removeSuffix ".zone" reverse_v6_zones_ts."0.e.1.a.c.5.1.1.a.7.d.f".name}.positive".text = ''
+    ${lib.removeSuffix ".zone" reverse_v6_zones_ts."0.e.1.a.c.5.1.1.a.7.d.f".name}. IN DS 60960 15 2 DD09A9E95F7C7851FAC65FD39FDE55FAB2C001D5B37D744F98AA23C56FD63D16
   '';
   services.bind = {
     enable = true;
@@ -375,7 +417,7 @@ in {
       {
         ${myvars.domain} = {
           master = true;
-          file = proteus_zone_ts.name; # Relative path
+          file = proteus_zone.name; # Relative path
           # Apply the DNSSEC policy to sign the zone locally
           extraConfig = "dnssec-policy custom;";
         };
@@ -391,7 +433,7 @@ in {
               };
             }
         ) {}
-        reverse_v4_zones)
+        reverse_v4_zones_ts)
       // (lib.foldlAttrs (
           acc: _: zone_file:
             acc
@@ -403,6 +445,30 @@ in {
               };
             }
         ) {}
-        reverse_v6_zones);
+        reverse_v4_zones_et)
+      // (lib.foldlAttrs (
+          acc: _: zone_file:
+            acc
+            // {
+              ${lib.removeSuffix ".zone" zone_file.name} = {
+                master = true;
+                file = zone_file.name;
+                extraConfig = "dnssec-policy custom;";
+              };
+            }
+        ) {}
+        reverse_v6_zones_ts)
+      // (lib.foldlAttrs (
+          acc: _: zone_file:
+            acc
+            // {
+              ${lib.removeSuffix ".zone" zone_file.name} = {
+                master = true;
+                file = zone_file.name;
+                extraConfig = "dnssec-policy custom;";
+              };
+            }
+        ) {}
+        reverse_v6_zones_et);
   };
 }
