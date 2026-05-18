@@ -4,36 +4,44 @@
     # Homelab's Physical Machines (TODO: Try KubeVirt)
     # ============================================
     Proteus-MBP14M4P = {
-      ipv4 = "100.95.17.39";
+      # ipv4 = "100.95.17.39";
+      ipv4 = "100.64.161.21"; # Temporary TEST
+
       ipv6 = "fd7a:115c:a1e0::783a:1127";
       et_ipv4 = "10.0.0.4";
       et_ipv6 = "fdfe:dcba:9877::4";
     };
-    Proteus-NUC = {
+    Proteus-NUC = let
       ipv4 = "100.64.161.20";
       ipv6 = "fd7a:115c:a1e0::cd3a:a114";
+    in {
+      inherit ipv4 ipv6;
       et_ipv4 = "10.0.0.2";
       et_ipv6 = "fdfe:dcba:9877::2";
-      domains.IN = [
-        "aria2"
-        "atuin"
-        "auth"
-        "git"
-        "hass"
-        "immich"
-        "ldap"
-        "notebook"
-        "paperless"
-        "papra"
-        "plane"
-        "postgresql"
-        "ql"
-        "sb"
-        # "sftpgo"
-        "sunshine"
-        "syncthing"
-        "traefik"
-      ];
+      domains = {
+        A = ["@" "ns1"];
+        AAAA = ["@" "ns1"];
+        CNAME = [
+          "aria2"
+          "atuin"
+          "auth"
+          "git"
+          "hass"
+          "immich"
+          "ldap"
+          "notebook"
+          "paperless"
+          "papra"
+          "plane"
+          "postgresql"
+          "ql"
+          "sb"
+          # "sftpgo"
+          "sunshine"
+          "syncthing"
+          "traefik"
+        ];
+      };
     };
     Proteus-Desktop = {
       ipv4 = "100.89.227.22";
@@ -42,7 +50,7 @@
       et_ipv6 = "fdfe:dcba:9877::3";
       iface = "enp4s0";
       iface_wlan = "wlp0s20u9";
-      domains.IN = [
+      domains.CNAME = [
         "garage"
         "monero"
         "nextcloud"

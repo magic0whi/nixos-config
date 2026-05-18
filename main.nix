@@ -53,7 +53,7 @@
   darwin_systems_values = builtins.attrValues darwin_systems;
   ## END Variables
 in {
-  # Add attribute sets into outputs for debugging
+  # DEBUG: Add attribute sets into outputs for debugging
   _DEBUG = {inherit inputs args_fn nixos_systems darwin_systems;};
   # Merge all the machines into a single attribute set (Multi-arch)
   nixosConfigurations = lib.mergeAttrsList (map (i: i.nixos_configurations or {}) nixos_systems_values);

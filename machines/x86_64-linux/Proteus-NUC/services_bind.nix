@@ -7,7 +7,7 @@
 }: let
   tailnet_prefix_length = 48;
   soa_parms = {
-    serial = "2026051403"; # Serial (YYYYMMDDNN)
+    serial = "2026051802"; # Serial (YYYYMMDDNN)
     refresh = "3600"; # Refresh (1 hour)
     retry = "1800"; # Retry (30 minutes)
     expire = "604800"; # Expire (1 week)
@@ -25,6 +25,7 @@
     ; Nameserver definitions
     @ IN NS   ns1.${myvars.domain}.
   '';
+  depth = 3;
   nuc_ipv4 = myvars.networking.hosts_addr.Proteus-NUC.ipv4;
   nuc_ipv6 = myvars.networking.hosts_addr.Proteus-NUC.ipv6;
   desktop_ipv4 = myvars.networking.hosts_addr.Proteus-Desktop.ipv4;
@@ -108,7 +109,7 @@
   # Don't forget update the SOA Serial
   # TODO: Implements
   # 1. (COMPLETED) Automate records generate
-  # myvars.networking.hosts_addr.<hostname>.domain.<class> = ["immich" "sftpgo"];
+  # myvars.networking.hosts_addr.<hostname>.domain.<type> = ["immich" "sftpgo"];
   # And will generate the following records in zone:
   # <hostname> IN A    myvars.networking.hosts_addr.<hostname>.ipv4
   # <hostname> IN AAAA myvars.networking.hosts_addr.<hostname>.ipv6
@@ -120,19 +121,12 @@
   # e.g., Merge 100.*.*.* to one zone for `octets_merge_depth = 1`; Merge 100.64.*.* to one zone for `octets_merge_depth = 2`
   proteus_zone = pkgs.writeText "${myvars.domain}.zone" ((zone_head myvars.domain)
     + ''
-      ; Manually specify
-      @ IN A    ${myvars.networking.hosts_addr.Proteus-NUC.ipv4}
-      @ IN AAAA ${myvars.networking.hosts_addr.Proteus-NUC.ipv6}
-
-      ; Nameserver A/AAAA records (Glue records)
-      ; Manually specify since it cannot be CNAME
-      ns1 IN A    ${myvars.networking.hosts_addr.Proteus-NUC.ipv4}
-      ns1 IN AAAA ${myvars.networking.hosts_addr.Proteus-NUC.ipv6}
-
-      ; Grouped Host Records
-      ${lib.foldlAttrs (acc: n: v: "${acc}\n${n} IN A ${v.ipv4}") ""
+      ; Grouped Host Records - IPv4
+      ${lib.foldlAttrs (acc: n: v: "${lib.optionalString (acc != "") "${acc}\n"}${n} IN A ${v.ipv4}") ""
         (lib.filterAttrs (_: v: v ? ipv4) myvars.networking.hosts_addr)}
-      ${lib.foldlAttrs (acc: n: v: "${acc}\n${n} IN AAAA ${v.ipv6}") ""
+
+      ; Grouped Host Records - IPv6
+      ${lib.foldlAttrs (acc: n: v: "${lib.optionalString (acc != "") "${acc}\n"}${n} IN AAAA ${v.ipv6}") ""
         (lib.filterAttrs (_: v: v ? ipv6) myvars.networking.hosts_addr)}
 
       ; EasyTier Hostnames
@@ -140,35 +134,33 @@
       ; lib.foldlAttrs (acc: name: val: <new_acc>) acc attrset
       ${let
         et_hosts = lib.filterAttrs (_: v: v ? et_ipv4 || v ? et_ipv6) myvars.networking.hosts_addr;
-        et_v4_hosts = lib.foldlAttrs (acc: n: v: "${acc}\n${n}.et IN A ${v.et_ipv4}") "" et_hosts;
-        et_v6_hosts = lib.foldlAttrs (acc: n: v: "${acc}\n${n}.et IN AAAA ${v.et_ipv6}") "" et_hosts;
+
+        et_v4_hosts = lib.foldlAttrs (acc: n: v: "${lib.optionalString (acc != "") "${acc}\n"}${n}.et IN A ${v.et_ipv4}") "" et_hosts;
+        et_v6_hosts = lib.foldlAttrs (acc: n: v: "${lib.optionalString (acc != "") "${acc}\n"}${n}.et IN AAAA ${v.et_ipv6}") "" et_hosts;
       in "${et_v4_hosts}\n${et_v6_hosts}"}
 
       ; Subdomain Services
-      ; Step 1: map (i: "''${i} IN CNAME Proteus-Desktop") domain_hosts.Proteus-Desktop.domains.IN
-      ; [
-      ;   "monero IN CNAME Proteus-Desktop"
-      ;   "traefik-desktop IN CNAME Proteus-Desktop"
-      ;   ...
-      ; ]
-      ; Step 2: lib.foldlAttrs
-      ;   (acc: class: names: acc ++ (map (name: "''${name} ''${class} CNAME Proteus-Desktop") names))
-      ;   [] domain_hosts.Proteus-Desktop.domains
-      ; [
-      ;   "monero IN CNAME Proteus-Desktop"
-      ;   "traefik-desktop IN CNAME Proteus-Desktop
-      ;   ...
-      ; ]
-      ; Step 3:
       ${let
         domain_hosts = lib.filterAttrs (_: v: v ? domains) myvars.networking.hosts_addr;
         records =
-          lib.foldlAttrs
-          (acc_1: hostname: v:
+          lib.foldlAttrs (acc_1: hostname: host_val:
             acc_1
-            ++ (lib.foldlAttrs
-              (acc_2: class: names: acc_2 ++ (map (name: "${name} ${class} CNAME ${hostname}") names)) []
-              v.domains))
+            ++ (
+              lib.foldlAttrs (acc_2: type: subs:
+                acc_2
+                ++ (map (sub: "${sub} IN ${type} ${
+                    if type == "A"
+                    then host_val.ipv4
+                    else if type == "AAAA"
+                    then host_val.ipv6
+                    else if type == "CNAME"
+                    then hostname
+                    else throw "Unsupported record type ${type}"
+                  }")
+                  subs))
+              []
+              host_val.domains
+            ))
           []
           domain_hosts;
       in (lib.concatLines records)}
@@ -176,6 +168,30 @@
   # =========================================
   # IPv4 Reverse Zones
   # =========================================
+  gen_reverse_v4_zones = depth:
+    lib.foldlAttrs
+    (acc: n: v:
+      lib.recursiveUpdate acc (let
+        splited_ipv4 = lib.splitString "." v.ipv4;
+        prefix = lib.concatStringsSep "." (lib.reverseList (lib.take depth splited_ipv4));
+      in {
+        ${prefix} = "${
+          if acc ? ${prefix}
+          then acc.${prefix}
+          else ""
+        }\n${lib.concatStringsSep "." (lib.drop depth splited_ipv4)} IN PTR ${n}.${myvars.tailnet}.";
+        # {"${lib.concatStringsSep "." (lib.drop depth splited_ipv4)}" = n;};
+      })) {}
+    myvars.networking.hosts_addr;
+  reverse_v4_zones = builtins.mapAttrs (prefix: records:
+    # pkgs.writeText "${prefix}.in-addr.arpa.zone" ''
+    ''
+      ${zone_head "${prefix}.in-addr.arpa."}
+      ; PTR Record
+      ${records}
+    '')
+  (gen_reverse_v4_zones depth);
+
   # In tailnet, the IPv4 reverse zone name are likely to vary
   nuc_reverse_zone_v4_name = gen_reverse_prefix_v4 nuc_ipv4;
   nuc_reverse_zone_v4 = let
