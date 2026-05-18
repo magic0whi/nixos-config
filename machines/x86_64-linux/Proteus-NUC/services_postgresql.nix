@@ -32,8 +32,8 @@
       local all all trust
       # The ?sub part tells the server to perform a "subtree" search. It will traverse down into both `ou=People` and
       # `ou=ServiceAccounts` to find the matching uid
-      host all all 100.64.0.0/10 ldap ldapurl="ldaps://ldap.${myvars.domain}/${base_dn}?uid?sub" ldapbinddn="uid=${config.systemd.services.postgresql.serviceConfig.User},ou=ServiceAccounts,${base_dn}" ldapbindpasswd="${config.sops.placeholder.postgres_ldap_bind_pw}"
-      host all all fd7a:115c:a1e0::/48 ldap ldapurl="ldaps://ldap.${myvars.domain}/${base_dn}?uid?sub" ldapbinddn="uid=${config.systemd.services.postgresql.serviceConfig.User},ou=ServiceAccounts,${base_dn}" ldapbindpasswd="${config.sops.placeholder.postgres_ldap_bind_pw}"
+      host all all 0.0.0.0/0 ldap ldapurl="ldaps://ldap.${myvars.domain}/${base_dn}?uid?sub" ldapbinddn="uid=${config.systemd.services.postgresql.serviceConfig.User},ou=ServiceAccounts,${base_dn}" ldapbindpasswd="${config.sops.placeholder.postgres_ldap_bind_pw}"
+      host all all ::/0 ldap ldapurl="ldaps://ldap.${myvars.domain}/${base_dn}?uid?sub" ldapbinddn="uid=${config.systemd.services.postgresql.serviceConfig.User},ou=ServiceAccounts,${base_dn}" ldapbindpasswd="${config.sops.placeholder.postgres_ldap_bind_pw}"
 
       # default value of `services.postgresql.authentication`
       local all postgres         peer map=postgres

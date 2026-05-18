@@ -368,17 +368,13 @@ in {
     # ];
     forwarders = [];
     # Bind standard port 53 strictly to the specific interface IPs
-    listenOn = with myvars.networking.hosts_addr.Proteus-NUC; [ipv4 et_ipv4];
-    listenOnIpv6 = with myvars.networking.hosts_addr.Proteus-NUC; [ipv6 et_ipv4];
+    listenOn = with myvars.networking.hosts_addr.Proteus-NUC; ["127.0.0.1" ipv4 et_ipv4];
+    listenOnIpv6 = with myvars.networking.hosts_addr.Proteus-NUC; ["::1" ipv6 et_ipv4];
 
     # Inject the variables into the raw extraOptions string for DoT and DoH
-    extraOptions = with myvars.networking.hosts_addr.Proteus-NUC; ''
+    extraOptions = ''
       # Strictly Authoritative-Only Mode
       recursion no;
-
-      # Raw DNS for local systemd-resolved and direct Tailscale clients
-      listen-on port 53 { 127.0.0.1; ${ipv4}; };
-      listen-on-v6 port 53 { ::1; ${ipv6}; };
 
       # Dedicated unencrypted TCP port strictly for Traefik's DoT proxy stream
       listen-on port 8530 proxy plain { 127.0.0.1; };
