@@ -11,17 +11,17 @@
   sops = let
     sopsFile = "${myvars.secrets_dir}/common.sops.yaml";
     restartUnits = ["restic-backups-${config.networking.hostName}.service"];
+    owner = config.services.restic.backups.${config.networking.hostName}.user;
   in {
     # Restic repository encryption password
     secrets = {
       restic_password = {
-        inherit sopsFile restartUnits;
-        owner = config.services.restic.backups.${config.networking.hostName}.user;
+        inherit sopsFile restartUnits owner;
       };
       restic_aws_secret_access_key = {inherit sopsFile restartUnits;};
     };
     templates."restic.env" = {
-      inherit restartUnits;
+      inherit restartUnits owner;
       content = ''
         AWS_ACCESS_KEY_ID=GKa80ba5756034df47aadc5b8f
         AWS_SECRET_ACCESS_KEY=${config.sops.placeholder.restic_aws_secret_access_key}
@@ -94,5 +94,9 @@
             "/srv/immich/upload/encoded-video" # Regeneratable transcodes
           ];
       };
+  };
+  systemd.tmpfiles.settings = {
+    "01-acl-srv-immich-backups-default"."${config.services.immich.mediaLocation}/backups"."A+".argument = "d:g:storage:rX";
+    "01-acl-srv-immich-backups"."${config.services.immich.mediaLocation}/backups".A.argument = "g:storage:rX";
   };
 }
