@@ -1,6 +1,7 @@
 {
   lib,
   myvars,
+  pkgs,
   ...
 }: {
   options.services.test = let
@@ -24,6 +25,7 @@
       @ IN NS   ns1.${myvars.domain}.
     '';
     depth = 1;
+    ipv6_prefix_len = 48;
   in {
     debug_subdomain = lib.mkOption {
       type = lib.types.listOf lib.types.str;
@@ -85,85 +87,132 @@
       # type = lib.types.functionTo lib.types.attrs;
       type = lib.types.attrs;
       default = let
-        gen_reverse_v4_zones = depth: domain:
+        gen_reverse_v4_zones = depth: domain: hosts:
           lib.foldlAttrs
-          (acc: hostname: v:
+          (acc: hostname: host_val:
             lib.recursiveUpdate acc (let
-              splited_ipv4 = lib.splitString "." v.ipv4;
-              prefix = lib.concatStringsSep "." (lib.reverseList (lib.take depth splited_ipv4));
-              host_octets = lib.concatStringsSep "." (lib.drop depth splited_ipv4);
+              splited_ipv4 = lib.splitString "." host_val.ipv4;
+              prefix = builtins.concatStringsSep "." (lib.reverseList (lib.take depth splited_ipv4));
+              host_octets = builtins.concatStringsSep "." (lib.reverseList (lib.drop depth splited_ipv4));
             in {
               ${prefix} = ''
                 ${
                   lib.optionalString (acc ? ${prefix}) "${acc.${prefix}}\n"
-                }${host_octets} IN PTR ${hostname}.${domain}.${
-                  lib.optionalString (v ? domains) "\n${host_octets} IN PTR ${hostname}.${domain}."
-                  # TODO implement subdomains
-                  #             then let
-                  #               records = lib.foldlAttrs
-                  #         (acc: class: names: acc ++ (map (name: "${host_octets} IN PTR ${hostname}") names)) []
-                  #         v.domains)
-                  # in (lib.concatLines records)}
+                }${host_octets} IN PTR ${hostname}.${domain}.
+                ${
+                  lib.optionalString (host_val ? domains) (let
+                    records =
+                      lib.foldlAttrs
+                      (acc: _: subs:
+                        acc
+                        ++ (map (sub:
+                          lib.optionalString (!lib.hasInfix "*" sub) "${host_octets} IN PTR ${
+                            if sub != "@"
+                            then "${sub}.${domain}."
+                            else "${domain}."
+                          }")
+                        subs))
+                      []
+                      host_val.domains;
+                  in (lib.concatLines (lib.unique records)))
                 }
               '';
-              # {"${lib.concatStringsSep "." (lib.drop depth splited_ipv4)}" = n;};
             })) {}
-          myvars.networking.hosts_addr;
+          hosts;
       in
         builtins.mapAttrs (prefix: records:
-          # pkgs.writeText "${prefix}.in-addr.arpa.zone" ''
-          ''
-            ${zone_head "${prefix}.in-addr.arpa."}
-            ; PTR Record
+          pkgs.writeText "${prefix}.in-addr.arpa.zone" ''
+            ${zone_head "${prefix}.in-addr.arpa"}
+            ; PTR Records
             ${records}
           '')
-        (gen_reverse_v4_zones depth myvars.domain);
+        (gen_reverse_v4_zones depth myvars.domain (lib.filterAttrs (_: v: v ? ipv4) myvars.networking.hosts_addr));
 
       description = "Identify different instances on same host";
     };
     debug_v6 = lib.mkOption {
-      type = lib.types.functionTo lib.types.attrs;
-      default = depth:
-        lib.foldlAttrs
-        (acc: n: v:
-          lib.recursiveUpdate acc (let
-            split_double_colon = lib.splitString "::" v.ipv6;
+      # type = lib.types.functionTo lib.types.attrs;
+      type = lib.types.attrs;
+      default = let
+        gen_reverse_v6_zones = prefix_len: domain: hosts:
+          lib.foldlAttrs
+          (acc: hostname: host_val:
+            lib.recursiveUpdate acc (let
+              # 1. Split by "::" to handle zero-compression
+              # e.g., "fd7a:115c:a1e0::cd3a:a114" -> ["fd7a:115c:a1e0" "cd3a:a114"]
+              split_double_colon = lib.splitString "::" host_val.ipv6;
 
-            # 2. Split the IP into a list, and pad add segments to 4 characters
-            # e.g. Left part: ["fd7a" "115c" "a1e0"], right part: ["cd3a" "a114"]
-            pad_hex = s: let
-              len = builtins.stringLength s;
-            in
-              # Helper: Pad a string to 4 characters with leading zeros
-              if len == 0
-              then "0000"
-              else if len == 1
-              then "000${s}"
-              else if len == 2
-              then "00${s}"
-              else if len == 3
-              then "0${s}"
-              else s;
-            left_padded = map pad_hex (lib.splitString ":" (builtins.head split_double_colon));
-            right_padded = map pad_hex (lib.splitString ":" (lib.last split_double_colon));
+              # 2. Split the IP into a list, and pad add segments to 4 characters
+              # e.g., Left part: ["fd7a" "115c" "a1e0"], right part: ["cd3a" "a114"]
+              pad_hex = s: let
+                len = builtins.stringLength s;
+              in
+                # Helper: Pad a string to 4 characters with leading zeros
+                if len == 0
+                then "0000"
+                else if len == 1
+                then "000${s}"
+                else if len == 2
+                then "00${s}"
+                else if len == 3
+                then "0${s}"
+                else s;
+              left_padded = map pad_hex (lib.splitString ":" (builtins.head split_double_colon));
+              right_padded = map pad_hex (lib.splitString ":" (lib.last split_double_colon));
 
-            # 3. Calculate and generate missing zero segments (IPv6 has 8 total segments)
-            # e.g. Missing count is `8 - (3 + 2) = 3`, so the missing_segments is: ["0000" "0000" "0000"]
-            missing_segments = let
-              missing_count = 8 - (builtins.length left_padded + builtins.length right_padded);
-            in (builtins.genList (_: "0000") missing_count);
+              # 3. Calculate and generate missing zero segments (IPv6 has 8 total segments)
+              # e.g., Missing count is `8 - (3 + 2) = 3`, so the missing_segments is: ["0000" "0000" "0000"]
+              missing_segments =
+                builtins.genList (_: "0000") (8 - (builtins.length left_padded + builtins.length right_padded));
 
-            list_to_chars = list: lib.concatMap lib.stringToCharacters list;
+              # 4. Construct the full 32-character string, iterate to break it to chars list, them reverse it
+              # e.g., ["fd7a" "115c" "a1e0" "0000" "0000" "0000" "cd3a" "a114"]
+              # -> ["f" "d" "7" "a" "1" "1" "5" "c" "a" "1" "e" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "c" "d" "3" "a" "a" "1" "1" "4"]
+              # -> ["4" "1" "1" "a" "a" "3" "d" "c" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "e" "1" "a" "c" "5" "1" "1" "a" "7" "d" "f"]
+              formated_ipv6 = lib.reverseList (lib.concatMap lib.stringToCharacters (left_padded ++ missing_segments ++ right_padded));
 
-            # 4. Construct the full 32-character string
-            # e.g.: ["fd7a" "115c" "a1e0", "0000" "0000" "0000" "cd3a" "a114"] -> "fd7a115ca1e0000000000000cd3aa114"
-            full_ipv6 = list_to_chars (left_padded ++ missing_segments ++ right_padded);
-          in {
-            "${lib.concatStringsSep "." (lib.reverseList (lib.take depth full_ipv6))}" = {
-              "${lib.concatStringsSep "." (lib.drop depth full_ipv6)}" = n;
-            };
-          })) {}
-        (lib.filterAttrs (_: v: v ? ipv6) myvars.networking.hosts_addr);
+              # Tailscale uses a /48 prefix. So the PTR length is `128 - 48 = 80` bits (20 hex chars), and the Zone Prefix is 48
+              # ["4" "1" "1" "a" "a" "3" "d" "c" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "e" "1" "a" "c" "5" "1" "1" "a" "7" "d" "f"]
+              # -> ["4" "1" "1" "a" "a" "3" "d" "c" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0"]
+              # -> "4.1.1.a.a.3.d.c.0.0.0.0.0.0.0.0.0.0.0.0"
+              host_hexes = builtins.concatStringsSep "." (lib.take ((128 - prefix_len) / 4) formated_ipv6);
+              prefix = builtins.concatStringsSep "." (lib.drop ((128 - prefix_len) / 4) formated_ipv6);
+            in {
+              "${prefix}" = ''
+                ${
+                  lib.optionalString (acc ? ${prefix}) "${acc.${prefix}}\n"
+                }${host_hexes} IN PTR ${hostname}.${domain}.
+                ${
+                  lib.optionalString (host_val ? domains) (let
+                    records =
+                      lib.foldlAttrs
+                      (acc: _: subs:
+                        acc
+                        ++ (map (sub:
+                          lib.optionalString (!lib.hasInfix "*" sub) "${host_hexes} IN PTR ${
+                            if sub != "@"
+                            then "${sub}.${domain}."
+                            else "${domain}."
+                          }")
+                        subs))
+                      []
+                      host_val.domains;
+                  in (lib.concatLines (lib.unique records)))
+                }
+              '';
+            })) {}
+          hosts;
+      in
+        builtins.mapAttrs (prefix: records:
+          pkgs.writeText "${prefix}.ip6.arpa.zone" ''
+            ${zone_head "${prefix}.ip6.arpa"}
+            ; PTR Records
+            ${records}
+          '')
+        (gen_reverse_v6_zones
+          ipv6_prefix_len
+          myvars.domain
+          (lib.filterAttrs (_: v: v ? ipv6) myvars.networking.hosts_addr));
       description = "Identify different instances on same host";
     };
   };
