@@ -397,63 +397,63 @@ in {
         signatures-validity-dnskey 10d; # KSK validity last for 10 days
       };
     '';
-    zones =
-      {
-        ${myvars.domain} = {
-          master = true;
-          file = proteus_zone.name; # Relative path
-          # Apply the DNSSEC policy to sign the zone locally
-          extraConfig = "dnssec-policy custom;";
-        };
-      }
-      // (lib.foldlAttrs (
-          acc: _: zone_file:
-            acc
-            // {
-              ${lib.removeSuffix ".zone" zone_file.name} = {
-                master = true;
-                file = zone_file.name;
-                extraConfig = "dnssec-policy custom;";
-              };
-            }
-        ) {}
-        reverse_v4_zones_ts)
-      // (lib.foldlAttrs (
-          acc: _: zone_file:
-            acc
-            // {
-              ${lib.removeSuffix ".zone" zone_file.name} = {
-                master = true;
-                file = zone_file.name;
-                extraConfig = "dnssec-policy custom;";
-              };
-            }
-        ) {}
-        reverse_v4_zones_et)
-      // (lib.foldlAttrs (
-          acc: _: zone_file:
-            acc
-            // {
-              ${lib.removeSuffix ".zone" zone_file.name} = {
-                master = true;
-                file = zone_file.name;
-                extraConfig = "dnssec-policy custom;";
-              };
-            }
-        ) {}
-        reverse_v6_zones_ts)
-      // (lib.foldlAttrs (
-          acc: _: zone_file:
-            acc
-            // {
-              ${lib.removeSuffix ".zone" zone_file.name} = {
-                master = true;
-                file = zone_file.name;
-                extraConfig = "dnssec-policy custom;";
-              };
-            }
-        ) {}
-        reverse_v6_zones_et);
+    # zones =
+    #   {
+    #     ${myvars.domain} = {
+    #       master = true;
+    #       file = proteus_zone.name; # Relative path
+    #       # Apply the DNSSEC policy to sign the zone locally
+    #       extraConfig = "dnssec-policy custom;";
+    #     };
+    #   }
+    #   // (lib.foldlAttrs (
+    #       acc: _: zone_file:
+    #         acc
+    #         // {
+    #           ${lib.removeSuffix ".zone" zone_file.name} = {
+    #             master = true;
+    #             file = zone_file.name;
+    #             extraConfig = "dnssec-policy custom;";
+    #           };
+    #         }
+    #     ) {}
+    #     reverse_v4_zones_ts)
+    #   // (lib.foldlAttrs (
+    #       acc: _: zone_file:
+    #         acc
+    #         // {
+    #           ${lib.removeSuffix ".zone" zone_file.name} = {
+    #             master = true;
+    #             file = zone_file.name;
+    #             extraConfig = "dnssec-policy custom;";
+    #           };
+    #         }
+    #     ) {}
+    #     reverse_v4_zones_et)
+    #   // (lib.foldlAttrs (
+    #       acc: _: zone_file:
+    #         acc
+    #         // {
+    #           ${lib.removeSuffix ".zone" zone_file.name} = {
+    #             master = true;
+    #             file = zone_file.name;
+    #             extraConfig = "dnssec-policy custom;";
+    #           };
+    #         }
+    #     ) {}
+    #     reverse_v6_zones_ts)
+    #   // (lib.foldlAttrs (
+    #       acc: _: zone_file:
+    #         acc
+    #         // {
+    #           ${lib.removeSuffix ".zone" zone_file.name} = {
+    #             master = true;
+    #             file = zone_file.name;
+    #             extraConfig = "dnssec-policy custom;";
+    #           };
+    #         }
+    #     ) {}
+    #     reverse_v6_zones_et);
   };
   services.automateBind = {
     enable = true;
@@ -467,7 +467,6 @@ in {
           v6PrefixLen = 48;
         }
         {
-          suffix = "et";
           v4PrefixLen = 3;
           v6PrefixLen = 64;
         }
