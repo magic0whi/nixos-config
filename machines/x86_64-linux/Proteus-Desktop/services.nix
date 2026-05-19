@@ -20,7 +20,7 @@
       rpc-bind-ipv6-address=fd7a:115c:a1e0::d901:e013
     '';
     prune = true;
-    rpc.address = myvars.networking.hosts_addr.${config.networking.hostName}.ipv4;
+    rpc.address = "0.0.0.0";
     rpc.restricted = true;
   };
   ## END services_monero.nix

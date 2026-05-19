@@ -28,7 +28,7 @@
   ts_depth = 1;
   et_depth = 3;
   ts_prefix_len = 48;
-  et_prefix_len = 48;
+  et_prefix_len = 64;
   ## END Variables
   ## BEGIN Functions
   # Usage example
@@ -115,25 +115,19 @@
         host_octets = builtins.concatStringsSep "." (lib.reverseList (lib.drop depth splited_ipv4));
       in {
         ${prefix} = ''
-          ${
-            lib.optionalString (acc ? ${prefix}) "${acc.${prefix}}\n"
-          }${host_octets} IN PTR ${hostname}.${domain}.
-          ${
-            lib.optionalString (host_val ? domains) (let
-              records =
-                lib.foldlAttrs (acc: type: subs:
-                  acc
-                  ++ lib.optionals (type != "AAAA") (map (sub:
-                    lib.optionalString (!lib.hasInfix "*" sub) "${host_octets} IN PTR ${
-                      if sub != "@"
-                      then "${sub}.${domain}."
-                      else "${domain}."
-                    }")
-                  subs))
-                []
-                host_val.domains;
-            in (lib.concatLines (lib.unique records)))
-          }
+          ${lib.optionalString (acc ? ${prefix}) "${acc.${prefix}}\n"}${host_octets} IN PTR ${hostname}.${domain}.
+          ${lib.optionalString (host_val ? domains) (let
+            records = lib.foldlAttrs (acc: type: subs:
+              acc
+              ++ lib.optionals (type != "AAAA") (map (sub:
+                lib.optionalString (!lib.hasInfix "*" sub) "${host_octets} IN PTR ${
+                  if sub != "@"
+                  then "${sub}.${domain}."
+                  else "${domain}."
+                }")
+              subs)) []
+            host_val.domains;
+          in (lib.concatLines (lib.unique records)))}
         '';
       })) {}
     hosts;
@@ -200,25 +194,19 @@
         prefix = builtins.concatStringsSep "." (lib.drop ((128 - prefix_len) / 4) formated_ipv6);
       in {
         "${prefix}" = ''
-          ${
-            lib.optionalString (acc ? ${prefix}) "${acc.${prefix}}\n"
-          }${host_hexes} IN PTR ${hostname}.${domain}.
-          ${
-            lib.optionalString (host_val ? domains) (let
-              records =
-                lib.foldlAttrs (acc: type: subs:
-                  acc
-                  ++ lib.optionals (type != "A") (map (sub:
-                    lib.optionalString (!lib.hasInfix "*" sub) "${host_hexes} IN PTR ${
-                      if sub != "@"
-                      then "${sub}.${domain}."
-                      else "${domain}."
-                    }")
-                  subs))
-                []
-                host_val.domains;
-            in (lib.concatLines (lib.unique records)))
-          }
+          ${lib.optionalString (acc ? ${prefix}) "${acc.${prefix}}\n"}${host_hexes} IN PTR ${hostname}.${domain}.
+          ${lib.optionalString (host_val ? domains) (let
+            records = lib.foldlAttrs (acc: type: subs:
+              acc
+              ++ lib.optionals (type != "A") (map (sub:
+                lib.optionalString (!lib.hasInfix "*" sub) "${host_hexes} IN PTR ${
+                  if sub != "@"
+                  then "${sub}.${domain}."
+                  else "${domain}."
+                }")
+              subs)) []
+            host_val.domains;
+          in (lib.concatLines (lib.unique records)))}
         '';
       })) {}
     hosts;
