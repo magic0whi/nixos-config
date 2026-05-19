@@ -49,7 +49,7 @@
       environmentFiles = [config.sops.templates."easytier.env".path];
       settings = {
         network_name = myvars.domain;
-        ipv4 = "${myvars.networking.hosts_addr.${config.networking.hostName}.et_ipv4}/24";
+        ipv4 = "${builtins.elemAt (map (i: i.ipv4) myvars.networking.hosts_addr.${config.networking.hostName}) 1}/24";
         hostname = config.networking.hostName;
         peers = ["txt://txt.easytier.cn"];
         listeners = [
@@ -63,7 +63,7 @@
         ];
       };
       extraSettings = {
-        ipv6 = "${myvars.networking.hosts_addr.${config.networking.hostName}.et_ipv6}/64";
+        ipv6 = "${builtins.elemAt (map (i: i.ipv6) myvars.networking.hosts_addr.${config.networking.hostName}) 1}/64";
         flags =
           {
             accept_dns = true; # Enable Magic DNS

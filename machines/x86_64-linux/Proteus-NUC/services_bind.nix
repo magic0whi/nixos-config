@@ -211,106 +211,11 @@
       })) {}
     hosts;
   ## END Functions
-  # =========================================
-  # Forward Zone (proteus.eu.org)
-  # =========================================
-  proteus_zone = pkgs.writeText "${myvars.domain}.zone" ((zone_head myvars.domain)
-    + ''
-      ; Grouped Host Records - IPv4
-      ${gen_v4_records "" (lib.filterAttrs (_: v: v ? ipv4) myvars.networking.hosts_addr)}
-      ${gen_v4_records "" (rename_attr_to "et_ipv4" "ipv4" myvars.networking.hosts_addr)}
-
-      ; Grouped Host Records - IPv6
-      ${gen_v6_records "" (lib.filterAttrs (_: v: v ? ipv6) myvars.networking.hosts_addr)}
-      ${gen_v6_records "" (rename_attr_to "et_ipv6" "ipv6" myvars.networking.hosts_addr)}
-
-      ; Grouped Host Records - Explicit EasyTier IPv4
-      ${gen_v4_records "et" (rename_attr_to "et_ipv4" "ipv4" myvars.networking.hosts_addr)}
-
-      ; Grouped Host Records - Explicit EasyTier IPv6
-      ${gen_v6_records "et" (rename_attr_to "et_ipv6" "ipv6" myvars.networking.hosts_addr)}
-
-      ; Subdomain Services
-      ${gen_subdomain_records (lib.filterAttrs (_: v: v ? domains) myvars.networking.hosts_addr)}
-
-      ${gen_subdomain_records (lib.filterAttrs (_: v: v ? domains)
-        (builtins.mapAttrs
-          (_: host_val:
-            host_val
-            // (lib.optionalAttrs (host_val ? domains) {
-              domains =
-                builtins.mapAttrs
-                # Remove "@" in A and AAAA
-                (_: records: lib.remove "@" records)
-                (builtins.removeAttrs host_val.domains ["CNAME"]);
-            }))
-          (rename_attr_to "et_ipv6" "ipv6" (rename_attr_to "et_ipv4" "ipv4" myvars.networking.hosts_addr))))}
-    '');
-  # =========================================
-  # IPv4 Reverse Zones
-  # =========================================
-  reverse_v4_zones_ts = builtins.mapAttrs (prefix: records:
-    pkgs.writeText "${prefix}.in-addr.arpa.zone" ''
-      ${zone_head "${prefix}.in-addr.arpa"}
-      ; PTR Records
-      ${records}
-    '')
-  (gen_reverse_v4_records ts_depth myvars.domain (lib.filterAttrs (_: v: v ? ipv4) myvars.networking.hosts_addr));
-  reverse_v4_zones_et = builtins.mapAttrs (prefix: records:
-    pkgs.writeText "${prefix}.in-addr.arpa.zone" ''
-      ${zone_head "${prefix}.in-addr.arpa"}
-      ; PTR Records
-      ${records}
-    '')
-  (gen_reverse_v4_records et_depth myvars.domain (rename_attr_to "et_ipv4" "ipv4" myvars.networking.hosts_addr));
-
-  # =========================================
-  # IPv6 Reverse Zone
-  # =========================================
-  reverse_v6_zones_ts =
-    builtins.mapAttrs (prefix: records:
-      pkgs.writeText "${prefix}.ip6.arpa.zone" ''
-        ${zone_head "${prefix}.ip6.arpa"}
-        ; PTR Records
-        ${records}
-      '')
-    (gen_reverse_v6_records ts_prefix_len myvars.domain
-      (lib.filterAttrs (_: v: v ? ipv6) myvars.networking.hosts_addr));
-  reverse_v6_zones_et = builtins.mapAttrs (prefix: records:
-    pkgs.writeText "${prefix}.ip6.arpa.zone" ''
-      ${zone_head "${prefix}.ip6.arpa"}
-      ; PTR Records
-      ${records}
-    '')
-  (gen_reverse_v6_records et_prefix_len myvars.domain (rename_attr_to "et_ipv6" "ipv6" myvars.networking.hosts_addr));
 in {
   networking.firewall = {
     allowedTCPPorts = [53];
     allowedUDPPorts = [53];
   };
-  # systemd.services.bind.preStart = lib.mkAfter ''
-  #   install -m 0644 ${proteus_zone} ${config.services.bind.directory}/${proteus_zone.name}
-  #   ${
-  #     lib.concatLines (lib.mapAttrsToList
-  #       (_: zone_file: "install -m 0644 ${zone_file} ${config.services.bind.directory}/${zone_file.name}")
-  #       reverse_v4_zones_ts)
-  #   }
-  #   ${
-  #     lib.concatLines (lib.mapAttrsToList
-  #       (_: zone_file: "install -m 0644 ${zone_file} ${config.services.bind.directory}/${zone_file.name}")
-  #       reverse_v4_zones_et)
-  #   }
-  #   ${
-  #     lib.concatLines (lib.mapAttrsToList
-  #       (_: zone_file: "install -m 0644 ${zone_file} ${config.services.bind.directory}/${zone_file.name}")
-  #       reverse_v6_zones_ts)
-  #   }
-  #   ${
-  #     lib.concatLines (lib.mapAttrsToList
-  #       (_: zone_file: "install -m 0644 ${zone_file} ${config.services.bind.directory}/${zone_file.name}")
-  #       reverse_v6_zones_et)
-  #   }
-  # '';
   services.resolved.settings.Resolve = {
     DNSSEC = "allow-downgrade";
     Domains =
@@ -323,7 +228,13 @@ in {
         else "~${zone.file}")
       config.services.bind.zones);
 
-    DNS = ["${myvars.networking.hosts_addr.Proteus-NUC.ipv4}#${myvars.domain}"];
+    DNS =
+      (lib.concatMap (iface: lib.optional (iface ? ipv4) "${iface.ipv4}#${myvars.domain}")
+        myvars.networking.hosts_addr.${config.networking.hostName})
+      ++ (lib.concatMap (iface: lib.optional (iface ? ipv6) "${iface.ipv6}#${myvars.domain}")
+        myvars.networking.hosts_addr.${config.networking.hostName});
+    # (map (iface: "${iface.ipv4}#${myvars.domain}") myvars.networking.hosts_addr.${config.networking.hostName})
+    # ++ (map (iface: "${iface.ipv6}#${myvars.domain}") myvars.networking.hosts_addr.${config.networking.hostName});
   };
   # Trust Island
   # NOTE: Query the zone apex (`proteus.eu.org`, `161.64.100.in-addr.arpa`
@@ -340,9 +251,9 @@ in {
   # environment.etc."dnssec-trust-anchors.d/${lib.removeSuffix ".zone" reverse_v4_zones."192".name}.positive".text = ''
   #   ${lib.removeSuffix ".zone" reverse_v4_zones."192".name}. IN DS 25153 15 2 B5B5AC75FDCC85AACBDF747323AC5F7CA8D8FC482D03C848DEE4EFAD79F7CD50
   # '';
-  environment.etc."dnssec-trust-anchors.d/${lib.removeSuffix ".zone" reverse_v6_zones_ts."0.e.1.a.c.5.1.1.a.7.d.f".name}.positive".text = ''
-    ${lib.removeSuffix ".zone" reverse_v6_zones_ts."0.e.1.a.c.5.1.1.a.7.d.f".name}. IN DS 60960 15 2 DD09A9E95F7C7851FAC65FD39FDE55FAB2C001D5B37D744F98AA23C56FD63D16
-  '';
+  # environment.etc."dnssec-trust-anchors.d/${lib.removeSuffix ".zone" reverse_v6_zones_ts."0.e.1.a.c.5.1.1.a.7.d.f".name}.positive".text = ''
+  #   ${lib.removeSuffix ".zone" reverse_v6_zones_ts."0.e.1.a.c.5.1.1.a.7.d.f".name}. IN DS 60960 15 2 DD09A9E95F7C7851FAC65FD39FDE55FAB2C001D5B37D744F98AA23C56FD63D16
+  # '';
   services.bind = {
     enable = true;
     checkConfig = false;
@@ -357,9 +268,14 @@ in {
     # ];
     forwarders = [];
     # Bind standard port 53 strictly to the specific interface IPs
-    listenOn = with myvars.networking.hosts_addr.Proteus-NUC; ["127.0.0.1" ipv4 et_ipv4];
-    listenOnIpv6 = with myvars.networking.hosts_addr.Proteus-NUC; ["::1" ipv6 et_ipv4];
-
+    listenOn =
+      ["127.0.0.1"]
+      ++ (lib.concatMap (iface: lib.optional (iface ? ipv4) iface.ipv4)
+        myvars.networking.hosts_addr.${config.networking.hostName});
+    listenOnIpv6 =
+      ["::1"]
+      ++ (lib.concatMap (iface: lib.optional (iface ? ipv6) iface.ipv6)
+        myvars.networking.hosts_addr.${config.networking.hostName});
     # Inject the variables into the raw extraOptions string for DoT and DoH
     extraOptions = ''
       # Strictly Authoritative-Only Mode

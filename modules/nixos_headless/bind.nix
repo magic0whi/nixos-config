@@ -462,35 +462,7 @@ in {
         pcsd_domain.zone_files)
       mutable_domains;
     in
-      lib.mkIf (mutable_domains != {}) {
-        # 3. Concatenate all the generated install scripts into one big preStart script
-        preStart = lib.mkAfter (lib.concatLines installScripts);
-      };
+      # Concatenate all the generated install scripts into one big preStart script
+      lib.mkIf (mutable_domains != {}) {preStart = lib.mkAfter (lib.concatLines installScripts);};
   };
-  # systemd.services.bind = lib.mkIf _cfg.mutable {
-  # preStart = lib.mkAfter ''
-  #   install -m 0644 ${proteus_zone} ${config.services.bind.directory}/${proteus_zone.name}
-  #   ${
-  #     lib.concatLines (lib.mapAttrsToList
-  #       (_: zone_file: "install -m 0644 ${zone_file} ${config.services.bind.directory}/${zone_file.name}")
-  #       reverse_v4_zones_ts)
-  #   }
-  #   ${
-  #     lib.concatLines (lib.mapAttrsToList
-  #       (_: zone_file: "install -m 0644 ${zone_file} ${config.services.bind.directory}/${zone_file.name}")
-  #       reverse_v4_zones_et)
-  #   }
-  #   ${
-  #     lib.concatLines (lib.mapAttrsToList
-  #       (_: zone_file: "install -m 0644 ${zone_file} ${config.services.bind.directory}/${zone_file.name}")
-  #       reverse_v6_zones_ts)
-  #   }
-  #   ${
-  #     lib.concatLines (lib.mapAttrsToList
-  #       (_: zone_file: "install -m 0644 ${zone_file} ${config.services.bind.directory}/${zone_file.name}")
-  #       reverse_v6_zones_et)
-  #   }
-  # '';
-  # };
-  # };
 }

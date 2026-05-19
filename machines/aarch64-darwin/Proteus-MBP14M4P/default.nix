@@ -1,7 +1,9 @@
 {
-  inputs,
+  # deploy-rs,
+  lib,
   mylib,
   myvars,
+  # system,
   ...
 }: let
   name = baseNameOf ./.;
@@ -15,7 +17,7 @@
     "modules/common_hm_gui"
     "modules/darwin_hm"
   ];
-  darwin_system = inputs.nix-darwin.lib.darwinSystem (mylib.gen_system_args {
+  darwin_system = lib.darwinSystem (mylib.gen_system_args {
     inherit name mylib myvars nixpkgs_modules hm_modules;
     machine_path = ./.;
   });
@@ -25,9 +27,18 @@ in {
   # It’s only possible to cross compile between aarch64-darwin and x86_64-darwin
   # Ref: https://nix.dev/tutorials/cross-compilation.html#determining-the-host-platform-config
   # deploy-rs_node.${name} = {
-  #   hostname = "${name}.tailba6c3f.ts.net";
+  #   hostname = let
+  #     ifaces = myvars.networking.hosts_addr.${name};
+  #     ts_iface = builtins.elemAt ifaces 0;
+  #     et_iface = lib.optionalAttrs (builtins.length ifaces >= 2) (builtins.elemAt ifaces 1);
+  #   in
+  #     if et_iface ? ipv4
+  #     then et_iface.ipv4
+  #     else if ts_iface ? ipv4
+  #     then ts_iface.ipv4
+  #     else name;
   #   profiles.system = {
-  #     path = inputs.deploy-rs.lib.${system}.activate.darwin darwin_system;
+  #     path = deploy-rs.lib.${system}.activate.darwin darwin_system;
   #     user = "root";
   #   };
   # };

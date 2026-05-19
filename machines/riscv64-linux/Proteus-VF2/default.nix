@@ -134,7 +134,16 @@ in {
   # Generate iso image
   packages.${name} = nixos_sd_image;
   deploy-rs_node.${name} = {
-    hostname = myvars.networking.hosts_addr.${name}.ipv4;
+    hostname = let
+      ifaces = myvars.networking.hosts_addr.${name};
+      ts_iface = builtins.elemAt ifaces 0;
+      et_iface = builtins.elemAt ifaces 1;
+    in
+      if ((builtins.length ifaces) >= 2 && et_iface ? ipv4)
+      then et_iface.ipv4
+      else if (ts_iface ? ipv4)
+      then ts_iface.ipv4
+      else name;
     sshUser = "root";
     interactiveSudo = false; # Since we use 'root' user to ssh
     profiles.system = {
