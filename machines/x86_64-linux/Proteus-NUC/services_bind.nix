@@ -16,7 +16,7 @@
   zone_head = _domain: ''
     $ORIGIN ${_domain}.
     $TTL ${soa_parms.minimal_ttl}
-    @ IN SOA  ns1.${myvars.domain}. admin.${myvars.domain}. (
+    @ IN SOA  ns1.${myvars.domain}. ${lib.replaceString "@" "." myvars.useremail}. (
               ${soa_parms.serial}       ; Serial (YYYYMMDDNN)
               ${soa_parms.refresh}      ; Refresh (1 hour)
               ${soa_parms.retry}        ; Retry (30 minutes)
@@ -45,7 +45,7 @@
   # ''
   gen_v4_records = suffix:
     lib.foldlAttrs (acc: hostname: v: (lib.concatStrings [
-      "${lib.optionalString (acc != "") "${acc}\n"}" # Accumulation
+      (lib.optionalString (acc != "") "${acc}\n") # Accumulation
       "${hostname}${lib.optionalString (suffix != "") ".${suffix}"}" # Subdomain
       " IN A ${v.ipv4}"
     ]))
@@ -454,5 +454,56 @@ in {
             }
         ) {}
         reverse_v6_zones_et);
+  };
+  services.automateBind = {
+    enable = true;
+
+    domains."proteus.eu.org" = {
+      nameServer = "ns1.proteus.eu.org";
+      adminEmail = myvars.useremail;
+      networks = [
+        {
+          v4PrefixLen = 1;
+          v6PrefixLen = 48;
+        }
+        {
+          suffix = "et";
+          v4PrefixLen = 3;
+          v6PrefixLen = 64;
+        }
+      ];
+      hosts = {
+        Proteus-Desktop = [
+          {
+            ipv4 = "100.89.227.22";
+            ipv6 = "fd7a:115c:a1e0::1a01:e318";
+            domains.CNAME = ["garage"];
+          }
+          {
+            ipv4 = "10.0.0.3";
+            ipv6 = "fdfe:dcba:9877::3";
+          }
+        ];
+        Proteus-NUC = [
+          {
+            ipv4 = "100.64.161.20";
+            ipv6 = "fd7a:115c:a1e0::cd3a:a114";
+            domains = {
+              A = ["@" "ns1" "v4"];
+              AAAA = ["@" "ns1" "v6"];
+              CNAME = ["aria2"];
+            };
+          }
+          {
+            ipv4 = "10.0.0.2";
+            ipv6 = "fdfe:dcba:9877::2";
+            domains = {
+              A = ["ns1" "v4"];
+              AAAA = ["ns1" "v6"];
+            };
+          }
+        ];
+      };
+    };
   };
 }
