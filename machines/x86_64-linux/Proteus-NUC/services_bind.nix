@@ -288,39 +288,40 @@ in {
     allowedTCPPorts = [53];
     allowedUDPPorts = [53];
   };
-  systemd.services.bind.preStart = lib.mkAfter ''
-    install -m 0644 ${proteus_zone} ${config.services.bind.directory}/${proteus_zone.name}
-    ${
-      lib.concatLines (lib.mapAttrsToList
-        (_: zone_file: "install -m 0644 ${zone_file} ${config.services.bind.directory}/${zone_file.name}")
-        reverse_v4_zones_ts)
-    }
-    ${
-      lib.concatLines (lib.mapAttrsToList
-        (_: zone_file: "install -m 0644 ${zone_file} ${config.services.bind.directory}/${zone_file.name}")
-        reverse_v4_zones_et)
-    }
-    ${
-      lib.concatLines (lib.mapAttrsToList
-        (_: zone_file: "install -m 0644 ${zone_file} ${config.services.bind.directory}/${zone_file.name}")
-        reverse_v6_zones_ts)
-    }
-    ${
-      lib.concatLines (lib.mapAttrsToList
-        (_: zone_file: "install -m 0644 ${zone_file} ${config.services.bind.directory}/${zone_file.name}")
-        reverse_v6_zones_et)
-    }
-  '';
+  # systemd.services.bind.preStart = lib.mkAfter ''
+  #   install -m 0644 ${proteus_zone} ${config.services.bind.directory}/${proteus_zone.name}
+  #   ${
+  #     lib.concatLines (lib.mapAttrsToList
+  #       (_: zone_file: "install -m 0644 ${zone_file} ${config.services.bind.directory}/${zone_file.name}")
+  #       reverse_v4_zones_ts)
+  #   }
+  #   ${
+  #     lib.concatLines (lib.mapAttrsToList
+  #       (_: zone_file: "install -m 0644 ${zone_file} ${config.services.bind.directory}/${zone_file.name}")
+  #       reverse_v4_zones_et)
+  #   }
+  #   ${
+  #     lib.concatLines (lib.mapAttrsToList
+  #       (_: zone_file: "install -m 0644 ${zone_file} ${config.services.bind.directory}/${zone_file.name}")
+  #       reverse_v6_zones_ts)
+  #   }
+  #   ${
+  #     lib.concatLines (lib.mapAttrsToList
+  #       (_: zone_file: "install -m 0644 ${zone_file} ${config.services.bind.directory}/${zone_file.name}")
+  #       reverse_v6_zones_et)
+  #   }
+  # '';
   services.resolved.settings.Resolve = {
     DNSSEC = "allow-downgrade";
     Domains =
       [
         "~${myvars.domain}" # The '~' prefix makes this a routing domain
       ]
-      ++ (map (zone_file: "~${lib.removeSuffix ".zone" zone_file.name}") (builtins.attrValues reverse_v4_zones_ts))
-      ++ (map (zone_file: "~${lib.removeSuffix ".zone" zone_file.name}") (builtins.attrValues reverse_v4_zones_et))
-      ++ (map (zone_file: "~${lib.removeSuffix ".zone" zone_file.name}") (builtins.attrValues reverse_v6_zones_ts))
-      ++ (map (zone_file: "~${lib.removeSuffix ".zone" zone_file.name}") (builtins.attrValues reverse_v6_zones_et));
+      ++ (lib.mapAttrsToList (_: zone:
+        if (lib.isDerivation zone.file)
+        then "~${zone.file.name}"
+        else "~${zone.file}")
+      config.services.bind.zones);
 
     DNS = ["${myvars.networking.hosts_addr.Proteus-NUC.ipv4}#${myvars.domain}"];
   };
@@ -454,55 +455,205 @@ in {
     #         }
     #     ) {}
     #     reverse_v6_zones_et);
-  };
-  services.automateBind = {
-    enable = true;
-
-    domains."proteus.eu.org" = {
-      nameServer = "ns1.proteus.eu.org";
-      adminEmail = myvars.useremail;
-      networks = [
-        {
-          v4PrefixLen = 1;
-          v6PrefixLen = 48;
-        }
-        {
-          v4PrefixLen = 3;
-          v6PrefixLen = 64;
-        }
-      ];
-      hosts = {
-        Proteus-Desktop = [
+    domains = {
+      "proteus.eu.org" = {
+        bindZoneOptions = {
+          master = true;
+          extraConfig = "dnssec-policy custom;";
+        };
+        mutable = true;
+        nameServer = "ns1.proteus.eu.org";
+        adminEmail = myvars.useremail;
+        soa.serial = "2026051901";
+        networks = [
           {
-            ipv4 = "100.89.227.22";
-            ipv6 = "fd7a:115c:a1e0::1a01:e318";
-            domains.CNAME = ["garage"];
+            v4PrefixLen = 1;
+            v6PrefixLen = 48;
           }
           {
-            ipv4 = "10.0.0.3";
-            ipv6 = "fdfe:dcba:9877::3";
+            v4PrefixLen = 3;
+            v6PrefixLen = 64;
           }
         ];
-        Proteus-NUC = [
-          {
-            ipv4 = "100.64.161.20";
-            ipv6 = "fd7a:115c:a1e0::cd3a:a114";
-            domains = {
-              A = ["@" "ns1" "v4"];
-              AAAA = ["@" "ns1" "v6"];
-              CNAME = ["aria2"];
-            };
-          }
-          {
-            ipv4 = "10.0.0.2";
-            ipv6 = "fdfe:dcba:9877::2";
-            domains = {
-              A = ["ns1" "v4"];
-              AAAA = ["ns1" "v6"];
-            };
-          }
-        ];
+        hosts = {
+          Proteus-Desktop = let
+            CNAME = [
+              "garage"
+              "monero"
+              "nextcloud"
+              "sb-desktop"
+              "syncthing-desktop"
+              "s3"
+              "*.s3"
+              "s3-pub"
+              "*.s3-pub"
+              "traefik-desktop"
+            ];
+          in [
+            {
+              ipv4 = "100.89.227.22";
+              ipv6 = "fd7a:115c:a1e0::1a01:e318";
+              domains = {inherit CNAME;};
+            }
+            {
+              ipv4 = "10.0.0.3";
+              ipv6 = "fdfe:dcba:9877::3";
+            }
+          ];
+          Proteus-NUC = let
+            CNAME = [
+              "aria2"
+              "atuin"
+              "auth"
+              "git"
+              "hass"
+              "immich"
+              "ldap"
+              "notebook"
+              "paperless"
+              "papra"
+              "plane"
+              "postgresql"
+              "ql"
+              "sb"
+              # "sftpgo"
+              "sunshine"
+              "syncthing"
+              "traefik"
+            ];
+          in [
+            {
+              ipv4 = "100.64.161.20";
+              ipv6 = "fd7a:115c:a1e0::cd3a:a114";
+              domains = {
+                inherit CNAME;
+                A = ["@" "ns1"];
+                AAAA = ["@" "ns1"];
+              };
+            }
+            {
+              ipv4 = "10.0.0.2";
+              ipv6 = "fdfe:dcba:9877::2";
+              domains = {
+                inherit CNAME;
+                A = ["ns1" "v4"];
+                AAAA = ["ns1" "v6"];
+              };
+            }
+          ];
+          Proteus-NixOS-0 = [
+            {
+              ipv4 = "100.74.72.29";
+              ipv6 = "fd7a:115c:a1e0::563a:481d";
+            }
+            {
+              ipv4 = "10.0.0.1";
+              ipv6 = "fdfe:dcba:9877::1";
+            }
+          ];
+          Proteus-NixOS-1 = [
+            {
+              ipv4 = "100.121.95.98";
+              ipv6 = "fd7a:115c:a1e0::df3a:5f62";
+            }
+            {
+              ipv4 = "10.0.0.5";
+              ipv6 = "fdfe:dcba:9877::5";
+            }
+          ];
+          Proteus-NixOS-2 = [
+            {
+              ipv4 = "100.78.150.50";
+              ipv6 = "fd7a:115c:a1e0::823a:9632";
+            }
+            {
+              ipv4 = "10.0.0.6";
+              ipv6 = "fdfe:dcba:9877::6";
+            }
+          ];
+          Proteus-NixOS-3 = [
+            {
+              ipv4 = "100.113.250.94";
+              ipv6 = "fd7a:115c:a1e0::703a:fa5e";
+            }
+            {
+              ipv4 = "10.0.0.7";
+              ipv6 = "fdfe:dcba:9877::7";
+            }
+          ];
+          Proteus-NixOS-4 = [
+            {
+              ipv4 = "100.118.72.118";
+              ipv6 = "fd7a:115c:a1e0::e33a:4876";
+            }
+            {
+              ipv4 = "10.0.0.8";
+              ipv6 = "fdfe:dcba:9877::8";
+            }
+          ];
+          Proteus-NixOS-5 = [
+            {
+              ipv4 = "100.90.238.8";
+              ipv6 = "fd7a:115c:a1e0::c53a:ee08";
+            }
+            {
+              ipv4 = "10.0.0.9";
+              ipv6 = "fdfe:dcba:9877::9";
+            }
+          ];
+        };
       };
+      # "example.com" = {
+      #   bindZoneOptions = {
+      #     master = true;
+      #     extraConfig = "dnssec-policy custom;";
+      #   };
+
+      #   nameServer = "ns1.proteus.eu.org";
+      #   adminEmail = myvars.useremail;
+      #   networks = [
+      #     {
+      #       v4PrefixLen = 1;
+      #       v6PrefixLen = 48;
+      #     }
+      #     {
+      #       v4PrefixLen = 3;
+      #       v6PrefixLen = 64;
+      #     }
+      #   ];
+      #   hosts = {
+      #     Proteus-Desktop = [
+      #       {
+      #         ipv4 = "100.89.227.22";
+      #         ipv6 = "fd7a:115c:a1e0::1a01:e318";
+      #         domains.CNAME = ["garage"];
+      #       }
+      #       {
+      #         ipv4 = "10.0.0.3";
+      #         ipv6 = "fdfe:dcba:9877::3";
+      #       }
+      #     ];
+      #     Proteus-NUC = [
+      #       {
+      #         ipv4 = "100.64.161.20";
+      #         ipv6 = "fd7a:115c:a1e0::cd3a:a114";
+      #         domains = {
+      #           A = ["@" "ns1" "v4"];
+      #           AAAA = ["@" "ns1" "v6"];
+      #           CNAME = ["aria2"];
+      #         };
+      #       }
+      #       {
+      #         ipv4 = "10.0.0.2";
+      #         ipv6 = "fdfe:dcba:9877::2";
+      #         domains = {
+      #           A = ["ns1" "v4"];
+      #           AAAA = ["ns1" "v6"];
+      #         };
+      #       }
+      #     ];
+      #   };
+      # };
     };
   };
 }

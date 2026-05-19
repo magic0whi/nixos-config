@@ -4,19 +4,58 @@
   pkgs,
   ...
 }: let
-  cfg = config.services.automateBind;
-
+  cfg = config.services.bind;
+  bindZoneOptions = {
+    name,
+    config,
+    ...
+  }: {
+    options = {
+      name = lib.mkOption {
+        type = lib.types.str;
+        default = name;
+        description = "Name of the zone.";
+      };
+      master = lib.mkOption {
+        description = "Master=false means slave server";
+        type = lib.types.bool;
+      };
+      file = lib.mkOption {
+        type = lib.types.either lib.types.str lib.types.path;
+        description = "Zone file resource records contain columns of data, separated by whitespace, that define the record.";
+      };
+      masters = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        description = "List of servers for inclusion in stub and secondary zones.";
+      };
+      slaves = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        description = "Addresses who may request zone transfers.";
+        default = [];
+      };
+      allowQuery = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        description = ''
+          List of address ranges allowed to query this zone. Instead of the address(es), this may instead
+          contain the single string "any".
+        '';
+        default = ["any"];
+      };
+      extraConfig = lib.mkOption {
+        type = lib.types.lines;
+        description = "Extra zone config to be appended at the end of the zone section.";
+        default = "";
+      };
+    };
+  };
   ## BEGIN Functions (Kept exactly as your original logic)
-  rename_attr_to = src_attr: dest_attr: hosts:
-    builtins.mapAttrs (_: v: v // {${dest_attr} = v.${src_attr};}) (lib.filterAttrs (_: v: v ? ${src_attr}) hosts);
-
   # Usage example
-  # gen_v4_records "et" {Proteus-Desktop = [{ipv4 = "100.89.227.22";} {ipv4 = "10.0.0.3";}]; Proteus-NUC = [{ipv4 = "100.64.161.20"; } {ipv4 = "10.0.0.2";}];}
+  # gen_v4_records {Proteus-Desktop = [{ipv4 = "100.89.227.22";} {ipv4 = "10.0.0.3";}]; Proteus-NUC = [{ipv4 = "100.64.161.20"; } {ipv4 = "10.0.0.2";}];}
   # => ''
-  # Proteus-Desktop.et IN A 100.89.227.22
-  # Proteus-Desktop.et IN A 10.0.0.3
-  # Proteus-NUC.et IN A 100.64.161.20
-  # Proteus-NUC.et IN A 10.0.0.2
+  # Proteus-Desktop IN A 100.89.227.22
+  # Proteus-Desktop IN A 10.0.0.3
+  # Proteus-NUC IN A 100.64.161.20
+  # Proteus-NUC IN A 10.0.0.2
   # ''
   gen_v4_records = lib.foldlAttrs (acc_1: hostname: ifaces: (lib.concatStrings [
     (lib.optionalString (acc_1 != "") "${acc_1}\n") # Prepend if not first loop
@@ -166,24 +205,23 @@
   ## END Functions
 
   # Compute Dynamic State based on options
-  gen_zone_head = ns: adm_email: domain: ''
+  gen_zone_head = _cfg: domain: ''
     $ORIGIN ${domain}.
-    $TTL ${cfg.soa.minimal_ttl}
-    @ IN SOA  ${ns}. ${lib.replaceString "@" "." adm_email}. (
-              ${cfg.soa.serial}       ; Serial
-              ${cfg.soa.refresh}      ; Refresh
-              ${cfg.soa.retry}        ; Retry
-              ${cfg.soa.expire}       ; Expire
-              ${cfg.soa.minimal_ttl}) ; Minimum TTL
+    $TTL ${_cfg.soa.minimal_ttl}
+    @ IN SOA  ${_cfg.nameServer}. ${lib.replaceString "@" "." _cfg.adminEmail}. (
+              ${_cfg.soa.serial}       ; Serial
+              ${_cfg.soa.refresh}      ; Refresh
+              ${_cfg.soa.retry}        ; Retry
+              ${_cfg.soa.expire}       ; Expire
+              ${_cfg.soa.minimal_ttl}) ; Minimum TTL
     ; Nameserver definitions
-    @ IN NS   ${ns}.
+    @ IN NS   ${_cfg.nameServer}.
   '';
 
   # Generate zones dynamically based on the networks defined in the options
-  domains =
+  processed_domains =
     lib.mapAttrs (domain: _cfg: let
-      partial_zone_head = gen_zone_head _cfg.nameServer _cfg.adminEmail;
-    in {
+      partial_zone_head = gen_zone_head _cfg;
       main_zone = pkgs.writeText "${_cfg.domain}.zone" (partial_zone_head _cfg.domain
         + ''
           ; Grouped Host Records
@@ -198,7 +236,7 @@
       # Generate reverse zones dynamically for all configured networks
       reverse_v4_zones = lib.mapAttrs' (
         prefix: records:
-          lib.nameValuePair "${prefix}.in-addr.arpa.zone" (pkgs.writeText "${prefix}.in-addr.arpa.zone" ''
+          lib.nameValuePair "${prefix}.in-addr.arpa" (pkgs.writeText "${prefix}.in-addr.arpa.zone" ''
             ${partial_zone_head "${prefix}.in-addr.arpa"}
             ; PTR Records
             ${records}
@@ -206,17 +244,53 @@
       ) (gen_reverse_v4_records _cfg.domain _cfg.networks _cfg.hosts);
       reverse_v6_zones = lib.mapAttrs' (
         prefix: records:
-          lib.nameValuePair "${prefix}.ip6.arpa.zone" (pkgs.writeText "${prefix}.ip6.arpa.zone" ''
+          lib.nameValuePair "${prefix}.ip6.arpa" (pkgs.writeText "${prefix}.ip6.arpa.zone" ''
             ${partial_zone_head "${prefix}.ip6.arpa"}
             ; PTR Records
             ${records}
           '')
       ) (gen_reverse_v6_records _cfg.domain _cfg.networks _cfg.hosts);
+    in {
+      zones =
+        {
+          ${_cfg.domain} =
+            _cfg.bindZoneOptions
+            // {
+              name = _cfg.domain;
+              file =
+                if _cfg.mutable
+                then main_zone.name
+                else main_zone;
+            };
+        }
+        // (builtins.mapAttrs (name: zone_file:
+          _cfg.bindZoneOptions
+          // {
+            inherit name;
+            file =
+              if _cfg.mutable
+              then zone_file.name
+              else zone_file;
+          })
+        reverse_v4_zones)
+        // (builtins.mapAttrs (name: zone_file:
+          _cfg.bindZoneOptions
+          // {
+            inherit name;
+            file =
+              if _cfg.mutable
+              then zone_file.name
+              else zone_file;
+          })
+        reverse_v6_zones);
+
+      # Collect all the derivation files that need to be copied if mutable = true
+      inherit (_cfg) mutable;
+      zone_files = [main_zone] ++ (builtins.attrValues reverse_v4_zones) ++ (builtins.attrValues reverse_v6_zones);
     })
     cfg.domains;
 in {
-  options.services.automateBind = {
-    enable = lib.mkEnableOption "Automated Bind DNS Zones generation";
+  options.services.bind = {
     debug = lib.mkOption {type = lib.types.anything;};
     domains = lib.mkOption {
       type = lib.types.attrsOf (lib.types.submodule ({
@@ -225,6 +299,32 @@ in {
         ...
       }: {
         options = {
+          mutable = lib.mkEnableOption "TBD";
+          bindZoneOptions = lib.mkOption {
+            type = lib.types.submodule bindZoneOptions;
+          };
+          soa = {
+            serial = lib.mkOption {
+              type = lib.types.str;
+              default = "1970010100";
+            };
+            refresh = lib.mkOption {
+              type = lib.types.str;
+              default = "3600";
+            };
+            retry = lib.mkOption {
+              type = lib.types.str;
+              default = "1800";
+            };
+            expire = lib.mkOption {
+              type = lib.types.str;
+              default = "604800";
+            };
+            minimal_ttl = lib.mkOption {
+              type = lib.types.str;
+              default = "86400";
+            };
+          };
           domain = lib.mkOption {
             type = lib.types.str;
             default = name;
@@ -348,55 +448,49 @@ in {
         };
       };
     };
-    soa = {
-      serial = lib.mkOption {
-        type = lib.types.str;
-        default = "2026051809";
-      };
-      refresh = lib.mkOption {
-        type = lib.types.str;
-        default = "3600";
-      };
-      retry = lib.mkOption {
-        type = lib.types.str;
-        default = "1800";
-      };
-      expire = lib.mkOption {
-        type = lib.types.str;
-        default = "604800";
-      };
-      minimal_ttl = lib.mkOption {
-        type = lib.types.str;
-        default = "86400";
-      };
-    };
   };
 
   config = lib.mkIf cfg.enable {
-    services.automateBind.debug = domains;
-    # services.bind = {
-    #   zones =
-    #     {
-    #       ${cfg.domain} = {
-    #         master = true;
-    #         file = main_zone.name;
-    #         extraConfig = "dnssec-policy custom;";
-    #       };
-    #     }
-    #     // (lib.mapAttrs' (_: z:
-    #       lib.nameValuePair (lib.removeSuffix ".zone" z.name) {
-    #         master = true;
-    #         file = z.name;
-    #         extraConfig = "dnssec-policy custom;";
-    #       })
-    #     reverse_v4_zones)
-    #     // (lib.mapAttrs' (_: z:
-    #       lib.nameValuePair (lib.removeSuffix ".zone" z.name) {
-    #         master = true;
-    #         file = z.name;
-    #         extraConfig = "dnssec-policy custom;";
-    #       })
-    #     reverse_v6_zones);
-    # };
+    services.bind.debug = processed_domains;
+    services.bind.zones = lib.foldlAttrs (acc: _: pcsd_domain: acc // pcsd_domain.zones) {} processed_domains;
+    systemd.services.bind = let
+      # Filter out only the mutable domains
+      mutable_domains = lib.filterAttrs (_: domainObj: domainObj.mutable) processed_domains;
+      # Generate the install commands for all files (main + reverse) for each mutable domain
+      installScripts = lib.mapAttrsToList (_: pcsd_domain:
+        lib.concatMapStringsSep "\n" (file: "install -m 0644 ${file} ${config.services.bind.directory}/${file.name}")
+        pcsd_domain.zone_files)
+      mutable_domains;
+    in
+      lib.mkIf (mutable_domains != {}) {
+        # 3. Concatenate all the generated install scripts into one big preStart script
+        preStart = lib.mkAfter (lib.concatLines installScripts);
+      };
   };
+  # systemd.services.bind = lib.mkIf _cfg.mutable {
+  # preStart = lib.mkAfter ''
+  #   install -m 0644 ${proteus_zone} ${config.services.bind.directory}/${proteus_zone.name}
+  #   ${
+  #     lib.concatLines (lib.mapAttrsToList
+  #       (_: zone_file: "install -m 0644 ${zone_file} ${config.services.bind.directory}/${zone_file.name}")
+  #       reverse_v4_zones_ts)
+  #   }
+  #   ${
+  #     lib.concatLines (lib.mapAttrsToList
+  #       (_: zone_file: "install -m 0644 ${zone_file} ${config.services.bind.directory}/${zone_file.name}")
+  #       reverse_v4_zones_et)
+  #   }
+  #   ${
+  #     lib.concatLines (lib.mapAttrsToList
+  #       (_: zone_file: "install -m 0644 ${zone_file} ${config.services.bind.directory}/${zone_file.name}")
+  #       reverse_v6_zones_ts)
+  #   }
+  #   ${
+  #     lib.concatLines (lib.mapAttrsToList
+  #       (_: zone_file: "install -m 0644 ${zone_file} ${config.services.bind.directory}/${zone_file.name}")
+  #       reverse_v6_zones_et)
+  #   }
+  # '';
+  # };
+  # };
 }
