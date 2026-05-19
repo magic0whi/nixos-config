@@ -178,7 +178,7 @@ Each NVMe drive has a LUKS container, then ZFS pools are created across the unlo
 
 Use the first machine as-is:
 ```bash
-nix-repl> (builtins.head _DEBUG.nixos_systems.x86_64-linux._DEBUG.machines)._DEBUG.myvars.networking.hosts_addr.Proteus-NUC.ipv4
+nix-repl> (builtins.head _DEBUG.nixos_systems.x86_64-linux._DEBUG.machines)._DEBUG.myvars.networking.hosts_addr.Proteus-NUC
 ```
 
 Or find the specific machine:

@@ -1,8 +1,8 @@
 {
   # deploy-rs,
-  lib,
   mylib,
   myvars,
+  nix-darwin,
   # system,
   ...
 }: let
@@ -17,7 +17,7 @@
     "modules/common_hm_gui"
     "modules/darwin_hm"
   ];
-  darwin_system = lib.darwinSystem (mylib.gen_system_args {
+  darwin_system = nix-darwin.lib.darwinSystem (mylib.gen_system_args {
     inherit name mylib myvars nixpkgs_modules hm_modules;
     machine_path = ./.;
   });
