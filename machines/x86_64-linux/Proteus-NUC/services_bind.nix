@@ -59,7 +59,7 @@
     "";
 
   # Usage example
-  # gen_subdomain_records {Proteus-Desktop = {domains.CNAME = ["garage"]}; Proteus-NUC = {domains = {A = ["@" "ns1"]; AAAA = ["@" "ns1"]; CNAME = ["aria2"]}; ipv4 = "100.64.161.20"; ipv6 = "fd7a:115c:a1e0::cd3a:a114";}
+  # gen_subdomain_records {Proteus-Desktop = {domains.CNAME = ["garage"];}; Proteus-NUC = {domains = {A = ["@" "ns1"]; AAAA = ["@" "ns1"]; CNAME = ["aria2"];}; ipv4 = "100.64.161.20"; ipv6 = "fd7a:115c:a1e0::cd3a:a114";};}
   # => ''
   # garage IN CNAME Proteus-Desktop
   # @ IN A 100.64.161.20
@@ -93,7 +93,7 @@
     );
 
   # Usage example
-  # gen_reverse_v4_records 1 "proteus.eu.org" {Proteus-Desktop = {domains.CNAME = ["garage"] ipv4 = "100.89.227.22";}; Proteus-NUC = {domains = {A = ["@" "ns1"]; AAAA = ["ns1" "v6"]; CNAME = ["aria2"]}; ipv4 = "100.64.161.20";}
+  # gen_reverse_v4_records 1 "proteus.eu.org" {Proteus-Desktop = {domains.CNAME = ["garage"]; ipv4 = "100.89.227.22";}; Proteus-NUC = {domains = {A = ["@" "ns1"]; AAAA = ["ns1" "v6"]; CNAME = ["aria2"];}; ipv4 = "100.64.161.20";};}
   # => {
   #   "100" = ''
   #     22.227.89 IN PTR Proteus-Desktop.proteus.eu.org.
@@ -133,7 +133,7 @@
     hosts;
 
   # Usage example
-  # gen_reverse_v6_records 48 "proteus.eu.org" {Proteus-Desktop = {domains.CNAME = ["garage"] ipv6 = "fd7a:115c:a1e0::1a01:e318";}; Proteus-NUC = {domains = {A = ["ns1" "v4"]; AAAA = ["@" "ns1"]; CNAME = ["aria2"]}; ipv6 = "fd7a:115c:a1e0::cd3a:a114";}
+  # gen_reverse_v6_records 48 "proteus.eu.org" {Proteus-Desktop = {domains.CNAME = ["garage"]; ipv6 = "fd7a:115c:a1e0::1a01:e318";}; Proteus-NUC = {domains = {A = ["ns1" "v4"]; AAAA = ["@" "ns1"]; CNAME = ["aria2"];}; ipv6 = "fd7a:115c:a1e0::cd3a:a114";};}
   # => {
   #   "0.e.1.a.c.5.1.1.a.7.d.f" = ''
   #     8.1.3.e.1.0.a.1.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR Proteus-Desktop.proteus.eu.org.

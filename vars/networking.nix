@@ -3,7 +3,6 @@
     # ============================================
     # Homelab's Physical Machines (TODO: Try KubeVirt)
     # ============================================
-    # TODO: machines might have multiple IPv4/IPv6, use a list to store them instead of single string
     Proteus-MBP14M4P = {
       ipv4 = "100.95.17.39";
       ipv6 = "fd7a:115c:a1e0::783a:1127";
