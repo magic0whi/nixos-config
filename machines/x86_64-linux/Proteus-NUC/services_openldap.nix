@@ -51,10 +51,11 @@
           olcDatabase = "{1}mdb";
           olcSuffix = base_dn;
           olcRootDN = manager_dn;
+          # TIP: To generate password digest
           # `slappasswd -o module-load=argon2 -h '{ARGON2}'`
           # or `slappasswd -o module-load=pw-pbkdf2.la -h '{PBKDF2-SHA512}'``
           # To verify:
-          # `systemd-ask-password -n | nix run nixpkgs#libargon2 -- "$(echo 'jIm9hSEdZYbgTAjqXx85IQ' | base64 -d)" -id -v 13 -m 16 -t 2 -p 1`
+          # `systemd-ask-password -n | nix run nixpkgs#libargon2 -- "$(echo -n 'jIm9hSEdZYbgTAjqXx85IQ' | base64 -d)" -id -v 13 -m 16 -t 2 -p 1`
           olcRootPW = "{ARGON2}$argon2id$v=19$m=65536,t=2,p=1$jIm9hSEdZYbgTAjqXx85IQ$ugObSc6CHpUPirGXr5v1DFFm29ux7HH1AGtOFN//XaQ";
           olcDbDirectory = "/var/lib/openldap/openldap-data";
           olcDbIndex = ["objectClass eq" "uid pres,eq" "cn,sn,mail pres,sub,eq" "dc eq"];
@@ -268,6 +269,18 @@
       cn: SSSD Service
       description: Dedicated LDAP account for SSSD to query the directory
       userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$I71nfOU2bdoCUvbHZ6lcaA$uCcQtwCSNYzjnx8KlyaU6nb0zDZQHiL2Cf9IGLskr8M
+
+      dn: uid=${config.services.forgejo.user},ou=ServiceAccounts,${base_dn}
+      objectClass: top
+      objectClass: person
+      objectClass: organizationalPerson
+      objectClass: inetOrgPerson
+      uid: ${config.services.forgejo.user}
+      o: Proteus Homelab
+      sn: Service
+      cn: Forgejo Database Auth Service
+      description: Dedicated LDAP account for authenticating database user
+      userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$Lk6YxoylMGkd2YaTXwYl2g$D/13/TdjrjezdOg3zhEgeI6UJvH9BMZb/xjNPcg17BE
 
       dn: cn=${myvars.username},ou=Group,${base_dn}
       objectClass: top

@@ -32,7 +32,7 @@ in {
   ## BEGIN hostapd.nix
   boot.extraModulePackages = [config.boot.kernelPackages.rtl8812au];
   boot.kernelModules = ["8812au"];
-  sops.secrets."proteus_ap_password" = {
+  sops.secrets.proteus_ap_password = {
     sopsFile = "${myvars.secrets_dir}/Proteus-Desktop.sops.yaml";
     restartUnits = ["hostapd.service"];
   };
@@ -70,7 +70,7 @@ in {
           authentication = {
             # "wpa2-sha1" is standard WPA2-PSK (AES/CCMP). "wpa2-sha256" causes issues.
             mode = "wpa2-sha1";
-            wpaPasswordFile = config.sops.secrets."proteus_ap_password".path;
+            wpaPasswordFile = config.sops.secrets.proteus_ap_password.path;
             # mode = "wpa3-sae"; saePasswords = [{passwordFile = config.sops.secrets."proteus_ap_password.key".path;}];
           };
         };

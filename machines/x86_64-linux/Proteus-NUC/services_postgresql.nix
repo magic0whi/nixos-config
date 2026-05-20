@@ -25,21 +25,24 @@
   sops.templates."pg_hba_auth.conf" = let
     base_dn = "dc=" + builtins.replaceStrings ["."] [",dc="] myvars.domain;
   in {
-    content = ''
-      # Generated file; do not edit!
-
+    content = let
+      ldap_opts = builtins.concatStringsSep " " [
+        ''ldapurl="ldaps://ldap.${myvars.domain}/${base_dn}?uid?sub"''
+        ''ldapbinddn="uid=${config.systemd.services.postgresql.serviceConfig.User},ou=ServiceAccounts,${base_dn}"''
+        ''ldapbindpasswd="${config.sops.placeholder.postgres_ldap_bind_pw}"''
+      ];
+    in ''
       # type database DBuser auth-method [auth-options]
-      local all all trust
       # The ?sub part tells the server to perform a "subtree" search. It will traverse down into both `ou=People` and
       # `ou=ServiceAccounts` to find the matching uid
-      host all all 0.0.0.0/0 ldap ldapurl="ldaps://ldap.${myvars.domain}/${base_dn}?uid?sub" ldapbinddn="uid=${config.systemd.services.postgresql.serviceConfig.User},ou=ServiceAccounts,${base_dn}" ldapbindpasswd="${config.sops.placeholder.postgres_ldap_bind_pw}"
-      host all all ::/0 ldap ldapurl="ldaps://ldap.${myvars.domain}/${base_dn}?uid?sub" ldapbinddn="uid=${config.systemd.services.postgresql.serviceConfig.User},ou=ServiceAccounts,${base_dn}" ldapbindpasswd="${config.sops.placeholder.postgres_ldap_bind_pw}"
+      host all all 0.0.0.0/0 ldap ${ldap_opts}
+      host all all ::/0 ldap ${ldap_opts}
 
       # default value of `services.postgresql.authentication`
-      local all postgres         peer map=postgres
-      local all all              peer
-      host  all all 127.0.0.1/32 md5
-      host  all all ::1/128      md5
+      local all postgres peer map=postgres
+      # Catch-all
+      local all all ldap ${ldap_opts}
+      #local all all peer
     '';
     owner = config.systemd.services.postgresql.serviceConfig.User;
     restartUnits = ["postgresql.service" "postgresql-setup.service"];
@@ -55,6 +58,7 @@
     enableTCPIP = true;
     settings = {
       ssl = true;
+      ssl_min_protocol_version = "TLSv1.3";
       ssl_cert_file = "${myvars.secrets_dir}/proteus_server.pub.pem";
       ssl_key_file = config.sops.secrets."postgresql_server.priv.pem".path;
       hba_file = lib.mkForce config.sops.templates."pg_hba_auth.conf".path;

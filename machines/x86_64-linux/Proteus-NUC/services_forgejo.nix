@@ -15,10 +15,17 @@ in {
   in
     lib.mkMerge [
       {
-        secrets."forgejo_authelia_secret" = {
-          inherit sopsFile;
-          restartUnits = ["forgejo.service"];
-          owner = config.services.forgejo.user;
+        secrets = {
+          forgejo_db_password = {
+            inherit sopsFile;
+            restartUnits = ["forgejo.service"];
+            # owner = config.services.forgejo.user;
+          };
+          forgejo_authelia_secret = {
+            inherit sopsFile;
+            restartUnits = ["forgejo.service"];
+            owner = config.services.forgejo.user;
+          };
         };
       }
       {
@@ -27,7 +34,7 @@ in {
         # Note this is different with `nixpgs#forgejo-cli`.
         # The token will not change until regenerate it. To regenerate the token, go through WebUI -> Site
         # administration -> Actions -> Runners, click the edit and check the "Regenerate token" box, them save
-        secrets."forgejo_runner_token" = {
+        secrets.forgejo_runner_token = {
           inherit sopsFile;
           restartUnits = restart_runner_units;
         };
@@ -41,7 +48,12 @@ in {
     ];
   services.forgejo = {
     enable = true;
-    database.type = "postgres"; # Module will automatically provision PostgreSQL
+    database = {
+      type = "postgres"; # Module will automatically provision PostgreSQL
+      # Prefer UNIX Domain Socket if this is not null
+      socket = "/run/postgresql";
+      passwordFile = config.sops.secrets.forgejo_db_password.path;
+    };
     lfs.enable = true;
     settings = {
       server = {
@@ -88,7 +100,7 @@ in {
           done
 
           # Read the secret from your age file
-          OIDC_SECRET=$(cat ${config.sops.secrets."forgejo_authelia_secret".path})
+          OIDC_SECRET=$(cat ${config.sops.secrets.forgejo_authelia_secret.path})
 
           # The environment variables (FORGEJO_WORK_DIR, etc.) are already injected by systemd.
           # `forgejo` is injected in `systemd.services.forgejo.path`
