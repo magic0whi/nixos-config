@@ -159,7 +159,7 @@
                 ${prefix} =
                   # Top merge
                   (lib.optionals (acc_0 ? ${prefix}) acc_0.${prefix})
-                  ++ ["${host_octets} IN PTR ${hostname}.${domain}"]
+                  ++ ["${host_octets} IN PTR ${hostname}.${domain}."]
                   ++ (lib.optionals (iface ? domains) (lib.foldlAttrs (acc_1: type: subs:
                     acc_1
                     ++ (lib.optionals (type != "AAAA") (map (sub:
@@ -491,7 +491,17 @@ in {
 
   config = lib.mkIf cfg.enable {
     services.bind.debug = processed_domains;
-    services.bind.zones = lib.foldlAttrs (acc: _: pcsd_domain: acc // pcsd_domain.zones) {} processed_domains;
+    services.bind = {
+      zones = lib.foldlAttrs (acc: _: pcsd_domain: acc // pcsd_domain.zones) {} processed_domains;
+      checkConfig = lib.mkIf (lib.foldlAttrs (any: _: domain:
+          if any
+          then any
+          else domain.mutable)
+        false
+        config.services.bind.domains)
+      false;
+    };
+
     systemd.services.bind = let
       # Filter out only the mutable domains
       mutable_domains = lib.filterAttrs (_: pcsd_domain: pcsd_domain.mutable) processed_domains;
