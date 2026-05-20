@@ -5,17 +5,17 @@ pkgs.testers.runNixOSTest {
 
   # Define the VM's configuration
   nodes = let
-    shared = {
+    shared_cfg = {
       imports = [../modules/nixos_headless/traffic-quota.nix];
       services.traffic-quota.enable = true;
     };
   in {
     machine_normal = {
-      imports = [shared];
+      imports = [shared_cfg];
       services.traffic-quota.limit = 196;
     };
     machine_exceeded = {
-      imports = [shared];
+      imports = [shared_cfg];
       services.traffic-quota.limit = 0;
     };
   };
