@@ -60,7 +60,7 @@ in {
         DOMAIN = "git.${myvars.domain}";
         ROOT_URL = "https://git.${myvars.domain}/";
         HTTP_ADDR = "127.0.0.1";
-        # PROTOCOL = "http+unix"; # http through unix
+        # PROTOCOL = "http+unix"; # HTTP through UNIX Domain Socket
       };
       openid.ENABLE_OPENID_SIGNIN = false; # Only allow OAuth
       oauth2_client = {

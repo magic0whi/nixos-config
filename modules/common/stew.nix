@@ -31,7 +31,7 @@
       # Substituers that will be considered before the official ones (https://cache.nixos.org)
       # cache mirror located in China
       # "https://mirrors.ustc.edu.cn/nix-channels/store" # status: https://mirrors.ustc.edu.cn/status/
-      "https://mirror.sjtu.edu.cn/nix-channels/store" # status: https://mirror.sjtu.edu.cn/
+      # "https://mirror.sjtu.edu.cn/nix-channels/store" # status: https://mirror.sjtu.edu.cn/
       # Others
       "https://mirrors.sustech.edu.cn/nix-channels/store"
       "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
