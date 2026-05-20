@@ -121,6 +121,28 @@
       hosts_cfg
     );
 
+  # Usage example
+  # gen_reverse_v4_records "example.com" [{v4PrefixLen = 1; v6PrefixLen = 48;} {v4PrefixLen = 3; v6PrefixLen = 64;}] {Proteus-Desktop = [{ipv4 = "100.89.227.22"; ipv6 = "fd7a:115c:a1e0::1a01:e318"; domains.CNAME = ["garage"];} {ipv4 = "10.0.0.3"; ipv6 = "fdfe:dcba:9877::3";}]; Proteus-NUC = [{ipv4 = "100.64.161.20"; ipv6 = "fd7a:115c:a1e0::cd3a:a114"; domains = {A = ["@" "ns1" "v4"]; AAAA = ["@" "ns1" "v6"]; CNAME = ["aria2"];};} {ipv4 = "10.0.0.2"; ipv6 = "fdfe:dcba:9877::2"; domains = {A = ["ns1" "v4"]; AAAA = ["ns1" "v6"]; CNAME = ["git"];};}];}
+  # {
+  #   "0.0.10" = ''
+  #     3 IN PTR Proteus-Desktop.example.com
+  #     2 IN PTR Proteus-NUC.example.com
+  #     2 IN PTR ns1.example.com.
+  #     2 IN PTR v4.example.com.
+  #     2 IN PTR git.example.com.
+  #
+  #   '';
+  #   "100" = ''
+  #   22.227.89 IN PTR Proteus-Desktop.example.com
+  #   22.227.89 IN PTR garage.example.com.
+  #   20.161.64 IN PTR Proteus-NUC.example.com
+  #   20.161.64 IN PTR example.com.
+  #   20.161.64 IN PTR ns1.example.com.
+  #   20.161.64 IN PTR v4.example.com.
+  #   20.161.64 IN PTR aria2.example.com.
+  #
+  #   '';
+  # };
   gen_reverse_v4_records = domain: nets_cfg: hosts_cfg:
     lib.zipAttrsWith (_: v: lib.concatLines (builtins.concatLists v)) (lib.imap0 (
         net_idx: net_cfg:
@@ -161,8 +183,14 @@
             // (let
               iface = builtins.elemAt ifaces net_idx;
 
+              # IPv6 Reverse Logic (Zero-Compression Expansion)
+              # 1. Split by "::" to handle zero-compression
+              # e.g., "fd7a:115c:a1e0::cd3a:a114" -> ["fd7a:115c:a1e0" "cd3a:a114"]
               split_double_colon = lib.splitString "::" iface.ipv6;
 
+              # 2. Split the IP into a list, and pad add segments to 4 characters
+              # e.g., Left part: ["fd7a" "115c" "a1e0"], right part: ["cd3a" "a114"]
+              # Helper: Pad a string to 4 characters with leading zeros
               pad_hex = s: let
                 len = builtins.stringLength s;
               in
@@ -178,9 +206,20 @@
               left_padded = map pad_hex (lib.splitString ":" (builtins.head split_double_colon));
               right_padded = map pad_hex (lib.splitString ":" (lib.last split_double_colon));
 
-              missing_segments = builtins.genList (_: "0000") (8 - (builtins.length left_padded + builtins.length right_padded));
-              formated_ipv6 = lib.reverseList (lib.concatMap lib.stringToCharacters (left_padded ++ missing_segments ++ right_padded));
+              # 3. Calculate and generate missing zero segments (IPv6 has 8 total segments)
+              # e.g., Missing count is `8 - (3 + 2) = 3`, so the missing_segments is: ["0000" "0000" "0000"]
+              miss_segs = builtins.genList (_: "0000") (8 - (builtins.length left_padded + builtins.length right_padded));
 
+              # 4. Construct the full 32-character string, iterate and break it to chars list, them reverse it
+              # e.g., ["fd7a" "115c" "a1e0" "0000" "0000" "0000" "cd3a" "a114"]
+              # -> ["f" "d" "7" "a" "1" "1" "5" "c" "a" "1" "e" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "c" "d" "3" "a" "a" "1" "1" "4"]
+              # -> ["4" "1" "1" "a" "a" "3" "d" "c" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "e" "1" "a" "c" "5" "1" "1" "a" "7" "d" "f"]
+              formated_ipv6 = lib.reverseList (lib.concatMap lib.stringToCharacters (left_padded ++ miss_segs ++ right_padded));
+
+              # For a /48 prefix. the PTR length is `128 - 48 = 80` bits (20 hex chars), and the Zone Prefix is 48
+              # ["4" "1" "1" "a" "a" "3" "d" "c" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "e" "1" "a" "c" "5" "1" "1" "a" "7" "d" "f"]
+              # -> ["4" "1" "1" "a" "a" "3" "d" "c" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0"]
+              # -> "4.1.1.a.a.3.d.c.0.0.0.0.0.0.0.0.0.0.0.0"
               host_hexes = builtins.concatStringsSep "." (lib.take ((128 - net_cfg.v6PrefixLen) / 4) formated_ipv6);
               prefix = builtins.concatStringsSep "." (lib.drop ((128 - net_cfg.v6PrefixLen) / 4) formated_ipv6);
             in
@@ -402,7 +441,7 @@ in {
       default = {};
       description = "TBD";
       example = {
-        "proteus.eu.org" = {
+        "example.com" = {
           networks = [
             {
               v4PrefixLen = 1;
@@ -455,7 +494,7 @@ in {
     services.bind.zones = lib.foldlAttrs (acc: _: pcsd_domain: acc // pcsd_domain.zones) {} processed_domains;
     systemd.services.bind = let
       # Filter out only the mutable domains
-      mutable_domains = lib.filterAttrs (_: domainObj: domainObj.mutable) processed_domains;
+      mutable_domains = lib.filterAttrs (_: pcsd_domain: pcsd_domain.mutable) processed_domains;
       # Generate the install commands for all files (main + reverse) for each mutable domain
       installScripts = lib.mapAttrsToList (_: pcsd_domain:
         lib.concatMapStringsSep "\n" (file: "install -m 0644 ${file} ${config.services.bind.directory}/${file.name}")
