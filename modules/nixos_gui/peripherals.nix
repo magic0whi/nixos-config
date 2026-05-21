@@ -24,12 +24,7 @@
   security.rtkit.enable = true; # rtkit is optional but recommended
   # Bluetooth
   hardware.bluetooth.enable = true;
-  services.blueman = {
-    enable = true;
-    # nixos/blueman: blueman-applet systemd unit fails with bad-setting
-    # Ref: https://github.com/NixOS/nixpkgs/issues/514705
-    withApplet = false;
-  };
+  services.blueman.enable = true;
   # Misc
   services = {
     printing.enable = true; # Enable CUPS to print documents.
