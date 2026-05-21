@@ -117,12 +117,12 @@
         };
         networks = [
           {
-            v4PrefixLen = 1;
-            v6PrefixLen = 48;
+            v4PrefixLen = 10 / 8;
+            v6PrefixLen = 48 / 4;
           }
           {
-            v4PrefixLen = 3;
-            v6PrefixLen = 64;
+            v4PrefixLen = 24 / 8;
+            v6PrefixLen = 64 / 4;
           }
         ];
         hosts = let

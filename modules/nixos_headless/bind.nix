@@ -122,7 +122,7 @@
     );
 
   # Usage example
-  # gen_reverse_v4_records "example.com" [{v4PrefixLen = 1; v6PrefixLen = 48;} {v4PrefixLen = 3; v6PrefixLen = 64;}] {Proteus-Desktop = [{ipv4 = "100.89.227.22"; ipv6 = "fd7a:115c:a1e0::1a01:e318"; domains.CNAME = ["garage"];} {ipv4 = "10.0.0.3"; ipv6 = "fdfe:dcba:9877::3";}]; Proteus-NUC = [{ipv4 = "100.64.161.20"; ipv6 = "fd7a:115c:a1e0::cd3a:a114"; domains = {A = ["@" "ns1" "v4"]; AAAA = ["@" "ns1" "v6"]; CNAME = ["aria2"];};} {ipv4 = "10.0.0.2"; ipv6 = "fdfe:dcba:9877::2"; domains = {A = ["ns1" "v4"]; AAAA = ["ns1" "v6"]; CNAME = ["git"];};}];}
+  # gen_reverse_v4_records "example.com" [{v4PrefixLen = 1; v6PrefixLen = 12;} {v4PrefixLen = 3; v6PrefixLen = 16;}] {Proteus-Desktop = [{ipv4 = "100.89.227.22"; ipv6 = "fd7a:115c:a1e0::1a01:e318"; domains.CNAME = ["garage"];} {ipv4 = "10.0.0.3"; ipv6 = "fdfe:dcba:9877::3";}]; Proteus-NUC = [{ipv4 = "100.64.161.20"; ipv6 = "fd7a:115c:a1e0::cd3a:a114"; domains = {A = ["@" "ns1" "v4"]; AAAA = ["@" "ns1" "v6"]; CNAME = ["aria2"];};} {ipv4 = "10.0.0.2"; ipv6 = "fdfe:dcba:9877::2"; domains = {A = ["ns1" "v4"]; AAAA = ["ns1" "v6"]; CNAME = ["git"];};}];}
   # {
   #   "0.0.10" = ''
   #     3 IN PTR Proteus-Desktop.example.com
@@ -216,12 +216,12 @@
               # -> ["4" "1" "1" "a" "a" "3" "d" "c" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "e" "1" "a" "c" "5" "1" "1" "a" "7" "d" "f"]
               formated_ipv6 = lib.reverseList (lib.concatMap lib.stringToCharacters (left_padded ++ miss_segs ++ right_padded));
 
-              # For a /48 prefix. the PTR length is `128 - 48 = 80` bits (20 hex chars), and the Zone Prefix is 48
+              # For a /48 prefix. the PTR length is `32 - 48 / 4 = 20` hexes, and the prefix length is 12 hexes
               # ["4" "1" "1" "a" "a" "3" "d" "c" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "e" "1" "a" "c" "5" "1" "1" "a" "7" "d" "f"]
               # -> ["4" "1" "1" "a" "a" "3" "d" "c" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0" "0"]
               # -> "4.1.1.a.a.3.d.c.0.0.0.0.0.0.0.0.0.0.0.0"
-              host_hexes = builtins.concatStringsSep "." (lib.take ((128 - net_cfg.v6PrefixLen) / 4) formated_ipv6);
-              prefix = builtins.concatStringsSep "." (lib.drop ((128 - net_cfg.v6PrefixLen) / 4) formated_ipv6);
+              host_hexes = builtins.concatStringsSep "." (lib.take (32 - net_cfg.v6PrefixLen) formated_ipv6);
+              prefix = builtins.concatStringsSep "." (lib.drop (32 - net_cfg.v6PrefixLen) formated_ipv6);
             in
               lib.optionalAttrs (iface.ipv6 != null) {
                 ${prefix} =
@@ -405,17 +405,19 @@ in {
             type = lib.types.listOf (lib.types.submodule {
               options = {
                 v4PrefixLen = lib.mkOption {
-                  type = lib.types.int;
+                  type = lib.types.ints.between 1 3;
+                  default = 24 / 8;
                   description = ''
                     The number of octets (not bits) that make up the IPv4 network prefix to split the reverse
                     in-addr.arpa zones. For example, a value of 3 represents a /24 subnet.
                   '';
                 };
                 v6PrefixLen = lib.mkOption {
-                  type = lib.types.int;
+                  type = lib.types.ints.between 1 31;
+                  default = 64 / 4;
                   description = ''
-                    The prefix length in bits for the IPv6 network (e.g., 48 or 64). Used to calculate and split the
-                    reverse ip6.arpa zones.
+                    The number of hexes (not bits) that make up the IPv6 network prefix to split the reverse ip6.arpa
+                    zones. For example, a value of 16 represents a /64 subnet.
                   '';
                 };
               };
@@ -486,12 +488,12 @@ in {
         "example.com" = {
           networks = [
             {
-              v4PrefixLen = 1;
-              v6PrefixLen = 48;
+              v4PrefixLen = 10 / 8;
+              v6PrefixLen = 64 / 4;
             }
             {
-              v4PrefixLen = 3;
-              v6PrefixLen = 64;
+              v4PrefixLen = 24 / 8;
+              v6PrefixLen = 64 / 4;
             }
           ];
           hosts = {
