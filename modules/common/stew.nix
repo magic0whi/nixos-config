@@ -40,7 +40,10 @@
     ];
     trusted-public-keys = ["nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="];
     builders-use-substitutes = true;
-    sandbox = true;
+    sandbox =
+      if pkgs.stdenv.isDarwin
+      then "relaxed" # KeePassXC
+      else true;
     # The substituter will be appended to the default substituters when fetching packages.
     extra-substituters = ["https://nix-cache.s3-pub.${myvars.domain}/"];
     extra-trusted-public-keys = ["s3.${myvars.domain}-1:IxrRwk4uC5ittHeG9menkuajABnrX9cboEWwZz/m4+E="];
