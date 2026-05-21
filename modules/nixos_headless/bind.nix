@@ -244,18 +244,14 @@
   ## END Functions
 
   # Compute Dynamic State based on options
-  gen_zone_head = _cfg: domain: ''
-    $ORIGIN ${domain}.
-    $TTL ${_cfg.soa.minimal_ttl}
-    @ IN SOA  ${_cfg.nameServer}. ${lib.replaceString "@" "." _cfg.adminEmail}. (
-              ${_cfg.soa.serial}       ; Serial
-              ${_cfg.soa.refresh}      ; Refresh
-              ${_cfg.soa.retry}        ; Retry
-              ${_cfg.soa.expire}       ; Expire
-              ${_cfg.soa.minimal_ttl}) ; Minimum TTL
-    ; Nameserver definitions
-    @ IN NS   ${_cfg.nameServer}.
-  '';
+  gen_zone_head = _cfg: domain:
+    with _cfg.soa; ''
+      $ORIGIN ${domain}.
+      $TTL ${minimal_ttl}
+      @ IN SOA ${mName}. ${lib.replaceString "@" "." rName}. (${serial} ${refresh} ${retry} ${expire} ${minimal_ttl})
+      ; Nameserver definitions
+      @ IN NS ${mName}.
+    '';
 
   # Generate zones dynamically based on the networks defined in the options
   processed_domains =
@@ -338,62 +334,97 @@ in {
         ...
       }: {
         options = {
-          mutable = lib.mkEnableOption "TBD";
-          bindZoneOptions = lib.mkOption {
-            type = lib.types.submodule bindZoneOptions;
-          };
+          mutable = lib.mkEnableOption ''
+            Mutable zone files, copying them to the `services.bind.directory` during preStart to allow for dynamic DNS
+            (DDNS) updates at runtime
+          '';
+          bindZoneOptions = lib.mkOption {type = lib.types.submodule bindZoneOptions;};
           soa = {
+            mName = lib.mkOption {
+              type = lib.types.str;
+              default = "ns1.${config.domain}";
+              description = "The primary nameserver (MNAME) to be used in the zone's SOA record.";
+            };
+            rName = lib.mkOption {
+              type = lib.types.str;
+              default = "admin@${config.domain}";
+              description = ''
+                The administrator's email address (RNAME) for the zone's SOA record. The '@' symbol will be
+                automatically replaced with a dot.
+              '';
+            };
             serial = lib.mkOption {
               type = lib.types.str;
               default = "1970010100";
+              description = ''
+                The serial number of the zone, used by secondary servers to detect when the zone has been updated. Often
+                formatted as YYYYMMDDNN (e.g., 1970010100).
+              '';
             };
             refresh = lib.mkOption {
               type = lib.types.str;
-              default = "3600";
+              default = "1h";
+              description = ''
+                The time interval before the zone should be refreshed by secondary nameservers (e.g., '3h' for 3 hours,
+                or '10800' for seconds).
+              '';
             };
             retry = lib.mkOption {
               type = lib.types.str;
-              default = "1800";
+              default = "15m";
+              description = ''
+                The time interval that should elapse before a failed refresh should be retried by secondary nameservers
+                (e.g., '15m' or '900').
+              '';
             };
             expire = lib.mkOption {
               type = lib.types.str;
-              default = "604800";
+              default = "1w";
+              description = ''
+                The upper limit on the time interval that can elapse before the zone is no longer authoritative on
+                secondary servers if the primary is unreachable (e.g., '1w' for 1 week).
+              '';
             };
             minimal_ttl = lib.mkOption {
               type = lib.types.str;
-              default = "86400";
+              default = "1d";
+              description = ''
+                The minimum TTL (Time to Live) for the zone, which determines how long negative responses (NXDOMAIN) are
+                cached by resolvers (e.g., '1d' or '86400').
+              '';
             };
           };
           domain = lib.mkOption {
             type = lib.types.str;
             default = name;
-            description = "TBD";
-          };
-          nameServer = lib.mkOption {
-            type = lib.types.str;
-            default = "ns1.${config.domain}";
-            description = "TBD";
-          };
-          adminEmail = lib.mkOption {
-            type = lib.types.str;
-            default = "admin.${config.domain}";
-            description = "TBD";
+            description = ''
+              The apex domain name (e.g., 'example.com'). Defaults to the attribute name of the domain definition.
+            '';
           };
           networks = lib.mkOption {
             type = lib.types.listOf (lib.types.submodule {
               options = {
                 v4PrefixLen = lib.mkOption {
                   type = lib.types.int;
-                  description = "TBD";
+                  description = ''
+                    The number of octets (not bits) that make up the IPv4 network prefix to split the reverse
+                    in-addr.arpa zones. For example, a value of 3 represents a /24 subnet.
+                  '';
                 };
                 v6PrefixLen = lib.mkOption {
                   type = lib.types.int;
-                  description = "TBD";
+                  description = ''
+                    The prefix length in bits for the IPv6 network (e.g., 48 or 64). Used to calculate and split the
+                    reverse ip6.arpa zones.
+                  '';
                 };
               };
             });
-            default = {};
-            description = "TBD";
+            default = [];
+            description = ''
+              A list of network configurations used to generate reverse DNS (PTR) zones. The sequence of items here
+              dictates the expected order of interface definitions in the `hosts` option.
+            '';
           };
           hosts = lib.mkOption {
             type = lib.types.attrsOf (lib.types.listOf (lib.types.submodule {
@@ -401,12 +432,12 @@ in {
                 ipv4 = lib.mkOption {
                   type = with lib.types; nullOr str;
                   default = null;
-                  description = "TBD";
+                  description = "The IPv4 address for this host in the corresponding network.";
                 };
                 ipv6 = lib.mkOption {
                   type = with lib.types; nullOr str;
                   default = null;
-                  description = "TBD";
+                  description = "The IPv6 address for this host in the corresponding network.";
                 };
                 domains = lib.mkOption {
                   type = lib.types.submodule {
@@ -414,32 +445,43 @@ in {
                       A = lib.mkOption {
                         type = with lib.types; listOf str;
                         default = [];
-                        description = "TBD";
+                        description = "List of subdomains that should resolve to this interface's IPv4 address.";
                       };
                       AAAA = lib.mkOption {
                         type = with lib.types; listOf str;
                         default = [];
-                        description = "TBD";
+                        description = "List of subdomains that should resolve to this interface's IPv6 address.";
                       };
                       CNAME = lib.mkOption {
                         type = with lib.types; listOf str;
                         default = [];
-                        description = "TBD";
+                        description = ''
+                          List of subdomains that should be aliased to this host's hostname via CNAME records.
+                        '';
                       };
                     };
                   };
                   default = {};
-                  description = "TBD";
+                  description = ''
+                    Additional subdomain records (A, AAAA, CNAME) attached to this network interface.
+                  '';
                 };
               };
             }));
             default = {};
-            description = "TBD";
+            description = ''
+              An attribute set defining hosts and their per-network config for name resolution. The keys are the
+              hostnames. The order of interfaces in the list must strictly align with the order defined in
+              `service.bind.domains.networks`.
+            '';
           };
         };
       }));
       default = {};
-      description = "TBD";
+      description = ''
+        Declarative configuration for BIND DNS domains, supporting automatic generation of forward zones, reverse zones,
+        and subdomains based on hosts and network prefixes.
+      '';
       example = {
         "example.com" = {
           networks = [

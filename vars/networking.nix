@@ -46,6 +46,10 @@
       {
         ipv4 = "10.0.0.2";
         ipv6 = "fdfe:dcba:9877::2";
+        domains = {
+          A = ["@" "ns1"];
+          AAAA = ["@" "ns1"];
+        };
       }
     ];
     Proteus-Desktop = [

@@ -6,10 +6,7 @@
 
     services.bind = {
       enable = true;
-      extraOptions = ''
-        # Strictly Authoritative-Only Mode
-        recursion no;
-      '';
+      extraOptions = "empty-zones-enable no;";
       domains."example.com" = {
         bindZoneOptions.master = true;
         networks = [

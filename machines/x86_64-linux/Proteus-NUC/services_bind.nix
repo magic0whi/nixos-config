@@ -67,7 +67,7 @@
         myvars.networking.hosts_addr.${config.networking.hostName});
     # Inject the variables into the raw extraOptions string for DoT and DoH
     extraOptions = ''
-      # Strictly Authoritative-Only Mode
+      # Strictly Authoritative-Only Mode, implies 'empty-zones-enable no'
       recursion no;
 
       # Dedicated unencrypted TCP port strictly for Traefik's DoT proxy stream
@@ -111,9 +111,10 @@
           extraConfig = "dnssec-policy custom;";
         };
         mutable = true;
-        nameServer = "ns1.${myvars.domain}";
-        adminEmail = myvars.useremail;
-        soa.serial = "2026052003";
+        soa = {
+          rName = myvars.useremail;
+          serial = "2026052100";
+        };
         networks = [
           {
             v4PrefixLen = 1;
