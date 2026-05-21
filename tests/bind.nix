@@ -11,12 +11,12 @@
         bindZoneOptions.master = true;
         networks = [
           {
-            v4PrefixLen = 1;
-            v6PrefixLen = 48;
+            v4PrefixLen = 10 / 8;
+            v6PrefixLen = 48 / 4;
           }
           {
-            v4PrefixLen = 3;
-            v6PrefixLen = 64;
+            v4PrefixLen = 24 / 8;
+            v6PrefixLen = 64 / 4;
           }
         ];
         hosts = {
@@ -60,13 +60,10 @@
   };
 in
   pkgs.testers.runNixOSTest {
-    name = "bind-dynamic-zones-generation-test";
+    name = "bind-dynamic-zone-generation-test";
 
     nodes = {
-      machine_immutable = {
-        imports = [shared_cfg];
-        services.bind.domains."example.com".mutable = false;
-      };
+      machine_immutable = {imports = [shared_cfg];};
 
       machine_mutable = {
         imports = [shared_cfg];

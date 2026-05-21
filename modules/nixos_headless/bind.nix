@@ -48,7 +48,7 @@
       };
     };
   };
-  ## BEGIN Functions (Kept exactly as your original logic)
+  ## BEGIN Functions
   # Usage example
   # gen_v4_records {Proteus-Desktop = [{ipv4 = "100.89.227.22";} {ipv4 = "10.0.0.3";}]; Proteus-NUC = [{ipv4 = "100.64.161.20"; } {ipv4 = "10.0.0.2";}];}
   # => ''
@@ -241,7 +241,6 @@
           hosts_cfg
       )
       nets_cfg);
-  ## END Functions
 
   # Compute Dynamic State based on options
   gen_zone_head = _cfg: domain:
@@ -252,6 +251,7 @@
       ; Nameserver definitions
       @ IN NS ${mName}.
     '';
+  ## END Functions
 
   # Generate zones dynamically based on the networks defined in the options
   processed_domains =
@@ -534,8 +534,8 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    services.bind.debug = processed_domains;
     services.bind = {
+      debug = processed_domains;
       zones = lib.foldlAttrs (acc: _: pcsd_domain: acc // pcsd_domain.zones) {} processed_domains;
       checkConfig = lib.mkIf (lib.foldlAttrs (any: _: domain:
           if any
