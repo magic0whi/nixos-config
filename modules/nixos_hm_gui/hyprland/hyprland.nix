@@ -178,10 +178,7 @@ in {
         # "blur:ignore_opacity" = false;
         "shadow:enabled" = false;
       };
-      dwindle = {
-        pseudotile = true; # Master switch for pseudotiling
-        preserve_split = true; # The split (side/top) will not change regardless of what happens to the container
-      };
+      dwindle.preserve_split = true; # The split (side/top) will not change regardless of what happens to the container
       env = [
         # "_JAVA_AWT_WM_NONREPARENTING,1"
         # "QT_WAYLAND_DISABLE_WINDOWDECORATION,1" # Disables window decorations on Qt applications
