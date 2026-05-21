@@ -2,7 +2,8 @@
   description = "Proteus Qian's nix configuration for NixOS & nix-darwin";
   inputs = {
     # Pinned as of 2026-05-04 17:55, branch: nixos-unstable
-    nixpkgs.url = "github:NixOS/nixpkgs/15f4ee454b1dce334612fa6843b3e05cf546efab";
+    # nixpkgs.url = "github:NixOS/nixpkgs/15f4ee454b1dce334612fa6843b3e05cf546efab";
+    nixpkgs.url = "github:magic0whi/nixpkgs/e85fc8d32e52a90b9ed293b35823588d7e1da3cd";
     # Pinned as of 2026-04-14 17:55, branch: nixos-unstable
     # nixpkgs-postgresql.url = "github:NixOS/nixpkgs/4c1018dae018162ec878d42fec712642d214fdfa";
     # Pinned as of 2026-05-04 17:55, branch: master
