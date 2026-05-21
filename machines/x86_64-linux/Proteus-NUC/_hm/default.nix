@@ -25,7 +25,7 @@ in {
     chezmoi
     libreoffice
     qpdf
-    act # Run your Github Actions locally
+    act # Run your GitHub Actions locally
     gemini-cli
     google-cloud-sdk # gcloud
     terraform
