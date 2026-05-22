@@ -6,16 +6,36 @@
   pkgs,
   ...
 }: let
-  dpi_scale = lib.substring 0 4 (lib.strings.floatToString 1.25);
+  monitor_cfg = {
+    output = "eDP-1";
+    mode = "highres";
+    bitdepth = 10;
+    cm = "adobe";
+  };
   # Ref: https://wiki.hyprland.org/Configuring/Monitors/
   # TIP: ls /sys/class/drm/card*
-  # 10-bit will cause the internal monitor flickering when using PRIME Sync
-  main_monitor =
-    if config.wayland.windowManager.hyprland.nvidia
-    then "eDP-1,highres,auto,${dpi_scale},bitdepth,8,cm,adobe"
-    else "eDP-1,highres,auto,${dpi_scale},bitdepth,10,cm,adobe";
-  secondary_monitor = "HDMI-A-1,highres,auto-left,2,bitdepth,10,cm,adobe";
-  third_monitor = "DP-3,highres,auto-up,1.67,bitdepth,10,cm,adobe";
+  monitor_0 =
+    monitor_cfg
+    // {
+      output = "eDP-1";
+      scale = lib.substring 0 4 (lib.strings.floatToString 1.25);
+    }
+    # 10-bit will cause the internal monitor flickering when using PRIME Sync
+    // lib.optionalAttrs config.wayland.windowManager.hyprland.nvidia_prime_sync {bitdepth = 8;};
+  monitor_1 =
+    monitor_cfg
+    // {
+      output = "HDMI-A-1";
+      position = "auto-left";
+      scale = 2;
+    };
+  monitor_2 =
+    monitor_cfg
+    // {
+      output = "DP-3";
+      position = "auto-up";
+      scale = 1.67;
+    };
 in {
   imports = mylib.scan_path ./.;
   ## BEGIN packages.nix
@@ -75,72 +95,130 @@ in {
   wayland.windowManager.hyprland = {
     nvidia = true; # Prime Sync
     settings = {
+      # May cause black screen if the bandwidth doesn't enough, disable it
+      # config.render.cm_auto_hdr = 0;
+
       # Configure your Display resolution, offset, scale and Monitors here, use
       # `hyprctl monitors` to get the info.
       #   highres:     get the best possible resolution
       #   auto:        position automatically
       #   bitdepth,10: enable 10 bit support
-      monitor = [main_monitor secondary_monitor third_monitor];
-      workspace = let
-        main_iface = builtins.head (lib.splitString "," main_monitor);
-        secondary_iface = builtins.head (lib.splitString "," secondary_monitor);
-        third_iface = builtins.head (lib.splitString "," third_monitor);
-      in [
-        "1,monitor:${third_iface}"
-        "2,monitor:${third_iface}"
-        "3,monitor:${third_iface}"
-        "4,monitor:${third_iface}"
-        "5,monitor:${secondary_iface}"
-        "6,monitor:${secondary_iface}"
-        "7,monitor:${secondary_iface}"
-        "8,monitor:${main_iface}"
-        "9,monitor:${main_iface}"
-        "10,monitor:${main_iface}"
+      monitor = [
+        monitor_0
+        monitor_1
+        # monitor_2
       ];
+      workspace_rule = [
+        {
+          workspace = "0";
+          monitor = monitor_1.output;
+          default = true;
+          layout = "scrolling";
+        }
+        {
+          workspace = "1";
+          monitor = monitor_1.output;
+        }
+        {
+          workspace = "2";
+          monitor = monitor_1.output;
+        }
+        {
+          workspace = "3";
+          monitor = monitor_1.output;
+        }
+        {
+          workspace = "4";
+          monitor = monitor_1.output;
+        }
+        {
+          workspace = "5";
+          monitor = monitor_1.output;
+        }
+        {
+          workspace = "6";
+          monitor = monitor_1.output;
+        }
+        {
+          workspace = "7";
+          monitor = monitor_1.output;
+        }
+        {
+          workspace = "8";
+          monitor = monitor_1.output;
+        }
+        {
+          workspace = "9";
+          monitor = monitor_0.output;
+        }
+        # "2,monitor:${third_iface}"
+        # "3,monitor:${third_iface}"
+        # "4,monitor:${third_iface}"
+        # "5,monitor:${secondary_iface}"
+        # "6,monitor:${secondary_iface}"
+        # "7,monitor:${secondary_iface}"
+        # "8,monitor:${main_iface}"
+        # "9,monitor:${main_iface}"
+        # "10,monitor:${main_iface}"
+      ];
+      # NOTE: Set "GDK_DPI_SCALE" globally is not recommend, makes firefox scale twice
       env =
         [
-          # "GDK_DPI_SCALE,${dpi_scale}" # Set globally is not recommend, makes firefox scale twice
-          "STEAM_FORCE_DESKTOPUI_SCALING,${dpi_scale}"
+          {_args = ["STEAM_FORCE_DESKTOPUI_SCALING" "${toString monitor_1.scale}"];}
         ]
         # PRIME Sync mode for Hyprland
         ++ lib.optional
         config.wayland.windowManager.hyprland.nvidia
-        "AQ_DRM_DEVICES,/dev/dri/${myvars.dgpu_sym_name}:/dev/dri/${myvars.igpu_sym_name}";
+        {_args = ["AQ_DRM_DEVICES" "/dev/dri/${myvars.dgpu_sym_name}:/dev/dri/${myvars.igpu_sym_name}"];};
 
       bind = [
         # Add shortcut key for Leave Mode. Leave to main monitor for sunshine streaming
-        (lib.concatStrings [
-          "$mainMod,Y,exec,"
-          "hyprctl keyword monitor "
-          "\"${builtins.head (lib.splitString "," secondary_monitor)},disable\""
-          "; hyprctl keyword monitor "
-          "\"${builtins.head (lib.splitString "," third_monitor)},disable\""
-          "; notify-send \"Hyprland\" \"Leave mode: on\""
-        ])
-        # Restore the three monitors
-        (lib.concatStrings [
-          "$mainMod SHIFT,Y,exec,"
-          "hyprctl keyword monitor \"${secondary_monitor}\""
-          ";hyprctl keyword monitor \"${third_monitor}\""
-          ";notify-send \"Hyprland\" \"Leave mode: off\""
-        ])
-      ];
-      bindl = [
+        {
+          _args = [
+            (lib.generators.mkLuaInline ''mainMod .. " + Y"'')
+            (lib.generators.mkLuaInline ''hl.dsp.exec_cmd("${
+                builtins.concatStringsSep "; " [
+                  "hyprctl keyword monitor '${monitor_0.output},disable'"
+                  ''notify-send 'Hyprland' 'Leave mode: on'''''
+                ]
+              }")'')
+            {locked = true;}
+          ];
+        }
+        # Restore the monitors
+        {
+          _args = [
+            (lib.generators.mkLuaInline ''mainMod .. " + SHIFT + Y"'')
+            (lib.generators.mkLuaInline ''hl.dsp.exec_cmd("${
+                builtins.concatStringsSep "; " [
+                  "hyprctl reload"
+                  ''notify-send 'Hyprland' 'Leave mode: off'''''
+                ]
+              }")'')
+          ];
+        }
         # Going to dock mode if has external monitor connected
-        (lib.concatStrings [
-          ",switch:on:Lid Switch,exec,"
-          # Hyprland interprets commands starting with [ as window rules, change
-          # it to `test`
-          "test $(hyprctl monitors -j | jq '.[].name' | wc -w) -ne 1"
-          " && hyprctl keyword monitor \"${
-            builtins.head (lib.splitString "," main_monitor)
-          },disable\""
-        ])
+        {
+          _args = [
+            (lib.generators.mkLuaInline ''"switch:on:Lid Switch"'')
+            (lib.generators.mkLuaInline ''hl.dsp.exec_cmd("${
+                builtins.concatStringsSep " " [
+                  # Hyprland interprets commands starting with [ as window rules, change it to `test`
+                  # TODO: Test whether new Lua can use `[`, `]`
+                  "test $(hyprctl -j monitors | jq '.[].name' | wc -w) -ne 1"
+                  "&& hyprctl keyword monitor '${monitor_0.output},disable'"
+                ]
+              }")'')
+          ];
+        }
         # Restore internal monitor
-        ",switch:off:Lid Switch,exec,hyprctl keyword monitor \"${main_monitor}\""
+        {
+          _args = [
+            (lib.generators.mkLuaInline ''"switch:off:Lid Switch"'')
+            (lib.generators.mkLuaInline ''hl.dsp.exec_cmd("hyprctl reload")'')
+          ];
+        }
       ];
-      # Cause black screen if the bandwidth doesn't enough
-      # render = {cm_auto_hdr = 0; cm_fs_passthrough = 0;};
     };
   };
   programs.mpv.profiles.common.vulkan-device =
