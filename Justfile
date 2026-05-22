@@ -16,7 +16,7 @@ default:
 # Run eval tests on Proteus-NUC
 [group('nix')]
 test:
-  nom build .#nixosConfigurations.Proteus-NUC.config.system.build.toplevel --show-trace --verbose
+  nom build --show-trace --verbose -o /tmp/result .#nixosConfigurations.Proteus-NUC.config.system.build.toplevel
 
 # Update all the flake inputs
 [group('nix')]
