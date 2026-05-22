@@ -10,6 +10,7 @@ in {
   # vendor-no-locking script, we can switch to another wayland compositor without modifying greetd's config in NixOS
   # module
   home.file.".wayland-session".source = "${hypr_pkg}/bin/start-hyprland";
+  catppuccin.hyprland.enable = false;
   wayland.windowManager.hyprland = {
     enable = true;
     package = hypr_pkg;
@@ -24,11 +25,10 @@ in {
         # "GDK_BACKEND,wayland"
         {_args = ["QT_ENABLE_HIGHDPI_SCALING" "1"];}
       ];
-      main_mod._var = "SUPER";
-      launch_prefix._var = "systemd-run --user --scope --";
-      terminal.var = lib.getExe config.xdg.terminal-exec.package;
-      # menu._var = "rofi -show combi";
-      menu._var = config.programs.anyrun.menu_script;
+
+      # Variables
+      a_launch_prefix._var = "systemd-run --user --scope -- ";
+      a_terminal._var = lib.getExe config.xdg.terminal-exec.package;
       # clip_manager = "sh -c 'cliphist list | rofi -dmenu | cliphist decode | wl-copy'";
       clip_manager._var = config.programs.anyrun.clip_script;
       color_picker._var = pkgs.writeShellScript "menu" ''
@@ -45,18 +45,24 @@ in {
           notify-send -h string:x-canonical-private-synchronous:sys-notify -u low -i $image "$color, copied to clipboard."
         fi
       '';
-      file_manager._var = ''terminal .. "yazi"'';
+      file_manager._var = lib.generators.mkLuaInline ''a_terminal .. " yazi"'';
+      main_mod._var = "SUPER";
+      # menu._var = "rofi -show combi";
+      menu._var = config.programs.anyrun.menu_script;
       wlogout._var = config.programs.wlogout.wrapper_script;
+
       # This will get rid of the pixelated look, but will not scale applications properly. To do this, each toolkit has
       # its own mechanism.
-      xwayland.force_zero_scaling = true;
       config = {
         general = {
           border_size = 2;
           gaps_in = 2; # gaps between windows
           gaps_out = 5; # gaps between windows and monitor edges
           col = {
-            active_border = "rgba(33ccffee) rgba(00ff99ee) 45deg";
+            active_border = {
+              colors = ["rgba(33ccffee)" "rgba(00ff99ee)"];
+              angle = 45;
+            };
             inactive_border = "rgba(595959aa)";
           };
         };
@@ -85,6 +91,7 @@ in {
             then true
             else false;
         };
+        xwayland.force_zero_scaling = true;
       };
       curve = [
         {
@@ -262,63 +269,63 @@ in {
           # Applications
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + E"'')
-              (mkLuaInline ''hl.dsp.exec_cmd(launch_prefix .. file_manager)'')
+              (mkLuaInline ''main_mod  .. " + Q"'')
+              (mkLuaInline "hl.dsp.exec_cmd(a_launch_prefix .. a_terminal)")
             ];
           }
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + Q"'')
-              (mkLuaInline "hl.dsp.exec_cmd(launch_prefix .. terminal)")
+              (mkLuaInline ''main_mod  .. " + E"'')
+              (mkLuaInline ''hl.dsp.exec_cmd(a_launch_prefix .. file_manager)'')
             ];
           }
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + SPACE"'')
-              (mkLuaInline "hl.dsp.exec_cmd(launch_prefix .. menu)")
+              (mkLuaInline ''main_mod  .. " + SPACE"'')
+              (mkLuaInline "hl.dsp.exec_cmd(a_launch_prefix .. menu)")
             ];
           }
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + V"'')
-              (mkLuaInline "hl.dsp.exec_cmd(launch_prefix .. clip_manager)")
+              (mkLuaInline ''main_mod  .. " + V"'')
+              (mkLuaInline "hl.dsp.exec_cmd(a_launch_prefix .. clip_manager)")
             ];
           }
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + CTRL + "'')
-              (mkLuaInline "hl.dsp.exec_cmd(launch_prefix .. colorpicker)")
+              (mkLuaInline ''main_mod  .. " + CTRL + "'')
+              (mkLuaInline "hl.dsp.exec_cmd(a_launch_prefix .. color_picker)")
             ];
           }
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + X"'')
-              (mkLuaInline "hl.dsp.exec_cmd(launch_prefix .. wlogout)")
+              (mkLuaInline ''main_mod  .. " + X"'')
+              (mkLuaInline "hl.dsp.exec_cmd(a_launch_prefix .. wlogout)")
             ];
           }
 
           # Window management
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + W"'')
+              (mkLuaInline ''main_mod  .. " + W"'')
               (mkLuaInline "hl.dsp.window.close()")
             ];
           }
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + F"'')
+              (mkLuaInline ''main_mod  .. " + F"'')
               (mkLuaInline "hl.dsp.window.fullscreen()")
             ];
           }
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + SHIFT + F"'')
+              (mkLuaInline ''main_mod  .. " + SHIFT + F"'')
               (mkLuaInline ''hl.dsp.window.float({ action = "toggle" })'')
             ];
           }
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + G"'')
+              (mkLuaInline ''main_mod  .. " + G"'')
               (mkLuaInline ''
                 function()
                   hl.dispatch(hl.dsp.window.float({ action = "enable" }))
@@ -329,13 +336,13 @@ in {
           }
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + T"'')
+              (mkLuaInline ''main_mod  .. " + T"'')
               (mkLuaInline ''hl.dsp.layout("togglesplit")'')
             ];
           }
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + SHIFT + P"'')
+              (mkLuaInline ''main_mod  .. " + SHIFT + P"'')
               (mkLuaInline "hl.dsp.window.pseudo()")
             ];
           }
@@ -343,13 +350,13 @@ in {
           # Special Workspace (Scratchpad)
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + S"'')
+              (mkLuaInline ''main_mod  .. " + S"'')
               (mkLuaInline ''hl.dsp.workspace.toggle_special("magic")'')
             ];
           }
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + SHIFT + S"'')
+              (mkLuaInline ''main_mod  .. " + SHIFT + S"'')
               (mkLuaInline ''hl.dsp.window.move({ workspace = "special:magic" })'')
             ];
           }
@@ -357,37 +364,37 @@ in {
           # Focus Movement
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + H"'')
+              (mkLuaInline ''main_mod  .. " + H"'')
               (mkLuaInline ''hl.dsp.focus({ direction = "l" })'')
             ];
           }
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + J"'')
+              (mkLuaInline ''main_mod  .. " + J"'')
               (mkLuaInline ''hl.dsp.focus({ direction = "d" })'')
             ];
           }
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + K"'')
+              (mkLuaInline ''main_mod  .. " + K"'')
               (mkLuaInline ''hl.dsp.focus({ direction = "u" })'')
             ];
           }
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + L"'')
+              (mkLuaInline ''main_mod  .. " + L"'')
               (mkLuaInline ''hl.dsp.focus({ direction = "r" })'')
             ];
           }
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + N"'')
+              (mkLuaInline ''main_mod  .. " + N"'')
               (mkLuaInline ''hl.dsp.window.cycle_next()'')
             ];
           }
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + P"'')
+              (mkLuaInline ''main_mod  .. " + P"'')
               (mkLuaInline ''hl.dsp.window.cycle_next({ next = false })'')
             ];
           }
@@ -395,25 +402,25 @@ in {
           # Move Windows
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + SHIFT + H"'')
+              (mkLuaInline ''main_mod  .. " + SHIFT + H"'')
               (mkLuaInline ''hl.dsp.window.move({ direction = "l" })'')
             ];
           }
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + SHIFT + J"'')
+              (mkLuaInline ''main_mod  .. " + SHIFT + J"'')
               (mkLuaInline ''hl.dsp.window.move({ direction = "d" })'')
             ];
           }
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + SHIFT + K"'')
+              (mkLuaInline ''main_mod  .. " + SHIFT + K"'')
               (mkLuaInline ''hl.dsp.window.move({ direction = "u" })'')
             ];
           }
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + SHIFT + L"'')
+              (mkLuaInline ''main_mod  .. " + SHIFT + L"'')
               (mkLuaInline ''hl.dsp.window.move({ direction = "r" })'')
             ];
           }
@@ -421,13 +428,13 @@ in {
           # Workspace Scrolling
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + mouse_down"'')
+              (mkLuaInline ''main_mod  .. " + mouse_down"'')
               (mkLuaInline ''hl.dsp.focus({ workspace = "e+1" })'')
             ];
           }
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + mouse_up"'')
+              (mkLuaInline ''main_mod  .. " + mouse_up"'')
               (mkLuaInline ''hl.dsp.focus({ workspace = "e-1" })'')
             ];
           }
@@ -437,50 +444,50 @@ in {
             _args = [
               (mkLuaInline ''"Print"'')
               (mkLuaInline
-                ''hl.dsp.exec_cmd(launch_prefix .. "hyprshot -m output -o ~/Pictures/Screenshots -- imv")'')
+                ''hl.dsp.exec_cmd(a_launch_prefix .. "hyprshot -m output -o ~/Pictures/Screenshots -- imv")'')
             ];
           }
           {
             _args = [
               (mkLuaInline ''"ALT + Print"'')
               (mkLuaInline
-                ''hl.dsp.exec_cmd(launch_prefix .. "hyprshot -m window -o ~/Pictures/Screenshots -- imv")'')
+                ''hl.dsp.exec_cmd(a_launch_prefix .. "hyprshot -m window -o ~/Pictures/Screenshots -- imv")'')
             ];
           }
           {
             _args = [
               (mkLuaInline ''"CTRL + Print"'')
               (mkLuaInline
-                ''hl.dsp.exec_cmd(launch_prefix .. "hyprshot -m region -o ~/Pictures/Screenshots -- imv")'')
+                ''hl.dsp.exec_cmd(a_launch_prefix .. "hyprshot -m region -o ~/Pictures/Screenshots -- imv")'')
             ];
           }
 
           # Window Resizing (Repeating)
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + ALT + H"'')
-              (mkLuaInline ''hl.dsp.window.resize({ x = -.05, y = 0, relative = true })'')
+              (mkLuaInline ''main_mod  .. " + ALT + H"'')
+              (mkLuaInline ''hl.dsp.window.resize({ x = -38.4, y = 0, relative = true })'')
               {repeating = true;}
             ];
           }
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + ALT + L"'')
-              (mkLuaInline ''hl.dsp.window.resize({ x = .05, y = 0, relative = true })'')
+              (mkLuaInline ''main_mod  .. " + ALT + L"'')
+              (mkLuaInline ''hl.dsp.window.resize({ x = 38.4, y = 0, relative = true })'')
               {repeating = true;}
             ];
           }
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + ALT + J"'')
-              (mkLuaInline ''hl.dsp.window.resize({ x = 0, y = .05, relative = true })'')
+              (mkLuaInline ''main_mod  .. " + ALT + J"'')
+              (mkLuaInline ''hl.dsp.window.resize({ x = 0, y = 21.6, relative = true })'')
               {repeating = true;}
             ];
           }
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + ALT + K"'')
-              (mkLuaInline ''hl.dsp.window.resize({ x = 0, y = -.05, relative = true })'')
+              (mkLuaInline ''main_mod  .. " + ALT + K"'')
+              (mkLuaInline ''hl.dsp.window.resize({ x = 0, y = -21.6, relative = true })'')
               {repeating = true;}
             ];
           }
@@ -598,42 +605,42 @@ in {
           # System controls (Locked)
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + Z"'')
+              (mkLuaInline ''main_mod  .. " + Z"'')
               (mkLuaInline ''hl.dsp.exec_cmd("loginctl lock-session")'')
               {locked = true;}
             ];
           }
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + CTRL + SHIFT + Q"'')
+              (mkLuaInline ''main_mod  .. " + CTRL + SHIFT + Q"'')
               (mkLuaInline ''hl.dsp.exec_cmd("loginctl terminate-user $USER")'')
               {locked = true;}
             ];
           }
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + CTRL + SHIFT + W"'')
+              (mkLuaInline ''main_mod  .. " + CTRL + SHIFT + W"'')
               (mkLuaInline ''hl.dsp.exec_cmd("systemctl suspend")'')
               {locked = true;}
             ];
           }
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + CTRL + SHIFT + E"'')
+              (mkLuaInline ''main_mod  .. " + CTRL + SHIFT + E"'')
               (mkLuaInline ''hl.dsp.exec_cmd("systemctl hibernate")'')
               {locked = true;}
             ];
           }
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + CTRL + SHIFT + R"'')
+              (mkLuaInline ''main_mod  .. " + CTRL + SHIFT + R"'')
               (mkLuaInline ''hl.dsp.exec_cmd("systemctl reboot")'')
               {locked = true;}
             ];
           }
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + CTRL + SHIFT + T"'')
+              (mkLuaInline ''main_mod  .. " + CTRL + SHIFT + T"'')
               (mkLuaInline ''hl.dsp.exec_cmd("systemctl poweroff")'')
               {locked = true;}
             ];
@@ -649,31 +656,36 @@ in {
           # Mouse actions
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + mouse:272"'')
+              (mkLuaInline ''main_mod  .. " + mouse:272"'')
               (mkLuaInline "hl.dsp.window.drag()")
               {mouse = true;}
             ];
           }
           {
             _args = [
-              (mkLuaInline ''mainMod .. " + mouse:273"'')
+              (mkLuaInline ''main_mod  .. " + mouse:273"'')
               (mkLuaInline "hl.dsp.window.resize()")
               {mouse = true;}
             ];
           }
         ]
         ++ (builtins.concatLists (builtins.genList (
-            i: [
+            i: let
+              ws_num =
+                if i == 0
+                then 10
+                else i;
+            in [
               {
                 _args = [
-                  (lib.generators.mkLuaInline ''mainMod .. " + ${toString i}"'')
-                  (lib.generators.mkLuaInline "hl.dsp.focus({ workspace = ${toString i} })")
+                  (lib.generators.mkLuaInline ''main_mod  .. " + ${toString i}"'')
+                  (lib.generators.mkLuaInline "hl.dsp.focus({ workspace = ${toString ws_num} })")
                 ];
               }
               {
                 _args = [
-                  (lib.generators.mkLuaInline ''mainMod .. " + SHIFT + ${toString i}"'')
-                  (lib.generators.mkLuaInline "hl.dsp.window.move({ workspace = ${toString i} })")
+                  (lib.generators.mkLuaInline ''main_mod  .. " + SHIFT + ${toString i}"'')
+                  (lib.generators.mkLuaInline "hl.dsp.window.move({ workspace = ${toString ws_num} })")
                 ];
               }
             ]
@@ -681,77 +693,77 @@ in {
           10));
 
       # bind = [
-      #   "$mainMod,E,exec,${launch_prefix} $file_manager"
-      #   "$mainMod,Q,exec,${launch_prefix} $terminal"
-      #   "$mainMod,SPACE,exec,${launch_prefix} $menu"
-      #   "$mainMod,V,exec,${launch_prefix} $clip_manager"
-      #   "$mainMod CTRL,P,exec,${launch_prefix} $colorpicker"
-      #   "$mainMod,X,exec,${launch_prefix} $wlogout"
-      #   "$mainMod,W,killactive,"
-      #   "$mainMod,F,fullscreen,"
-      #   "$mainMod SHIFT,F,togglefloating"
-      #   "$mainMod,G,exec,hyprctl dispatch setfloating && hyprctl dispatch pin"
-      #   "$mainMod,T,layoutmsg,togglesplit" # dwindle
-      #   "$mainMod SHIFT,P,pseudo" # dwindle"
+      #   "$main_mod ,E,exec,${a_launch_prefix} $file_manager"
+      #   "$main_mod ,Q,exec,${a_launch_prefix} $a_terminal"
+      #   "$main_mod ,SPACE,exec,${a_launch_prefix} $menu"
+      #   "$main_mod ,V,exec,${a_launch_prefix} $clip_manager"
+      #   "$main_mod  CTRL,P,exec,${a_launch_prefix} $colorpicker"
+      #   "$main_mod ,X,exec,${a_launch_prefix} $wlogout"
+      #   "$main_mod ,W,killactive,"
+      #   "$main_mod ,F,fullscreen,"
+      #   "$main_mod  SHIFT,F,togglefloating"
+      #   "$main_mod ,G,exec,hyprctl dispatch setfloating && hyprctl dispatch pin"
+      #   "$main_mod ,T,layoutmsg,togglesplit" # dwindle
+      #   "$main_mod  SHIFT,P,pseudo" # dwindle"
 
       #   # Special workspace (scratchpad)
-      #   "$mainMod,S,togglespecialworkspace,magic"
-      #   "$mainMod SHIFT,S,movetoworkspace,special:magic"
+      #   "$main_mod ,S,togglespecialworkspace,magic"
+      #   "$main_mod  SHIFT,S,movetoworkspace,special:magic"
 
       #   # Move focus
-      #   "$mainMod,H,movefocus,l"
-      #   "$mainMod,J,movefocus,d"
-      #   "$mainMod,K,movefocus,u"
-      #   "$mainMod,L,movefocus,r"
-      #   "$mainMod,N,cyclenext,"
-      #   "$mainMod,P,cyclenext,prev"
+      #   "$main_mod ,H,movefocus,l"
+      #   "$main_mod ,J,movefocus,d"
+      #   "$main_mod ,K,movefocus,u"
+      #   "$main_mod ,L,movefocus,r"
+      #   "$main_mod ,N,cyclenext,"
+      #   "$main_mod ,P,cyclenext,prev"
 
       #   # Move windows
-      #   "$mainMod SHIFT,H,movewindow,l"
-      #   "$mainMod SHIFT,J,movewindow,d"
-      #   "$mainMod SHIFT,K,movewindow,u"
-      #   "$mainMod SHIFT,L,movewindow,r"
+      #   "$main_mod  SHIFT,H,movewindow,l"
+      #   "$main_mod  SHIFT,J,movewindow,d"
+      #   "$main_mod  SHIFT,K,movewindow,u"
+      #   "$main_mod  SHIFT,L,movewindow,r"
 
-      #   # Scroll through existing workspaces with mainMod + scroll
-      #   "$mainMod,mouse_down,workspace,e+1"
-      #   "$mainMod,mouse_up,workspace,e-1"
+      #   # Scroll through existing workspaces with main_mod  + scroll
+      #   "$main_mod ,mouse_down,workspace,e+1"
+      #   "$main_mod ,mouse_up,workspace,e-1"
 
       #   # Screenshots
-      #   ",Print,exec,${launch_prefix} hyprshot -m output -o ~/Pictures/Screenshots -- imv"
-      #   "ALT,Print,exec,${launch_prefix} hyprshot -m window -o ~/Pictures/Screenshots -- imv"
-      #   "CTRL,Print,exec,${launch_prefix} hyprshot -m region -o ~/Pictures/Screenshots -- imv"
+      #   ",Print,exec,${a_launch_prefix} hyprshot -m output -o ~/Pictures/Screenshots -- imv"
+      #   "ALT,Print,exec,${a_launch_prefix} hyprshot -m window -o ~/Pictures/Screenshots -- imv"
+      #   "CTRL,Print,exec,${a_launch_prefix} hyprshot -m region -o ~/Pictures/Screenshots -- imv"
 
-      #   # Switch workspaces with mainMod + [0-9]
-      #   "$mainMod,0,workspace,0"
-      #   "$mainMod,1,workspace,1"
-      #   "$mainMod,2,workspace,2"
-      #   "$mainMod,3,workspace,3"
-      #   "$mainMod,4,workspace,4"
-      #   "$mainMod,5,workspace,5"
-      #   "$mainMod,6,workspace,6"
-      #   "$mainMod,7,workspace,7"
-      #   "$mainMod,8,workspace,8"
-      #   "$mainMod,9,workspace,9"
+      #   # Switch workspaces with main_mod  + [0-9]
+      #   "$main_mod ,1,workspace,1"
+      #   "$main_mod ,2,workspace,2"
+      #   "$main_mod ,3,workspace,3"
+      #   "$main_mod ,4,workspace,4"
+      #   "$main_mod ,5,workspace,5"
+      #   "$main_mod ,6,workspace,6"
+      #   "$main_mod ,7,workspace,7"
+      #   "$main_mod ,8,workspace,8"
+      #   "$main_mod ,9,workspace,9"
+      #   "$main_mod ,10,workspace,0"
 
-      #   # Move active window to a workspace with mainMod + SHIFT + [0-9]
-      #   "$mainMod SHIFT,0,movetoworkspace,0"
-      #   "$mainMod SHIFT,1,movetoworkspace,1"
-      #   "$mainMod SHIFT,2,movetoworkspace,2"
-      #   "$mainMod SHIFT,3,movetoworkspace,3"
-      #   "$mainMod SHIFT,4,movetoworkspace,4"
-      #   "$mainMod SHIFT,5,movetoworkspace,5"
-      #   "$mainMod SHIFT,6,movetoworkspace,6"
-      #   "$mainMod SHIFT,7,movetoworkspace,7"
-      #   "$mainMod SHIFT,8,movetoworkspace,8"
-      #   "$mainMod SHIFT,9,movetoworkspace,9"
+      #   # Move active window to a workspace with main_mod  + SHIFT + [0-9]
+      #   "$main_mod  SHIFT,1,movetoworkspace,1"
+      #   "$main_mod  SHIFT,2,movetoworkspace,2"
+      #   "$main_mod  SHIFT,3,movetoworkspace,3"
+      #   "$main_mod  SHIFT,4,movetoworkspace,4"
+      #   "$main_mod  SHIFT,5,movetoworkspace,5"
+      #   "$main_mod  SHIFT,6,movetoworkspace,6"
+      #   "$main_mod  SHIFT,7,movetoworkspace,7"
+      #   "$main_mod  SHIFT,8,movetoworkspace,8"
+      #   "$main_mod  SHIFT,9,movetoworkspace,9"
+      #   "$main_mod  SHIFT,10,movetoworkspace,10"
 
       # ];
       # binde = [
       #   # Resize windows
-      #   "$mainMod ALT,H,resizeactive,-5% 0"
-      #   "$mainMod ALT,L,resizeactive,5% 0"
-      #   "$mainMod ALT,J,resizeactive,0 5%"
-      #   "$mainMod ALT,K,resizeactive,0 -5%"
+      #   "$main_mod  ALT,H,resizeactive,-5% 0"
+      #   "$main_mod  ALT,L,resizeactive,5% 0"
+      #   "$main_mod  ALT,J,resizeactive,0 5%"
+      #   "$main_mod  ALT,K,resizeactive,0 -5%"
       # ];
       # bindel = [
       #   # Multimedia keys for volume and brightness
@@ -767,18 +779,18 @@ in {
       #   ",XF86AudioStop,exec,mpc stop" # Or `playerctl --all-players stop`
       # ];
       # bindl = [
-      #   "$mainMod,Z,exec,loginctl lock-session"
-      #   "$mainMod CTRL SHIFT,Q,exec,loginctl terminate-user $USER" # Logout & Exit Hyprland
-      #   "$mainMod CTRL SHIFT,W,exec,systemctl suspend" # Suspend
-      #   "$mainMod CTRL SHIFT,E,exec,systemctl hibernate" # Hibernate
-      #   "$mainMod CTRL SHIFT,R,exec,systemctl reboot" # Reboot
-      #   "$mainMod CTRL SHIFT,T,exec,systemctl poweroff" # Shutdown
+      #   "$main_mod ,Z,exec,loginctl lock-session"
+      #   "$main_mod  CTRL SHIFT,Q,exec,loginctl terminate-user $USER" # Logout & Exit Hyprland
+      #   "$main_mod  CTRL SHIFT,W,exec,systemctl suspend" # Suspend
+      #   "$main_mod  CTRL SHIFT,E,exec,systemctl hibernate" # Hibernate
+      #   "$main_mod  CTRL SHIFT,R,exec,systemctl reboot" # Reboot
+      #   "$main_mod  CTRL SHIFT,T,exec,systemctl poweroff" # Shutdown
       #   ",switch:Lid Switch,exec,loginctl lock-session" # Lock when lid switch triggered
       # ];
       # bindm = [
       #   # LMB/RMB and dragging to move/resize windows
-      #   "$mainMod,mouse:272,movewindow"
-      #   "$mainMod,mouse:273,resizewindow"
+      #   "$main_mod ,mouse:272,movewindow"
+      #   "$main_mod ,mouse:273,resizewindow"
       # ];
       # windowrule = [
       #   "match:class ^imv$,float true"

@@ -18,24 +18,24 @@
     monitor_cfg
     // {
       output = "eDP-1";
-      scale = lib.substring 0 4 (lib.strings.floatToString 1.25);
+      scale = 1.25;
     }
     # 10-bit will cause the internal monitor flickering when using PRIME Sync
     // lib.optionalAttrs config.wayland.windowManager.hyprland.nvidia_prime_sync {bitdepth = 8;};
   monitor_1 =
     monitor_cfg
     // {
-      output = "HDMI-A-1";
-      position = "auto-left";
-      scale = 2;
-    };
-  monitor_2 =
-    monitor_cfg
-    // {
       output = "DP-3";
       position = "auto-up";
       scale = 1.67;
     };
+  # monitor_2 =
+  #   monitor_cfg
+  #   // {
+  #     output = "DP-3";
+  #     position = "auto-up";
+  #     scale = 1.67;
+  #   };
 in {
   imports = mylib.scan_path ./.;
   ## BEGIN packages.nix
@@ -93,7 +93,7 @@ in {
   ## END cloud-providers.nix
   ## BEGIN hyprland.nix
   wayland.windowManager.hyprland = {
-    nvidia = true; # Prime Sync
+    nvidia_prime_sync = true;
     settings = {
       # May cause black screen if the bandwidth doesn't enough, disable it
       # config.render.cm_auto_hdr = 0;
@@ -110,18 +110,15 @@ in {
       ];
       workspace_rule = [
         {
-          workspace = "0";
+          workspace = "1";
           monitor = monitor_1.output;
           default = true;
           layout = "scrolling";
         }
         {
-          workspace = "1";
-          monitor = monitor_1.output;
-        }
-        {
           workspace = "2";
           monitor = monitor_1.output;
+          layout = "scrolling";
         }
         {
           workspace = "3";
@@ -149,6 +146,10 @@ in {
         }
         {
           workspace = "9";
+          monitor = monitor_1.output;
+        }
+        {
+          workspace = "10";
           monitor = monitor_0.output;
         }
         # "2,monitor:${third_iface}"
@@ -168,18 +169,18 @@ in {
         ]
         # PRIME Sync mode for Hyprland
         ++ lib.optional
-        config.wayland.windowManager.hyprland.nvidia
+        config.wayland.windowManager.hyprland.nvidia_prime_sync
         {_args = ["AQ_DRM_DEVICES" "/dev/dri/${myvars.dgpu_sym_name}:/dev/dri/${myvars.igpu_sym_name}"];};
 
       bind = [
         # Add shortcut key for Leave Mode. Leave to main monitor for sunshine streaming
         {
           _args = [
-            (lib.generators.mkLuaInline ''mainMod .. " + Y"'')
+            (lib.generators.mkLuaInline ''main_mod .. " + Y"'')
             (lib.generators.mkLuaInline ''hl.dsp.exec_cmd("${
                 builtins.concatStringsSep "; " [
-                  "hyprctl keyword monitor '${monitor_0.output},disable'"
-                  ''notify-send 'Hyprland' 'Leave mode: on'''''
+                  ''hyprctl dispatch 'hl.monitor({ output = \"${monitor_0.output}\", disabled = true })' ''
+                  ''notify-send 'Hyprland' 'Leave mode: on' ''
                 ]
               }")'')
             {locked = true;}
@@ -188,11 +189,11 @@ in {
         # Restore the monitors
         {
           _args = [
-            (lib.generators.mkLuaInline ''mainMod .. " + SHIFT + Y"'')
+            (lib.generators.mkLuaInline ''main_mod .. " + SHIFT + Y"'')
             (lib.generators.mkLuaInline ''hl.dsp.exec_cmd("${
                 builtins.concatStringsSep "; " [
                   "hyprctl reload"
-                  ''notify-send 'Hyprland' 'Leave mode: off'''''
+                  ''notify-send 'Hyprland' 'Leave mode: off' ''
                 ]
               }")'')
           ];
@@ -203,10 +204,10 @@ in {
             (lib.generators.mkLuaInline ''"switch:on:Lid Switch"'')
             (lib.generators.mkLuaInline ''hl.dsp.exec_cmd("${
                 builtins.concatStringsSep " " [
-                  # Hyprland interprets commands starting with [ as window rules, change it to `test`
-                  # TODO: Test whether new Lua can use `[`, `]`
+                  # Hyprland interprets commands starting with [ as window rules, change it to `test`, same as Lua
+                  # Config
                   "test $(hyprctl -j monitors | jq '.[].name' | wc -w) -ne 1"
-                  "&& hyprctl keyword monitor '${monitor_0.output},disable'"
+                  ''&& hyprctl dispatch 'hl.monitor({ output = \"${monitor_0.output}\", disabled = true })' ''
                 ]
               }")'')
           ];
@@ -222,7 +223,7 @@ in {
     };
   };
   programs.mpv.profiles.common.vulkan-device =
-    if config.wayland.windowManager.hyprland.nvidia
+    if config.wayland.windowManager.hyprland.nvidia_prime_sync
     then "NVIDIA GeForce RTX 3070 Laptop GPU"
     else "Intel(R) UHD Graphics (TGL GT1)";
   ## END hyprland.nix
