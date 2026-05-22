@@ -29,8 +29,9 @@ in {
       # Variables
       a_launch_prefix._var = "systemd-run --user --scope -- ";
       a_terminal._var = lib.getExe config.xdg.terminal-exec.package;
-      # clip_manager = "sh -c 'cliphist list | rofi -dmenu | cliphist decode | wl-copy'";
-      clip_manager._var = config.programs.anyrun.clip_script;
+      # clip_manager._var = "sh -c 'cliphist list | rofi -dmenu | cliphist decode | wl-copy'";
+      # clip_manager._var = config.programs.anyrun.clip_script;
+      clip_manager._var = "walker -m clipboard";
       color_picker._var = pkgs.writeShellScript "menu" ''
         ## Simple Script To Pick Color Quickly.
         color=$(hyprpicker)
@@ -48,7 +49,8 @@ in {
       file_manager._var = lib.generators.mkLuaInline ''a_terminal .. " yazi"'';
       main_mod._var = "SUPER";
       # menu._var = "rofi -show combi";
-      menu._var = config.programs.anyrun.menu_script;
+      # menu._var = config.programs.anyrun.menu_script;
+      menu._var = "walker";
       wlogout._var = config.programs.wlogout.wrapper_script;
 
       # This will get rid of the pixelated look, but will not scale applications properly. To do this, each toolkit has
