@@ -8,7 +8,12 @@
     enable = true;
     defaultEditor = true;
     extraPackages = with pkgs;
-      [vscode-json-languageserver yaml-language-server alejandra.packages.${pkgs.stdenv.hostPlatform.system}.default] # Added alejandra here
+      [
+        vscode-json-languageserver
+        yaml-language-server
+        alejandra.packages.${pkgs.stdenv.hostPlatform.system}.default
+        nixd
+      ]
       ++ lib.optionals (!stdenv.hostPlatform.isRiscV64) [nil marksman]; # TODO: Requires bootstrap GHC
     settings = {
       # theme = "gruvbox"; # Disable if use catpuccin
