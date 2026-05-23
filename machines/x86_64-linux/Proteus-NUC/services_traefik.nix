@@ -86,12 +86,6 @@ in {
             service = "api@internal";
             tls = {};
           };
-          immich = {
-            rule = "Host(`immich.${myvars.domain}`)";
-            entryPoints = ["websecure"];
-            service = "immich";
-            tls = {};
-          };
           paperless = {
             rule = "Host(`paperless.${myvars.domain}`)";
             entryPoints = ["websecure"];
@@ -182,10 +176,6 @@ in {
           };
         };
         services = {
-          immich.loadBalancer = {
-            servers = [{url = "http://127.0.0.1:${toString config.services.immich.port}";}];
-            healthCheck.path = "/api/server/ping";
-          };
           paperless.loadBalancer.servers = [
             {url = "http://127.0.0.1:${toString config.services.paperless.port}";}
           ];
