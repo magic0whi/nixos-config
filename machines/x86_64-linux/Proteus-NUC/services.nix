@@ -54,42 +54,6 @@
     };
   };
   ## END services_tor.nix
-  ## BEGIN services_home_assistant.nix
-  services.home-assistant = {
-    enable = true;
-    # NixOS will automatically fetch the required Python dependencies (like
-    # python-miio) and assign Bluetooth capabilities for BLE sensors.
-    extraComponents = [
-      "default_config"
-      "met" # Meteorologisk institute (Met.no)
-      "homekit" # xiaomi_miot requires pyhap
-    ];
-    # Include custom components if specific devices are better supported by the
-    # community 'xiaomi_miot' integration.
-    customComponents = with pkgs.home-assistant-custom-components; [
-      xiaomi_miot # Xiaomi Miot Auto (Community)
-      # xiaomi_home # Xiaomi Home (Official)
-    ];
-    config = {
-      default_config = {}; # Implicitly enable `mobile_app`
-      http = {
-        server_port = 8123;
-        server_host = ["127.0.0.1" "::1"];
-        use_x_forwarded_for = true;
-        trusted_proxies = ["127.0.0.1" "::1"];
-        cors_allowed_origins = ["https://hass.${myvars.domain}"];
-      };
-      homeassistant = {
-        name = "Proteus' Homo";
-        unit_system = "metric"; # or "us_customary"
-        latitude = config.home-manager.users.${myvars.username}.services.gammastep.settings.manual.lat;
-        longitude = config.home-manager.users.${myvars.username}.services.gammastep.settings.manual.lon;
-        time_zone = "Asia/Hong_Kong";
-      };
-      logger.default = "info";
-    };
-  };
-  ## END services_home_assistant.nix
   ## BEGIN services_sunshine.nix
   # Wake monitor when connect
   # Ref: https://github.com/orgs/LizardByte/discussions/439#discussioncomment-15813284
