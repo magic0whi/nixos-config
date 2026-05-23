@@ -44,13 +44,13 @@
     };
   };
   services.traefik.dynamicConfigOptions.http = {
-    services.immich = {
+    routers.immich = {
       rule = "Host(`immich.${myvars.domain}`)";
       entryPoints = ["websecure"];
       service = "immich";
       tls = {};
     };
-    routers.immich.loadBalancer = {
+    services.immich.loadBalancer = {
       servers = [{url = "http://127.0.0.1:${toString config.services.immich.port}";}];
       healthCheck.path = "/api/server/ping";
     };
