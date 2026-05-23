@@ -74,27 +74,10 @@ in {
       };
       # For other domains
       # tls.certificates = [{certFile = server_pub_crt; keyFile = config.sops.secrets."traefik_server.priv.pem".path;}];
-      http = let
-        authelia_port = toString (mylib.get_uri_port config.services.authelia.instances.main.settings.server.address);
-      in {
+      http = {
         # For sunshine-webui
         serversTransports.ignorecert.insecureSkipVerify = true;
-
-        middlewares.authelia-auth.forwardAuth = {
-          # Tell Traefik where to ask if a user is authenticated
-          address = "http://127.0.0.1:${authelia_port}/api/authz/forward-auth?authelia_url=https://auth.${myvars.domain}/";
-          trustForwardHeader = true;
-          authResponseHeaders = ["Remote-User" "Remote-Groups" "Remote-Email" "Remote-Name"];
-        };
         routers = {
-          # Router for the login portal
-          # `tls = {}` enables TLS using the default cert provided above
-          authelia = {
-            rule = "Host(`auth.${myvars.domain}`)";
-            entryPoints = ["websecure"];
-            service = "authelia-backend";
-            tls = {};
-          };
           traefik-dashboard = {
             rule = "Host(`traefik.${myvars.domain}`)";
             # `authelia-auth` Protect the dashboard
@@ -205,10 +188,6 @@ in {
           };
         };
         services = {
-          authelia-backend.loadBalancer = {
-            servers = [{url = "http://127.0.0.1:${authelia_port}";}];
-            healthCheck.path = "/api/health";
-          };
           atuin.loadBalancer = {
             servers = [{url = "http://127.0.0.1:${toString config.services.atuin.port}";}];
             healthCheck.path = "/healthz";
