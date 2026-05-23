@@ -29,6 +29,7 @@
             "hass"
             "immich"
             "ldap"
+            "navidrome"
             "notebook"
             "paperless"
             "papra"
@@ -36,10 +37,10 @@
             "postgresql"
             "ql"
             "sb"
-            # "sftpgo"
             "sunshine"
             "syncthing"
             "traefik"
+            # "sftpgo"
           ];
         };
       }
