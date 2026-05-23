@@ -30,7 +30,9 @@
       push.autoSetupRemote = true;
       pull.rebase = true;
       core.hooksPath = ".git_hooks";
+      difftool.difftastic.cmd = "${lib.getExe config.programs.difftastic.package} $LOCAL $REMOTE";
       url = {
+        # New machines that lacks of a SSH Agent / key may not able to clone repo anonymously
         # Replace https with ssh
         # "ssh://git@ssh.github.com:443/${myvars.github_username}" = {
         #   insteadOf = "https://github.com/${myvars.github_username}";
@@ -95,7 +97,7 @@
   # A syntax-highlighting pager written in Rust
   programs.delta = {
     enable = true;
-    enableGitIntegration = false;
+    enableGitIntegration = true;
     options = {
       diff-so-fancy = true;
       line-numbers = true;
@@ -105,6 +107,10 @@
   };
   programs.difftastic = {
     enable = true;
-    git.enable = !config.programs.delta.enableGitIntegration;
+    git = {
+      enable = !config.programs.delta.enableGitIntegration;
+      # Persists as of 2026-05-23, https://github.com/nix-community/home-manager/issues/8592
+      # diffToolMode = true;
+    };
   };
 }
