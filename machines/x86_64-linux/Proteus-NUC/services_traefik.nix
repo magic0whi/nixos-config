@@ -86,12 +86,6 @@ in {
             service = "api@internal";
             tls = {};
           };
-          aria2-rpc = {
-            rule = "Host(`aria2.${myvars.domain}`)";
-            entryPoints = ["websecure"];
-            service = "aria2-rpc";
-            tls = {};
-          };
           qinglong = {
             rule = "Host(`ql.${myvars.domain}`)";
             entryPoints = ["websecure"];
@@ -164,12 +158,6 @@ in {
           };
         };
         services = {
-          # Even though it's WebSockets, we define it as http://
-          aria2-rpc.loadBalancer.servers = [
-            {
-              url = "http://127.0.0.1:${toString config.services.aria2.settings.rpc-listen-port}";
-            }
-          ];
           qinglong.loadBalancer.servers = [{url = "http://127.0.0.1:5700";}];
           # Use HTTP/2 Cleartext (h2c) when talking to BIND's local port.
           doh.loadBalancer.servers = [{url = "h2c://127.0.0.1:8053";} {url = "h2c://[::1]:8053";}];
