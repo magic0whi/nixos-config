@@ -45,6 +45,7 @@
     # wireshark # Network analyzer
 
     super-productivity
+    nuclear
   ];
   ## BEGIN browsers.nix
   programs.firefox.enable = true;
