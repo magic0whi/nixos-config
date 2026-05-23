@@ -29,7 +29,7 @@
   dconf.settings."org/gnome/desktop/interface".color-scheme = "prefer-dark"; # GTK4 prefer dark
   qt = {
     enable = true;
-    platformTheme.name = "kvantum";
+    platformTheme.name = "qtct";
     style.name = "kvantum";
   };
 }
