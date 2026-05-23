@@ -86,12 +86,6 @@ in {
             service = "api@internal";
             tls = {};
           };
-          atuin = {
-            rule = "Host(`atuin.${myvars.domain}`)";
-            entryPoints = ["websecure"];
-            service = "atuin";
-            tls = {};
-          };
           immich = {
             rule = "Host(`immich.${myvars.domain}`)";
             entryPoints = ["websecure"];
@@ -188,10 +182,6 @@ in {
           };
         };
         services = {
-          atuin.loadBalancer = {
-            servers = [{url = "http://127.0.0.1:${toString config.services.atuin.port}";}];
-            healthCheck.path = "/healthz";
-          };
           immich.loadBalancer = {
             servers = [{url = "http://127.0.0.1:${toString config.services.immich.port}";}];
             healthCheck.path = "/api/server/ping";

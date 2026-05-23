@@ -26,4 +26,16 @@
     environmentFile = config.sops.templates."atuin.env".path;
     openRegistration = true;
   };
+  services.traefik.dynamicConfigOptions.http = {
+    routers.atuin = {
+      rule = "Host(`atuin.${myvars.domain}`)";
+      entryPoints = ["websecure"];
+      service = "atuin";
+      tls = {};
+    };
+    services.atuin.loadBalancer = {
+      servers = [{url = "http://127.0.0.1:${toString config.services.atuin.port}";}];
+      healthCheck.path = "/healthz";
+    };
+  };
 }
