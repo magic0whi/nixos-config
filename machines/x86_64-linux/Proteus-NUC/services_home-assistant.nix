@@ -69,4 +69,15 @@
       };
     };
   };
+  services.traefik.dynamicConfigOptions.http = {
+    routers.home-assistant = {
+      rule = "Host(`hass.${myvars.domain}`)";
+      entryPoints = ["websecure"];
+      service = "home-assistant";
+      tls = {};
+    };
+    services.home-assistant.loadBalancer.servers = let
+      hass_port = toString config.services.home-assistant.config.http.server_port;
+    in [{url = "http://127.0.0.1:${hass_port}";} {url = "http://[::1]:${hass_port}";}];
+  };
 }

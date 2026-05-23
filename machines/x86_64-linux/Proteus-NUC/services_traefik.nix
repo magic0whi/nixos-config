@@ -103,12 +103,6 @@ in {
             service = "syncthing-dashboard";
             tls = {};
           };
-          home-assistant = {
-            rule = "Host(`hass.${myvars.domain}`)";
-            entryPoints = ["websecure"];
-            service = "home-assistant";
-            tls = {};
-          };
           sunshine-webui = {
             rule = "Host(`sunshine.${myvars.domain}`)";
             entryPoints = ["websecure"];
@@ -150,9 +144,6 @@ in {
             servers = [{url = "http://${config.home-manager.users.${myvars.username}.services.syncthing.guiAddress}";}];
             healthCheck.path = "/rest/noauth/health";
           };
-          home-assistant.loadBalancer.servers = let
-            hass_port = toString config.services.home-assistant.config.http.server_port;
-          in [{url = "http://127.0.0.1:${hass_port}";} {url = "http://[::1]:${hass_port}";}];
           sunshine-webui.loadBalancer = {
             serversTransport = "ignorecert";
             servers = [{url = "https://127.0.0.1:${toString (config.services.sunshine.settings.port + 1)}";}];
