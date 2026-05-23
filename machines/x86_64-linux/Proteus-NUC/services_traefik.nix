@@ -12,12 +12,10 @@ in {
       80 # Traefik
       443 # Traefik
       636 # OpenLDAP (secure)
-      853 # BIND DoT
     ];
     allowedUDPPorts = [
       443 # Traefik (QUIC)
       # 636 # OpenLDAP (secure, generally not used)
-      # 853 # unbound DNS-over-QUIC, bind don't support it
     ];
   };
   sops.secrets."traefik_server.priv.pem" = {
@@ -58,8 +56,7 @@ in {
             (lib.concatMap (iface: lib.optional (iface ? ipv4) iface.ipv4) myvars.networking.hosts_addr.Proteus-Desktop)
             ++ (lib.concatMap (iface: lib.optional (iface ? ipv6) iface.ipv6) myvars.networking.hosts_addr.Proteus-Desktop);
         };
-        ldaps = {address = ":636";}; # Dedicated entrypoint for secure LDAP traffic
-        dot = {address = ":853";}; # Add the standard DoT port as a TCP entrypoint
+        ldaps.address = ":636"; # Dedicated entrypoint for secure LDAP traffic
       };
     };
     # Dynamic configuration defines routing rules, backend services, and certificate management.
@@ -91,20 +88,6 @@ in {
             entryPoints = ["websecure"];
             service = "qinglong";
             tls = {};
-          };
-          doh = {
-            # Intercept standard DoH queries at the apex domain
-            rule = lib.concatStrings [
-              "("
-              "Host(`${myvars.domain}`)" # TODO: Current server cert lacks SAN for apex domain
-              " || Host(`ns1.${myvars.domain}`)"
-              " || Host(`${config.networking.hostName}.${myvars.tailnet}`)"
-              ")"
-              " && Path(`/dns-query`)"
-            ];
-            entryPoints = ["websecure"];
-            tls = {};
-            service = "doh";
           };
           sb = {
             rule = "Host(`sb.${myvars.domain}`)";
@@ -159,8 +142,6 @@ in {
         };
         services = {
           qinglong.loadBalancer.servers = [{url = "http://127.0.0.1:5700";}];
-          # Use HTTP/2 Cleartext (h2c) when talking to BIND's local port.
-          doh.loadBalancer.servers = [{url = "h2c://127.0.0.1:8053";} {url = "h2c://[::1]:8053";}];
           sb-dashboard.loadBalancer.servers = [{url = "http://127.0.0.1:9091";}];
           syncthing-dashboard.loadBalancer = {
             # By setting to false Traefik will overrides the Host header to
@@ -209,29 +190,12 @@ in {
             service = "openldap-backend";
             tls = {};
           };
-          dot = {
-            rule = builtins.concatStringsSep " " [
-              "HostSNI(`${myvars.domain}`)"
-              "|| HostSNI(`ns1.${myvars.domain}`)"
-              "|| HostSNI(`proteus-nuc.${myvars.tailnet}`)"
-            ];
-            entryPoints = ["dot"];
-            service = "dot";
-            tls = {};
-          };
         };
-        services = {
-          openldap-backend.loadBalancer = {
-            proxyProtocol.version = 2; # Instruct Traefik to inject the PROXY protocol v2 header
-            servers = let
-              openldap_port = toString (mylib.get_uri_port (builtins.head config.services.openldap.urlList));
-            in [{address = "127.0.0.1:${openldap_port}";} {address = "[::1]:${openldap_port}";}];
-          };
-          # Forward raw DNS to BIND's local 53
-          dot.loadBalancer = {
-            proxyProtocol.version = 2;
-            servers = [{address = "127.0.0.1:8530";} {address = "[::1]:8530";}];
-          };
+        services.openldap-backend.loadBalancer = {
+          proxyProtocol.version = 2; # Instruct Traefik to inject the PROXY protocol v2 header
+          servers = let
+            openldap_port = toString (mylib.get_uri_port (builtins.head config.services.openldap.urlList));
+          in [{address = "127.0.0.1:${openldap_port}";} {address = "[::1]:${openldap_port}";}];
         };
       };
     };

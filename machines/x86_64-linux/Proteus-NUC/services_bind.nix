@@ -5,8 +5,8 @@
   ...
 }: {
   networking.firewall = {
-    allowedTCPPorts = [53];
-    allowedUDPPorts = [53];
+    allowedTCPPorts = [53 853];
+    allowedUDPPorts = [53]; # Bind don't support DNS-over QUIC
   };
   services.resolved.settings.Resolve = {
     DNSSEC = "allow-downgrade";
@@ -137,6 +137,47 @@
           lib.mapAttrs (_: ifaces:
             map (iface: lib.filterAttrs (key: _: builtins.elem key ["ipv4" "ipv6" "domains"]) iface) ifaces)
           (lib.filterAttrs (name: _: builtins.elem name allowed_hosts) myvars.networking.hosts_addr);
+      };
+    };
+  };
+
+  services.traefik = {
+    staticConfigOptions.entryPoints.dot.address = ":853"; # Add the standard DoT port as a TCP entrypoint
+    dynamicConfigOptions = {
+      http = {
+        routers.doh = {
+          # Intercept standard DoH queries at the apex domain
+          rule = lib.concatStrings [
+            "("
+            "Host(`${myvars.domain}`)" # TODO: Current server cert lacks SAN for apex domain
+            " || Host(`ns1.${myvars.domain}`)"
+            " || Host(`${config.networking.hostName}.${myvars.tailnet}`)"
+            ")"
+            " && Path(`/dns-query`)"
+          ];
+          entryPoints = ["websecure"];
+          tls = {};
+          service = "doh";
+        };
+        # Use HTTP/2 Cleartext (h2c) when talking to BIND's local port.
+        services.doh.loadBalancer.servers = [{url = "h2c://127.0.0.1:8053";} {url = "h2c://[::1]:8053";}];
+      };
+      tcp = {
+        routers.dot = {
+          rule = builtins.concatStringsSep " " [
+            "HostSNI(`${myvars.domain}`)"
+            "|| HostSNI(`ns1.${myvars.domain}`)"
+            "|| HostSNI(`proteus-nuc.${myvars.tailnet}`)"
+          ];
+          entryPoints = ["dot"];
+          service = "dot";
+          tls = {};
+        };
+        # Forward raw DNS to BIND's local 53
+        services.dot.loadBalancer = {
+          proxyProtocol.version = 2;
+          servers = [{address = "127.0.0.1:8530";} {address = "[::1]:8530";}];
+        };
       };
     };
   };
