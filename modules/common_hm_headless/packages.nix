@@ -3,7 +3,7 @@
   pkgs,
   ...
 }: {
-  # programs.yt-dlp.enable = if pkgs.stdenv.hostPlatform.isRiscV64 then false else true;
+  # programs.yt-dlp.enable = !pkgs.stdenv.hostPlatform.isRiscV64;
   home.packages = with pkgs;
     [
       keepassxc # Offline password manager, provides both CLI and GUI

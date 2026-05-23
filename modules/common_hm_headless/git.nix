@@ -95,12 +95,16 @@
   # A syntax-highlighting pager written in Rust
   programs.delta = {
     enable = true;
-    enableGitIntegration = true;
+    enableGitIntegration = false;
     options = {
       diff-so-fancy = true;
       line-numbers = true;
       true-color = "always";
       # features = ""; # features are named groups of settings, used to keep related settings organized
     };
+  };
+  programs.difftastic = {
+    enable = true;
+    git.enable = !config.programs.delta.enableGitIntegration;
   };
 }
