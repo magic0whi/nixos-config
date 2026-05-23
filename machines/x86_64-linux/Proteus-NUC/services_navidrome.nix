@@ -1,17 +1,23 @@
 {
   config,
+  lib,
   myvars,
   ...
 }: {
   services.navidrome = {
     enable = true;
     settings = {
+      BaseUrl = "https://navidrome.${myvars.domain}";
       MusicFolder = "${config.users.users.${myvars.username}.home}/Music";
       ExtAuth = {
         TrustedSources = "127.0.0.1/32,::1/128";
-        LogoutURL = "https://auth.${myvars.domain}/logout";
+        LogoutURL = "https://auth.${myvars.domain}/logout?rd=https://navidrome.${myvars.domain}";
       };
     };
+  };
+  systemd.services.navidrome.serviceConfig = {
+    ProtectHome = lib.mkForce "tmpfs";
+    BindReadOnlyPaths = ["${config.users.users.${myvars.username}.home}/Music"];
   };
   services.traefik.dynamicConfigOptions.http = {
     routers = {
