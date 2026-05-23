@@ -20,8 +20,8 @@
       output = "eDP-1";
       scale = 1.25;
     }
-    # 10-bit will cause the internal monitor flickering when using PRIME Sync
-    // lib.optionalAttrs config.wayland.windowManager.hyprland.nvidia_prime_sync {bitdepth = 8;};
+    # 10-bit will cause the internal monitor flickering when using sync mode
+    // lib.optionalAttrs config.wayland.windowManager.hyprland.nvidia_sync {bitdepth = 8;};
   monitor_1 =
     monitor_cfg
     // {
@@ -93,7 +93,7 @@ in {
   ## END cloud-providers.nix
   ## BEGIN hyprland.nix
   wayland.windowManager.hyprland = {
-    nvidia_prime_sync = true;
+    nvidia_sync = true;
     settings = {
       # May cause black screen if the bandwidth doesn't enough, disable it
       # config.render.cm_auto_hdr = 0;
@@ -167,9 +167,9 @@ in {
         [
           {_args = ["STEAM_FORCE_DESKTOPUI_SCALING" "${toString monitor_1.scale}"];}
         ]
-        # PRIME Sync mode for Hyprland
+        # Sync mode for Hyprland
         ++ lib.optional
-        config.wayland.windowManager.hyprland.nvidia_prime_sync
+        config.wayland.windowManager.hyprland.nvidia_sync
         {_args = ["AQ_DRM_DEVICES" "/dev/dri/${myvars.dgpu_sym_name}:/dev/dri/${myvars.igpu_sym_name}"];};
 
       bind = [
@@ -223,7 +223,7 @@ in {
     };
   };
   programs.mpv.profiles.common.vulkan-device =
-    if config.wayland.windowManager.hyprland.nvidia_prime_sync
+    if config.wayland.windowManager.hyprland.nvidia_sync
     then "NVIDIA GeForce RTX 3070 Laptop GPU"
     else "Intel(R) UHD Graphics (TGL GT1)";
   ## END hyprland.nix

@@ -3,9 +3,9 @@
   lib,
   ...
 }: let
-  cfg = config.wayland.windowManager.hyprland.nvidia_prime_sync;
+  cfg = config.wayland.windowManager.hyprland.nvidia_sync;
 in {
-  options.wayland.windowManager.hyprland.nvidia_prime_sync =
+  options.wayland.windowManager.hyprland.nvidia_sync =
     lib.mkEnableOption "Whether nvidia GPU is used exclusively";
 
   # Ref: https://wiki.hyprland.org/Nvidia/
