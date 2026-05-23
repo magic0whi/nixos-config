@@ -86,12 +86,6 @@ in {
             service = "api@internal";
             tls = {};
           };
-          # sftpgo-webui = {
-          #   rule = "Host(`sftpgo.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "sftpgo-webui"; tls = {};
-          # };
-          # sftpgo-webdav = {
-          #   rule = "Host(`webdav.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "sftpgo-webdav"; tls = {};
-          # };
           aria2-rpc = {
             rule = "Host(`aria2.${myvars.domain}`)";
             entryPoints = ["websecure"];
@@ -170,14 +164,6 @@ in {
           };
         };
         services = {
-          # sftpgo-webui.loadBalancer.servers = [
-          #   {url = "http://127.0.0.1:${toString (builtins.head config.services.sftpgo.settings.httpd.bindings).port}";}
-          #   {url = "http://[::1]:${toString (builtins.head config.services.sftpgo.settings.httpd.bindings).port}";}
-          # ];
-          # sftpgo-webdav.loadBalancer.servers = [
-          #   {url = "http://127.0.0.1:${toString (builtins.head config.services.sftpgo.settings.webdavd.bindings).port}";}
-          #   {url = "http://[::1]:${toString (lib.last config.services.sftpgo.settings.webdavd.bindings).port}";}
-          # ];
           # Even though it's WebSockets, we define it as http://
           aria2-rpc.loadBalancer.servers = [
             {

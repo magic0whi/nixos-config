@@ -54,27 +54,6 @@
     };
   };
   ## END services_tor.nix
-  ## BEGIN services_sftpgo.nix
-  # services.sftpgo = {
-  #   enable = true;
-  #   user = myvars.username;
-  #   group = myvars.username;
-  #   extraReadWriteDirs = [/srv/aria2 config.home-manager.users.${myvars.username}.xdg.userDirs.documents];
-  #   settings = {
-  #     httpd = {
-  #       bindings = [
-  #         # Allow reverse proxy
-  #         {port = 8081; client_ip_proxy_header = "X-Forwarded-For"; proxy_allowed = ["127.0.0.1"];}
-  #         {address = "[::1]"; port = 8081; client_ip_proxy_header = "X-Forwarded-For"; proxy_allowed = ["::1"];}
-  #       ];
-  #     };
-  #     webdavd.bindings = [
-  #       {port = 8443; client_ip_proxy_header = "X-Forwarded-For"; proxy_allowed = ["127.0.0.1"];}
-  #       {address = "[::1]"; port = 8443; client_ip_proxy_header = "X-Forwarded-For"; proxy_allowed = ["::1"];}
-  #     ];
-  #   };
-  # };
-  ## END services_sftpgo.nix
   ## BEGIN services_home_assistant.nix
   services.home-assistant = {
     enable = true;
