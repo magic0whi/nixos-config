@@ -78,6 +78,7 @@
     };
     environmentFile = config.sops.templates."paperless.env".path;
     # dataDir = "/srv/paperless";
+
     exporter = {
       enable = true;
       onCalendar = myvars.backup_times.paperless;
@@ -86,6 +87,7 @@
       settings.no-thumbnail = true;
     };
   };
+
   systemd.tmpfiles.settings = let
     cfg = config.services.paperless.exporter;
   in
@@ -108,4 +110,14 @@
         ExecStartPost = ["+${pkgs.coreutils}/bin/chmod -R g+r ${cfg.directory}"];
       };
     };
+
+  services.traefik.dynamicConfigOptions.http = {
+    routers.paperless = {
+      rule = "Host(`paperless.${myvars.domain}`)";
+      entryPoints = ["websecure"];
+      service = "paperless";
+      tls = {};
+    };
+    services.paperless.loadBalancer.servers = [{url = "http://127.0.0.1:${toString config.services.paperless.port}";}];
+  };
 }

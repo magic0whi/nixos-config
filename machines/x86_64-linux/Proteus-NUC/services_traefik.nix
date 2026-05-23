@@ -86,12 +86,6 @@ in {
             service = "api@internal";
             tls = {};
           };
-          paperless = {
-            rule = "Host(`paperless.${myvars.domain}`)";
-            entryPoints = ["websecure"];
-            service = "paperless";
-            tls = {};
-          };
           # sftpgo-webui = {
           #   rule = "Host(`sftpgo.${myvars.domain}`)"; entryPoints = ["websecure"]; service = "sftpgo-webui"; tls = {};
           # };
@@ -176,9 +170,6 @@ in {
           };
         };
         services = {
-          paperless.loadBalancer.servers = [
-            {url = "http://127.0.0.1:${toString config.services.paperless.port}";}
-          ];
           # sftpgo-webui.loadBalancer.servers = [
           #   {url = "http://127.0.0.1:${toString (builtins.head config.services.sftpgo.settings.httpd.bindings).port}";}
           #   {url = "http://[::1]:${toString (builtins.head config.services.sftpgo.settings.httpd.bindings).port}";}
