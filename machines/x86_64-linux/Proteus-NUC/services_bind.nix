@@ -2,6 +2,7 @@
   config,
   lib,
   myvars,
+  pkgs,
   ...
 }: {
   networking.firewall = {
@@ -150,8 +151,8 @@
       ]
       ++ (lib.mapAttrsToList (_: zone:
         if (lib.isDerivation zone.file)
-        then "~${zone.file.name}"
-        else "~${zone.file}")
+        then "~${lib.removeSuffix ".zone" zone.file.name}"
+        else "~${lib.removeSuffix ".zone" zone.file}")
       config.services.bind.zones);
 
     DNS =
@@ -162,21 +163,115 @@
   };
 
   # Trust Island
-  # NOTE: Query the zone apex (`proteus.eu.org`, `161.64.100.in-addr.arpa`
+  # NOTE: To get a DS records for reverse zone, query the zone apex (`proteus.eu.org`, `161.64.100.in-addr.arpa`
   # `0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa`)
   # nix run nixpkgs#dig -- @100.64.161.20 161.64.100.in-addr.arpa DNSKEY +noall +answer | nix shell nixpkgs#bind --command dnssec-dsfromkey -f - 161.64.100.in-addr.arpa
   # Or
   # nix run nixpkgs#dig -- @100.64.161.20 161.64.100.in-addr.arpa DNSKEY +noall +answer | nix shell nixpkgs#ldns.examples --command ldns-key2ds -n /dev/stdin
+  sops = let
+    sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";
+    restartUnits = ["bind.service"];
+    owner = config.systemd.services.bind.serviceConfig.User;
+    mode = "0600";
+  in {
+    secrets = {
+      "bind_domain_zone_priv" = {inherit sopsFile restartUnits;};
+      "bind_ts_v4_rev_zone_priv" = {inherit sopsFile restartUnits;};
+      "bind_ts_v6_rev_zone_priv" = {inherit sopsFile restartUnits;};
+      "bind_et_v4_rev_zone_priv" = {inherit sopsFile restartUnits;};
+      "bind_et_v6_rev_zone_priv" = {inherit sopsFile restartUnits;};
+    };
+    templates = let
+      shared_priv_cfg = ''
+        Private-key-format: v1.3
+        Algorithm: 15 (ED25519)
+      '';
+      shared_priv_timestamp = ''
+        Created: 20260523080310
+        Publish: 20260523080310
+        Activate: 20260523080310
+        SyncPublish: 20260524080810
+      '';
+    in {
+      "bind_domain_zone_priv" = {
+        inherit restartUnits owner mode;
+        content =
+          shared_priv_cfg
+          + "PrivateKey: ${config.sops.placeholder.bind_domain_zone_priv}\n"
+          + shared_priv_timestamp;
+        path = "${config.services.bind.directory}/Kproteus.eu.org.+015+40751.private";
+      };
+      "bind_ts_v4_rev_zone_priv" = {
+        inherit restartUnits owner mode;
+        content =
+          shared_priv_cfg
+          + "PrivateKey: ${config.sops.placeholder.bind_ts_v4_rev_zone_priv}\n"
+          + shared_priv_timestamp;
+        path = "${config.services.bind.directory}/K100.in-addr.arpa.+015+16452.private";
+      };
+      "bind_ts_v6_rev_zone_priv" = {
+        inherit restartUnits owner mode;
+        content =
+          shared_priv_cfg
+          + "PrivateKey: ${config.sops.placeholder.bind_ts_v6_rev_zone_priv}\n"
+          + shared_priv_timestamp;
+        path = "${config.services.bind.directory}/K0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa.+015+02790.private";
+      };
+      "bind_et_v4_rev_zone_priv" = {
+        inherit restartUnits owner mode;
+        content =
+          shared_priv_cfg
+          + "PrivateKey: ${config.sops.placeholder.bind_et_v4_rev_zone_priv}\n"
+          + shared_priv_timestamp;
+        path = "${config.services.bind.directory}/K0.0.10.in-addr.arpa.+015+03009.private";
+      };
+      "bind_et_v6_rev_zone_priv" = {
+        inherit restartUnits owner mode;
+        content =
+          shared_priv_cfg
+          + "PrivateKey: ${config.sops.placeholder.bind_et_v6_rev_zone_priv}\n"
+          + shared_priv_timestamp;
+        path = "${config.services.bind.directory}/K0.0.0.0.7.7.8.9.a.b.c.d.e.f.d.f.ip6.arpa.+015+01147.private";
+      };
+    };
+  };
+  systemd.services.bind.preStart = let
+    zones_pubs = [
+      (pkgs.writeText "Kproteus.eu.org.+015+40751.key" ''
+        proteus.eu.org. 3600 IN DNSKEY 257 3 15 f1EhcwJnyqstgxFUySK5m650d2fg+w8DLh8FNwVKHTc=
+      '')
+      (pkgs.writeText "K100.in-addr.arpa.+015+16452.key" ''
+        100.in-addr.arpa. 3600 IN DNSKEY 257 3 15 PwFirzXup9sShggRjrky0w1g+OgDc32HLIJ9n+acyJM=
+      '')
+      (pkgs.writeText "K0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa.+015+02790.key" ''
+        0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa. 3600 IN DNSKEY 257 3 15 VZFDZ7Hu0xm2Lu/8myOO5zpAs9fjNTx6nfeNq6Y4OPo=
+      '')
+      (pkgs.writeText "K0.0.10.in-addr.arpa.+015+03009.key" ''
+        0.0.10.in-addr.arpa. 3600 IN DNSKEY 257 3 15 r3yhoiw0ch3YhWpvVNneJ9hTuxwfrc9rl+dJVbm+hMQ=
+      '')
+      (pkgs.writeText "K0.0.0.0.7.7.8.9.a.b.c.d.e.f.d.f.ip6.arpa.+015+01147.key" ''
+        0.0.0.0.7.7.8.9.a.b.c.d.e.f.d.f.ip6.arpa. 3600 IN DNSKEY 257 3 15 wP+4ropyVJWnhxzY67Lx1WDlW2b2yZ7M/fpzMZVurU4=
+      '')
+    ];
+  in
+    # Generate the install commands for all pub keys (main + reverse)
+    lib.concatMapStringsSep "\n"
+    (file: "install -m 0644 ${file} ${config.services.bind.directory}/${file.name}")
+    zones_pubs;
+
   environment.etc."dnssec-trust-anchors.d/${myvars.domain}.positive".text = ''
-    ${myvars.domain}. IN DS 19905 15 2 AC53E45BD2ECD7E4D8DED050FB08E0F37095AF97E0B6F73CE912A56CE5C542C0
+    ${myvars.domain}. IN DS 40751 15 2 EFFF70FD3922613584774DE050E31D5A3FFF988E45EB5C75296BF448B5B01FCF
   '';
-  # environment.etc."dnssec-trust-anchors.d/${lib.removeSuffix ".zone" reverse_v4_zones."100".name}.positive".text = ''
-  #   ${lib.removeSuffix ".zone" reverse_v4_zones."100".name}. IN DS 32237 15 2 5F089BE41C87322212B05BAB4A760097235220F5346A1F51F6161728B77A0F8F
-  # '';
-  # environment.etc."dnssec-trust-anchors.d/${lib.removeSuffix ".zone" reverse_v4_zones."192".name}.positive".text = ''
-  #   ${lib.removeSuffix ".zone" reverse_v4_zones."192".name}. IN DS 25153 15 2 B5B5AC75FDCC85AACBDF747323AC5F7CA8D8FC482D03C848DEE4EFAD79F7CD50
-  # '';
-  # environment.etc."dnssec-trust-anchors.d/${lib.removeSuffix ".zone" reverse_v6_zones_ts."0.e.1.a.c.5.1.1.a.7.d.f".name}.positive".text = ''
-  #   ${lib.removeSuffix ".zone" reverse_v6_zones_ts."0.e.1.a.c.5.1.1.a.7.d.f".name}. IN DS 60960 15 2 DD09A9E95F7C7851FAC65FD39FDE55FAB2C001D5B37D744F98AA23C56FD63D16
-  # '';
+  environment.etc."dnssec-trust-anchors.d/ts_v4_rev_zone.positive".text = ''
+    100.in-addr.arpa. IN DS 16452 15 2 673360156B641DBA72909952F230FA34A6FA8D8D249A8A8A55C05A94EC6794FF
+  '';
+  environment.etc."dnssec-trust-anchors.d/ts_v6_rev_zone.positive.positive".text = ''
+    0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa. IN DS 2790 15 2 B90A8FDD8D504FC3182F57750FC433EF8D43AFA8ABE6716A3DC49BFBCCD5F3EA
+  '';
+  environment.etc."dnssec-trust-anchors.d/et_v4_rev_zone.positive".text = ''
+    0.0.10.in-addr.arpa. IN DS 3009 15 2 E93B662038A9985D4A4BAEA2F619593EF4699EAFA08612BD7C3FCD00691FA85C
+  '';
+  environment.etc."dnssec-trust-anchors.d/et_v6_rev_zone.positive.positive".text = ''
+    0.0.0.0.7.7.8.9.a.b.c.d.e.f.d.f.ip6.arpa. IN DS 1147 15 2 2DCEF637F1D130E0CF63F33FEF81C99E01C8B187A8AE75A3985545400FF4A763
+  '';
 }
