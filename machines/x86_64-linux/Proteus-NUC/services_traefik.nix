@@ -107,12 +107,6 @@ in {
             service = "papra";
             tls = {};
           };
-          notebook = {
-            rule = "Host(`notebook.${myvars.domain}`)";
-            entryPoints = ["websecure"];
-            service = "notebook";
-            tls = {};
-          };
           forgejo = {
             rule = "Host(`git.${myvars.domain}`)";
             entryPoints = ["websecure"];
@@ -137,19 +131,6 @@ in {
             healthCheck.path = "/rest/noauth/health";
           };
           papra.loadBalancer.servers = [{url = "http://127.0.0.1:1221";}];
-          notebook.loadBalancer.servers = [
-            {
-              url = let
-                find_first_infix = key: set:
-                  builtins.elemAt
-                  (lib.attrNames set)
-                  (lib.lists.findFirstIndex (i: lib.hasInfix key i) null (lib.attrNames set));
-                port =
-                  toString (mylib.get_uri_port
-                    (find_first_infix "notebook.${myvars.domain}" config.services.caddy.virtualHosts));
-              in "http://127.0.0.1:${port}";
-            }
-          ];
           forgejo.loadBalancer = {
             servers = [
               {url = "http://127.0.0.1:${toString config.services.forgejo.settings.server.HTTP_PORT}";}
