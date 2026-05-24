@@ -1,5 +1,5 @@
 {mylib, ...}: {
-  ## BEGIN pkgs agnostic functions
+  ## BEGIN pkgs agnostic variables
   username = "proteus";
   userfullname = "Proteus Qian";
   useremail = "sudaku233@outlook.com";
@@ -42,13 +42,36 @@
     paperless = "02:15:00";
     postgresql = "02:20:00";
   };
-  ## END pkgs dependent functions
-  ## BEGIN pkgs dependent functions
+
+  base = {
+    nixpkgs_modules = map mylib.relative_to_root [
+      "modules/secrets/common.nix"
+
+      "modules/common/misc.nix"
+      "modules/common/shell.nix"
+      "modules/common/easytier.nix"
+
+      "modules/nixos_headless/_impermanence.nix"
+      "modules/nixos_headless/stew.nix"
+      "modules/nixos_headless/packages.nix"
+      "modules/nixos_headless/sing-box.nix"
+      "modules/nixos_headless/traffic-quota.nix"
+    ];
+    hm_modules = map mylib.relative_to_root [
+      "modules/common_hm_headless/git.nix"
+      "modules/common_hm_headless/helix.nix"
+      "modules/common_hm_headless/shell.nix"
+      "modules/common_hm_headless/stew.nix"
+      "modules/nixos_hm_headless/shell.nix"
+    ];
+  };
+  ## END pkgs agnostic functions
+  ## BEGIN pkgs dependent variables
   mk_for_pkgs = pkgs: {
     monospace = {
       name = "Iosevka Nerd Font Mono";
       package = pkgs.nerd-fonts.iosevka;
     };
   };
-  ## END pkgs dependent functions
+  ## END pkgs dependent variables
 }

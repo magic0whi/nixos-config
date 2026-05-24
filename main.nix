@@ -27,7 +27,7 @@
       pkgs = nixpkgs.legacyPackages.${system};
     in {
       # The args given to other nix files
-      inherit lib system deploy-rs nix-darwin;
+      inherit lib system nix-darwin;
       myvars = myvars // (myvars.mk_for_pkgs pkgs);
       mylib = mylib // (mylib.mk_for_pkgs pkgs);
     };
