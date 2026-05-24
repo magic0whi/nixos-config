@@ -72,8 +72,6 @@ in {
       # For other domains
       # tls.certificates = [{certFile = server_pub_crt; keyFile = config.sops.secrets."traefik_server.priv.pem".path;}];
       http = {
-        # For sunshine-webui
-        serversTransports.ignorecert.insecureSkipVerify = true;
         routers = {
           traefik-dashboard = {
             rule = "Host(`traefik.${myvars.domain}`)";
@@ -101,12 +99,6 @@ in {
             entryPoints = ["websecure"];
             middlewares = ["authelia-auth"];
             service = "syncthing-dashboard";
-            tls = {};
-          };
-          sunshine-webui = {
-            rule = "Host(`sunshine.${myvars.domain}`)";
-            entryPoints = ["websecure"];
-            service = "sunshine-webui";
             tls = {};
           };
           papra = {
@@ -143,10 +135,6 @@ in {
             passHostHeader = false;
             servers = [{url = "http://${config.home-manager.users.${myvars.username}.services.syncthing.guiAddress}";}];
             healthCheck.path = "/rest/noauth/health";
-          };
-          sunshine-webui.loadBalancer = {
-            serversTransport = "ignorecert";
-            servers = [{url = "https://127.0.0.1:${toString (config.services.sunshine.settings.port + 1)}";}];
           };
           papra.loadBalancer.servers = [{url = "http://127.0.0.1:1221";}];
           notebook.loadBalancer.servers = [
