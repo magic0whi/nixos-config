@@ -100,38 +100,4 @@
     };
   };
   ## END services_sunshine.nix
-  ## BEGIN services_caddy.nix
-  # TODO: Change to given user caddy `openssh.authorizedKeys.keys` and change the Action for notebook deploy
-  # Ensure the web root exists with the correct permissions.
-  # Caddy runs as user 'caddy', group 'caddy' by default according to the
-  # module. CI script will run as 'proteus', so we make the folder owned by
-  # `myvars.username` but give the group (which default to 'caddy') read access.
-  systemd.tmpfiles.settings."10-caddy-create-webroot" = let
-    root_path = builtins.head (
-      builtins.match ''.*root \* ([a-zA-Z0-9/_-]+).*''
-      # Get the first attrset under services.caddy.virtualHosts
-      (builtins.head (builtins.attrValues config.services.caddy.virtualHosts)).extraConfig
-    );
-  in {
-    ${root_path}.d = {
-      mode = "2755";
-      user = myvars.username;
-      group = config.services.caddy.group;
-    };
-  };
-  services.caddy = {
-    enable = true;
-    # Caddy doesn't need to bind to public ports (80/443) since Traefik handles
-    # that. We can tell Caddy's global config not to attempt ACME/HTTPS bindings.
-    globalConfig = ''auto_https off'';
-    virtualHosts."http://notebook.${myvars.domain}:8080" = {
-      listenAddresses = ["127.0.0.1" "[::1]"];
-      extraConfig = ''
-        # respond "Hello, world!" # For debug
-        root * /srv/www
-        file_server
-      '';
-    };
-  };
-  ## END services_caddy.nix
 }
