@@ -18,7 +18,7 @@ runs:
       if: github.server_url != 'https://github.com'
       shell: bash
       run: |
-        sed -i -e 's|^\(extra-substituters\ = \)|\1https://s3.proteus.eu.org/nix-cache/ |' \
+        sed -i -e 's|^\(extra-substituters\ = \)|\1https://nix-cache.s3-pub.proteus.eu.org/ |' \
         -e 's|^\(extra-trusted-public-keys\ =\ \)|\1s3.proteus.eu.org-1:IxrRwk4uC5ittHeG9menkuajABnrX9cboEWwZz/m4+E= |' \
         /etc/nix/nix.conf
 
