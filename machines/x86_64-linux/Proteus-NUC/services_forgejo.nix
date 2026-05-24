@@ -152,6 +152,19 @@ in {
     )
   ];
 
+  services.traefik.dynamicConfigOptions.http = {
+    routers.forgejo = {
+      rule = "Host(`git.${myvars.domain}`)";
+      entryPoints = ["websecure"];
+      service = "forgejo";
+      tls = {};
+    };
+    services.forgejo.loadBalancer = {
+      servers = [{url = "http://127.0.0.1:${toString config.services.forgejo.settings.server.HTTP_PORT}";}];
+      healthCheck.path = "/api/healthz";
+    };
+  };
+
   # Local Action Runner connecting to your Forgejo instance
   # Docker is required to execute Docker-based action labels
   virtualisation.docker.enable = true;

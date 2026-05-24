@@ -107,12 +107,6 @@ in {
             service = "papra";
             tls = {};
           };
-          forgejo = {
-            rule = "Host(`git.${myvars.domain}`)";
-            entryPoints = ["websecure"];
-            service = "forgejo";
-            tls = {};
-          };
           plane = {
             rule = "Host(`plane.${myvars.domain}`)";
             entryPoints = ["websecure"];
@@ -131,12 +125,6 @@ in {
             healthCheck.path = "/rest/noauth/health";
           };
           papra.loadBalancer.servers = [{url = "http://127.0.0.1:1221";}];
-          forgejo.loadBalancer = {
-            servers = [
-              {url = "http://127.0.0.1:${toString config.services.forgejo.settings.server.HTTP_PORT}";}
-            ];
-            healthCheck.path = "/api/healthz";
-          };
           plane.loadBalancer.servers = [{url = "http://127.0.0.1:8081";}];
         };
       };
