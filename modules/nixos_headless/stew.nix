@@ -14,8 +14,10 @@
   };
   ## END bootloader.nix
   ## BEGIN nix.nix
-  nix.gc.dates = "weekly";
-  nix.settings.auto-optimise-store = true; # Optimise the store after each build
+  nix = {
+    gc.dates = "weekly";
+    settings.auto-optimise-store = true; # Optimise the store after each build
+  };
   ## END nix.nix
   ## BEGIN ssh.nix
   services.openssh.settings.PasswordAuthentication = false; # Disable password login
@@ -29,6 +31,7 @@
   # NOTE: You cannot use ssh-agent and GnuPG agent with SSH support at the same time
   # ssh.startAgent = true;
   ## END ssh.nix
+
   ## BEGIN i18n.nix
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
@@ -44,36 +47,40 @@
   #   LC_TIME = "en_US.UTF-8";
   # };
   ## END i18n.nix
+
   ## BEGIN dbus.nix
   services.dbus.implementation = "broker";
   ## END dbus.nix
+
   ## BEGIN sysctl.nix
   boot.kernel.sysctl."net.ipv4.tcp_congestion_control" = "bbr";
   boot.kernel.sysctl."net.core.default_qdisc" = "cake";
   ## END sysctl.nix
-  ## BEGIN network.nix
-  networking.useNetworkd = true;
-  networking.nftables.enable = true;
-  networking.firewall = {
-    # enable = false; # Disable firewall
-    extraInputRules = ''
-      # ip saddr 192.168.1.0/24 accept comment "Allow from LAN"
-      ip6 saddr { fe80::/16, fd66:06e5:aebe::/48 } accept comment "Allow from Link-Local / ULA-Prefix (IPv6)"
-      udp dport bootps accept comment "Allow DHCP server (systemd-nspawn)"
-    '';
-  };
-  # services.timesyncd.servers = [
-  networking.timeServers = [
-    "ntp.aliyun.com" # Aliyun NTP Server
-    "ntp.tencent.com" # Tencent NTP Server
-  ];
-  services.resolved.enable = true;
 
-  # Tailscale stores its data in /var/lib/tailscale, which is persistent across reboots via impermanence.nix
-  # Ref: https://github.com/NixOS/nixpkgs/blob/nixos-24.11/nixos/modules/services/networking/tailscale.nix
+  ## BEGIN network.nix
+  networking = {
+    useNetworkd = true;
+    nftables.enable = true;
+    firewall = {
+      # enable = false; # Disable firewall
+      extraInputRules = ''
+        # ip saddr 192.168.1.0/24 accept comment "Allow from LAN"
+        ip6 saddr { fe80::/16, fd66:06e5:aebe::/48 } accept comment "Allow from Link-Local / ULA-Prefix (IPv6)"
+        udp dport bootps accept comment "Allow DHCP server (systemd-nspawn)"
+      '';
+    };
+    # Or `services.timesyncd.servers`
+    timeServers = [
+      "ntp.aliyun.com" # Aliyun NTP Server
+      "ntp.tencent.com" # Tencent NTP Server
+    ];
+  };
+  services.resolved.enable = true;
 
   # Auto detect the firewall type (nftables)
   systemd.services.tailscaled.environment.TS_DEBUG_FIREWALL_MODE = "auto";
+  # Tailscale stores its data in /var/lib/tailscale, which is persistent across reboots via impermanence.nix
+  # Ref: https://github.com/NixOS/nixpkgs/blob/nixos-24.11/nixos/modules/services/networking/tailscale.nix
   services.tailscale = {
     openFirewall = true; # allow the Tailscale UDP port through the firewall
     useRoutingFeatures = "client"; # "server" if act as exit node
@@ -149,6 +156,7 @@
   ## BEGIN zram.nix
   zramSwap.enable = true;
   ## END zram.nix
+  ## BEGIN power-management.nix
   systemd.services.console-blanking = {
     # Let monitor become blank after 2 mins, and 3 mins inactive to poweroff
     description = "Enable virtual console blanking and DPMS";
@@ -162,6 +170,7 @@
     };
     wantedBy = ["multi-user.target"];
   };
+  ## END power-management.nix
   ## BEGIN fonts.nix
   # All fonts are linked to /nix/var/nix/profiles/system/sw/share/X11/fonts
   fonts = {
@@ -186,9 +195,13 @@
   ## END fonts.nix
   ## BEGIN security.nix
   # Without polkit, sing-box can't interact with systemd-resolved
-  security.polkit.enable = true;
-  security.sudo.package = pkgs.sudo.override {withSssd = true;};
-  security.sudo.extraConfig = ''Defaults passwd_timeout=0''; # Disable timeout for sudo prompt
+  security = {
+    polkit.enable = true;
+    sudo = {
+      package = pkgs.sudo.override {withSssd = true;};
+      extraConfig = ''Defaults passwd_timeout=0''; # Disable timeout for sudo prompt
+    };
+  };
   system.nssDatabases.sudoers = ["sss"]; # Use LDAP to distribute configuration of sudo as well
   sops = let
     restartUnits = ["sssd.service"];
