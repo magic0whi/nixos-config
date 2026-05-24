@@ -1,22 +1,14 @@
 {
   config,
   lib,
-  mylib,
   myvars,
   ...
 }: let
   server_pub_crt = "${myvars.secrets_dir}/proteus_server.pub.pem";
 in {
   networking.firewall = {
-    allowedTCPPorts = [
-      80 # Traefik
-      443 # Traefik
-      636 # OpenLDAP (secure)
-    ];
-    allowedUDPPorts = [
-      443 # Traefik (QUIC)
-      # 636 # OpenLDAP (secure, generally not used)
-    ];
+    allowedTCPPorts = [80 443];
+    allowedUDPPorts = [443]; # QUIC
   };
   sops.secrets."traefik_server.priv.pem" = {
     sopsFile = "${myvars.secrets_dir}/proteus_server.priv.pem.sops";
@@ -56,15 +48,13 @@ in {
             (lib.concatMap (iface: lib.optional (iface ? ipv4) iface.ipv4) myvars.networking.hosts_addr.Proteus-Desktop)
             ++ (lib.concatMap (iface: lib.optional (iface ? ipv6) iface.ipv6) myvars.networking.hosts_addr.Proteus-Desktop);
         };
-        ldaps.address = ":636"; # Dedicated entrypoint for secure LDAP traffic
       };
     };
     # Dynamic configuration defines routing rules, backend services, and certificate management.
     dynamicConfigOptions = {
       # Establish the default fallback certificate.
-      # This is critical for TCP clients (like `ldapsearch`) that do not send
-      # Server Name Indication (SNI) data during the TLS handshake. Without this,
-      # Traefik serves an untrusted dummy certificate.
+      # This is critical for TCP clients (like `ldapsearch`) that do not send Server Name Indication (SNI) data during
+      # the TLS handshake. Without this, Traefik serves an untrusted dummy certificate.
       tls.stores.default.defaultCertificate = {
         certFile = server_pub_crt;
         keyFile = config.sops.secrets."traefik_server.priv.pem".path;
@@ -87,18 +77,18 @@ in {
             service = "qinglong";
             tls = {};
           };
-          sb = {
-            rule = "Host(`sb.${myvars.domain}`)";
-            entryPoints = ["websecure"];
-            middlewares = ["authelia-auth"];
-            service = "sb-dashboard";
-            tls = {};
-          };
           syncthing = {
             rule = "Host(`syncthing.${myvars.domain}`)";
             entryPoints = ["websecure"];
             middlewares = ["authelia-auth"];
             service = "syncthing-dashboard";
+            tls = {};
+          };
+          sb = {
+            rule = "Host(`sb.${myvars.domain}`)";
+            entryPoints = ["websecure"];
+            middlewares = ["authelia-auth"];
+            service = "sb-dashboard";
             tls = {};
           };
           papra = {
@@ -126,24 +116,6 @@ in {
           };
           papra.loadBalancer.servers = [{url = "http://127.0.0.1:1221";}];
           plane.loadBalancer.servers = [{url = "http://127.0.0.1:8081";}];
-        };
-      };
-      tcp = {
-        routers = {
-          # Catch-all for traffic on this port. standard LDAP clients (like ldapsearch and many older legacy systems) do
-          # not send SNI data.
-          openldap-secure = {
-            rule = "HostSNI(`*`)";
-            entryPoints = ["ldaps"];
-            service = "openldap-backend";
-            tls = {};
-          };
-        };
-        services.openldap-backend.loadBalancer = {
-          proxyProtocol.version = 2; # Instruct Traefik to inject the PROXY protocol v2 header
-          servers = let
-            openldap_port = toString (mylib.get_uri_port (builtins.head config.services.openldap.urlList));
-          in [{address = "127.0.0.1:${openldap_port}";} {address = "[::1]:${openldap_port}";}];
         };
       };
     };

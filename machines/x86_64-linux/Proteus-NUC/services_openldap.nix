@@ -4,7 +4,10 @@
   myvars,
   pkgs,
   ...
-}: {
+}: let
+  openldap_port = 636; # OpenLDAP (Secure)
+in {
+  networking.firewall.allowedTCPPorts = [openldap_port]; # UDP generally not used
   services.openldap = let
     base_dn = "dc=" + builtins.replaceStrings ["."] [",dc="] myvars.domain;
     manager_dn = "cn=Manager,${base_dn}";
@@ -299,5 +302,22 @@
       description: Group to share directory across multiple users
       member: uid=${myvars.username},ou=People,${base_dn}
     '';
+  };
+  services.traefik = {
+    staticConfigOptions.entryPoints.ldaps.address = ":${openldap_port}";
+    dynamicConfigOptions.tcp = {
+      routers.openldap = {
+        # Catch-all rule for traffic on this port. standard LDAP clients (like ldapsearch and many older legacy systems)
+        # do not send SNI data.
+        rule = "HostSNI(`*`)";
+        entryPoints = ["ldaps"];
+        service = "openldap";
+        tls = {};
+      };
+      services.openldap.loadBalancer = {
+        proxyProtocol.version = 2; # Instruct Traefik to inject the PROXY protocol v2 header
+        servers = [{address = "127.0.0.1:${openldap_port}";} {address = "[::1]:${openldap_port}";}];
+      };
+    };
   };
 }
