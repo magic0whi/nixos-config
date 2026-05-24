@@ -172,13 +172,13 @@ in {
       sn: Qian
       givenName: Proteus
       title: Qiansan
-      mobile: +44 1145114191
+      mobile: +86 1145114191
       mail: ${myvars.useremail}
       postalAddress: Toukyouto$Setagayaku$Kitazawa3Choume23Ban14Gou
       labeledURI: https://magic0whi.github.io/
       loginShell: /bin/zsh
-      uidNumber: 1000
-      gidNumber: 1000
+      uidNumber: ${config.users.users.proteus.uid}
+      gidNumber: ${config.users.groups.users.gid}
       homeDirectory: ${config.users.users.${myvars.username}.home}
       description: Primary personal account
       userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$arVKdAqitf39aAVGaLS5Qw$AtzBSJDhT9vsiLg6ZhZDuHxH5euYqlVmGSE+EWjlxqs
