@@ -82,7 +82,7 @@
 
       # android-tools
     ]
-    # TODO: Requires bootstrap GHC
+    # NOTE: Requires bootstrap GHC
     ++ lib.optionals (!stdenv.hostPlatform.isRiscV64) [
       nix-output-monitor # Command `nom`, works just like `nix` with more fancy output
       nix-tree # A TUI to visualize the dependency graph of a nix derivation, ref: https://github.com/utdemir/nix-tree

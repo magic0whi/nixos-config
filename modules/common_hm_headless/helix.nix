@@ -14,7 +14,7 @@
         alejandra.packages.${pkgs.stdenv.hostPlatform.system}.default
         nixd
       ]
-      ++ lib.optionals (!stdenv.hostPlatform.isRiscV64) [nil marksman]; # TODO: Requires bootstrap GHC
+      ++ lib.optionals (!stdenv.hostPlatform.isRiscV64) [nil marksman]; # NOTE: Requires bootstrap GHC
     settings = {
       # theme = "gruvbox"; # Disable if use catpuccin
       editor = {
