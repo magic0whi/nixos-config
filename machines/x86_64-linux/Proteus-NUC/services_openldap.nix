@@ -6,6 +6,7 @@
   ...
 }: let
   openldap_port = 636; # OpenLDAP (Secure)
+  openldap_backend_port = 389;
 in {
   networking.firewall.allowedTCPPorts = [openldap_port]; # UDP generally not used
   services.openldap = let
@@ -13,13 +14,9 @@ in {
     manager_dn = "cn=Manager,${base_dn}";
   in {
     enable = true;
-    # The `///` tells OpenLDAP to bind to the default port on all available
-    # network interfaces (`0.0.0.0` and `::`)
-    urlList = [
-      # "ldaps:///"
-      "pldap://127.0.0.1:389/"
-      "pldap://[::1]:389/"
-    ];
+    # If use `ldaps:///`, the `///` tells OpenLDAP to bind to the default port on all available network interfaces (
+    # `0.0.0.0` and `::`)
+    urlList = ["pldap://127.0.0.1:${toString openldap_backend_port}/" "pldap://[::1]:${toString openldap_backend_port}/"];
     settings = {
       # dn: cn=config
       attrs = {
@@ -316,7 +313,10 @@ in {
       };
       services.openldap.loadBalancer = {
         proxyProtocol.version = 2; # Instruct Traefik to inject the PROXY protocol v2 header
-        servers = [{address = "127.0.0.1:${toString openldap_port}";} {address = "[::1]:${toString openldap_port}";}];
+        servers = [
+          {address = "127.0.0.1:${toString openldap_backend_port}";}
+          {address = "[::1]:${toString openldap_backend_port}";}
+        ];
       };
     };
   };
