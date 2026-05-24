@@ -7,16 +7,23 @@
   name = baseNameOf ./.;
   nixpkgs_modules = map mylib.relative_to_root [
     "modules/secrets/common.nix"
+
     "modules/overlays"
+
     "modules/common"
+
     "modules/nixos_headless"
     "modules/nixos_headless/_impermanence.nix"
+
     "modules/nixos_gui"
   ];
   hm_modules = map mylib.relative_to_root [
     "modules/common_hm_headless"
+
     "modules/common_hm_gui"
+
     "modules/nixos_hm_headless"
+
     "modules/nixos_hm_gui"
   ];
   nuc_myvars =

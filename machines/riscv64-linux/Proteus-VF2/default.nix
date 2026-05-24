@@ -1,8 +1,8 @@
 {
   inputs,
+  lib,
   mylib,
   myvars,
-  system,
   ...
 }: let
   name = baseNameOf ./.;
@@ -23,7 +23,7 @@
     "modules/common_hm_headless/misc.nix"
     "modules/nixos_hm_headless/shell.nix"
   ];
-  nixos_system = inputs.nixpkgs.lib.nixosSystem (mylib.gen_system_args {
+  nixos_system = lib.nixosSystem (mylib.gen_system_args {
     inherit name mylib myvars nixpkgs_modules hm_modules;
     system = "x86_64-linux"; # Cross-compile
     machine_path = ./.;
@@ -129,26 +129,8 @@
     })).config.system.build.images.sd-card;
   # })); # For debug
 in {
-  _DEBUG = {inherit name nixpkgs_modules hm_modules myvars mylib;};
+  _DEBUG = {inherit name nixpkgs_modules hm_modules myvars mylib nixos_system;};
   nixos_configurations.${name} = nixos_system;
-  # Generate iso image
-  packages.${name} = nixos_sd_image;
-  deploy-rs_node.${name} = {
-    hostname = let
-      ifaces = myvars.networking.hosts_addr.${name};
-      ts_iface = builtins.elemAt ifaces 0;
-      et_iface = builtins.elemAt ifaces 1;
-    in
-      if ((builtins.length ifaces) >= 2 && et_iface ? ipv4)
-      then et_iface.ipv4
-      else if (ts_iface ? ipv4)
-      then ts_iface.ipv4
-      else name;
-    sshUser = "root";
-    interactiveSudo = false; # Since we use 'root' user to ssh
-    profiles.system = {
-      path = inputs.deploy-rs.lib.${system}.activate.nixos nixos_system;
-      user = "root";
-    };
-  };
+  packages.${name} = nixos_sd_image; # Generate iso image
+  deploy-rs_node.${name} = mylib.gen_deploy-rs_node myvars.networking.hosts_addr.${name} nixos_system;
 }
