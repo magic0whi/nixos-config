@@ -28,6 +28,7 @@
             "git"
             "hass"
             "immich"
+            "jellyfin"
             "ldap"
             "navidrome"
             "notebook"

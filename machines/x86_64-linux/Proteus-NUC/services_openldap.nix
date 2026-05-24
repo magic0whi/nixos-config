@@ -282,22 +282,22 @@ in {
       description: Dedicated LDAP account for authenticating database user
       userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$Lk6YxoylMGkd2YaTXwYl2g$D/13/TdjrjezdOg3zhEgeI6UJvH9BMZb/xjNPcg17BE
 
-      dn: cn=${myvars.username},ou=Group,${base_dn}
-      objectClass: top
-      objectClass: posixGroup
-      objectClass: groupOfMembers
-      cn: ${myvars.username}
-      gidNumber: 1000
-      member: uid=${myvars.username},ou=People,${base_dn}
-
       dn: cn=storage,ou=Group,${base_dn}
       objectClass: top
       objectClass: posixGroup
       objectClass: groupOfMembers
       cn: storage
-      gidNumber: 1001
+      gidNumber: ${config.users.groups.storage.gid}
       description: Group to share directory across multiple users
       member: uid=${myvars.username},ou=People,${base_dn}
+
+      dn: cn=jellyfin-admins,ou=Group,${base_dn}
+      objectClass: top
+      objectClass: groupOfMembers
+      cn: jellyfin-admins
+      description: Group to set Jellyfin Admins
+      member: uid=${myvars.username},ou=People,${base_dn}
+
     '';
   };
   services.traefik = {
