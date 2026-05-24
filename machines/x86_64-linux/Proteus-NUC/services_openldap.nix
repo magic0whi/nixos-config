@@ -196,7 +196,7 @@ in {
       o: Proteus Homelab
       cn: Atuin Database Auth Service
       sn: Service
-      # loginShell: ${pkgs.shadow}/bin/nologin
+      # loginShell: ${lib.getExe' pkgs.shadow "nologin"}
       # homeDirectory: /var/empty
       description: Dedicated LDAP account for authenticating database user
       userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$2/qpzCZL/QW5fczhx60Bwg$64zn/anj0LiNqsupuKnr5UA7B+Ejm3H+JL29NgSqwVs
@@ -304,7 +304,7 @@ in {
     '';
   };
   services.traefik = {
-    staticConfigOptions.entryPoints.ldaps.address = ":${openldap_port}";
+    staticConfigOptions.entryPoints.ldaps.address = ":${toString openldap_port}";
     dynamicConfigOptions.tcp = {
       routers.openldap = {
         # Catch-all rule for traffic on this port. standard LDAP clients (like ldapsearch and many older legacy systems)
@@ -316,7 +316,7 @@ in {
       };
       services.openldap.loadBalancer = {
         proxyProtocol.version = 2; # Instruct Traefik to inject the PROXY protocol v2 header
-        servers = [{address = "127.0.0.1:${openldap_port}";} {address = "[::1]:${openldap_port}";}];
+        servers = [{address = "127.0.0.1:${toString openldap_port}";} {address = "[::1]:${toString openldap_port}";}];
       };
     };
   };
