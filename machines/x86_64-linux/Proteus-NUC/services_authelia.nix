@@ -100,6 +100,7 @@ in {
             mail = "mail";
             group_name = "cn";
             nickname = "givenName";
+            picture = "labeledURI";
             # NOTE: Here the name attribute is used for internal references within Authelia, while the attrset name is
             # the directory server attribute to search
             # Ref: https://www.authelia.com/configuration/first-factor/ldap/#extra

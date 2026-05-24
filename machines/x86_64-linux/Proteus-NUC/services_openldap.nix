@@ -172,13 +172,11 @@ in {
       sn: Qian
       givenName: Proteus
       title: Qiansan
-      mobile: +86 1145114191
       mail: ${myvars.useremail}
-      postalAddress: Toukyouto$Setagayaku$Kitazawa3Choume23Ban14Gou
-      labeledURI: https://magic0whi.github.io/
+      labeledURI: http://misc.s3-pub.proteus.eu.org/siameseemoji_agadmqeaaspumeu.png
       loginShell: /bin/zsh
-      uidNumber: ${config.users.users.proteus.uid}
-      gidNumber: ${config.users.groups.users.gid}
+      uidNumber: ${toString config.users.users.${myvars.username}.uid}
+      gidNumber: ${toString config.users.groups.users.gid}
       homeDirectory: ${config.users.users.${myvars.username}.home}
       description: Primary personal account
       userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$arVKdAqitf39aAVGaLS5Qw$AtzBSJDhT9vsiLg6ZhZDuHxH5euYqlVmGSE+EWjlxqs
@@ -287,7 +285,7 @@ in {
       objectClass: posixGroup
       objectClass: groupOfMembers
       cn: storage
-      gidNumber: ${config.users.groups.storage.gid}
+      gidNumber: ${toString config.users.groups.storage.gid}
       description: Group to share directory across multiple users
       member: uid=${myvars.username},ou=People,${base_dn}
 
