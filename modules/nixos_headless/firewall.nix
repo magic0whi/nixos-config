@@ -6,7 +6,7 @@
   ...
 }: {
   networking.firewall = let
-    hm_cfg = config.home-manager.users.${myvars.username};
+    hm_cfg = config.home-manager.users.${myvars.username} or {};
     iperf3_port = 5201;
     syncthing_port = 22000; # Syncthing TCP/QUIC transfers
     localsend_port = 53317; # LocalSend (HTTP/TCP)/(Multicast/UDP)
@@ -14,13 +14,14 @@
     # enable = false; # Disable firewall
     allowedTCPPorts =
       lib.optional (builtins.elem pkgs.iperf3 config.environment.systemPackages) iperf3_port
-      ++ (lib.optional hm_cfg.services.syncthing.enable syncthing_port)
-      ++ (lib.optional (builtins.elem pkgs.localsend hm_cfg.home.packages) localsend_port);
+      ++ (lib.optional (hm_cfg.services.syncthing.enable or false) syncthing_port)
+      ++ (lib.optional (builtins.elem pkgs.localsend (hm_cfg.home.packages or [])) localsend_port);
+
     allowedUDPPorts =
       lib.optional (builtins.elem pkgs.iperf3 config.environment.systemPackages) iperf3_port
       # 21027: Syncthing discovery broadcasts on IPv4 and multicasts on IPv6
-      ++ (lib.optionals hm_cfg.services.syncthing.enable [21027 syncthing_port])
-      ++ (lib.optional (builtins.elem pkgs.localsend hm_cfg.home.packages) localsend_port);
+      ++ (lib.optionals (hm_cfg.services.syncthing.enable or false) [21027 syncthing_port])
+      ++ (lib.optional (builtins.elem pkgs.localsend (hm_cfg.home.packages or [])) localsend_port);
 
     # TODO check whether libvirt dnsmasq add rules to allow, and add a optionalString to check if any
     # `systemd.nspawn.<name>.enable` == true
