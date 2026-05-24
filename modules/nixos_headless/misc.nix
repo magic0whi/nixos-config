@@ -62,14 +62,6 @@
   networking = {
     useNetworkd = true;
     nftables.enable = true;
-    firewall = {
-      # enable = false; # Disable firewall
-      extraInputRules = ''
-        # ip saddr 192.168.1.0/24 accept comment "Allow from LAN"
-        ip6 saddr { fe80::/16, fd66:06e5:aebe::/48 } accept comment "Allow from Link-Local / ULA-Prefix (IPv6)"
-        udp dport bootps accept comment "Allow DHCP server (systemd-nspawn)"
-      '';
-    };
     # Or `services.timesyncd.servers`
     timeServers = [
       "ntp.aliyun.com" # Aliyun NTP Server

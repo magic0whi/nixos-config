@@ -3,20 +3,6 @@
   pkgs,
   ...
 }: {
-  networking.firewall = {
-    allowedTCPPorts = [
-      5201
-      5201 # iperf3
-      22000 # Syncthing TCP transfers
-      53317 # LocalSend (HTTP/TCP)
-    ];
-    allowedUDPPorts = [
-      5201 # iperf3
-      21027 # Syncthing discovery broadcasts on IPv4 and multicasts on IPv6
-      22000 # Syncthing QUIC transfers
-      53317 # LocalSend (Multicast/UDP)
-    ];
-  };
   ## BEGIN services_tor.nix
   services.tor = {
     enable = true;
