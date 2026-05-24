@@ -63,15 +63,15 @@
   services.traefik.dynamicConfigOptions.http = {
     # For sunshine-webui
     serversTransports.ignorecert.insecureSkipVerify = true;
-    servers.sunshine-webui.loadBalancer = {
-      serversTransport = "ignorecert";
-      servers = [{url = "https://127.0.0.1:${toString (config.services.sunshine.settings.port + 1)}";}];
-    };
     routers.sunshine-webui = {
       rule = "Host(`sunshine.${myvars.domain}`)";
       entryPoints = ["websecure"];
       service = "sunshine-webui";
       tls = {};
+    };
+    services.sunshine-webui.loadBalancer = {
+      serversTransport = "ignorecert";
+      servers = [{url = "https://127.0.0.1:${toString (config.services.sunshine.settings.port + 1)}";}];
     };
   };
 }
