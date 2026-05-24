@@ -3,12 +3,10 @@
   lib,
   ...
 }: {
-  options.services.sing-box = {
-    # Use camel case for outside interface
-    configFile = lib.mkOption {
-      type = lib.types.path;
-      description = "Path to the sing-box config file";
-    };
+  # Use camel case for outside interface
+  options.services.sing-box.configFile = lib.mkOption {
+    type = lib.types.path;
+    description = "Path to the sing-box config file";
   };
   config = lib.mkIf config.services.sing-box.enable {
     # Override the sing-box's systemd service

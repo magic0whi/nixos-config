@@ -11,12 +11,6 @@
   # version changes in each release.
   home.stateVersion = myvars.nixos_state_version;
   programs.home-manager.enable = true; # Let Home Manager install and manage itself.
-  programs.rclone.enable = true;
-  ## BEGIN syncthing.nix
-  services.syncthing.enable = lib.mkDefault true;
-  systemd.user.services.syncthing.environment.STNODEFAULTFOLDER = "true";
-  launchd.agents.syncthing.config.EnvironmentVariables.STNODEFAULTFOLDER = "true";
-  ## END syncthing.nix
   ## BEGIN pip.nix
   # Use mirror for pip install
   xdg.configFile."pip/pip.conf".text = ''

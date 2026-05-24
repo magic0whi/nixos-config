@@ -2,58 +2,20 @@
   # List packages installed in system profile. To search, run: `nix search nixpkgs "^firefox"`
   environment.systemPackages = with pkgs;
     [
-      # Archives
-      zip
-      xz
-      zstd
-      unzipNLS
-      p7zip
-
-      # Text Processing, ref: https://github.com/learnbyexample/Command-line-text-processing
-      gnused # GNU sed, very powerful(mainly for replacing text in files)
-      gawk # GNU awk, a pattern scanning and processing language
-      jq # A lightweight and flexible command-line JSON processor
-
-      # Networking Tools
-      mtr # A network diagnostic tool
-      iperf3
-      # dnsutils # `dig` + `nslookup`
-      ldns # replacement of `dig`, it provide the command `drill`
-      wget
-      socat # replacement of openbsd-netcat
-      nmap # A utility for network discovery and security auditing
-      ipcalc # it is a calculator for the IPv4/v6 addresses
-
-      # Misc
-      file
-      which
-
-      # System Call Monitoring
-      strace # system call monitoring
-      # tcpdump # network sniffer
-      lsof # list open files
-
-      # ebpf Related Tools
-      bpftop # monitor BPF programs
-      bpfmon # BPF based visual packet rate monitor
-
       # System Monitoring
+      # strace # system call monitoring
       # sysstat
       # iotop
-      # iftop
       # nmon
-      # sysbench
 
       # System Tools
       psmisc # killall/pstree/prtstat/fuser/...
       lm_sensors # for `sensors`
       # ethtool
-      pciutils # lspci
-      usbutils # lsusb
-      hdparm # for disk performance
-      # a tool that reads information about your system's hardware from the BIOS according to the SMBIOS/DMI standard
-      dmidecode
-      parted
+      # hdparm # For disk performance
+      # A tool that reads information about your system's hardware from the BIOS according to the SMBIOS/DMI standard
+      # dmidecode
+      # parted
       cryptsetup # dm-crypt tools
       # nfs-utils # Linux user-space NFS utilities
     ]

@@ -14,6 +14,7 @@
   };
   ## END bootloader.nix
   ## BEGIN nix.nix
+  # TODO: merge to common modules by optionalAttrs
   nix = {
     gc.dates = "weekly";
     settings.auto-optimise-store = true; # Optimise the store after each build
@@ -79,6 +80,7 @@
 
   # Auto detect the firewall type (nftables)
   systemd.services.tailscaled.environment.TS_DEBUG_FIREWALL_MODE = "auto";
+  # TODO: merge to common modules by optionalAttrs
   # Tailscale stores its data in /var/lib/tailscale, which is persistent across reboots via impermanence.nix
   # Ref: https://github.com/NixOS/nixpkgs/blob/nixos-24.11/nixos/modules/services/networking/tailscale.nix
   services.tailscale = {
@@ -122,8 +124,8 @@
   users = {
     defaultUserShell = pkgs.zsh;
     mutableUsers = false; # Don't allow mutate users outside the config
+    # TODO move to NUC/Desktop's per configuration
     groups = {
-      # ${myvars.username} = {gid = 1000;};
       docker = {};
       storage = {gid = 1001;};
     };
@@ -144,6 +146,7 @@
       home = "/home/${myvars.username}";
       # initialHashedPassword = myvars.initial_hashed_password;
       isNormalUser = true;
+      # TODO move docker, libvirtd, to NUC/Desktop's per configuration
       extraGroups = [myvars.username "docker" "input" "libvirtd" "network" "video" "wheel"];
     };
     # root user are heavily used for remote NixOS deployment
@@ -156,43 +159,6 @@
   ## BEGIN zram.nix
   zramSwap.enable = true;
   ## END zram.nix
-  ## BEGIN power-management.nix
-  systemd.services.console-blanking = {
-    # Let monitor become blank after 2 mins, and 3 mins inactive to poweroff
-    description = "Enable virtual console blanking and DPMS";
-    after = ["display-manager.service"];
-    environment.TERM = "linux";
-    serviceConfig = {
-      Type = "oneshot";
-      StandardOutput = "tty";
-      TTYPath = "/dev/console";
-      ExecStart = "${lib.getExe' pkgs.util-linux "setterm"} --blank 2 --powerdown 3";
-    };
-    wantedBy = ["multi-user.target"];
-  };
-  ## END power-management.nix
-  ## BEGIN fonts.nix
-  # All fonts are linked to /nix/var/nix/profiles/system/sw/share/X11/fonts
-  fonts = {
-    fontDir.enable = true;
-    packages = with pkgs; [noto-fonts noto-fonts-color-emoji];
-    fontconfig = {
-      subpixel.rgba = "rgb";
-      defaultFonts = {
-        serif = ["Noto Serif" "FZYaSongS-R-GB" "Noto Serif CJK SC" "Noto Serif CJK TC" "Noto Serif CJK JP"];
-        sansSerif = ["Inter Nerd Font" "Noto Sans" "Noto Sans CJK SC" "Noto Sans CJK TC" "Noto Sans CJK JP"];
-        monospace = [
-          myvars.monospace.name
-          "Noto Sans Mono"
-          "Noto Sans Mono CJK SC"
-          "Noto Sans Mono CJK TC"
-          "Noto Sans Mono CJK JP"
-        ];
-        emoji = ["Noto Color Emoji"];
-      };
-    };
-  };
-  ## END fonts.nix
   ## BEGIN security.nix
   # Without polkit, sing-box can't interact with systemd-resolved
   security = {
