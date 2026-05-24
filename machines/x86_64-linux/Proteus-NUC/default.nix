@@ -1,9 +1,7 @@
 {
-  deploy-rs,
   lib,
   mylib,
   myvars,
-  system,
   ...
 }: let
   name = baseNameOf ./.;
@@ -44,27 +42,8 @@
       machine_path = ./.;
     })).config.system.build.images.iso;
 in {
-  _DEBUG = {inherit name nixpkgs_modules hm_modules myvars mylib;};
+  _DEBUG = {inherit name nixpkgs_modules hm_modules myvars mylib nixos_system;};
   nixos_configurations.${name} = nixos_system;
-  # generate iso image
-  # packages.${name} = inputs.self.nixosConfigurations.${name}.config.formats.iso;
-  packages.${name} = nixos_iso;
-  deploy-rs_node.${name} = {
-    hostname = let
-      ifaces = myvars.networking.hosts_addr.${name};
-      ts_iface = builtins.elemAt ifaces 0;
-      et_iface = lib.optionalAttrs (builtins.length ifaces >= 2) (builtins.elemAt ifaces 1);
-    in
-      if et_iface ? ipv4
-      then et_iface.ipv4
-      else if ts_iface ? ipv4
-      then ts_iface.ipv4
-      else name;
-    sshUser = "root";
-    interactiveSudo = false; # Since we use 'root' user to ssh
-    profiles.system = {
-      path = deploy-rs.lib.${system}.activate.nixos nixos_system;
-      user = "root";
-    };
-  };
+  packages.${name} = nixos_iso; # generate iso image
+  deploy-rs_node.${name} = mylib.gen_deploy-rs_node myvars.networking.hosts_addr.${name} nixos_system;
 }

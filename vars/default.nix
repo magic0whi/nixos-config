@@ -47,22 +47,14 @@
     nixpkgs_modules = map mylib.relative_to_root [
       "modules/secrets/common.nix"
 
+      "modules/common/easytier.nix"
       "modules/common/misc.nix"
       "modules/common/shell.nix"
-      "modules/common/easytier.nix"
 
       "modules/nixos_headless/_impermanence.nix"
-      "modules/nixos_headless/stew.nix"
-      "modules/nixos_headless/packages.nix"
+      "modules/nixos_headless/misc.nix"
       "modules/nixos_headless/sing-box.nix"
       "modules/nixos_headless/traffic-quota.nix"
-    ];
-    hm_modules = map mylib.relative_to_root [
-      "modules/common_hm_headless/git.nix"
-      "modules/common_hm_headless/helix.nix"
-      "modules/common_hm_headless/shell.nix"
-      "modules/common_hm_headless/stew.nix"
-      "modules/nixos_hm_headless/shell.nix"
     ];
   };
   ## END pkgs agnostic functions

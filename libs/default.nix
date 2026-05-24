@@ -95,7 +95,7 @@ in {
       mylib,
       myvars,
       nixpkgs_modules,
-      hm_modules,
+      hm_modules ? [],
       machine_path,
       generate_iso ? false,
       system ? pkgs.stdenv.hostPlatform.system,
