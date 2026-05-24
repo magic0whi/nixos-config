@@ -10,7 +10,7 @@
     "modules/secrets/common.nix"
     "modules/common"
     "modules/nixos_headless/_impermanence.nix"
-    "modules/nixos_headless/stew.nix"
+    "modules/nixos_headless/misc.nix"
     "modules/nixos_headless/packages.nix"
     "modules/nixos_headless/sing-box.nix"
     "modules/nixos_gui/kmscon.nix"
@@ -20,7 +20,7 @@
     "modules/common_hm_headless/helix.nix"
     "modules/common_hm_headless/packages.nix"
     "modules/common_hm_headless/shell.nix"
-    "modules/common_hm_headless/stew.nix"
+    "modules/common_hm_headless/misc.nix"
     "modules/nixos_hm_headless/shell.nix"
   ];
   nixos_system = inputs.nixpkgs.lib.nixosSystem (mylib.gen_system_args {
