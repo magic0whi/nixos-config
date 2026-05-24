@@ -12,35 +12,6 @@
   home.stateVersion = myvars.nixos_state_version;
   programs.home-manager.enable = true; # Let Home Manager install and manage itself.
   programs.rclone.enable = true;
-  home.packages = with pkgs;
-    [
-      fastfetch
-      bc
-      ## Modern CLI Tools, replacement of grep/sed/...
-      # A fast and polyglot tool for code searching, linting, rewriting at large scale
-      # Supported languages: only some mainstream languages currently (don't support nix/nginx/yaml/toml/...)
-      ast-grep
-      sad # CLI search and replace, just like sed, but with diff preview.
-      lazygit # Git terminal UI.
-      hyperfine # Command-line benchmarking tool, replace `time`
-      gping # ping, but with a graph (TUI)
-      doggo # DNS client for humans
-      duf # Disk Usage/Free Utility - a better 'df' alternative
-      dust # A more intuitive version of `du` in rust
-      ncdu # Analyzer your disk usage Interactively, via TUI (replacement of `du`)
-      gdu # Disk usage analyzer(replacement of `du`)
-
-      ## Nix related
-      hydra-check # Check hydra (nix's build farm) for the build status of a package
-      nix-index # A small utility to index nix store paths
-      nix-init # Generate nix derivation from url
-      nix-melt # A TUI flake.lock viewer, ref: https://github.com/nix-community/nix-melt
-    ]
-    # TODO: Requires bootstrap GHC
-    ++ lib.optionals (!stdenv.hostPlatform.isRiscV64) [
-      nix-output-monitor # Command `nom`, works just like `nix` with more fancy output
-      nix-tree # A TUI to visualize the dependency graph of a nix derivation, ref: https://github.com/utdemir/nix-tree
-    ];
   ## BEGIN syncthing.nix
   services.syncthing.enable = lib.mkDefault true;
   systemd.user.services.syncthing.environment.STNODEFAULTFOLDER = "true";
