@@ -11,8 +11,10 @@
     # NOTE: As of 2026-05-05, sops-nix don't support restartUnits on macOS
     # restartUnits = ["sing-box.service"];
   };
-  services.sing-box.enable = true;
-  services.sing-box.config_file = config.sops.secrets."sb_client_darwin.json".path;
+  services.sing-box = {
+    enable = true;
+    configFile = config.sops.secrets."sb_client_darwin.json".path;
+  };
   # launchd.daemons.tailscaled.serviceConfig = {
   #   StandardErrorPath = "/Library/Logs/com.tailscale.ipn.stderr.log";
   #   StandardOutPath = "/Library/Logs/com.tailscale.ipn.stdout.log";

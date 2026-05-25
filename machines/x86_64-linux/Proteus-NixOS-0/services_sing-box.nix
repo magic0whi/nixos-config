@@ -4,12 +4,12 @@
   ...
 }:
 {
+  networking.firewall.allowedTCPPorts = [ 443 ]; # Reality
   sops.secrets."sb_Proteus-NixOS-1.json" = {
     sopsFile = "${myvars.secrets_dir}/sb_Proteus-NixOS-1.json.sops";
     format = "binary";
     restartUnits = [ "sing-box.service" ];
   };
-  networking.firewall.allowedTCPPorts = [ 443 ]; # Reality
   services.sing-box.enable = true;
   services.sing-box.configFile = config.sops.secrets."sb_Proteus-NixOS-1.json".path;
 }

@@ -9,6 +9,8 @@
     format = "binary";
     restartUnits = [ "sing-box.service" ];
   };
-  services.sing-box.enable = true;
-  services.sing-box.configFile = config.sops.secrets."sb_client_linux.json".path;
+  services.sing-box = {
+    enable = true;
+    configFile = config.sops.secrets."sb_client_linux.json".path;
+  };
 }
