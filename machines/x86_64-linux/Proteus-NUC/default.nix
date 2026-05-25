@@ -6,7 +6,7 @@
 }: let
   name = baseNameOf ./.;
   nixpkgs_modules = map mylib.relative_to_root [
-    "modules/secrets/common.nix"
+    "modules/secrets"
 
     "modules/overlays"
 

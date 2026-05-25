@@ -45,7 +45,7 @@
 
   base = {
     nixpkgs_modules = map mylib.relative_to_root [
-      "modules/secrets/common.nix"
+      "modules/secrets"
 
       "modules/common/easytier.nix"
       "modules/common/misc.nix"
