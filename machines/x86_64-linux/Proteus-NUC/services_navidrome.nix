@@ -3,7 +3,8 @@
   lib,
   myvars,
   ...
-}: {
+}:
+{
   services.navidrome = {
     enable = true;
     settings = {
@@ -17,27 +18,29 @@
   };
   systemd.services.navidrome.serviceConfig = {
     ProtectHome = lib.mkForce "tmpfs";
-    BindReadOnlyPaths = [config.home-manager.users.${myvars.username}.xdg.userDirs.music];
+    BindReadOnlyPaths = [ config.home-manager.users.${myvars.username}.xdg.userDirs.music ];
   };
   services.traefik.dynamicConfigOptions.http = {
     routers = {
       navidrome = {
         rule = "Host(`navidrome.${myvars.domain}`)";
-        entryPoints = ["websecure"];
-        middlewares = ["authelia-auth"];
+        entryPoints = [ "websecure" ];
+        middlewares = [ "authelia-auth" ];
         service = "navidrome";
-        tls = {};
+        tls = { };
       };
       # Authentication bypass for share and subsonic endpoints
       navidrome-public = {
         rule = "Host(`navidrome.${myvars.domain}`) && (PathPrefix(`/share/`) || PathPrefix(`/rest/`))";
-        entryPoints = ["websecure"];
+        entryPoints = [ "websecure" ];
         service = "navidrome";
-        tls = {};
+        tls = { };
       };
     };
     services.navidrome.loadBalancer.servers = [
-      (with config.services.navidrome.settings; {url = "http://${Address}:${toString Port}";})
+      (with config.services.navidrome.settings; {
+        url = "http://${Address}:${toString Port}";
+      })
     ];
   };
 }

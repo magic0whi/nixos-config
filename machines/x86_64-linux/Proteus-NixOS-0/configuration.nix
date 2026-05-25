@@ -17,5 +17,5 @@ _: {
   # };
   # networking.useDHCP = false;
   services.traffic-quota.enable = true;
-  boot.binfmt.emulatedSystems = ["riscv64-linux"]; # Cross compilation
+  boot.binfmt.emulatedSystems = [ "riscv64-linux" ]; # Cross compilation
 }

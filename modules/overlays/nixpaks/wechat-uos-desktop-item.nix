@@ -12,6 +12,6 @@ makeDesktopItem {
   #   tree $"($p)/share/icons"
   icon = "${wechat-uos}/share/icons/hicolor/256x256/apps/com.tencent.wechat.png";
   type = "Application";
-  categories = ["Network"];
+  categories = [ "Network" ];
   comment = "Wechat boxed";
 }

@@ -5,7 +5,8 @@
   myvars,
   pkgs,
   ...
-}: {
+}:
+{
   options.programs.wlogout = {
     wrapper_script = lib.mkOption {
       type = lib.types.path;

@@ -4,7 +4,8 @@
   pkgs,
   lib,
   ...
-}: let
+}:
+let
   restartUnits = [
     "nextcloud-setup.service"
     "nextcloud-cron.service"
@@ -12,26 +13,35 @@
     "nextcloud-update-db.service"
     "phpfpm-nextcloud.service"
   ];
-in {
-  sops.secrets = let
-    sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";
-  in {
-    nextcloud_db_password = {inherit sopsFile restartUnits;};
-    nextcloud_admin_password = {inherit sopsFile restartUnits;};
-    nextcloud_oidc_client_secret = {inherit sopsFile restartUnits;};
-  };
-  systemd.services = let
-    clean_units = map (s: lib.removeSuffix ".service" s) restartUnits;
-  in
+in
+{
+  sops.secrets =
+    let
+      sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";
+    in
+    {
+      nextcloud_db_password = { inherit sopsFile restartUnits; };
+      nextcloud_admin_password = { inherit sopsFile restartUnits; };
+      nextcloud_oidc_client_secret = { inherit sopsFile restartUnits; };
+    };
+  systemd.services =
+    let
+      clean_units = map (s: lib.removeSuffix ".service" s) restartUnits;
+    in
     lib.mkMerge [
       # Add RequiresMountsFor to wait for storage mounted
-      (lib.genAttrs clean_units (_: {unitConfig.RequiresMountsFor = [myvars.storage_path];}))
+      (lib.genAttrs clean_units (_: {
+        unitConfig.RequiresMountsFor = [ myvars.storage_path ];
+      }))
       # https://wiki.nixos.org/wiki/Nextcloud#Dynamic_configuration
       {
         nextcloud-custom-config = {
-          after = ["nextcloud-setup.service"];
-          wantedBy = ["multi-user.target"];
-          path = [config.services.nextcloud.occ pkgs.jq];
+          after = [ "nextcloud-setup.service" ];
+          wantedBy = [ "multi-user.target" ];
+          path = [
+            config.services.nextcloud.occ
+            pkgs.jq
+          ];
           script = ''
             nextcloud-occ app:disable app_api # I don't plan to run external AI apps
             # Logreader only supports "file" log_type and complains it, I'd rather prefer journald
@@ -90,7 +100,10 @@ in {
     secrets.oidc_login_client_secret = config.sops.secrets.nextcloud_oidc_client_secret.path;
     settings = {
       serverid = "0";
-      trusted_proxies = ["127.0.0.1" "::1"];
+      trusted_proxies = [
+        "127.0.0.1"
+        "::1"
+      ];
       overwriteprotocol = "https";
 
       maintenance_window_start = 18;
@@ -142,7 +155,7 @@ in {
     };
     phpOptions."opcache.interned_strings_buffer" = "23";
 
-    extraApps = {inherit (pkgs.nextcloud33Packages.apps) oidc_login;};
+    extraApps = { inherit (pkgs.nextcloud33Packages.apps) oidc_login; };
   };
   # Let Traefik own :80/:443, and move the generated Nextcloud nginx vhost to loopback.
   services.nginx.virtualHosts."${config.services.nextcloud.hostName}".listen = [

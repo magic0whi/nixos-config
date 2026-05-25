@@ -2,39 +2,36 @@
   config,
   myvars,
   ...
-}: {
-  services.jellyfin = let
-    nvidia_sync = config.home-manager.users.${myvars.username}.wayland.windowManager.hyprland.nvidia_sync;
-  in {
-    enable = true;
-    hardwareAcceleration = {
+}:
+{
+  services.jellyfin =
+    let
+      nvidia_sync = config.home-manager.users.${myvars.username}.wayland.windowManager.hyprland.nvidia_sync;
+    in
+    {
       enable = true;
-      device =
-        if nvidia_sync
-        then "/dev/dri/${myvars.dgpu_sym_name}"
-        else "/dev/dri/${myvars.igpu_sym_name}";
-      type = "vaapi";
-    };
-    transcoding = {
-      enableHardwareEncoding = true;
-      enableIntelLowPowerEncoding =
-        if nvidia_sync
-        then false
-        else true;
-      hardwareDecodingCodecs = {
-        h264 = true;
-        hevc = true;
-        hevc10bit = true;
-        hevcRExt10bit = true;
-        hevcRExt12bit = true;
-        mpeg2 = true;
-        vc1 = true;
-        vp8 = true;
-        vp9 = true;
+      hardwareAcceleration = {
+        enable = true;
+        device = if nvidia_sync then "/dev/dri/${myvars.dgpu_sym_name}" else "/dev/dri/${myvars.igpu_sym_name}";
+        type = "vaapi";
       };
-      hardwareEncodingCodecs.hevc = true;
+      transcoding = {
+        enableHardwareEncoding = true;
+        enableIntelLowPowerEncoding = if nvidia_sync then false else true;
+        hardwareDecodingCodecs = {
+          h264 = true;
+          hevc = true;
+          hevc10bit = true;
+          hevcRExt10bit = true;
+          hevcRExt12bit = true;
+          mpeg2 = true;
+          vc1 = true;
+          vp8 = true;
+          vp9 = true;
+        };
+        hardwareEncodingCodecs.hevc = true;
+      };
     };
-  };
   services.traefik.dynamicConfigOptions.http = {
     middlewares.jellyfin-headers.headers = {
       # The customResponseHeaders option lists the Header names and values to apply to the response.
@@ -58,11 +55,11 @@
     };
     routers.jellyfin = {
       rule = "Host(`jellyfin.${myvars.domain}`)";
-      entryPoints = ["websecure"];
-      middlewares = ["jellyfin-headers"];
+      entryPoints = [ "websecure" ];
+      middlewares = [ "jellyfin-headers" ];
       service = "jellyfin";
-      tls = {};
+      tls = { };
     };
-    services.jellyfin.loadBalancer.servers = [{url = "http://127.0.0.1:8096";}];
+    services.jellyfin.loadBalancer.servers = [ { url = "http://127.0.0.1:8096"; } ];
   };
 }

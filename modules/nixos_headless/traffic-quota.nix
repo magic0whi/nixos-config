@@ -3,7 +3,8 @@
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   cfg = config.services.traffic-quota;
   script = pkgs.writeShellScript "check-traffic-quota" ''
     set -eufo pipefail
@@ -34,7 +35,8 @@
       echo "Current traffic: $TOTAL_BYTES bytes. Limit: $LIMIT bytes."
     fi
   '';
-in {
+in
+{
   options.services.traffic-quota = {
     enable = lib.mkEnableOption "traffic quota checker";
     limit = lib.mkOption {
@@ -47,16 +49,21 @@ in {
     services.vnstat.enable = true;
     systemd.services.traffic-quota = {
       description = "Check vnstat traffic quota and shutdown if exceeded";
-      after = ["vnstat.service"];
+      after = [ "vnstat.service" ];
       serviceConfig = {
         Type = "oneshot";
         ExecStart = script;
       };
-      path = with pkgs; [jq vnstat vnstat systemd];
+      path = with pkgs; [
+        jq
+        vnstat
+        vnstat
+        systemd
+      ];
     };
     systemd.timers.traffic-quota = {
       description = "Timer for traffic quota checker";
-      wantedBy = ["timers.target"];
+      wantedBy = [ "timers.target" ];
       timerConfig = {
         OnBootSec = "5m";
         OnUnitActiveSec = "5m";

@@ -5,21 +5,23 @@
   myvars,
   pkgs,
   ...
-}: let
+}:
+let
   cfg = config.services.sing-box;
   sing-box_dir = "/Library/Application Support/sing-box";
-in {
-  meta.maintainers = [myvars.userfullname];
+in
+{
+  meta.maintainers = [ myvars.userfullname ];
   options.services.sing-box = {
     enable = lib.mkEnableOption "sing-box universal proxy platform";
-    package = lib.mkPackageOption pkgs "sing-box" {};
+    package = lib.mkPackageOption pkgs "sing-box" { };
     config_file = lib.mkOption {
       type = lib.types.path;
       description = "Path to the sing-box config file";
     };
   };
   config = lib.mkIf cfg.enable {
-    environment.systemPackages = [cfg.package];
+    environment.systemPackages = [ cfg.package ];
 
     system.activationScripts.postActivation.text = ''
       # Ensure the sing-box state directory is initialized
@@ -39,8 +41,7 @@ in {
       ProgramArguments = [
         "/bin/sh"
         "-c"
-        ("/bin/wait4path /nix/store"
-          + " && exec ${lib.getExe cfg.package} -c ${cfg.config_file} -D \"${sing-box_dir}\" run")
+        ("/bin/wait4path /nix/store" + " && exec ${lib.getExe cfg.package} -c ${cfg.config_file} -D \"${sing-box_dir}\" run")
       ];
     };
   };

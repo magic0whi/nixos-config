@@ -4,12 +4,19 @@
   myvars,
   pkgs,
   ...
-}: {
-  users.users.${myvars.username}.extraGroups = ["docker" "libvirtd"];
+}:
+{
+  users.users.${myvars.username}.extraGroups = [
+    "docker"
+    "libvirtd"
+  ];
   # virtualisation.waydroid.enable = true; # Usage: https://wiki.nixos.org/wiki/Waydroid
   # virtualisation.docker.storageDriver = "btrfs"; # conflict with feature: containerd-snapshotter
   ## BEGIN binfmt.nix
-  boot.binfmt.emulatedSystems = ["riscv64-linux" "aarch64-linux"]; # Cross compilation
+  boot.binfmt.emulatedSystems = [
+    "riscv64-linux"
+    "aarch64-linux"
+  ]; # Cross compilation
   # For riscv64 docker container
   boot.binfmt.registrations."riscv64-linux" = {
     interpreter = "${lib.getExe' pkgs.pkgsStatic.qemu-user "qemu-riscv64"}";
@@ -18,7 +25,10 @@
   };
   ## END binfmt.nix
   ## BEGIN sriov.nix
-  boot.extraModulePackages = with pkgs; [i915-sriov xe-sriov];
+  boot.extraModulePackages = with pkgs; [
+    i915-sriov
+    xe-sriov
+  ];
   boot.kernelParams = [
     "intel_iommu=on"
     # Gen11
@@ -88,10 +98,11 @@
       192.168.122.0/24 # Libvirt
     } accept comment "Allow Docker/Libvirt to reach auto_redirect ports"
   '';
-  networking.firewall.trustedInterfaces = ["virbr0"];
+  networking.firewall.trustedInterfaces = [ "virbr0" ];
 
-  systemd.services.docker.path =
-    lib.optional (config.virtualisation.docker.daemon.settings.firewall-backend == "nftables") pkgs.nftables;
+  systemd.services.docker.path = lib.optional (
+    config.virtualisation.docker.daemon.settings.firewall-backend == "nftables"
+  ) pkgs.nftables;
 
   virtualisation.docker = {
     enable = true;
@@ -112,7 +123,7 @@
   # - For Intel CPU, add "kvm-intel" to kernelModules.
   #   boot.kernelModules = ["kvm-intel"];
   #   boot.extraModprobeConfig = "options kvm_intel nested=1"; # for intel cpu
-  boot.kernelModules = ["vfio-pci"];
+  boot.kernelModules = [ "vfio-pci" ];
   services.udev.extraRules = ''
     # Bind all i915 VFs (00:02.1 to 00:02.7) to vfio-pci
     ${builtins.concatStringsSep ", " [
@@ -120,139 +131,143 @@
       ''KERNEL=="${builtins.head (lib.splitString "." myvars.igpu_pci_ids)}.[1-7]"''
       ''ATTR{vendor}=="0x8086", ATTR{device}=="0x9a60"''
       ''DRIVER!="vfio-pci"''
-      ''RUN+="/bin/sh -c '${builtins.concatStringsSep "; " [
+      ''RUN+="/bin/sh -c '${
+        builtins.concatStringsSep "; " [
           ''echo \$kernel > /sys/bus/pci/devices/\$kernel/driver/unbind''
           ''echo vfio-pci > /sys/bus/pci/devices/\$kernel/driver_override''
-          ''modprobe vfio-pci''
+          "modprobe vfio-pci"
           ''echo \$kernel > /sys/bus/pci/drivers/vfio-pci/bind''
-        ]}'"''
+        ]
+      }'"''
     ]}
   '';
   virtualisation = {
     spiceUSBRedirection.enable = true;
     # lxd.enable = true;
-    libvirtd = let
-      domain_name = "win11";
-    in {
-      enable = true;
-      qemu.swtpm.enable = true;
-      qemu.vhostUserPackages = [pkgs.virtiofsd];
-      # hooks.qemu."99-hugepages.sh" = pkgs.writeShellScript "99-hugepages.sh" ''
-      #   set -eufo pipefail
-      #   # ## BEGIN DEBUG
-      #   # LOG=/var/log/libvirt/hooks-qemu.log
-      #   # exec >>"$LOG" 2>&1
-      #   # set -x
-      #   # echo "---- $(date -Is) ----"
-      #   # echo "argv: $0 $*"
-      #   # env | sort
-      #   # ## END DEBUG
+    libvirtd =
+      let
+        domain_name = "win11";
+      in
+      {
+        enable = true;
+        qemu.swtpm.enable = true;
+        qemu.vhostUserPackages = [ pkgs.virtiofsd ];
+        # hooks.qemu."99-hugepages.sh" = pkgs.writeShellScript "99-hugepages.sh" ''
+        #   set -eufo pipefail
+        #   # ## BEGIN DEBUG
+        #   # LOG=/var/log/libvirt/hooks-qemu.log
+        #   # exec >>"$LOG" 2>&1
+        #   # set -x
+        #   # echo "---- $(date -Is) ----"
+        #   # echo "argv: $0 $*"
+        #   # env | sort
+        #   # ## END DEBUG
 
-      #   DOMAIN_XML="$(cat)"
-      #   VM="$1"
-      #   OP="$2"
-      #   SUBOP="$3"
+        #   DOMAIN_XML="$(cat)"
+        #   VM="$1"
+        #   OP="$2"
+        #   SUBOP="$3"
 
-      #   [ "$VM" = "${domain_name}" ] || exit 0 # Only for this VM
+        #   [ "$VM" = "${domain_name}" ] || exit 0 # Only for this VM
 
-      #   MEM_MIB=$((
-      #     $(printf '%s' "$DOMAIN_XML" \
-      #     | ${lib.getExe' pkgs.libxml2 "xmllint"} --xpath "string(//domain/memory)" -) / 1024
-      #   )) # Unit in xml is KiB
-      #   HP_SIZE_KB=$(${lib.getExe pkgs.gawk} '/Hugepagesize:/ { print $2 }' /proc/meminfo)
-      #   HP_SYSFS="/sys/kernel/mm/hugepages/hugepages-''${HP_SIZE_KB}kB/nr_hugepages"
+        #   MEM_MIB=$((
+        #     $(printf '%s' "$DOMAIN_XML" \
+        #     | ${lib.getExe' pkgs.libxml2 "xmllint"} --xpath "string(//domain/memory)" -) / 1024
+        #   )) # Unit in xml is KiB
+        #   HP_SIZE_KB=$(${lib.getExe pkgs.gawk} '/Hugepagesize:/ { print $2 }' /proc/meminfo)
+        #   HP_SYSFS="/sys/kernel/mm/hugepages/hugepages-''${HP_SIZE_KB}kB/nr_hugepages"
 
-      #   STATE_DIR="/run/libvirt-hugepages"
-      #   STATE_FILE="$STATE_DIR/$VM.baseline"
+        #   STATE_DIR="/run/libvirt-hugepages"
+        #   STATE_FILE="$STATE_DIR/$VM.baseline"
 
-      #   pages_needed() {
-      #     echo $(((MEM_MIB * 1024) / HP_SIZE_KB))
-      #   }
+        #   pages_needed() {
+        #     echo $(((MEM_MIB * 1024) / HP_SIZE_KB))
+        #   }
 
-      #   get_current() {
-      #     cat "$HP_SYSFS"
-      #   }
+        #   get_current() {
+        #     cat "$HP_SYSFS"
+        #   }
 
-      #   set_target() {
-      #     local target="$1"
-      #     echo "$target" > "$HP_SYSFS"
-      #   }
+        #   set_target() {
+        #     local target="$1"
+        #     echo "$target" > "$HP_SYSFS"
+        #   }
 
-      #   alloc_if_needed() {
-      #     mkdir -p "$STATE_DIR"
+        #   alloc_if_needed() {
+        #     mkdir -p "$STATE_DIR"
 
-      #     local baseline current need target
-      #     current="$(get_current)"
-      #     baseline="$current"
-      #     echo "$baseline" > "$STATE_FILE"
+        #     local baseline current need target
+        #     current="$(get_current)"
+        #     baseline="$current"
+        #     echo "$baseline" > "$STATE_FILE"
 
-      #     need="$(pages_needed)"
-      #     target=$((baseline + need))
+        #     need="$(pages_needed)"
+        #     target=$((baseline + need))
 
-      #     # Only grow pool if we don't already have enough
-      #     if [ "$current" -lt "$target" ]; then
-      #       set_target "$target"
-      #     fi
-      #   }
+        #     # Only grow pool if we don't already have enough
+        #     if [ "$current" -lt "$target" ]; then
+        #       set_target "$target"
+        #     fi
+        #   }
 
-      #   restore_baseline() {
-      #     [ -f "$STATE_FILE" ] || exit 0
-      #     local baseline
-      #     baseline="$(cat "$STATE_FILE")"
+        #   restore_baseline() {
+        #     [ -f "$STATE_FILE" ] || exit 0
+        #     local baseline
+        #     baseline="$(cat "$STATE_FILE")"
 
-      #     # Restore exactly to what it was before starting this VM
-      #     set_target "$baseline"
-      #     rm -f "$STATE_FILE"
-      #   }
+        #     # Restore exactly to what it was before starting this VM
+        #     set_target "$baseline"
+        #     rm -f "$STATE_FILE"
+        #   }
 
-      #   case "$OP $SUBOP" in
-      #     "prepare begin")
-      #       alloc_if_needed
-      #       ;;
-      #     "release end")
-      #       restore_baseline
-      #       ;;
-      #   esac
-      # '';
-      hooks.qemu."10-igpu-sriov.sh" = pkgs.writeShellScript "10-igpu-sriov.sh" ''
-        set -eufo pipefail
+        #   case "$OP $SUBOP" in
+        #     "prepare begin")
+        #       alloc_if_needed
+        #       ;;
+        #     "release end")
+        #       restore_baseline
+        #       ;;
+        #   esac
+        # '';
+        hooks.qemu."10-igpu-sriov.sh" = pkgs.writeShellScript "10-igpu-sriov.sh" ''
+          set -eufo pipefail
 
-        VM="$1"
-        OP="$2"
-        SUBOP="$3"
+          VM="$1"
+          OP="$2"
+          SUBOP="$3"
 
-        [ "$VM" = "${domain_name}" ] || exit 0 # Apply to this specific VM
+          [ "$VM" = "${domain_name}" ] || exit 0 # Apply to this specific VM
 
-        SRIOV_PATH="/sys/bus/pci/devices/${myvars.igpu_pci_ids}/sriov_numvfs"
+          SRIOV_PATH="/sys/bus/pci/devices/${myvars.igpu_pci_ids}/sriov_numvfs"
 
-        # Check if the sysfs path exists before trying to read/write
-        if [ ! -f "$SRIOV_PATH" ]; then
-          echo "SR-IOV path $SRIOV_PATH not found" >&2
-          exit 0
-        fi
+          # Check if the sysfs path exists before trying to read/write
+          if [ ! -f "$SRIOV_PATH" ]; then
+            echo "SR-IOV path $SRIOV_PATH not found" >&2
+            exit 0
+          fi
 
-        CURRENT_VFS=$(cat "$SRIOV_PATH")
+          CURRENT_VFS=$(cat "$SRIOV_PATH")
 
-        case "$OP $SUBOP" in
-          "prepare begin")
-            NEW_VFS=$((CURRENT_VFS + 1))
-            # Note: Depending on your iGPU driver, the Linux kernel might throw
-            # "Device or resource busy" if you try to change sriov_numvfs
-            # without setting it to 0 first. If your driver supports dynamic
-            # scaling, this works natively.
-            echo "$NEW_VFS" > "$SRIOV_PATH"
-            ;;
-          "release end")
-            NEW_VFS=$((CURRENT_VFS - 1))
-            # Safeguard to prevent negative values
-            if [ "$NEW_VFS" -lt 0 ]; then
-              NEW_VFS=0
-            fi
-            echo "$NEW_VFS" > "$SRIOV_PATH"
-            ;;
-        esac
-      '';
-    };
+          case "$OP $SUBOP" in
+            "prepare begin")
+              NEW_VFS=$((CURRENT_VFS + 1))
+              # Note: Depending on your iGPU driver, the Linux kernel might throw
+              # "Device or resource busy" if you try to change sriov_numvfs
+              # without setting it to 0 first. If your driver supports dynamic
+              # scaling, this works natively.
+              echo "$NEW_VFS" > "$SRIOV_PATH"
+              ;;
+            "release end")
+              NEW_VFS=$((CURRENT_VFS - 1))
+              # Safeguard to prevent negative values
+              if [ "$NEW_VFS" -lt 0 ]; then
+                NEW_VFS=0
+              fi
+              echo "$NEW_VFS" > "$SRIOV_PATH"
+              ;;
+          esac
+        '';
+      };
   };
   environment.systemPackages = with pkgs; [
     # This script is used to install the arm translation layer for waydroid

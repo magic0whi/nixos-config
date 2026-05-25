@@ -3,7 +3,9 @@ _: {
     {
       # TODO: Unsafe
       file = "/etc/dm_keyfile.key";
-      parentDirectory = {mode = "0700";};
+      parentDirectory = {
+        mode = "0700";
+      };
     }
   ];
 }

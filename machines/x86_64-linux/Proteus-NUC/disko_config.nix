@@ -1,4 +1,5 @@
-_: let
+_:
+let
   # LUKS-encrypted ZFS disk helper (460GB partition)
   zroot = "zroot";
   mk_luks_part = disk_id: {
@@ -21,67 +22,76 @@ _: let
       };
     };
   };
-in {
+in
+{
   disko.devices = {
     # Big NVMe (953.9G) with ESP + swap + zroot1 + Windows 11
     disk = {
-      nvme0 = let
-        disk_id = "nvme-SAMSUNG_MZVL21T0HCLR-00B00_S676NX0T115316";
-      in {
-        device = "/dev/disk/by-id/${disk_id}";
-        type = "disk";
-        content = {
-          type = "gpt";
-          partitions = {
-            ESP = {
-              label = "EFI SYSTEM PARTITION";
-              # https://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_type_GUIDs
-              type = "C12A7328-F81F-11D2-BA4B-00A0C93EC93B";
-              size = "512M";
-              content = {
-                type = "filesystem";
-                format = "vfat";
-                extraArgs = ["-F32" "-S4096" "-nBOOT"];
-                mountpoint = "/boot";
-                mountOptions = ["umask=0077"];
+      nvme0 =
+        let
+          disk_id = "nvme-SAMSUNG_MZVL21T0HCLR-00B00_S676NX0T115316";
+        in
+        {
+          device = "/dev/disk/by-id/${disk_id}";
+          type = "disk";
+          content = {
+            type = "gpt";
+            partitions = {
+              ESP = {
+                label = "EFI SYSTEM PARTITION";
+                # https://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_type_GUIDs
+                type = "C12A7328-F81F-11D2-BA4B-00A0C93EC93B";
+                size = "512M";
+                content = {
+                  type = "filesystem";
+                  format = "vfat";
+                  extraArgs = [
+                    "-F32"
+                    "-S4096"
+                    "-nBOOT"
+                  ];
+                  mountpoint = "/boot";
+                  mountOptions = [ "umask=0077" ];
+                };
               };
-            };
-            encrypted_swap = {
-              label = "SWAP";
-              type = "0657FD6D-A4AB-43C4-84E5-0933C84B4F4F";
-              size = "32G";
-              content = {
-                type = "swap";
-                discardPolicy = "both";
-                resumeDevice = true;
-                randomEncryption = true;
-                # Not supported by disko yet
-                # encrypted.enable = true;
-                # encrypted.label = "swap";
-                # encrypted.blkDev = "/dev/disk/by-id/nvme-eui.002538b121b3218a-part2";
+              encrypted_swap = {
+                label = "SWAP";
+                type = "0657FD6D-A4AB-43C4-84E5-0933C84B4F4F";
+                size = "32G";
+                content = {
+                  type = "swap";
+                  discardPolicy = "both";
+                  resumeDevice = true;
+                  randomEncryption = true;
+                  # Not supported by disko yet
+                  # encrypted.enable = true;
+                  # encrypted.label = "swap";
+                  # encrypted.blkDev = "/dev/disk/by-id/nvme-eui.002538b121b3218a-part2";
+                };
               };
-            };
-            luks_part = mk_luks_part disk_id;
-            # Optional spare/unused space for Microsoft(R) Windows
-            windows = {
-              label = "WINDOWS";
-              type = "EBD0A0A2-B9E5-4433-87C0-68B6B72699C7"; # aka. Basic data partition
-              size = "100%";
+              luks_part = mk_luks_part disk_id;
+              # Optional spare/unused space for Microsoft(R) Windows
+              windows = {
+                label = "WINDOWS";
+                type = "EBD0A0A2-B9E5-4433-87C0-68B6B72699C7"; # aka. Basic data partition
+                size = "100%";
+              };
             };
           };
         };
-      };
       # Smaller NVMe fully used for LUKS+ZFS
-      nvme1 = let
-        disk_id = "nvme-SAMSUNG_MZVLB512HAJQ-000L2_S3RGNF0K901813";
-      in {
-        device = "/dev/disk/by-id/${disk_id}";
-        type = "disk";
-        content = {
-          type = "gpt";
-          partitions.luks_part = mk_luks_part disk_id;
+      nvme1 =
+        let
+          disk_id = "nvme-SAMSUNG_MZVLB512HAJQ-000L2_S3RGNF0K901813";
+        in
+        {
+          device = "/dev/disk/by-id/${disk_id}";
+          type = "disk";
+          content = {
+            type = "gpt";
+            partitions.luks_part = mk_luks_part disk_id;
+          };
         };
-      };
     };
     # ROOT POOL (NVMe) - Impermanence Setup
     zpool.zroot = {
@@ -105,8 +115,7 @@ in {
         mountpoint = "/";
         canmount = "off";
       };
-      postCreateHook =
-        "zpool set bootfs=${zroot}/root ${zroot};" + "zpool set cachefile=/etc/zfs/zpool.cache ${zroot}"; # Create zpool.cache
+      postCreateHook = "zpool set bootfs=${zroot}/root ${zroot};" + "zpool set cachefile=/etc/zfs/zpool.cache ${zroot}"; # Create zpool.cache
       datasets = {
         # ROOT dataset (ephemeral, rolled back to blank on boot)
         root = {
@@ -136,7 +145,10 @@ in {
           type = "zfs_fs";
           mountpoint = "/persistent";
           options."com.sun:auto-snapshot" = "true";
-          mountOptions = ["defaults" "x-gvfs-trash"];
+          mountOptions = [
+            "defaults"
+            "x-gvfs-trash"
+          ];
         };
       };
     };

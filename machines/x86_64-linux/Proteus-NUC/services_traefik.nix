@@ -3,18 +3,23 @@
   lib,
   myvars,
   ...
-}: let
+}:
+let
   server_pub_crt = "${myvars.secrets_dir}/proteus_server.pub.pem";
-in {
+in
+{
   networking.firewall = {
-    allowedTCPPorts = [80 443];
-    allowedUDPPorts = [443]; # QUIC
+    allowedTCPPorts = [
+      80
+      443
+    ];
+    allowedUDPPorts = [ 443 ]; # QUIC
   };
   sops.secrets."traefik_server.priv.pem" = {
     sopsFile = "${myvars.secrets_dir}/proteus_server.priv.pem.sops";
     format = "binary";
     owner = config.systemd.services.traefik.serviceConfig.User;
-    restartUnits = ["traefik.service"];
+    restartUnits = [ "traefik.service" ];
   };
   services.traefik = {
     enable = true;
@@ -36,7 +41,7 @@ in {
         };
         websecure = {
           address = ":443";
-          http3 = {}; # For QUIC
+          http3 = { }; # For QUIC
           # Prevent large video uploads from timing out and throwing Error 499. Ref:
           # https://web.archive.org/web/20260217103328/https://docs.immich.app/administration/reverse-proxy/#traefik-proxy-example-config
           transport.respondingTimeouts = {
@@ -66,56 +71,56 @@ in {
           traefik-dashboard = {
             rule = "Host(`traefik.${myvars.domain}`)";
             # `authelia-auth` Protect the dashboard
-            entryPoints = ["websecure"];
-            middlewares = ["authelia-auth"];
+            entryPoints = [ "websecure" ];
+            middlewares = [ "authelia-auth" ];
             service = "api@internal";
-            tls = {};
+            tls = { };
           };
           qinglong = {
             rule = "Host(`ql.${myvars.domain}`)";
-            entryPoints = ["websecure"];
+            entryPoints = [ "websecure" ];
             service = "qinglong";
-            tls = {};
+            tls = { };
           };
           syncthing = {
             rule = "Host(`syncthing.${myvars.domain}`)";
-            entryPoints = ["websecure"];
-            middlewares = ["authelia-auth"];
+            entryPoints = [ "websecure" ];
+            middlewares = [ "authelia-auth" ];
             service = "syncthing-dashboard";
-            tls = {};
+            tls = { };
           };
           sb = {
             rule = "Host(`sb.${myvars.domain}`)";
-            entryPoints = ["websecure"];
-            middlewares = ["authelia-auth"];
+            entryPoints = [ "websecure" ];
+            middlewares = [ "authelia-auth" ];
             service = "sb-dashboard";
-            tls = {};
+            tls = { };
           };
           papra = {
             rule = "Host(`papra.${myvars.domain}`)";
-            entryPoints = ["websecure"];
+            entryPoints = [ "websecure" ];
             service = "papra";
-            tls = {};
+            tls = { };
           };
           plane = {
             rule = "Host(`plane.${myvars.domain}`)";
-            entryPoints = ["websecure"];
+            entryPoints = [ "websecure" ];
             service = "plane";
-            tls = {};
+            tls = { };
           };
         };
         services = {
-          qinglong.loadBalancer.servers = [{url = "http://127.0.0.1:5700";}];
-          sb-dashboard.loadBalancer.servers = [{url = "http://127.0.0.1:9091";}];
+          qinglong.loadBalancer.servers = [ { url = "http://127.0.0.1:5700"; } ];
+          sb-dashboard.loadBalancer.servers = [ { url = "http://127.0.0.1:9091"; } ];
           syncthing-dashboard.loadBalancer = {
             # By setting to false Traefik will overrides the Host header to
             # 127.0.0.1
             passHostHeader = false;
-            servers = [{url = "http://${config.home-manager.users.${myvars.username}.services.syncthing.guiAddress}";}];
+            servers = [ { url = "http://${config.home-manager.users.${myvars.username}.services.syncthing.guiAddress}"; } ];
             healthCheck.path = "/rest/noauth/health";
           };
-          papra.loadBalancer.servers = [{url = "http://127.0.0.1:1221";}];
-          plane.loadBalancer.servers = [{url = "http://127.0.0.1:8081";}];
+          papra.loadBalancer.servers = [ { url = "http://127.0.0.1:1221"; } ];
+          plane.loadBalancer.servers = [ { url = "http://127.0.0.1:8081"; } ];
         };
       };
     };

@@ -15,9 +15,13 @@ _: {
             content = {
               type = "filesystem";
               format = "vfat";
-              extraArgs = ["-F32" "-S4096" "-nBOOT"];
+              extraArgs = [
+                "-F32"
+                "-S4096"
+                "-nBOOT"
+              ];
               mountpoint = "/boot";
-              mountOptions = ["umask=0077"];
+              mountOptions = [ "umask=0077" ];
             };
           };
           plain_swap = {
@@ -64,8 +68,7 @@ _: {
         canmount = "off";
       };
       mode = "";
-      postCreateHook =
-        "zpool set bootfs=zroot/root zroot;" + "zpool set cachefile=/etc/zfs/zpool.cache zroot"; # Create zpool.cache
+      postCreateHook = "zpool set bootfs=zroot/root zroot;" + "zpool set cachefile=/etc/zfs/zpool.cache zroot"; # Create zpool.cache
       datasets = {
         # ROOT dataset (ephemeral, rolled back to blank on boot)
         root = {

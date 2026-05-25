@@ -1,4 +1,5 @@
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   ## BEGIN peripherals.nix
   services.playerctld.enable = true; # playerctl
   ## END peripherals.nix

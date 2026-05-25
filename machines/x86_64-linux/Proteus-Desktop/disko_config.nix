@@ -1,4 +1,5 @@
-{myvars, ...}: let
+{ myvars, ... }:
+let
   # LUKS-encrypted ZFS disk helper (460GB partition)
   mk_luks_zfs_disk = disk_id: {
     device = "/dev/disk/by-id/${disk_id}";
@@ -15,7 +16,7 @@
           initrdUnlock = false; # Manually manage in stage 2 by `environment.etc."crypttab"`
           # For boot.initrd.luks.device.<name>.*
           settings = {
-            crypttabExtraOpts = ["nofail"];
+            crypttabExtraOpts = [ "nofail" ];
             # keyFile = "/etc/dm_keyfile.key"; # Conflicts with Cievis
             keyFileTimeout = 15;
             allowDiscards = true;
@@ -30,7 +31,8 @@
       };
     };
   };
-in {
+in
+{
   disko.devices = {
     # --- 1. NVMe Root Drive (ZFS with Impermanence) ---
     disk = {
@@ -48,9 +50,13 @@ in {
               content = {
                 type = "filesystem";
                 format = "vfat";
-                extraArgs = ["-F32" "-S4096" "-nBOOT"];
+                extraArgs = [
+                  "-F32"
+                  "-S4096"
+                  "-nBOOT"
+                ];
                 mountpoint = "/boot";
-                mountOptions = ["umask=0077"];
+                mountOptions = [ "umask=0077" ];
               };
             };
             plain_swap = {
@@ -85,76 +91,79 @@ in {
       sata6 = mk_luks_zfs_disk "ata-WDC_WD2002FYPS-02W3B0_WCAVY6186321";
     };
     # --- 3. ZFS Pools ---
-    zpool = let
-      type = "zpool";
-      options.ashift = "12"; # Pool-level options
-      # Dataset defaults
-      rootFsOptions = {
-        # ACL and Extended Attributes
-        acltype = "posixacl";
-        xattr = "sa";
-        # Performance
-        dnodesize = "auto";
-        normalization = "formD";
-        relatime = "on";
+    zpool =
+      let
+        type = "zpool";
+        options.ashift = "12"; # Pool-level options
+        # Dataset defaults
+        rootFsOptions = {
+          # ACL and Extended Attributes
+          acltype = "posixacl";
+          xattr = "sa";
+          # Performance
+          dnodesize = "auto";
+          normalization = "formD";
+          relatime = "on";
 
-        compression = "zstd";
+          compression = "zstd";
 
-        devices = "off"; # Security
-        # Mount behavior
-        mountpoint = "none";
-        canmount = "off";
-      };
-    in {
-      # ROOT POOL (NVMe) - Impermanence Setup
-      zroot = {
-        inherit type options;
-        mode = "";
-        rootFsOptions = rootFsOptions // {mountpoint = "/";};
-        postCreateHook =
-          "zpool set bootfs=zroot/root zroot;" + "zpool set cachefile=/etc/zfs/zpool.cache zroot"; # Create zpool.cache
-        datasets = {
-          # ROOT dataset (ephemeral, rolled back to blank on boot)
-          root = {
-            type = "zfs_fs";
+          devices = "off"; # Security
+          # Mount behavior
+          mountpoint = "none";
+          canmount = "off";
+        };
+      in
+      {
+        # ROOT POOL (NVMe) - Impermanence Setup
+        zroot = {
+          inherit type options;
+          mode = "";
+          rootFsOptions = rootFsOptions // {
             mountpoint = "/";
-            options."com.sun:auto-snapshot" = "false";
-            postCreateHook = "zfs list -t snapshot -H -o name | grep -E '^zroot/root@blank$' || zfs snapshot zroot/root@blank";
           };
-          home = {
-            # `com.sun:auto-snapshot` is used by options `services.zfs.autoSnapshot.*`
-            type = "zfs_fs";
-            mountpoint = "/home";
-            options."com.sun:auto-snapshot" = "true";
+          postCreateHook = "zpool set bootfs=zroot/root zroot;" + "zpool set cachefile=/etc/zfs/zpool.cache zroot"; # Create zpool.cache
+          datasets = {
+            # ROOT dataset (ephemeral, rolled back to blank on boot)
+            root = {
+              type = "zfs_fs";
+              mountpoint = "/";
+              options."com.sun:auto-snapshot" = "false";
+              postCreateHook = "zfs list -t snapshot -H -o name | grep -E '^zroot/root@blank$' || zfs snapshot zroot/root@blank";
+            };
+            home = {
+              # `com.sun:auto-snapshot` is used by options `services.zfs.autoSnapshot.*`
+              type = "zfs_fs";
+              mountpoint = "/home";
+              options."com.sun:auto-snapshot" = "true";
+            };
+            "home/root" = {
+              type = "zfs_fs";
+              mountpoint = "/root";
+            };
+            nix = {
+              type = "zfs_fs";
+              mountpoint = "/nix";
+              options."com.sun:auto-snapshot" = "false";
+              options.atime = "off";
+            };
+            persistent = {
+              type = "zfs_fs";
+              mountpoint = "/persistent";
+              options."com.sun:auto-snapshot" = "false";
+            };
           };
-          "home/root" = {
+        };
+        # STORAGE POOL (SATA RAIDZ2)
+        storage = {
+          inherit type options rootFsOptions;
+          mode = "raidz2";
+          datasets.data = {
             type = "zfs_fs";
-            mountpoint = "/root";
-          };
-          nix = {
-            type = "zfs_fs";
-            mountpoint = "/nix";
-            options."com.sun:auto-snapshot" = "false";
-            options.atime = "off";
-          };
-          persistent = {
-            type = "zfs_fs";
-            mountpoint = "/persistent";
-            options."com.sun:auto-snapshot" = "false";
+            mountpoint = myvars.storage_path;
+            mountOptions = [ "nofail" ];
+            options.canmount = "on";
           };
         };
       };
-      # STORAGE POOL (SATA RAIDZ2)
-      storage = {
-        inherit type options rootFsOptions;
-        mode = "raidz2";
-        datasets.data = {
-          type = "zfs_fs";
-          mountpoint = myvars.storage_path;
-          mountOptions = ["nofail"];
-          options.canmount = "on";
-        };
-      };
-    };
   };
 }

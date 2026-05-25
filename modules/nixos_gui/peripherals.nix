@@ -1,6 +1,7 @@
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   # Audio(PipeWire)
-  environment.systemPackages = [pkgs.pulseaudio]; # Provides `pactl`, which is required by some apps (e.g. sonic-pi)
+  environment.systemPackages = [ pkgs.pulseaudio ]; # Provides `pactl`, which is required by some apps (e.g. sonic-pi)
 
   # PipeWire is a new low-level multimedia framework. It aims to offer capture and playback for both audio and video
   # with minimal latency. It support for PulseAudio-, JACK-, ALSA- and GStreamer-based applications. PipeWire has a

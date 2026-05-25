@@ -3,7 +3,8 @@
   myvars,
   pkgs,
   ...
-}: {
+}:
+{
   ## BEGIN gpg.nix
   programs.gpg = {
     # https://www.gnupg.org/gph/en/manual/x334.html

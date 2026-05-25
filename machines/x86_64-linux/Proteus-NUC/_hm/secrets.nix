@@ -1,4 +1,5 @@
-{config, ...}: {
+{ config, ... }:
+{
   sops.gnupg.home = config.programs.gpg.homedir;
   # sops.age = {
   #   sshKeyPaths = ["proteus@recovery.ssh.priv.key"];

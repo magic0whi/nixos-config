@@ -3,25 +3,31 @@
   lib,
   myvars,
   ...
-}: {
-  sops = let
-    sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";
-    restartUnits = ["immich-machine-learning.service" "immich-server.service"];
-  in {
-    secrets = {
-      immich_db_password = {inherit sopsFile restartUnits;};
-      immich_oauth_secret = {
-        inherit sopsFile restartUnits;
-        owner = config.services.immich.user;
+}:
+{
+  sops =
+    let
+      sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";
+      restartUnits = [
+        "immich-machine-learning.service"
+        "immich-server.service"
+      ];
+    in
+    {
+      secrets = {
+        immich_db_password = { inherit sopsFile restartUnits; };
+        immich_oauth_secret = {
+          inherit sopsFile restartUnits;
+          owner = config.services.immich.user;
+        };
+      };
+      templates."immich.env" = {
+        inherit restartUnits;
+        # content = "DB_PASSWORD=${config.sops.placeholder.immich_db_password}";
+        # Immich don't use env DB_PASSWORD when using unix socket to connect the DB
+        content = "DB_URL=postgresql://${config.services.immich.database.user}:${config.sops.placeholder.immich_db_password}@/${config.services.immich.database.user}";
       };
     };
-    templates."immich.env" = {
-      inherit restartUnits;
-      # content = "DB_PASSWORD=${config.sops.placeholder.immich_db_password}";
-      # Immich don't use env DB_PASSWORD when using unix socket to connect the DB
-      content = "DB_URL=postgresql://${config.services.immich.database.user}:${config.sops.placeholder.immich_db_password}@/${config.services.immich.database.user}";
-    };
-  };
   systemd.tmpfiles.settings.immich.${config.services.immich.mediaLocation}.e.mode = lib.mkForce "0750";
   services.immich = {
     enable = true;
@@ -46,12 +52,12 @@
   services.traefik.dynamicConfigOptions.http = {
     routers.immich = {
       rule = "Host(`immich.${myvars.domain}`)";
-      entryPoints = ["websecure"];
+      entryPoints = [ "websecure" ];
       service = "immich";
-      tls = {};
+      tls = { };
     };
     services.immich.loadBalancer = {
-      servers = [{url = "http://127.0.0.1:${toString config.services.immich.port}";}];
+      servers = [ { url = "http://127.0.0.1:${toString config.services.immich.port}"; } ];
       healthCheck.path = "/api/server/ping";
     };
   };

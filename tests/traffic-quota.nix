@@ -1,24 +1,26 @@
-{pkgs, ...}:
+{ pkgs, ... }:
 pkgs.testers.runNixOSTest {
   name = "traffic-quota-module-test";
-  meta.maintainers = ["Proteus Qian"];
+  meta.maintainers = [ "Proteus Qian" ];
 
   # Define the VM's configuration
-  nodes = let
-    shared_cfg = {
-      imports = [../modules/nixos_headless/traffic-quota.nix];
-      services.traffic-quota.enable = true;
+  nodes =
+    let
+      shared_cfg = {
+        imports = [ ../modules/nixos_headless/traffic-quota.nix ];
+        services.traffic-quota.enable = true;
+      };
+    in
+    {
+      machine_normal = {
+        imports = [ shared_cfg ];
+        services.traffic-quota.limit = 196;
+      };
+      machine_exceeded = {
+        imports = [ shared_cfg ];
+        services.traffic-quota.limit = 0;
+      };
     };
-  in {
-    machine_normal = {
-      imports = [shared_cfg];
-      services.traffic-quota.limit = 196;
-    };
-    machine_exceeded = {
-      imports = [shared_cfg];
-      services.traffic-quota.limit = 0;
-    };
-  };
 
   # interactive.sshBackdoor.enable = true;
 

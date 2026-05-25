@@ -2,7 +2,8 @@
   config,
   myvars,
   ...
-}: {
+}:
+{
   # time.timeZone = "Asia/Hong_Kong";
   sops.secrets."sb_client_darwin.json" = {
     sopsFile = "${myvars.secrets_dir}/sb_client_darwin.json.sops";

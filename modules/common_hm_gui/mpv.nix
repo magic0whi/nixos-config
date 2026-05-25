@@ -2,16 +2,21 @@
   lib,
   pkgs,
   ...
-}: {
+}:
+{
   home.shellAliases."mpv" = "mpv --player-operation-mode=pseudo-gui";
   programs.mpv = {
     enable = true;
     package =
-      if pkgs.stdenv.isDarwin
-      then pkgs.mpv-unwrapped # https://github.com/NixOS/nixpkgs/issues/356860
-      else pkgs.mpv;
-    scripts = lib.optionals (!pkgs.stdenv.isDarwin) [pkgs.mpvScripts.mpris];
-    defaultProfiles = ["common" "gpu-hq"];
+      if pkgs.stdenv.isDarwin then
+        pkgs.mpv-unwrapped # https://github.com/NixOS/nixpkgs/issues/356860
+      else
+        pkgs.mpv;
+    scripts = lib.optionals (!pkgs.stdenv.isDarwin) [ pkgs.mpvScripts.mpris ];
+    defaultProfiles = [
+      "common"
+      "gpu-hq"
+    ];
     config = {
       # log-file = "${config.xdg.cacheHome}";
 

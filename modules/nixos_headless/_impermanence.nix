@@ -3,7 +3,8 @@
   lib,
   myvars,
   ...
-}: {
+}:
+{
   # NOTE: Impermance can not coexist with nixos-generators, don't import this file if you wanna generate bootable iso
   # TIP: to show impermanence usage, run `sudo ncdu -x /`
   config = lib.mkIf (config.environment ? persistence) {
@@ -38,7 +39,7 @@
       ];
       # ++ lib.optional config.boot.lanzaboote.enable config.boot.lanzaboote.pkiBundle; # If lanzaboote is enabled. Disable since we got its parent `/var/lib` persistent already
 
-      files = ["/etc/machine-id"];
+      files = [ "/etc/machine-id" ];
 
       users.${myvars.username} = {
         # The following directories will be passed to /persistent/home/$USER

@@ -3,19 +3,22 @@
   myvars,
   pkgs,
   ...
-}: {
-  sops = let
-    restartUnits = ["home-assistant.service"];
-  in {
-    secrets.hass_oidc_secret = {
-      inherit restartUnits;
-      sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";
+}:
+{
+  sops =
+    let
+      restartUnits = [ "home-assistant.service" ];
+    in
+    {
+      secrets.hass_oidc_secret = {
+        inherit restartUnits;
+        sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";
+      };
+      templates."hass_secrets.yaml" = {
+        inherit restartUnits;
+        content = "hass_oidc_secret: ${config.sops.placeholder.hass_oidc_secret}";
+      };
     };
-    templates."hass_secrets.yaml" = {
-      inherit restartUnits;
-      content = "hass_oidc_secret: ${config.sops.placeholder.hass_oidc_secret}";
-    };
-  };
   systemd.services.home-assistant = {
     serviceConfig.LoadCredential = "hass_secrets.yaml:${config.sops.templates."hass_secrets.yaml".path}";
     preStart = ''
@@ -39,13 +42,19 @@
       # xiaomi_home # Xiaomi Home (Official)
     ];
     config = {
-      default_config = {}; # Implicitly enable `mobile_app`
+      default_config = { }; # Implicitly enable `mobile_app`
       http = {
         server_port = 8123;
-        server_host = ["127.0.0.1" "::1"];
+        server_host = [
+          "127.0.0.1"
+          "::1"
+        ];
         use_x_forwarded_for = true;
-        trusted_proxies = ["127.0.0.1" "::1"];
-        cors_allowed_origins = ["https://hass.${myvars.domain}"];
+        trusted_proxies = [
+          "127.0.0.1"
+          "::1"
+        ];
+        cors_allowed_origins = [ "https://hass.${myvars.domain}" ];
       };
       homeassistant = {
         name = "Proteus' Homo";
@@ -72,12 +81,17 @@
   services.traefik.dynamicConfigOptions.http = {
     routers.home-assistant = {
       rule = "Host(`hass.${myvars.domain}`)";
-      entryPoints = ["websecure"];
+      entryPoints = [ "websecure" ];
       service = "home-assistant";
-      tls = {};
+      tls = { };
     };
-    services.home-assistant.loadBalancer.servers = let
-      hass_port = toString config.services.home-assistant.config.http.server_port;
-    in [{url = "http://127.0.0.1:${hass_port}";} {url = "http://[::1]:${hass_port}";}];
+    services.home-assistant.loadBalancer.servers =
+      let
+        hass_port = toString config.services.home-assistant.config.http.server_port;
+      in
+      [
+        { url = "http://127.0.0.1:${hass_port}"; }
+        { url = "http://[::1]:${hass_port}"; }
+      ];
   };
 }

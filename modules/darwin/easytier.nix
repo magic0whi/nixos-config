@@ -6,23 +6,37 @@
   myvars,
   pkgs,
   ...
-}: let
+}:
+let
   cfg = config.services.easytier;
-  settings_format = pkgs.formats.toml {};
+  settings_format = pkgs.formats.toml { };
 
   # Filter settings that has null value, then filter instances and it's settings that the value is an empty attrset
-  gen_final_settings = inst:
-    lib.filterAttrsRecursive (_: v: v != {}) (lib.filterAttrsRecursive (_: v: v != null) ({
-        inherit (inst.settings) instance_name hostname ipv4 dhcp listeners;
-        network_identity = {inherit (inst.settings) network_name network_secret;};
-        peer = map (p: {uri = p;}) inst.settings.peers;
-      }
-      // inst.extraSettings));
+  gen_final_settings =
+    inst:
+    lib.filterAttrsRecursive (_: v: v != { }) (
+      lib.filterAttrsRecursive (_: v: v != null) (
+        {
+          inherit (inst.settings)
+            instance_name
+            hostname
+            ipv4
+            dhcp
+            listeners
+            ;
+          network_identity = { inherit (inst.settings) network_name network_secret; };
+          peer = map (p: { uri = p; }) inst.settings.peers;
+        }
+        // inst.extraSettings
+      )
+    );
 
-  config_file_det = name: inst:
-    if inst.configFile == null
-    then settings_format.generate "easytier-${name}.toml" (gen_final_settings inst)
-    else inst.configFile;
+  config_file_det =
+    name: inst:
+    if inst.configFile == null then
+      settings_format.generate "easytier-${name}.toml" (gen_final_settings inst)
+    else
+      inst.configFile;
 
   active_insts = lib.filterAttrs (_: inst: inst.enable) cfg.instances;
 
@@ -66,7 +80,10 @@
       };
       listeners = lib.mkOption {
         type = with lib.types; listOf str;
-        default = ["tcp://0.0.0.0:11010" "udp://0.0.0.0:11010"];
+        default = [
+          "tcp://0.0.0.0:11010"
+          "udp://0.0.0.0:11010"
+        ];
         description = ''
           Listener addresses to accept connections from other peers. Valid format is: `<proto>://<addr>:<port>`, where
           the protocol can be `tcp`, `udp`, `ring`, `wg`, `ws`, `wss`.
@@ -74,110 +91,121 @@
       };
       peers = lib.mkOption {
         type = with lib.types; listOf str;
-        default = [];
+        default = [ ];
         description = "Peers to connect initially. Valid format is: `<proto>://<addr>:<port>`.";
-        example = ["tcp://example.com:11010"];
+        example = [ "tcp://example.com:11010" ];
       };
     };
   };
-  instance_module = {name, ...}: {
-    options = {
-      enable = lib.mkOption {
-        type = lib.types.bool;
-        default = true;
-        description = "Enable the instance.";
-      };
-      configServer = lib.mkOption {
-        type = with lib.types; nullOr str;
-        default = null;
-        description = ''
-          Configure the instance from config server. When this option set, any other settings for configuring the
-          instance manually except `hostname` will be ignored. Valid formats are:
+  instance_module =
+    { name, ... }:
+    {
+      options = {
+        enable = lib.mkOption {
+          type = lib.types.bool;
+          default = true;
+          description = "Enable the instance.";
+        };
+        configServer = lib.mkOption {
+          type = with lib.types; nullOr str;
+          default = null;
+          description = ''
+            Configure the instance from config server. When this option set, any other settings for configuring the
+            instance manually except `hostname` will be ignored. Valid formats are:
 
-          - full uri for custom server: `udp://example.com:22020/<token>`
-          - username only for official server: `<token>`
-        '';
-        example = "udp://example.com:22020/myusername";
-      };
-      configFile = lib.mkOption {
-        type = with lib.types; nullOr path;
-        default = null;
-        description = ''
-          Path to easytier config file. Setting this option will override `settings` and `extraSettings` of this
-          instance.
-        '';
-      };
-      environmentFiles = lib.mkOption {
-        type = with lib.types; listOf path;
-        default = [];
-        description = ''
-          Environment files for this instance. All command-line args have corresponding environment variables.
-        '';
-        example = lib.literalExpression ''
-          [
-            /path/to/.env
-            /path/to/.env.secret
-          ]
-        '';
-      };
-      settings = lib.mkOption {
-        type = lib.types.submodule (settings_module name);
-        default = {};
-        description = "Settings to generate {file}`easytier-${name}.toml`";
-      };
-      extraSettings = lib.mkOption {
-        type = settings_format.type;
-        default = {};
-        description = ''
-          Extra settings to add to {file}`easytier-${name}.toml`.
-        '';
-      };
-      extraArgs = lib.mkOption {
-        type = with lib.types; listOf str;
-        default = [];
-        description = "Extra args append to the easytier command-line.";
+            - full uri for custom server: `udp://example.com:22020/<token>`
+            - username only for official server: `<token>`
+          '';
+          example = "udp://example.com:22020/myusername";
+        };
+        configFile = lib.mkOption {
+          type = with lib.types; nullOr path;
+          default = null;
+          description = ''
+            Path to easytier config file. Setting this option will override `settings` and `extraSettings` of this
+            instance.
+          '';
+        };
+        environmentFiles = lib.mkOption {
+          type = with lib.types; listOf path;
+          default = [ ];
+          description = ''
+            Environment files for this instance. All command-line args have corresponding environment variables.
+          '';
+          example = lib.literalExpression ''
+            [
+              /path/to/.env
+              /path/to/.env.secret
+            ]
+          '';
+        };
+        settings = lib.mkOption {
+          type = lib.types.submodule (settings_module name);
+          default = { };
+          description = "Settings to generate {file}`easytier-${name}.toml`";
+        };
+        extraSettings = lib.mkOption {
+          type = settings_format.type;
+          default = { };
+          description = ''
+            Extra settings to add to {file}`easytier-${name}.toml`.
+          '';
+        };
+        extraArgs = lib.mkOption {
+          type = with lib.types; listOf str;
+          default = [ ];
+          description = "Extra args append to the easytier command-line.";
+        };
       };
     };
-  };
-in {
+in
+{
   options.services.easytier = {
     enable = lib.mkEnableOption "EasyTier daemon";
-    package = lib.mkPackageOption pkgs "easytier" {};
+    package = lib.mkPackageOption pkgs "easytier" { };
     allowSystemForward = lib.mkEnableOption ''
       Allow the system to forward packets from easytier. Useful when `proxy_forward_by_system` enabled.
     '';
     instances = lib.mkOption {
       description = "EasyTier instances.";
       type = lib.types.attrsOf (lib.types.submodule instance_module);
-      default = {};
+      default = { };
       example = {
         settings = {
           network_name = "easytier";
           network_secret = "easytier";
           ipv4 = "10.144.144.1/24";
-          peers = ["tcp://public.easytier.cn:11010" "wss://example.com:443"];
+          peers = [
+            "tcp://public.easytier.cn:11010"
+            "wss://example.com:443"
+          ];
         };
         extraSettings.flags.dev_name = "utun5";
       };
     };
   };
   config = lib.mkIf cfg.enable {
-    environment.systemPackages = [cfg.package];
+    environment.systemPackages = [ cfg.package ];
 
     system.activationScripts.postActivation.text = ''
       # Ensure the Easytier state directory is initialized
-      ${lib.concatLines (lib.mapAttrsToList (name: _: ''
+      ${lib.concatLines (
+        lib.mapAttrsToList (name: _: ''
           if [ ! -d "/Library/Application Support/easytier-${name}" ]; then
             echo "Setting up EasyTier directory for ${name}..."
             install -dm700 "/Library/Application Support/easytier-${name}"
           fi
-        '')
-        active_insts)}
+        '') active_insts
+      )}
     '';
     # nix-darwin lacks `launchd.daemon.<name>.restartTriggers`
-    launchd.daemons = lib.mapAttrs' (name: inst:
+    launchd.daemons = lib.mapAttrs' (
+      name: inst:
       lib.nameValuePair "easytier-${name}" {
-        path = [cfg.package "/usr/bin:/bin:/usr/sbin:/sbin"];
+        path = [
+          cfg.package
+          "/usr/bin:/bin:/usr/sbin:/sbin"
+        ];
         # Emulate Systemd's EnvironmentFile setups inside the Launchd script
         script = ''
           # Emulate Systemd's EnvironmentFile parsing safely
@@ -203,12 +231,24 @@ in {
           }
           ${lib.concatMapStringsSep "\n" (f: "load_env_file ${lib.escapeShellArg f}") inst.environmentFiles}
 
-          exec ${lib.escapeShellArgs (["easytier-core"]
-            ++ lib.optionals (inst.configServer != null) ["-w" inst.configServer]
-            ++ lib.optionals (inst.configServer != null && inst.settings.hostname != null)
-            ["--hostname" inst.settings.hostname]
-            ++ lib.optionals (inst.configServer == null) ["-c" "${config_file_det name inst}"]
-            ++ inst.extraArgs)}
+          exec ${
+            lib.escapeShellArgs (
+              [ "easytier-core" ]
+              ++ lib.optionals (inst.configServer != null) [
+                "-w"
+                inst.configServer
+              ]
+              ++ lib.optionals (inst.configServer != null && inst.settings.hostname != null) [
+                "--hostname"
+                inst.settings.hostname
+              ]
+              ++ lib.optionals (inst.configServer == null) [
+                "-c"
+                "${config_file_det name inst}"
+              ]
+              ++ inst.extraArgs
+            )
+          }
         '';
         serviceConfig = {
           Label = "org.nixos.easytier-${name}";
@@ -221,8 +261,8 @@ in {
           StandardOutPath = "/Library/Logs/org.nixos.easytier-${name}.stdout.log";
           StandardErrorPath = "/Library/Logs/org.nixos.easytier-${name}.stderr.log";
         };
-      })
-    active_insts;
+      }
+    ) active_insts;
 
     # Darwin-specific sysctl routing equivalents
     environment.etc = lib.mkIf cfg.allowSystemForward {
@@ -232,5 +272,8 @@ in {
       '';
     };
   };
-  meta.maintainers = with lib.maintainers; [ltrump myvars.userfullname];
+  meta.maintainers = with lib.maintainers; [
+    ltrump
+    myvars.userfullname
+  ];
 }

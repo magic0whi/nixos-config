@@ -3,7 +3,8 @@
   lib,
   myvars,
   ...
-}: let
+}:
+let
   monitor_cfg = {
     output = "eDP-1";
     mode = "highres";
@@ -19,15 +20,14 @@
       scale = 1.25;
     }
     # 10-bit will cause the internal monitor flickering when using sync mode
-    // lib.optionalAttrs config.wayland.windowManager.hyprland.nvidia_sync {bitdepth = 8;};
-  monitor_1 =
-    monitor_cfg
-    // {
-      output = "DP-3";
-      position = "auto-up";
-      scale = 1.67;
-    };
-in {
+    // lib.optionalAttrs config.wayland.windowManager.hyprland.nvidia_sync { bitdepth = 8; };
+  monitor_1 = monitor_cfg // {
+    output = "DP-3";
+    position = "auto-up";
+    scale = 1.67;
+  };
+in
+{
   wayland.windowManager.hyprland = {
     nvidia_sync = true;
     settings = {
@@ -35,7 +35,10 @@ in {
       # config.render.cm_auto_hdr = 0;
 
       # TIP: Run `hyprctl monitors` to get the info.
-      monitor = [monitor_0 monitor_1];
+      monitor = [
+        monitor_0
+        monitor_1
+      ];
       workspace_rule = [
         {
           workspace = "1";
@@ -82,11 +85,21 @@ in {
         }
       ];
       # NOTE: Set "GDK_DPI_SCALE" globally is not recommend, makes firefox scale twice
-      env =
-        [{_args = ["STEAM_FORCE_DESKTOPUI_SCALING" "${toString monitor_1.scale}"];}]
-        # Sync mode for Hyprland
-        ++ lib.optional config.wayland.windowManager.hyprland.nvidia_sync
-        {_args = ["AQ_DRM_DEVICES" "/dev/dri/${myvars.dgpu_sym_name}:/dev/dri/${myvars.igpu_sym_name}"];};
+      env = [
+        {
+          _args = [
+            "STEAM_FORCE_DESKTOPUI_SCALING"
+            "${toString monitor_1.scale}"
+          ];
+        }
+      ]
+      # Sync mode for Hyprland
+      ++ lib.optional config.wayland.windowManager.hyprland.nvidia_sync {
+        _args = [
+          "AQ_DRM_DEVICES"
+          "/dev/dri/${myvars.dgpu_sym_name}:/dev/dri/${myvars.igpu_sym_name}"
+        ];
+      };
 
       bind = [
         # Add shortcut key for Leave Mode. Leave to main monitor for sunshine streaming
@@ -94,12 +107,12 @@ in {
           _args = [
             (lib.generators.mkLuaInline ''main_mod .. " + Y"'')
             (lib.generators.mkLuaInline ''hl.dsp.exec_cmd("${
-                builtins.concatStringsSep "; " [
-                  ''hyprctl dispatch 'hl.monitor({ output = \"${monitor_0.output}\", disabled = true })' ''
-                  ''notify-send 'Hyprland' 'Leave mode: on' ''
-                ]
-              }")'')
-            {locked = true;}
+              builtins.concatStringsSep "; " [
+                ''hyprctl dispatch 'hl.monitor({ output = \"${monitor_0.output}\", disabled = true })' ''
+                "notify-send 'Hyprland' 'Leave mode: on' "
+              ]
+            }")'')
+            { locked = true; }
           ];
         }
         # Restore the monitors
@@ -107,11 +120,11 @@ in {
           _args = [
             (lib.generators.mkLuaInline ''main_mod .. " + SHIFT + Y"'')
             (lib.generators.mkLuaInline ''hl.dsp.exec_cmd("${
-                builtins.concatStringsSep "; " [
-                  "hyprctl reload"
-                  ''notify-send 'Hyprland' 'Leave mode: off' ''
-                ]
-              }")'')
+              builtins.concatStringsSep "; " [
+                "hyprctl reload"
+                "notify-send 'Hyprland' 'Leave mode: off' "
+              ]
+            }")'')
           ];
         }
         # Going to dock mode if has external monitor connected
@@ -119,13 +132,13 @@ in {
           _args = [
             (lib.generators.mkLuaInline ''"switch:on:Lid Switch"'')
             (lib.generators.mkLuaInline ''hl.dsp.exec_cmd("${
-                builtins.concatStringsSep " " [
-                  # Hyprland interprets commands starting with [ as window rules, change it to `test`, same as Lua
-                  # Config
-                  "test $(hyprctl -j monitors | jq '.[].name' | wc -w) -ne 1"
-                  ''&& hyprctl dispatch 'hl.monitor({ output = \"${monitor_0.output}\", disabled = true })' ''
-                ]
-              }")'')
+              builtins.concatStringsSep " " [
+                # Hyprland interprets commands starting with [ as window rules, change it to `test`, same as Lua
+                # Config
+                "test $(hyprctl -j monitors | jq '.[].name' | wc -w) -ne 1"
+                ''&& hyprctl dispatch 'hl.monitor({ output = \"${monitor_0.output}\", disabled = true })' ''
+              ]
+            }")'')
           ];
         }
         # Restore internal monitor

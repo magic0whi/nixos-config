@@ -1,6 +1,7 @@
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   home.packages = with pkgs; [
-    (nvtopPackages.intel.override {nvidia = true;})
+    (nvtopPackages.intel.override { nvidia = true; })
     minicom # embedded development
     chezmoi
     libreoffice

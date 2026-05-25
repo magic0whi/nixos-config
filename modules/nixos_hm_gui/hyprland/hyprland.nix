@@ -3,9 +3,11 @@
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   hypr_pkg = pkgs.hyprland;
-in {
+in
+{
   # NOTE: this executable is used by Greetd to start a wayland session when system boot up. With such a
   # vendor-no-locking script, we can switch to another wayland compositor without modifying greetd's config in NixOS
   # module
@@ -15,7 +17,7 @@ in {
     enable = true;
     package = hypr_pkg;
     # configType = "hyprlang";
-    systemd.variables = ["--all"];
+    systemd.variables = [ "--all" ];
     settings = {
       env = [
         # "_JAVA_AWT_WM_NONREPARENTING,1"
@@ -23,7 +25,12 @@ in {
         # "QT_QPA_PLATFORM,wayland"
         # "SDL_VIDEODRIVER,wayland"
         # "GDK_BACKEND,wayland"
-        {_args = ["QT_ENABLE_HIGHDPI_SCALING" "1"];}
+        {
+          _args = [
+            "QT_ENABLE_HIGHDPI_SCALING"
+            "1"
+          ];
+        }
       ];
 
       # Variables
@@ -62,13 +69,16 @@ in {
           gaps_out = 5; # gaps between windows and monitor edges
           col = {
             active_border = {
-              colors = ["rgba(33ccffee)" "rgba(00ff99ee)"];
+              colors = [
+                "rgba(33ccffee)"
+                "rgba(00ff99ee)"
+              ];
               angle = 45;
             };
             inactive_border = "rgba(595959aa)";
           };
         };
-        gesture = ["3,horizontal,workspace"];
+        gesture = [ "3,horizontal,workspace" ];
         decoration = {
           rounding = 10;
           inactive_opacity = 0.9;
@@ -88,10 +98,7 @@ in {
           key_press_enables_dpms = true;
           vrr = 1;
           # https://github.com/hyprwm/hyprlock/issues/779
-          allow_session_lock_restore =
-            if config.programs.hyprlock.enable
-            then true
-            else false;
+          allow_session_lock_restore = if config.programs.hyprlock.enable then true else false;
         };
         xwayland.force_zero_scaling = true;
       };
@@ -102,7 +109,16 @@ in {
             "easeOutQuint"
             {
               type = "bezier";
-              points = [[0.23 1] [0.32 1]];
+              points = [
+                [
+                  0.23
+                  1
+                ]
+                [
+                  0.32
+                  1
+                ]
+              ];
             }
           ];
         }
@@ -112,7 +128,16 @@ in {
             "linear"
             {
               type = "bezier";
-              points = [[0 0] [1 1]];
+              points = [
+                [
+                  0
+                  0
+                ]
+                [
+                  1
+                  1
+                ]
+              ];
             }
           ];
         }
@@ -122,7 +147,16 @@ in {
             "almostLinear"
             {
               type = "bezier";
-              points = [[0.5 0.5] [0.75 1.0]];
+              points = [
+                [
+                  0.5
+                  0.5
+                ]
+                [
+                  0.75
+                  1.0
+                ]
+              ];
             }
           ];
         }
@@ -132,7 +166,16 @@ in {
             "quick"
             {
               type = "bezier";
-              points = [[0.15 0] [0.1 1]];
+              points = [
+                [
+                  0.15
+                  0
+                ]
+                [
+                  0.1
+                  1
+                ]
+              ];
             }
           ];
         }
@@ -266,7 +309,8 @@ in {
           bezier = "quick";
         }
       ];
-      bind = with lib.generators;
+      bind =
+        with lib.generators;
         [
           # Applications
           {
@@ -278,7 +322,7 @@ in {
           {
             _args = [
               (mkLuaInline ''main_mod  .. " + E"'')
-              (mkLuaInline ''hl.dsp.exec_cmd(a_launch_prefix .. file_manager)'')
+              (mkLuaInline "hl.dsp.exec_cmd(a_launch_prefix .. file_manager)")
             ];
           }
           {
@@ -391,13 +435,13 @@ in {
           {
             _args = [
               (mkLuaInline ''main_mod  .. " + N"'')
-              (mkLuaInline ''hl.dsp.window.cycle_next()'')
+              (mkLuaInline "hl.dsp.window.cycle_next()")
             ];
           }
           {
             _args = [
               (mkLuaInline ''main_mod  .. " + P"'')
-              (mkLuaInline ''hl.dsp.window.cycle_next({ next = false })'')
+              (mkLuaInline "hl.dsp.window.cycle_next({ next = false })")
             ];
           }
 
@@ -445,22 +489,19 @@ in {
           {
             _args = [
               (mkLuaInline ''"Print"'')
-              (mkLuaInline
-                ''hl.dsp.exec_cmd(a_launch_prefix .. "hyprshot -m output -o ~/Pictures/Screenshots -- imv")'')
+              (mkLuaInline ''hl.dsp.exec_cmd(a_launch_prefix .. "hyprshot -m output -o ~/Pictures/Screenshots -- imv")'')
             ];
           }
           {
             _args = [
               (mkLuaInline ''"ALT + Print"'')
-              (mkLuaInline
-                ''hl.dsp.exec_cmd(a_launch_prefix .. "hyprshot -m window -o ~/Pictures/Screenshots -- imv")'')
+              (mkLuaInline ''hl.dsp.exec_cmd(a_launch_prefix .. "hyprshot -m window -o ~/Pictures/Screenshots -- imv")'')
             ];
           }
           {
             _args = [
               (mkLuaInline ''"CTRL + Print"'')
-              (mkLuaInline
-                ''hl.dsp.exec_cmd(a_launch_prefix .. "hyprshot -m region -o ~/Pictures/Screenshots -- imv")'')
+              (mkLuaInline ''hl.dsp.exec_cmd(a_launch_prefix .. "hyprshot -m region -o ~/Pictures/Screenshots -- imv")'')
             ];
           }
 
@@ -468,29 +509,29 @@ in {
           {
             _args = [
               (mkLuaInline ''main_mod  .. " + ALT + H"'')
-              (mkLuaInline ''hl.dsp.window.resize({ x = -38.4, y = 0, relative = true })'')
-              {repeating = true;}
+              (mkLuaInline "hl.dsp.window.resize({ x = -38.4, y = 0, relative = true })")
+              { repeating = true; }
             ];
           }
           {
             _args = [
               (mkLuaInline ''main_mod  .. " + ALT + L"'')
-              (mkLuaInline ''hl.dsp.window.resize({ x = 38.4, y = 0, relative = true })'')
-              {repeating = true;}
+              (mkLuaInline "hl.dsp.window.resize({ x = 38.4, y = 0, relative = true })")
+              { repeating = true; }
             ];
           }
           {
             _args = [
               (mkLuaInline ''main_mod  .. " + ALT + J"'')
-              (mkLuaInline ''hl.dsp.window.resize({ x = 0, y = 21.6, relative = true })'')
-              {repeating = true;}
+              (mkLuaInline "hl.dsp.window.resize({ x = 0, y = 21.6, relative = true })")
+              { repeating = true; }
             ];
           }
           {
             _args = [
               (mkLuaInline ''main_mod  .. " + ALT + K"'')
-              (mkLuaInline ''hl.dsp.window.resize({ x = 0, y = -21.6, relative = true })'')
-              {repeating = true;}
+              (mkLuaInline "hl.dsp.window.resize({ x = 0, y = -21.6, relative = true })")
+              { repeating = true; }
             ];
           }
 
@@ -609,49 +650,49 @@ in {
             _args = [
               (mkLuaInline ''main_mod  .. " + Z"'')
               (mkLuaInline ''hl.dsp.exec_cmd("loginctl lock-session")'')
-              {locked = true;}
+              { locked = true; }
             ];
           }
           {
             _args = [
               (mkLuaInline ''main_mod  .. " + CTRL + SHIFT + Q"'')
               (mkLuaInline ''hl.dsp.exec_cmd("loginctl terminate-user $USER")'')
-              {locked = true;}
+              { locked = true; }
             ];
           }
           {
             _args = [
               (mkLuaInline ''main_mod  .. " + CTRL + SHIFT + W"'')
               (mkLuaInline ''hl.dsp.exec_cmd("systemctl suspend")'')
-              {locked = true;}
+              { locked = true; }
             ];
           }
           {
             _args = [
               (mkLuaInline ''main_mod  .. " + CTRL + SHIFT + E"'')
               (mkLuaInline ''hl.dsp.exec_cmd("systemctl hibernate")'')
-              {locked = true;}
+              { locked = true; }
             ];
           }
           {
             _args = [
               (mkLuaInline ''main_mod  .. " + CTRL + SHIFT + R"'')
               (mkLuaInline ''hl.dsp.exec_cmd("systemctl reboot")'')
-              {locked = true;}
+              { locked = true; }
             ];
           }
           {
             _args = [
               (mkLuaInline ''main_mod  .. " + CTRL + SHIFT + T"'')
               (mkLuaInline ''hl.dsp.exec_cmd("systemctl poweroff")'')
-              {locked = true;}
+              { locked = true; }
             ];
           }
           {
             _args = [
               (mkLuaInline ''"switch:Lid Switch"'')
               (mkLuaInline ''hl.dsp.exec_cmd("loginctl lock-session")'')
-              {locked = true;}
+              { locked = true; }
             ];
           }
 
@@ -660,24 +701,24 @@ in {
             _args = [
               (mkLuaInline ''main_mod  .. " + mouse:272"'')
               (mkLuaInline "hl.dsp.window.drag()")
-              {mouse = true;}
+              { mouse = true; }
             ];
           }
           {
             _args = [
               (mkLuaInline ''main_mod  .. " + mouse:273"'')
               (mkLuaInline "hl.dsp.window.resize()")
-              {mouse = true;}
+              { mouse = true; }
             ];
           }
         ]
-        ++ (builtins.concatLists (builtins.genList (
-            i: let
-              ws_num =
-                if i == 0
-                then 10
-                else i;
-            in [
+        ++ (builtins.concatLists (
+          builtins.genList (
+            i:
+            let
+              ws_num = if i == 0 then 10 else i;
+            in
+            [
               {
                 _args = [
                   (lib.generators.mkLuaInline ''main_mod  .. " + ${toString i}"'')
@@ -691,8 +732,8 @@ in {
                 ];
               }
             ]
-          )
-          10));
+          ) 10
+        ));
       # Window Rules TODO: Review
       window_rule = [
         {
@@ -838,37 +879,37 @@ in {
     };
   };
   # For dbus' loginctl lock/unlock
-  services.hypridle = let
-    locking_utility =
-      if config.programs.hyprlock.enable
-      then lib.getExe config.programs.hyprlock.package
-      else lib.getExe config.programs.swaylock.package; # Default to swaylock
-  in {
-    enable = true;
-    settings = {
-      general = {
-        lock_cmd = lib.mkDefault "pidof ${locking_utility} || (${locking_utility} && loginctl unlock-session)";
-        before_sleep_cmd = "loginctl lock-session"; # lock before suspend.
-        after_sleep_cmd = "hyprctl dispatch dpms on"; # avoid have to press a key twice to turn on the display.
+  services.hypridle =
+    let
+      locking_utility =
+        if config.programs.hyprlock.enable then
+          lib.getExe config.programs.hyprlock.package
+        else
+          lib.getExe config.programs.swaylock.package; # Default to swaylock
+    in
+    {
+      enable = true;
+      settings = {
+        general = {
+          lock_cmd = lib.mkDefault "pidof ${locking_utility} || (${locking_utility} && loginctl unlock-session)";
+          before_sleep_cmd = "loginctl lock-session"; # lock before suspend.
+          after_sleep_cmd = "hyprctl dispatch dpms on"; # avoid have to press a key twice to turn on the display.
+        };
+        listener = [
+          {
+            timeout = 600; # 10min
+            on-timeout = "loginctl lock-session"; # lock screen when timeout has passed
+          }
+          {
+            timeout = 630; # 10.5min
+            on-timeout = "hyprctl dispatch dpms off"; # screen off when timeout has passed
+            on-resume = "hyprctl dispatch dpms on"; # screen on when activity is detected after timeout has fired.
+          }
+        ];
       };
-      listener = [
-        {
-          timeout = 600; # 10min
-          on-timeout = "loginctl lock-session"; # lock screen when timeout has passed
-        }
-        {
-          timeout = 630; # 10.5min
-          on-timeout = "hyprctl dispatch dpms off"; # screen off when timeout has passed
-          on-resume = "hyprctl dispatch dpms on"; # screen on when activity is detected after timeout has fired.
-        }
-      ];
     };
-  };
   programs.hyprlock.enable = false;
-  programs.swaylock.enable =
-    if config.programs.hyprlock.enable
-    then false
-    else true;
+  programs.swaylock.enable = if config.programs.hyprlock.enable then false else true;
   home.pointerCursor.hyprcursor.enable = true;
   services.cliphist.enable = true;
 }

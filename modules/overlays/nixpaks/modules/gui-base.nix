@@ -5,11 +5,13 @@
   pkgs,
   sloth,
   ...
-}: let
+}:
+let
   envSuffix = envKey: suffix: sloth.concat' (sloth.env envKey) suffix;
   # cursor & icon's theme should be the same as the host's one.
   cursor_theme = pkgs.bibata-cursors;
-in {
+in
+{
   config = {
     dbus.policies = {
       "${config.flatpak.appId}.*" = "own"; # A name of "org.foo.*" matches "org.foo", org.foo.bar", and "org.foo.bar.gazonk", but not "org.foobar".
@@ -81,16 +83,23 @@ in {
       ];
 
       env = {
-        XDG_DATA_DIRS = lib.mkForce (lib.makeSearchPath "share" (with pkgs; [
-          cursor_theme
-          papirus-icon-theme
+        XDG_DATA_DIRS = lib.mkForce (
+          lib.makeSearchPath "share" (
+            with pkgs;
+            [
+              cursor_theme
+              papirus-icon-theme
 
-          shared-mime-info
-        ]));
-        XCURSOR_PATH = lib.mkForce (builtins.concatStringsSep ":" [
-          "${cursor_theme}/share/icons"
-          "${cursor_theme}/share/pixmaps"
-        ]);
+              shared-mime-info
+            ]
+          )
+        );
+        XCURSOR_PATH = lib.mkForce (
+          builtins.concatStringsSep ":" [
+            "${cursor_theme}/share/icons"
+            "${cursor_theme}/share/pixmaps"
+          ]
+        );
       };
     };
   };

@@ -2,7 +2,8 @@
   nixpak,
   pkgs,
   ...
-}: let
+}:
+let
   callArgs = {
     mkNixPak = nixpak.lib.nixpak {
       inherit (pkgs) lib;
@@ -14,16 +15,17 @@
     ];
   };
   wrapper = _pkgs: path: (_pkgs.callPackage path callArgs).config.script;
-in {
+in
+{
   # Add nixpaked Apps into nixpkgs, and reference them in home-manager or other nixos modules
   nixpkgs.overlays = [
     (_: super: {
       nixpaks = {
         qq = wrapper super ./qq.nix;
-        qq-desktop-item = super.callPackage ./qq-desktop-item.nix {};
+        qq-desktop-item = super.callPackage ./qq-desktop-item.nix { };
 
         wechat-uos = wrapper super ./wechat-uos.nix;
-        wechat-uos-desktop-item = super.callPackage ./wechat-uos-desktop-item.nix {};
+        wechat-uos-desktop-item = super.callPackage ./wechat-uos-desktop-item.nix { };
       };
     })
   ];

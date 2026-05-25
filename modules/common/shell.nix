@@ -3,7 +3,8 @@
   lib,
   myvars,
   ...
-}: {
+}:
+{
   programs.zsh = {
     # On macOS, this creates /etc/zshrc that loads the nix-darwin environment. Which is required if you want to use
     # macOS's default shell - zsh
@@ -90,7 +91,7 @@
       PS1='[%{$BRed%}%n%{$Color_Off%}@%{$BBlue%}%m%{$Color_Off%} %{$BBlue%}%3~%{$Color_Off%} %{$BCyan%}%{$Color_Off%}]%{$BGreen%}%(#.#.$)%{$Color_Off%} '
     '';
   };
-  environment.variables =
-    lib.mkIf (config.home-manager.users.${myvars.username}.programs.helix.defaultEditor or false)
-    {EDITOR = "hx";};
+  environment.variables = lib.mkIf (config.home-manager.users.${myvars.username}.programs.helix.defaultEditor or false) {
+    EDITOR = "hx";
+  };
 }

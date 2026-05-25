@@ -1,26 +1,32 @@
-{lib, ...}: let
-  homebrew_env_script = let
-    # Homebrew Mirror
-    homebrew_mirror_env = {
-      # NOTE: This is only useful when you run `brew install` manually! (not via nix-darwin)
-      # TUNA mirror
-      # HOMEBREW_API_DOMAIN = "https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/api";
-      # HOMEBREW_BOTTLE_DOMAIN = "https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles";
-      # HOMEBREW_BREW_GIT_REMOTE = "https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git";
-      # HOMEBREW_CORE_GIT_REMOTE = "https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git";
-      # HOMEBREW_PIP_INDEX_URL = "https://pypi.tuna.tsinghua.edu.cn/simple";
+{ lib, ... }:
+let
+  homebrew_env_script =
+    let
+      # Homebrew Mirror
+      homebrew_mirror_env = {
+        # NOTE: This is only useful when you run `brew install` manually! (not via nix-darwin)
+        # TUNA mirror
+        # HOMEBREW_API_DOMAIN = "https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/api";
+        # HOMEBREW_BOTTLE_DOMAIN = "https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles";
+        # HOMEBREW_BREW_GIT_REMOTE = "https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git";
+        # HOMEBREW_CORE_GIT_REMOTE = "https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git";
+        # HOMEBREW_PIP_INDEX_URL = "https://pypi.tuna.tsinghua.edu.cn/simple";
 
-      # NJU mirror
-      HOMEBREW_API_DOMAIN = "https://mirror.nju.edu.cn/homebrew-bottles/api";
-      HOMEBREW_BOTTLE_DOMAIN = "https://mirror.nju.edu.cn/homebrew-bottles";
-      HOMEBREW_BREW_GIT_REMOTE = "https://mirror.nju.edu.cn/git/homebrew/brew.git";
-      HOMEBREW_CORE_GIT_REMOTE = "https://mirror.nju.edu.cn/git/homebrew/homebrew-core.git";
-      HOMEBREW_PIP_INDEX_URL = "https://pypi.tuna.tsinghua.edu.cn/simple";
-    };
-    homebrew_auto_update_env.HOMEBREW_AUTO_UPDATE_SECS = "86400";
-  in
-    lib.foldlAttrs (acc: n: v: "${acc}\nexport ${n}=${v}") "" (homebrew_mirror_env // homebrew_auto_update_env);
-in {
+        # NJU mirror
+        HOMEBREW_API_DOMAIN = "https://mirror.nju.edu.cn/homebrew-bottles/api";
+        HOMEBREW_BOTTLE_DOMAIN = "https://mirror.nju.edu.cn/homebrew-bottles";
+        HOMEBREW_BREW_GIT_REMOTE = "https://mirror.nju.edu.cn/git/homebrew/brew.git";
+        HOMEBREW_CORE_GIT_REMOTE = "https://mirror.nju.edu.cn/git/homebrew/homebrew-core.git";
+        HOMEBREW_PIP_INDEX_URL = "https://pypi.tuna.tsinghua.edu.cn/simple";
+      };
+      homebrew_auto_update_env.HOMEBREW_AUTO_UPDATE_SECS = "86400";
+    in
+    lib.foldlAttrs (
+      acc: n: v:
+      "${acc}\nexport ${n}=${v}"
+    ) "" (homebrew_mirror_env // homebrew_auto_update_env);
+in
+{
   system.activationScripts.homebrew.text = lib.mkBefore ''
     echo >&2 '# DEBUG:${homebrew_env_script}'
     ${homebrew_env_script}

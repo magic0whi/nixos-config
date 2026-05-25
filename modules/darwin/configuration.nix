@@ -3,7 +3,8 @@
 #     [System Preferences] -> [Keyboard] -> [Keyboard Shortcuts] -> [Mission Control]
 #   2. Disable use Caps Lock as 中/英 switch in:
 #     [System Preferences] -> [Keyboard] -> [Input Sources] -> [Edit] -> [Use 中/英 key to switch ] -> [Disable]
-{config, ...}: {
+{ config, ... }:
+{
   system = {
     defaults = {
       ## NOTE: https://github.com/nix-darwin/nix-darwin/issues/1207#issuecomment-2510402916
@@ -75,10 +76,7 @@
       "/usr/bin/hidutil"
       "property"
       "--set"
-      ''
-        {"UserKeyMapping":${
-          builtins.toJSON config.system.keyboard.userKeyMapping
-        }}''
+      ''{"UserKeyMapping":${builtins.toJSON config.system.keyboard.userKeyMapping}}''
     ];
     RunAtLoad = true;
   };

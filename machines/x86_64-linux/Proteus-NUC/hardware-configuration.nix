@@ -2,13 +2,20 @@
   config,
   modulesPath,
   ...
-}: {
-  imports = [(modulesPath + "/installer/scan/not-detected.nix")];
+}:
+{
+  imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
 
-  boot.initrd.availableKernelModules = ["xhci_pci" "thunderbolt" "nvme" "uas" "sd_mod"];
-  boot.initrd.kernelModules = [];
+  boot.initrd.availableKernelModules = [
+    "xhci_pci"
+    "thunderbolt"
+    "nvme"
+    "uas"
+    "sd_mod"
+  ];
+  boot.initrd.kernelModules = [ ];
   # boot.extraModulePackages = [config.boot.kernelPackages.qc71_laptop];
-  boot.kernelModules = ["kvm-intel"];
+  boot.kernelModules = [ "kvm-intel" ];
   boot.kernelParams = [
     # "i915.enable_guc=2"
     # "i915.mitigations=off"
@@ -28,9 +35,9 @@
   # specified
   boot.initrd.systemd.services."zfs-rollback-root" = {
     description = "Rollback zroot/root@blank in initrd";
-    wantedBy = ["zfs-import.target"];
-    after = ["zfs-import-zroot.service"]; # Make sure zroot is imported
-    before = ["sysroot.mount"]; # Make sure this happens before root is mounted
+    wantedBy = [ "zfs-import.target" ];
+    after = [ "zfs-import-zroot.service" ]; # Make sure zroot is imported
+    before = [ "sysroot.mount" ]; # Make sure this happens before root is mounted
     serviceConfig = {
       Type = "oneshot";
       ExecStart = "${config.boot.zfs.package}/sbin/zfs rollback -r zroot/root@blank";

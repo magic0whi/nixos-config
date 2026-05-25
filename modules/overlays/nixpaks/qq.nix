@@ -9,50 +9,62 @@
   ...
 }:
 mkNixPak {
-  config = {sloth, ...}: {
-    app = {
-      package = pkgs.qq.override {
-        # fix fcitx5 input method
-        commandLineArgs = builtins.concatStringsSep " " ["--enable-wayland-ime"];
+  config =
+    { sloth, ... }:
+    {
+      app = {
+        package = pkgs.qq.override {
+          # fix fcitx5 input method
+          commandLineArgs = builtins.concatStringsSep " " [ "--enable-wayland-ime" ];
+        };
+        binPath = "bin/qq";
       };
-      binPath = "bin/qq";
-    };
-    flatpak.appId = "com.tencent.qq";
+      flatpak.appId = "com.tencent.qq";
 
-    imports = [
-      ./modules/gui-base.nix
-      ./modules/network.nix
-    ];
-
-    # list all dbus services:
-    #   ls -al /run/current-system/sw/share/dbus-1/services/
-    #   ls -al /etc/profiles/per-user/ryan/share/dbus-1/services/
-    dbus.policies = {
-      "org.gnome.Shell.Screencast" = "talk";
-      "org.freedesktop.Notifications" = "talk";
-      "org.kde.StatusNotifierWatcher" = "talk";
-    };
-    bubblewrap = {
-      # To trace all the home files QQ accesses, you can use the following nushell command:
-      #   just trace-access qq
-      # See the Justfile in the root of this repository for more information.
-      bind.rw = [
-        # given the read write permission to the following directories.
-        # NOTE: sloth.mkdir is used to create the directory if it does not exist!
-        (sloth.mkdir (sloth.concat [sloth.xdgConfigHome "/QQ"]))
-        (sloth.mkdir (sloth.concat [sloth.xdgDownloadDir "/QQ"]))
+      imports = [
+        ./modules/gui-base.nix
+        ./modules/network.nix
       ];
-      sockets = {
-        x11 = false;
-        wayland = true;
-        pipewire = true;
+
+      # list all dbus services:
+      #   ls -al /run/current-system/sw/share/dbus-1/services/
+      #   ls -al /etc/profiles/per-user/ryan/share/dbus-1/services/
+      dbus.policies = {
+        "org.gnome.Shell.Screencast" = "talk";
+        "org.freedesktop.Notifications" = "talk";
+        "org.kde.StatusNotifierWatcher" = "talk";
       };
-      bind.dev = [
-        "/dev/shm" # Shared Memory
-      ];
-      tmpfs = [
-        "/tmp"
-      ];
+      bubblewrap = {
+        # To trace all the home files QQ accesses, you can use the following nushell command:
+        #   just trace-access qq
+        # See the Justfile in the root of this repository for more information.
+        bind.rw = [
+          # given the read write permission to the following directories.
+          # NOTE: sloth.mkdir is used to create the directory if it does not exist!
+          (sloth.mkdir (
+            sloth.concat [
+              sloth.xdgConfigHome
+              "/QQ"
+            ]
+          ))
+          (sloth.mkdir (
+            sloth.concat [
+              sloth.xdgDownloadDir
+              "/QQ"
+            ]
+          ))
+        ];
+        sockets = {
+          x11 = false;
+          wayland = true;
+          pipewire = true;
+        };
+        bind.dev = [
+          "/dev/shm" # Shared Memory
+        ];
+        tmpfs = [
+          "/tmp"
+        ];
+      };
     };
-  };
 }

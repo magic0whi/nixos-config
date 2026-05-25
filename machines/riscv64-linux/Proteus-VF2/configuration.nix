@@ -1,1 +1,1 @@
-_: {boot.loader.systemd-boot.enable = false;}
+_: { boot.loader.systemd-boot.enable = false; }

@@ -2,7 +2,8 @@
   config,
   myvars,
   ...
-}: {
+}:
+{
   xdg.configFile."nix/public.key".source = "${myvars.secrets_dir}/nix_public.key";
   sops = {
     secrets = {

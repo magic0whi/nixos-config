@@ -5,16 +5,21 @@
   myvars,
   pkgs,
   ...
-}: let
+}:
+let
   web_root = "/srv/www";
-in {
+in
+{
   services.caddy = {
     enable = true;
     # Caddy doesn't need to bind to public ports (80/443) since Traefik handles that. We can tell Caddy's global config
     # not to attempt ACME/HTTPS bindings.
-    globalConfig = ''auto_https off'';
+    globalConfig = "auto_https off";
     virtualHosts."http://notebook.${myvars.domain}:8080" = {
-      listenAddresses = ["127.0.0.1" "[::1]"];
+      listenAddresses = [
+        "127.0.0.1"
+        "[::1]"
+      ];
       extraConfig = ''
         # respond "Hello, world!" # For debug
         root * ${web_root}
@@ -32,20 +37,20 @@ in {
   services.traefik.dynamicConfigOptions.http = {
     routers.notebook = {
       rule = "Host(`notebook.${myvars.domain}`)";
-      entryPoints = ["websecure"];
+      entryPoints = [ "websecure" ];
       service = "notebook";
-      tls = {};
+      tls = { };
     };
     services.notebook.loadBalancer.servers = [
       {
-        url = let
-          find_first_infix = key: set:
-            builtins.elemAt
-            (lib.attrNames set) (lib.lists.findFirstIndex (i: lib.hasInfix key i) null (lib.attrNames set));
-          port =
-            toString (mylib.get_uri_port
-              (find_first_infix "notebook.${myvars.domain}" config.services.caddy.virtualHosts));
-        in "http://127.0.0.1:${port}";
+        url =
+          let
+            find_first_infix =
+              key: set:
+              builtins.elemAt (lib.attrNames set) (lib.lists.findFirstIndex (i: lib.hasInfix key i) null (lib.attrNames set));
+            port = toString (mylib.get_uri_port (find_first_infix "notebook.${myvars.domain}" config.services.caddy.virtualHosts));
+          in
+          "http://127.0.0.1:${port}";
       }
     ];
   };

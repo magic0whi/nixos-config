@@ -1,5 +1,6 @@
-{myvars, ...}: {
-  environment.persistence."/persistent".directories = ["/srv"];
+{ myvars, ... }:
+{
+  environment.persistence."/persistent".directories = [ "/srv" ];
   environment.persistence."/persistent".users.${myvars.username} = {
     directories = [
       "Documents"
@@ -43,6 +44,6 @@
       ".config/gcloud"
       ".terraform.d"
     ];
-    files = [];
+    files = [ ];
   };
 }

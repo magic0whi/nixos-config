@@ -4,11 +4,12 @@
   myvars,
   pkgs,
   ...
-}: {
+}:
+{
   home.packages = with pkgs; [
     tlrc # tldr written in Rust
     fd # Search for files by name, faster than `find`
-    (ripgrep.override {withPCRE2 = true;}) # search for files by its content, replacement of `grep`
+    (ripgrep.override { withPCRE2 = true; }) # search for files by its content, replacement of `grep`
   ];
   # Environment variables that always set at login
   home.sessionVariables = {
@@ -21,62 +22,61 @@
     WINEPREFIX = config.xdg.dataHome + "/wine";
     DELTA_PAGER = "less -R"; # Enable scrolling in git diff
   };
-  home.shellAliases =
-    {
-      k = "kubectl";
-      urldecode = "python3 -c 'import sys, urllib.parse as ul; print(ul.unquote_plus(sys.stdin.read()))'";
-      urlencode = "python3 -c 'import sys, urllib.parse as ul; print(ul.quote_plus(sys.stdin.read()))'";
+  home.shellAliases = {
+    k = "kubectl";
+    urldecode = "python3 -c 'import sys, urllib.parse as ul; print(ul.unquote_plus(sys.stdin.read()))'";
+    urlencode = "python3 -c 'import sys, urllib.parse as ul; print(ul.quote_plus(sys.stdin.read()))'";
 
-      # `programs.eza.enable*Integration` overrides these
-      ls = "eza";
-      ll = "eza -lg";
-      la = "eza -aa";
-      lla = "eza -laag";
-      # ls = "ls --color=auto -v";
-      # ll = "ls -l --color=auto -v";
-      # la = "ls -la --color=auto -v";
-      # lh = "ls -lah --color=auto -v";
+    # `programs.eza.enable*Integration` overrides these
+    ls = "eza";
+    ll = "eza -lg";
+    la = "eza -aa";
+    lla = "eza -laag";
+    # ls = "ls --color=auto -v";
+    # ll = "ls -l --color=auto -v";
+    # la = "ls -la --color=auto -v";
+    # lh = "ls -lah --color=auto -v";
 
-      grep = "grep --color=auto";
-      ip = "ip --color=auto";
-      cp = "cp -i";
-      bc = "bc -lq"; # `-l` load ath lib, `-q` quiet
-      cpr = "rsync --archive -hh --partial --info=stats1,progress2 --modify-window=1";
-      mvr = "rsync --archive -hh --partial --info=stats1,progress2 --modify-window=1 --remove-source-files";
-      diff = "diff --text --expand-tabs --unified --new-file --recursive --color=auto";
-      # For `git filter-branch --help | bat -l man`, use
-      # `MANWIDTH=999 git filter-branch --help | bat -lman` instead to prevent
-      # git from baking ugly line breaks
-      man = builtins.concatStringsSep " " [
-        "MANPAGER=\"less -R --use-color -Dd+r -Du+b\"" # Set boldface -> red color, underline -> blue color
-        "MANROFFOPT=\"-P-c\"" # Enables groff's "continuous" (non-paginated) output mode
-        "MANWIDTH=$(($(tput cols) - 7))" # Adjustment manwidth when less' line number enabled
-        "command man"
-      ];
-      tmux = "tmux -2"; # `-2` force assume the terminal supports 256 colors
-      # Run `TERM=xterm-ghostty command ssh` if the remote machine has the corresponding terminfo installed
-      ssh = "TERM=xterm-256color ssh";
-      sshot = "ssh -o 'ConnectTimeout=10' -o 'IdentitiesOnly=no' -o 'UserKnownHostsFile=/dev/null' -o 'StrictHostKeyChecking=no'"; # One-time SSH session
-      sshstop = "ssh -O stop"; # Close a persistent SSH session
-      status = "systemctl status";
-      show = "systemctl show";
-      is-active = "systemctl is-active";
-      start = "sudo systemctl start";
-      stop = "sudo systemctl stop";
-      restart = "sudo systemctl restart";
-      tarxz = "tar -I xz -cvf";
-      tarxzls = "tar -I xz -tvf";
-      tarzst = "tar -I 'zstd -T0' -cvf";
-      tarzstls = "tar -I 'zstd -T0' -tvf";
-      targz = "tar -I 'nix run nixpkgs#pigz --' -cvf";
-      targzls = "tar -I 'nix run nixpkgs#pigz --' -tvf";
-    }
-    // lib.optionalAttrs pkgs.stdenv.isLinux {
-      ip = "ip --color=auto";
-      Ci = "wl-copy";
-      Co = "wl-paste";
-      Coimg = "Co --type image";
-    };
+    grep = "grep --color=auto";
+    ip = "ip --color=auto";
+    cp = "cp -i";
+    bc = "bc -lq"; # `-l` load ath lib, `-q` quiet
+    cpr = "rsync --archive -hh --partial --info=stats1,progress2 --modify-window=1";
+    mvr = "rsync --archive -hh --partial --info=stats1,progress2 --modify-window=1 --remove-source-files";
+    diff = "diff --text --expand-tabs --unified --new-file --recursive --color=auto";
+    # For `git filter-branch --help | bat -l man`, use
+    # `MANWIDTH=999 git filter-branch --help | bat -lman` instead to prevent
+    # git from baking ugly line breaks
+    man = builtins.concatStringsSep " " [
+      "MANPAGER=\"less -R --use-color -Dd+r -Du+b\"" # Set boldface -> red color, underline -> blue color
+      "MANROFFOPT=\"-P-c\"" # Enables groff's "continuous" (non-paginated) output mode
+      "MANWIDTH=$(($(tput cols) - 7))" # Adjustment manwidth when less' line number enabled
+      "command man"
+    ];
+    tmux = "tmux -2"; # `-2` force assume the terminal supports 256 colors
+    # Run `TERM=xterm-ghostty command ssh` if the remote machine has the corresponding terminfo installed
+    ssh = "TERM=xterm-256color ssh";
+    sshot = "ssh -o 'ConnectTimeout=10' -o 'IdentitiesOnly=no' -o 'UserKnownHostsFile=/dev/null' -o 'StrictHostKeyChecking=no'"; # One-time SSH session
+    sshstop = "ssh -O stop"; # Close a persistent SSH session
+    status = "systemctl status";
+    show = "systemctl show";
+    is-active = "systemctl is-active";
+    start = "sudo systemctl start";
+    stop = "sudo systemctl stop";
+    restart = "sudo systemctl restart";
+    tarxz = "tar -I xz -cvf";
+    tarxzls = "tar -I xz -tvf";
+    tarzst = "tar -I 'zstd -T0' -cvf";
+    tarzstls = "tar -I 'zstd -T0' -tvf";
+    targz = "tar -I 'nix run nixpkgs#pigz --' -cvf";
+    targzls = "tar -I 'nix run nixpkgs#pigz --' -tvf";
+  }
+  // lib.optionalAttrs pkgs.stdenv.isLinux {
+    ip = "ip --color=auto";
+    Ci = "wl-copy";
+    Co = "wl-paste";
+    Coimg = "Co --type image";
+  };
   # TODO: Re-enable
   # catppuccin.fzf.enable = false; # catppuccin fzf is prone to fail on macOS
   programs = {
@@ -86,13 +86,18 @@
       autosuggestion = {
         enable = true;
         highlight = "fg=60";
-        strategy = ["match_prev_cmd" "history" "completion"];
+        strategy = [
+          "match_prev_cmd"
+          "history"
+          "completion"
+        ];
       };
-      initContent = let
-        local_bin = "${config.home.homeDirectory}/.local/bin";
-        go_bin = "${config.home.homeDirectory}/go/bin";
-        rust_bin = "${config.home.homeDirectory}/.cargo/bin";
-      in
+      initContent =
+        let
+          local_bin = "${config.home.homeDirectory}/.local/bin";
+          go_bin = "${config.home.homeDirectory}/go/bin";
+          rust_bin = "${config.home.homeDirectory}/.cargo/bin";
+        in
         lib.mkAfter ''
           # Export GPG primary key and subkeys to a specified (or default) directory
           export-gpg-keys() {
@@ -160,10 +165,7 @@
     };
     # A modern replacement for `ls`, useful in bash/zsh prompt, but not in nushell
     eza = {
-      enable =
-        if pkgs.stdenv.hostPlatform.isRiscV64
-        then false
-        else true;
+      enable = if pkgs.stdenv.hostPlatform.isRiscV64 then false else true;
       enableZshIntegration = false;
       git = true;
       icons = "auto";
@@ -176,7 +178,7 @@
     # A command-line fuzzy finder. Interactively filter its input using fuzzy searching, not limit to filenames.
     fzf = {
       enable = true;
-      defaultOptions = ["-m"];
+      defaultOptions = [ "-m" ];
       defaultCommand = "rg --files"; # Using `ripgrep` in `fzf`
     };
     # zoxide is a smarter cd command, inspired by z and autojump.

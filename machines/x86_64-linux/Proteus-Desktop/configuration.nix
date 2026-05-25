@@ -3,17 +3,19 @@
   lib,
   myvars,
   ...
-}: let
+}:
+let
   ifaces = myvars.networking.hosts_addr.${config.networking.hostName};
   iface_wire = builtins.elemAt ifaces 2;
   iface_wlan = builtins.elemAt ifaces 3;
-in {
-  boot.binfmt.emulatedSystems = ["riscv64-linux"]; # Cross compilation
+in
+{
+  boot.binfmt.emulatedSystems = [ "riscv64-linux" ]; # Cross compilation
   ## BEGIN sing-box.nix
   sops.secrets."sb_client_linux.json" = {
     sopsFile = "${myvars.secrets_dir}/sb_client_linux.json.sops";
     format = "binary";
-    restartUnits = ["sing-box.service"];
+    restartUnits = [ "sing-box.service" ];
   };
   services.sing-box.enable = true;
   services.sing-box.configFile = config.sops.secrets."sb_client_linux.json".path;
@@ -30,11 +32,11 @@ in {
   # };
   ## END systemd_tmpfiles.nix
   ## BEGIN hostapd.nix
-  boot.extraModulePackages = [config.boot.kernelPackages.rtl8812au];
-  boot.kernelModules = ["8812au"];
+  boot.extraModulePackages = [ config.boot.kernelPackages.rtl8812au ];
+  boot.kernelModules = [ "8812au" ];
   sops.secrets.proteus_ap_password = {
     sopsFile = "${myvars.secrets_dir}/Proteus-Desktop.sops.yaml";
-    restartUnits = ["hostapd.service"];
+    restartUnits = [ "hostapd.service" ];
   };
   services.hostapd = {
     enable = true;
@@ -99,11 +101,10 @@ in {
       '';
     };
   };
-  networking.firewall.extraInputRules = with (
-    builtins.head config.networking.interfaces.${iface_wlan.name}.ipv4.addresses
-  ); ''
-    ip saddr ${address}/${toString prefixLength} accept comment "Allow hostapd clients to reach auto_redirect ports"
-  '';
+  networking.firewall.extraInputRules =
+    with (builtins.head config.networking.interfaces.${iface_wlan.name}.ipv4.addresses); ''
+      ip saddr ${address}/${toString prefixLength} accept comment "Allow hostapd clients to reach auto_redirect ports"
+    '';
   services.dnsmasq = {
     enable = true;
     settings = {
@@ -111,16 +112,16 @@ in {
       # it to only bind there, this prevents conflicts with systemd-resolved
       interface = iface_wlan.name;
       bind-interfaces = true;
-      dhcp-range = ["192.168.12.10,192.168.12.240,12h"];
+      dhcp-range = [ "192.168.12.10,192.168.12.240,12h" ];
       # Tell DHCP clients to use 223.5.5.5 as their DNS server so sing-box can hijack
-      dhcp-option = ["option:dns-server,223.5.5.5"];
+      dhcp-option = [ "option:dns-server,223.5.5.5" ];
     };
   };
   networking.nat = {
     enable = true;
     # The interface connected to the internet (e.g., eth0, wlan0 onboard)
     externalInterface = iface_wire.name;
-    internalInterfaces = [iface_wlan.name]; # The interface acting as the hotspot
+    internalInterfaces = [ iface_wlan.name ]; # The interface acting as the hotspot
   };
   ## END hostapd.nix
 }

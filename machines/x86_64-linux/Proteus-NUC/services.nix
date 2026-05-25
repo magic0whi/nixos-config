@@ -2,14 +2,15 @@
   lib,
   pkgs,
   ...
-}: {
+}:
+{
   services.tor = {
     enable = true;
     client.enable = true;
     # openFirewall = true;
     settings = {
       # ExitNodes = "{GB}";
-      ExitPolicy = ["accept *:*"];
+      ExitPolicy = [ "accept *:*" ];
       AvoidDiskWrites = 1;
       HardwareAccel = 1;
       UseBridges = true;

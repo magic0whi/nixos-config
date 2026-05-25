@@ -16,7 +16,8 @@
   myvars,
   pkgs,
   ...
-}: {
+}:
+{
   programs.alacritty = {
     enable = true;
     # https://alacritty.org/config-alacritty.html
@@ -33,10 +34,7 @@
         bold_italic.family = myvars.monospace.name;
         italic.family = myvars.monospace.name;
         normal.family = myvars.monospace.name;
-        size =
-          if pkgs.stdenv.isDarwin
-          then 14
-          else 10;
+        size = if pkgs.stdenv.isDarwin then 14 else 10;
       };
       terminal = {
         # shell = { # Spawn a nushell in login mode via `bash`

@@ -2,9 +2,11 @@
   deploy-rs,
   pkgs,
   ...
-}: {
+}:
+{
   # programs.yt-dlp.enable = !pkgs.stdenv.hostPlatform.isRiscV64;
-  home.packages = with pkgs;
+  home.packages =
+    with pkgs;
     [
       fastfetch
       bc
@@ -88,8 +90,9 @@
       nix-tree # A TUI to visualize the dependency graph of a nix derivation, ref: https://github.com/utdemir/nix-tree
     ]
     ++ (
-      if stdenv.hostPlatform.isRiscV64
-      then [pkgs.pkgs.deploy-rs]
-      else [deploy-rs.packages.${pkgs.stdenv.hostPlatform.system}.deploy-rs]
+      if stdenv.hostPlatform.isRiscV64 then
+        [ pkgs.pkgs.deploy-rs ]
+      else
+        [ deploy-rs.packages.${pkgs.stdenv.hostPlatform.system}.deploy-rs ]
     );
 }

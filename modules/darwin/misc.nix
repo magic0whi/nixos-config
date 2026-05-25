@@ -4,10 +4,11 @@
   myvars,
   pkgs,
   ...
-}: {
+}:
+{
   ## BEGIN networking.nix
   networking = {
-    knownNetworkServices = ["Wi-Fi"]; # List of networkservices that should be configured.
+    knownNetworkServices = [ "Wi-Fi" ]; # List of networkservices that should be configured.
     # sing-box requires a non-local address to hijack DNS
     dns = [
       "223.5.5.5"
@@ -57,7 +58,7 @@
   '';
   ## END security.nix
   ## BEGIN shell.nix
-  environment.shells = [config.users.users.${myvars.username}.shell]; # Permissible login shells
+  environment.shells = [ config.users.users.${myvars.username}.shell ]; # Permissible login shells
   programs.zsh.enableSyntaxHighlighting = true;
   ## END shell.nix
   ## BEGIN users.nix

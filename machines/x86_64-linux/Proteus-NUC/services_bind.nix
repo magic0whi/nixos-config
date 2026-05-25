@@ -4,10 +4,14 @@
   myvars,
   pkgs,
   ...
-}: {
+}:
+{
   networking.firewall = {
-    allowedTCPPorts = [53 853];
-    allowedUDPPorts = [53]; # Bind don't support DNS-over QUIC
+    allowedTCPPorts = [
+      53
+      853
+    ];
+    allowedUDPPorts = [ 53 ]; # Bind don't support DNS-over QUIC
   };
   services.bind = {
     enable = true;
@@ -20,16 +24,20 @@
     #   "100.64.0.0/10" "fd7a:115c:a1e0::/48"
     #   "192.168.0.0/16"
     # ];
-    forwarders = [];
+    forwarders = [ ];
     # Bind standard port 53 strictly to the specific interface IPs
-    listenOn =
-      ["127.0.0.1"]
-      ++ (lib.concatMap (iface: lib.optional (iface ? ipv4) iface.ipv4)
-        myvars.networking.hosts_addr.${config.networking.hostName});
-    listenOnIpv6 =
-      ["::1"]
-      ++ (lib.concatMap (iface: lib.optional (iface ? ipv6) iface.ipv6)
-        myvars.networking.hosts_addr.${config.networking.hostName});
+    listenOn = [
+      "127.0.0.1"
+    ]
+    ++ (lib.concatMap (
+      iface: lib.optional (iface ? ipv4) iface.ipv4
+    ) myvars.networking.hosts_addr.${config.networking.hostName});
+    listenOnIpv6 = [
+      "::1"
+    ]
+    ++ (lib.concatMap (
+      iface: lib.optional (iface ? ipv6) iface.ipv6
+    ) myvars.networking.hosts_addr.${config.networking.hostName});
     # Inject the variables into the raw extraOptions string for DoT and DoH
     extraOptions = ''
       # Strictly Authoritative-Only Mode, implies 'empty-zones-enable no'
@@ -90,14 +98,29 @@
             v6PrefixLen = 64 / 4;
           }
         ];
-        hosts = let
-          allowed_hosts =
-            ["Proteus-NUC" "Proteus-MBP14M4P" "Proteus-Desktop"]
+        hosts =
+          let
+            allowed_hosts = [
+              "Proteus-NUC"
+              "Proteus-MBP14M4P"
+              "Proteus-Desktop"
+            ]
             ++ map (i: "Proteus-NixOS-${toString i}") (lib.range 0 5);
-        in
-          lib.mapAttrs (_: ifaces:
-            map (iface: lib.filterAttrs (key: _: builtins.elem key ["ipv4" "ipv6" "domains"]) iface) ifaces)
-          (lib.filterAttrs (name: _: builtins.elem name allowed_hosts) myvars.networking.hosts_addr);
+          in
+          lib.mapAttrs (
+            _: ifaces:
+            map (
+              iface:
+              lib.filterAttrs (
+                key: _:
+                builtins.elem key [
+                  "ipv4"
+                  "ipv6"
+                  "domains"
+                ]
+              ) iface
+            ) ifaces
+          ) (lib.filterAttrs (name: _: builtins.elem name allowed_hosts) myvars.networking.hosts_addr);
       };
     };
   };
@@ -116,12 +139,15 @@
             ")"
             " && Path(`/dns-query`)"
           ];
-          entryPoints = ["websecure"];
-          tls = {};
+          entryPoints = [ "websecure" ];
+          tls = { };
           service = "doh";
         };
         # Use HTTP/2 Cleartext (h2c) when talking to BIND's local port.
-        services.doh.loadBalancer.servers = [{url = "h2c://127.0.0.1:8053";} {url = "h2c://[::1]:8053";}];
+        services.doh.loadBalancer.servers = [
+          { url = "h2c://127.0.0.1:8053"; }
+          { url = "h2c://[::1]:8053"; }
+        ];
       };
       tcp = {
         routers.dot = {
@@ -130,14 +156,17 @@
             "|| HostSNI(`ns1.${myvars.domain}`)"
             "|| HostSNI(`proteus-nuc.${myvars.tailnet}`)"
           ];
-          entryPoints = ["dot"];
+          entryPoints = [ "dot" ];
           service = "dot";
-          tls = {};
+          tls = { };
         };
         # Forward raw DNS to BIND's local 53
         services.dot.loadBalancer = {
           proxyProtocol.version = 2;
-          servers = [{address = "127.0.0.1:8530";} {address = "[::1]:8530";}];
+          servers = [
+            { address = "127.0.0.1:8530"; }
+            { address = "[::1]:8530"; }
+          ];
         };
       };
     };
@@ -145,21 +174,24 @@
 
   services.resolved.settings.Resolve = {
     DNSSEC = "allow-downgrade";
-    Domains =
-      [
-        "~${myvars.domain}" # The '~' prefix makes this a routing domain
-      ]
-      ++ (lib.mapAttrsToList (_: zone:
-        if (lib.isDerivation zone.file)
-        then "~${lib.removeSuffix ".zone" zone.file.name}"
-        else "~${lib.removeSuffix ".zone" zone.file}")
-      config.services.bind.zones);
+    Domains = [
+      "~${myvars.domain}" # The '~' prefix makes this a routing domain
+    ]
+    ++ (lib.mapAttrsToList (
+      _: zone:
+      if (lib.isDerivation zone.file) then
+        "~${lib.removeSuffix ".zone" zone.file.name}"
+      else
+        "~${lib.removeSuffix ".zone" zone.file}"
+    ) config.services.bind.zones);
 
     DNS =
-      (lib.concatMap (iface: lib.optional (iface ? ipv4) "${iface.ipv4}#${myvars.domain}")
-        myvars.networking.hosts_addr.${config.networking.hostName})
-      ++ (lib.concatMap (iface: lib.optional (iface ? ipv6) "${iface.ipv6}#${myvars.domain}")
-        myvars.networking.hosts_addr.${config.networking.hostName});
+      (lib.concatMap (
+        iface: lib.optional (iface ? ipv4) "${iface.ipv4}#${myvars.domain}"
+      ) myvars.networking.hosts_addr.${config.networking.hostName})
+      ++ (lib.concatMap (
+        iface: lib.optional (iface ? ipv6) "${iface.ipv6}#${myvars.domain}"
+      ) myvars.networking.hosts_addr.${config.networking.hostName});
   };
 
   # Trust Island
@@ -168,96 +200,86 @@
   # nix run nixpkgs#dig -- @100.64.161.20 161.64.100.in-addr.arpa DNSKEY +noall +answer | nix shell nixpkgs#bind --command dnssec-dsfromkey -f - 161.64.100.in-addr.arpa
   # Or
   # nix run nixpkgs#dig -- @100.64.161.20 161.64.100.in-addr.arpa DNSKEY +noall +answer | nix shell nixpkgs#ldns.examples --command ldns-key2ds -n /dev/stdin
-  sops = let
-    sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";
-    restartUnits = ["bind.service"];
-    owner = config.systemd.services.bind.serviceConfig.User;
-    mode = "0600";
-  in {
-    secrets = {
-      "bind_domain_zone_priv" = {inherit sopsFile restartUnits;};
-      "bind_ts_v4_rev_zone_priv" = {inherit sopsFile restartUnits;};
-      "bind_ts_v6_rev_zone_priv" = {inherit sopsFile restartUnits;};
-      "bind_et_v4_rev_zone_priv" = {inherit sopsFile restartUnits;};
-      "bind_et_v6_rev_zone_priv" = {inherit sopsFile restartUnits;};
+  sops =
+    let
+      sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";
+      restartUnits = [ "bind.service" ];
+      owner = config.systemd.services.bind.serviceConfig.User;
+      mode = "0600";
+    in
+    {
+      secrets = {
+        "bind_domain_zone_priv" = { inherit sopsFile restartUnits; };
+        "bind_ts_v4_rev_zone_priv" = { inherit sopsFile restartUnits; };
+        "bind_ts_v6_rev_zone_priv" = { inherit sopsFile restartUnits; };
+        "bind_et_v4_rev_zone_priv" = { inherit sopsFile restartUnits; };
+        "bind_et_v6_rev_zone_priv" = { inherit sopsFile restartUnits; };
+      };
+      templates =
+        let
+          shared_priv_cfg = ''
+            Private-key-format: v1.3
+            Algorithm: 15 (ED25519)
+          '';
+          shared_priv_timestamp = ''
+            Created: 20260523080310
+            Publish: 20260523080310
+            Activate: 20260523080310
+            SyncPublish: 20260524080810
+          '';
+        in
+        {
+          "bind_domain_zone_priv" = {
+            inherit restartUnits owner mode;
+            content = shared_priv_cfg + "PrivateKey: ${config.sops.placeholder.bind_domain_zone_priv}\n" + shared_priv_timestamp;
+            path = "${config.services.bind.directory}/Kproteus.eu.org.+015+40751.private";
+          };
+          "bind_ts_v4_rev_zone_priv" = {
+            inherit restartUnits owner mode;
+            content = shared_priv_cfg + "PrivateKey: ${config.sops.placeholder.bind_ts_v4_rev_zone_priv}\n" + shared_priv_timestamp;
+            path = "${config.services.bind.directory}/K100.in-addr.arpa.+015+16452.private";
+          };
+          "bind_ts_v6_rev_zone_priv" = {
+            inherit restartUnits owner mode;
+            content = shared_priv_cfg + "PrivateKey: ${config.sops.placeholder.bind_ts_v6_rev_zone_priv}\n" + shared_priv_timestamp;
+            path = "${config.services.bind.directory}/K0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa.+015+02790.private";
+          };
+          "bind_et_v4_rev_zone_priv" = {
+            inherit restartUnits owner mode;
+            content = shared_priv_cfg + "PrivateKey: ${config.sops.placeholder.bind_et_v4_rev_zone_priv}\n" + shared_priv_timestamp;
+            path = "${config.services.bind.directory}/K0.0.10.in-addr.arpa.+015+03009.private";
+          };
+          "bind_et_v6_rev_zone_priv" = {
+            inherit restartUnits owner mode;
+            content = shared_priv_cfg + "PrivateKey: ${config.sops.placeholder.bind_et_v6_rev_zone_priv}\n" + shared_priv_timestamp;
+            path = "${config.services.bind.directory}/K0.0.0.0.7.7.8.9.a.b.c.d.e.f.d.f.ip6.arpa.+015+01147.private";
+          };
+        };
     };
-    templates = let
-      shared_priv_cfg = ''
-        Private-key-format: v1.3
-        Algorithm: 15 (ED25519)
-      '';
-      shared_priv_timestamp = ''
-        Created: 20260523080310
-        Publish: 20260523080310
-        Activate: 20260523080310
-        SyncPublish: 20260524080810
-      '';
-    in {
-      "bind_domain_zone_priv" = {
-        inherit restartUnits owner mode;
-        content =
-          shared_priv_cfg
-          + "PrivateKey: ${config.sops.placeholder.bind_domain_zone_priv}\n"
-          + shared_priv_timestamp;
-        path = "${config.services.bind.directory}/Kproteus.eu.org.+015+40751.private";
-      };
-      "bind_ts_v4_rev_zone_priv" = {
-        inherit restartUnits owner mode;
-        content =
-          shared_priv_cfg
-          + "PrivateKey: ${config.sops.placeholder.bind_ts_v4_rev_zone_priv}\n"
-          + shared_priv_timestamp;
-        path = "${config.services.bind.directory}/K100.in-addr.arpa.+015+16452.private";
-      };
-      "bind_ts_v6_rev_zone_priv" = {
-        inherit restartUnits owner mode;
-        content =
-          shared_priv_cfg
-          + "PrivateKey: ${config.sops.placeholder.bind_ts_v6_rev_zone_priv}\n"
-          + shared_priv_timestamp;
-        path = "${config.services.bind.directory}/K0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa.+015+02790.private";
-      };
-      "bind_et_v4_rev_zone_priv" = {
-        inherit restartUnits owner mode;
-        content =
-          shared_priv_cfg
-          + "PrivateKey: ${config.sops.placeholder.bind_et_v4_rev_zone_priv}\n"
-          + shared_priv_timestamp;
-        path = "${config.services.bind.directory}/K0.0.10.in-addr.arpa.+015+03009.private";
-      };
-      "bind_et_v6_rev_zone_priv" = {
-        inherit restartUnits owner mode;
-        content =
-          shared_priv_cfg
-          + "PrivateKey: ${config.sops.placeholder.bind_et_v6_rev_zone_priv}\n"
-          + shared_priv_timestamp;
-        path = "${config.services.bind.directory}/K0.0.0.0.7.7.8.9.a.b.c.d.e.f.d.f.ip6.arpa.+015+01147.private";
-      };
-    };
-  };
-  systemd.services.bind.preStart = let
-    zones_pubs = [
-      (pkgs.writeText "Kproteus.eu.org.+015+40751.key" ''
-        proteus.eu.org. 3600 IN DNSKEY 257 3 15 f1EhcwJnyqstgxFUySK5m650d2fg+w8DLh8FNwVKHTc=
-      '')
-      (pkgs.writeText "K100.in-addr.arpa.+015+16452.key" ''
-        100.in-addr.arpa. 3600 IN DNSKEY 257 3 15 PwFirzXup9sShggRjrky0w1g+OgDc32HLIJ9n+acyJM=
-      '')
-      (pkgs.writeText "K0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa.+015+02790.key" ''
-        0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa. 3600 IN DNSKEY 257 3 15 VZFDZ7Hu0xm2Lu/8myOO5zpAs9fjNTx6nfeNq6Y4OPo=
-      '')
-      (pkgs.writeText "K0.0.10.in-addr.arpa.+015+03009.key" ''
-        0.0.10.in-addr.arpa. 3600 IN DNSKEY 257 3 15 r3yhoiw0ch3YhWpvVNneJ9hTuxwfrc9rl+dJVbm+hMQ=
-      '')
-      (pkgs.writeText "K0.0.0.0.7.7.8.9.a.b.c.d.e.f.d.f.ip6.arpa.+015+01147.key" ''
-        0.0.0.0.7.7.8.9.a.b.c.d.e.f.d.f.ip6.arpa. 3600 IN DNSKEY 257 3 15 wP+4ropyVJWnhxzY67Lx1WDlW2b2yZ7M/fpzMZVurU4=
-      '')
-    ];
-  in
+  systemd.services.bind.preStart =
+    let
+      zones_pubs = [
+        (pkgs.writeText "Kproteus.eu.org.+015+40751.key" ''
+          proteus.eu.org. 3600 IN DNSKEY 257 3 15 f1EhcwJnyqstgxFUySK5m650d2fg+w8DLh8FNwVKHTc=
+        '')
+        (pkgs.writeText "K100.in-addr.arpa.+015+16452.key" ''
+          100.in-addr.arpa. 3600 IN DNSKEY 257 3 15 PwFirzXup9sShggRjrky0w1g+OgDc32HLIJ9n+acyJM=
+        '')
+        (pkgs.writeText "K0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa.+015+02790.key" ''
+          0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa. 3600 IN DNSKEY 257 3 15 VZFDZ7Hu0xm2Lu/8myOO5zpAs9fjNTx6nfeNq6Y4OPo=
+        '')
+        (pkgs.writeText "K0.0.10.in-addr.arpa.+015+03009.key" ''
+          0.0.10.in-addr.arpa. 3600 IN DNSKEY 257 3 15 r3yhoiw0ch3YhWpvVNneJ9hTuxwfrc9rl+dJVbm+hMQ=
+        '')
+        (pkgs.writeText "K0.0.0.0.7.7.8.9.a.b.c.d.e.f.d.f.ip6.arpa.+015+01147.key" ''
+          0.0.0.0.7.7.8.9.a.b.c.d.e.f.d.f.ip6.arpa. 3600 IN DNSKEY 257 3 15 wP+4ropyVJWnhxzY67Lx1WDlW2b2yZ7M/fpzMZVurU4=
+        '')
+      ];
+    in
     # Generate the install commands for all pub keys (main + reverse)
-    lib.concatMapStringsSep "\n"
-    (file: "install -m 0644 ${file} ${config.services.bind.directory}/${file.name}")
-    zones_pubs;
+    lib.concatMapStringsSep "\n" (
+      file: "install -m 0644 ${file} ${config.services.bind.directory}/${file.name}"
+    ) zones_pubs;
 
   environment.etc."dnssec-trust-anchors.d/${myvars.domain}.positive".text = ''
     ${myvars.domain}. IN DS 40751 15 2 EFFF70FD3922613584774DE050E31D5A3FFF988E45EB5C75296BF448B5B01FCF

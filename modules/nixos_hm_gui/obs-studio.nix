@@ -1,4 +1,5 @@
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   programs.obs-studio = {
     # Live streaming
     enable = true;

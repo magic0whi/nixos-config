@@ -2,14 +2,16 @@
   config,
   myvars,
   ...
-}: let
+}:
+let
   path_prefix = "/srv";
-in {
+in
+{
   sops.secrets.aria2_rpc_secret = {
     sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";
-    restartUnits = ["aria2.service"];
+    restartUnits = [ "aria2.service" ];
   };
-  users.users.${myvars.username}.extraGroups = ["aria2"];
+  users.users.${myvars.username}.extraGroups = [ "aria2" ];
   services.aria2 = {
     enable = true;
     rpcSecretFile = config.sops.secrets.aria2_rpc_secret.path;
@@ -120,13 +122,13 @@ in {
   services.traefik.dynamicConfigOptions.http = {
     routers.aria2-rpc = {
       rule = "Host(`aria2.${myvars.domain}`)";
-      entryPoints = ["websecure"];
+      entryPoints = [ "websecure" ];
       service = "aria2-rpc";
-      tls = {};
+      tls = { };
     };
     # Even though it's WebSockets, we define it as http://
     services.aria2-rpc.loadBalancer.servers = [
-      {url = "http://127.0.0.1:${toString config.services.aria2.settings.rpc-listen-port}";}
+      { url = "http://127.0.0.1:${toString config.services.aria2.settings.rpc-listen-port}"; }
     ];
   };
 }

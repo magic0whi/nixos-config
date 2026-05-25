@@ -4,43 +4,48 @@
   myvars,
   pkgs,
   ...
-}: {
-  sops = let
-    sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";
-    restartUnits = [
-      "paperless-scheduler.service"
-      "paperless-task-queue.service"
-      "paperless-consumer.service"
-      "paperless-web.service"
-    ];
-  in {
-    secrets = {
-      paperless_dbpass = {inherit sopsFile restartUnits;};
-      paperless_admin_password = {inherit sopsFile restartUnits;};
-      paperless_authelia_secret = {inherit sopsFile restartUnits;};
+}:
+{
+  sops =
+    let
+      sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";
+      restartUnits = [
+        "paperless-scheduler.service"
+        "paperless-task-queue.service"
+        "paperless-consumer.service"
+        "paperless-web.service"
+      ];
+    in
+    {
+      secrets = {
+        paperless_dbpass = { inherit sopsFile restartUnits; };
+        paperless_admin_password = { inherit sopsFile restartUnits; };
+        paperless_authelia_secret = { inherit sopsFile restartUnits; };
+      };
+      templates."paperless.env" = {
+        inherit restartUnits;
+        # Fixes `paperless-manage`
+        # https://github.com/NixOS/nixpkgs/blob/15f4ee454b1dce334612fa6843b3e05cf546efab/nixos/modules/services/misc/paperless.nix#L53
+        owner = config.services.paperless.user;
+        content =
+          let
+            socialaccount_providers.openid_connect.APPS = [
+              {
+                client_id = "paperless";
+                name = "Authelia";
+                provider_id = "authelia";
+                secret = "${config.sops.placeholder.paperless_authelia_secret}";
+                settings.server_url = "https://auth.${myvars.domain}/.well-known/openid-configuration";
+              }
+            ];
+          in
+          ''
+            PAPERLESS_DBPASS='${config.sops.placeholder.paperless_dbpass}'
+            PAPERLESS_ADMIN_PASSWORD='${config.sops.placeholder.paperless_admin_password}'
+            PAPERLESS_SOCIALACCOUNT_PROVIDERS='${builtins.toJSON socialaccount_providers}'
+          '';
+      };
     };
-    templates."paperless.env" = {
-      inherit restartUnits;
-      # Fixes `paperless-manage`
-      # https://github.com/NixOS/nixpkgs/blob/15f4ee454b1dce334612fa6843b3e05cf546efab/nixos/modules/services/misc/paperless.nix#L53
-      owner = config.services.paperless.user;
-      content = let
-        socialaccount_providers.openid_connect.APPS = [
-          {
-            client_id = "paperless";
-            name = "Authelia";
-            provider_id = "authelia";
-            secret = "${config.sops.placeholder.paperless_authelia_secret}";
-            settings.server_url = "https://auth.${myvars.domain}/.well-known/openid-configuration";
-          }
-        ];
-      in ''
-        PAPERLESS_DBPASS='${config.sops.placeholder.paperless_dbpass}'
-        PAPERLESS_ADMIN_PASSWORD='${config.sops.placeholder.paperless_admin_password}'
-        PAPERLESS_SOCIALACCOUNT_PROVIDERS='${builtins.toJSON socialaccount_providers}'
-      '';
-    };
-  };
   # As of 2026-05-01, paperless.nix still hardcoded group to be same with uesr
   services.paperless = {
     domain = "paperless.${myvars.domain}";
@@ -88,18 +93,20 @@
     };
   };
 
-  systemd.tmpfiles.settings = let
-    cfg = config.services.paperless.exporter;
-  in
+  systemd.tmpfiles.settings =
+    let
+      cfg = config.services.paperless.exporter;
+    in
     lib.mkIf cfg.enable {
       "10-paperless-exporter-change-group".${cfg.directory}.z = {
         mode = "2750";
         group = "storage";
       };
     };
-  systemd.services = let
-    cfg = config.services.paperless.exporter;
-  in
+  systemd.services =
+    let
+      cfg = config.services.paperless.exporter;
+    in
     lib.mkIf cfg.enable {
       paperless-exporter.serviceConfig = {
         # Type=oneshot forces systemd to wait until the paperless-exporter-start script completely finishes (which
@@ -107,17 +114,17 @@
         # is Type=simple (the default), systemd will run ExecStartPost instantly, before the PDFs are generated, causing
         # them to be owned by paperless:paperless.
         Type = "oneshot";
-        ExecStartPost = ["+${pkgs.coreutils}/bin/chmod -R g+r ${cfg.directory}"];
+        ExecStartPost = [ "+${pkgs.coreutils}/bin/chmod -R g+r ${cfg.directory}" ];
       };
     };
 
   services.traefik.dynamicConfigOptions.http = {
     routers.paperless = {
       rule = "Host(`paperless.${myvars.domain}`)";
-      entryPoints = ["websecure"];
+      entryPoints = [ "websecure" ];
       service = "paperless";
-      tls = {};
+      tls = { };
     };
-    services.paperless.loadBalancer.servers = [{url = "http://127.0.0.1:${toString config.services.paperless.port}";}];
+    services.paperless.loadBalancer.servers = [ { url = "http://127.0.0.1:${toString config.services.paperless.port}"; } ];
   };
 }

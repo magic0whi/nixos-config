@@ -2,7 +2,8 @@
   myvars,
   pkgs,
   ...
-}: {
+}:
+{
   fonts.packages = with pkgs; [
     myvars.monospace.package
     noto-fonts-cjk-sans

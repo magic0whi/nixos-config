@@ -4,19 +4,24 @@
   lib,
   pkgs,
   ...
-}: {
+}:
+{
   environment.systemPackages = [
-    (let
-      base = pkgs.appimageTools.defaultFhsEnvArgs;
-    in
-      pkgs.buildFHSEnv (base
+    (
+      let
+        base = pkgs.appimageTools.defaultFhsEnvArgs;
+      in
+      pkgs.buildFHSEnv (
+        base
         // {
           name = "fhs";
-          targetPkgs = pkgs: (base.targetPkgs pkgs) ++ [pkgs.pkg-config];
+          targetPkgs = pkgs: (base.targetPkgs pkgs) ++ [ pkgs.pkg-config ];
           profile = "export FHS=1";
           runScript = lib.getExe config.users.defaultUserShell;
-          extraOutputsToInstall = ["dev"];
-        }))
+          extraOutputsToInstall = [ "dev" ];
+        }
+      )
+    )
   ];
   # nix-ld will install itself at `/lib64/ld-linux-x86-64.so.2` so that it can be used as the dynamic linker for non-NixOS binaries.
   # Ref: https://github.com/Mic92/nix-ld
@@ -31,5 +36,5 @@
   # You can overwrite `NIX_LD_LIBRARY_PATH` in the environment where you run the non-NixOS binaries to customize the
   # search path for shared libraries.
   programs.nix-ld.enable = true;
-  programs.nix-ld.libraries = [pkgs.stdenv.cc.cc];
+  programs.nix-ld.libraries = [ pkgs.stdenv.cc.cc ];
 }

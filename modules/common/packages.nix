@@ -1,6 +1,8 @@
 # These a packages available both on Linux & Darwin
-{pkgs, ...}: {
-  environment.systemPackages = with pkgs;
+{ pkgs, ... }:
+{
+  environment.systemPackages =
+    with pkgs;
     [
       # Misc
       findutils

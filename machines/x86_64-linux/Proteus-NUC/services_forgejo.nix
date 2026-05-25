@@ -4,26 +4,29 @@
   myvars,
   pkgs,
   ...
-}: let
-  restart_runner_units =
-    map
-    (name: "gitea-runner-${name}.service") (builtins.attrNames config.services.gitea-actions-runner.instances);
+}:
+let
+  restart_runner_units = map (name: "gitea-runner-${name}.service") (
+    builtins.attrNames config.services.gitea-actions-runner.instances
+  );
   clean_runner_units = map (s: lib.removeSuffix ".service" s) restart_runner_units;
-in {
-  sops = let
-    sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";
-  in
+in
+{
+  sops =
+    let
+      sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";
+    in
     lib.mkMerge [
       {
         secrets = {
           forgejo_db_password = {
             inherit sopsFile;
-            restartUnits = ["forgejo.service"];
+            restartUnits = [ "forgejo.service" ];
             # owner = config.services.forgejo.user;
           };
           forgejo_authelia_secret = {
             inherit sopsFile;
-            restartUnits = ["forgejo.service"];
+            restartUnits = [ "forgejo.service" ];
             owner = config.services.forgejo.user;
           };
         };
@@ -131,88 +134,86 @@ in {
         '';
       };
     }
-    (
-      lib.genAttrs
-      clean_runner_units
-      (_: {
-        serviceConfig.ExecStartPre = lib.mkAfter [
-          (pkgs.writeShellScript "wait-for-forgejo" ''
-            set -eufo pipefail
+    (lib.genAttrs clean_runner_units (_: {
+      serviceConfig.ExecStartPre = lib.mkAfter [
+        (pkgs.writeShellScript "wait-for-forgejo" ''
+          set -eufo pipefail
 
-            echo "Waiting for Forgejo to be online..."
-            # Retry until Forgejo reports status=pass
-            while [ "$(${lib.getExe pkgs.curl} -sSf https://git.${myvars.domain}/api/healthz | ${lib.getExe pkgs.jq} -r '.status')" != "pass" ]; do
-              sleep 1
-            done
+          echo "Waiting for Forgejo to be online..."
+          # Retry until Forgejo reports status=pass
+          while [ "$(${lib.getExe pkgs.curl} -sSf https://git.${myvars.domain}/api/healthz | ${lib.getExe pkgs.jq} -r '.status')" != "pass" ]; do
+            sleep 1
+          done
 
-            echo "Forgejo is online, proceeding with runner startup."
-          '')
-        ];
-      })
-    )
+          echo "Forgejo is online, proceeding with runner startup."
+        '')
+      ];
+    }))
   ];
 
   services.traefik.dynamicConfigOptions.http = {
     routers.forgejo = {
       rule = "Host(`git.${myvars.domain}`)";
-      entryPoints = ["websecure"];
+      entryPoints = [ "websecure" ];
       service = "forgejo";
-      tls = {};
+      tls = { };
     };
     services.forgejo.loadBalancer = {
-      servers = [{url = "http://127.0.0.1:${toString config.services.forgejo.settings.server.HTTP_PORT}";}];
+      servers = [ { url = "http://127.0.0.1:${toString config.services.forgejo.settings.server.HTTP_PORT}"; } ];
       healthCheck.path = "/api/healthz";
     };
   };
 
   # Local Action Runner connecting to your Forgejo instance
   # Docker is required to execute Docker-based action labels
-  services.gitea-actions-runner = let
-    default_instance = {
-      enable = true;
-      name = "${config.networking.hostName}-runner";
-      url = "https://git.${myvars.domain}";
-      tokenFile = config.sops.templates."forgejo_runner_token.env".path;
-      labels = [
-        "debian-latest:docker://node:20-bookworm"
-        # Fake the ubuntu name, because node provides no ubuntu builds
-        "ubuntu-latest:docker://node:20-bookworm"
-        # "ubuntu-24.04-arm:docker://node:20-bookworm"
-      ];
-      # https://gitea.com/gitea/act_runner/src/commit/40dcee0991c3bd33b657bb77aa1f2f46d69cc0e2/internal/pkg/config/config.example.yaml
-      settings = {
-        # The nodejs still couldn't recognize my self-signed cert
-        runner.capacity = 3; # Set to your desired number of simultaneous jobs
-        runner.envs.NODE_EXTRA_CA_CERTS = "/etc/ssl/certs/ca-certificates.crt";
-        container = {
-          options = "-v ${config.security.pki.caBundle}:/etc/ssl/certs/ca-certificates.crt:ro";
-          valid_volumes = [config.security.pki.caBundle];
-          force_pull = false;
+  services.gitea-actions-runner =
+    let
+      default_instance = {
+        enable = true;
+        name = "${config.networking.hostName}-runner";
+        url = "https://git.${myvars.domain}";
+        tokenFile = config.sops.templates."forgejo_runner_token.env".path;
+        labels = [
+          "debian-latest:docker://node:20-bookworm"
+          # Fake the ubuntu name, because node provides no ubuntu builds
+          "ubuntu-latest:docker://node:20-bookworm"
+          # "ubuntu-24.04-arm:docker://node:20-bookworm"
+        ];
+        # https://gitea.com/gitea/act_runner/src/commit/40dcee0991c3bd33b657bb77aa1f2f46d69cc0e2/internal/pkg/config/config.example.yaml
+        settings = {
+          # The nodejs still couldn't recognize my self-signed cert
+          runner.capacity = 3; # Set to your desired number of simultaneous jobs
+          runner.envs.NODE_EXTRA_CA_CERTS = "/etc/ssl/certs/ca-certificates.crt";
+          container = {
+            options = "-v ${config.security.pki.caBundle}:/etc/ssl/certs/ca-certificates.crt:ro";
+            valid_volumes = [ config.security.pki.caBundle ];
+            force_pull = false;
+          };
         };
       };
+    in
+    {
+      package = pkgs.forgejo-runner;
+      instances = {
+        x86_64 = default_instance;
+        # arm64 = lib.recursiveUpdate default_instance {
+        #   name = "${config.networking.hostName}-runner-arm64";
+        #   labels = ["ubuntu-24.04-arm:docker://node:20-bookworm"];
+        #   settings = {
+        #     runner.capacity = 1;
+        #     container.options = default_instance.settings.container.options + " --platform=linux/arm64";
+        #     force_pull = false;
+        #   };
+        # };
+        # riscv64 = lib.recursiveUpdate default_instance {
+        #   name = "${config.networking.hostName}-runner-riscv64";
+        #   labels = ["ubuntu-24.04-riscv64:docker://custom-node-riscv64:22.22.0"];
+        #   settings = {
+        #     runner.capacity = 1;
+        #     container.options = default_instance.settings.container.options + " --platform=linux/riscv64";
+        #     force_pull = false;
+        #   };
+        # };
+      };
     };
-  in {
-    package = pkgs.forgejo-runner;
-    instances = {
-      x86_64 = default_instance;
-      # arm64 = lib.recursiveUpdate default_instance {
-      #   name = "${config.networking.hostName}-runner-arm64";
-      #   labels = ["ubuntu-24.04-arm:docker://node:20-bookworm"];
-      #   settings = {
-      #     runner.capacity = 1;
-      #     container.options = default_instance.settings.container.options + " --platform=linux/arm64";
-      #     force_pull = false;
-      #   };
-      # };
-      # riscv64 = lib.recursiveUpdate default_instance {
-      #   name = "${config.networking.hostName}-runner-riscv64";
-      #   labels = ["ubuntu-24.04-riscv64:docker://custom-node-riscv64:22.22.0"];
-      #   settings = {
-      #     runner.capacity = 1;
-      #     container.options = default_instance.settings.container.options + " --platform=linux/riscv64";
-      #     force_pull = false;
-      #   };
-      # };
-    };
-  };
 }

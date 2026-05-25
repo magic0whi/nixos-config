@@ -1,4 +1,5 @@
-{mylib, ...}: {
+{ mylib, ... }:
+{
   ## BEGIN pkgs agnostic variables
   username = "proteus";
   userfullname = "Proteus Qian";
@@ -30,7 +31,7 @@
   ];
   # Use an [A]uthenticate subkey, run `gpg --list-secret-keys --with-keygrip` to show its keygrip
   git_signingkey = "73EDF7A727CC3B5F329863DBFC4881A7361DF34E";
-  gpg2ssh_keygrip = ["94BDB192359497927D5AA4AC76D238BA1BFEFE57"];
+  gpg2ssh_keygrip = [ "94BDB192359497927D5AA4AC76D238BA1BFEFE57" ];
 
   catppuccin_flavor = "mocha";
   catppuccin_accent = "pink";

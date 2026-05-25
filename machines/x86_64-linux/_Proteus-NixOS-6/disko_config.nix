@@ -13,33 +13,39 @@
           # so set it to "024DEE41-33E7-11D3-9D69-0008C781F39F" makes
           # `boot.loader.grub.devices` not automatically set
           type = "EF02";
-          attributes = [0]; # Partition attribute
+          attributes = [ 0 ]; # Partition attribute
         };
         root = {
           size = "100%";
           content = {
             type = "btrfs";
-            extraArgs = ["-f"];
+            extraArgs = [ "-f" ];
             subvolumes = {
               "@root" = {
                 mountpoint = "/";
-                mountOptions = ["compress=zstd"];
+                mountOptions = [ "compress=zstd" ];
               };
               "@home" = {
                 mountpoint = "/home";
-                mountOptions = ["compress=zstd"];
+                mountOptions = [ "compress=zstd" ];
               };
               "@nix" = {
                 mountpoint = "/nix";
-                mountOptions = ["compress=zstd" "noatime"];
+                mountOptions = [
+                  "compress=zstd"
+                  "noatime"
+                ];
               };
               "@persistent" = {
                 mountpoint = "/persistent";
-                mountOptions = ["compress=zstd"];
+                mountOptions = [ "compress=zstd" ];
               };
               "@swap" = {
                 mountpoint = "/.swapvol";
-                mountOptions = ["compress=zstd" "noatime"];
+                mountOptions = [
+                  "compress=zstd"
+                  "noatime"
+                ];
                 swap.swapfile.size = "2G";
               };
             };

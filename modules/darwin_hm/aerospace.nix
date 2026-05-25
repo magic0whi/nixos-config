@@ -1,4 +1,5 @@
-{config, ...}: {
+{ config, ... }:
+{
   # Highlight focused windows with colored borders
   services.jankyborders = {
     enable = true;
@@ -145,19 +146,46 @@
       # Ref: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
       # "service" binding mode
       mode.service.binding = {
-        esc = ["reload-config" "mode main"];
-        f = ["layout floating tiling" "mode main"]; # Toggle between floating and tiling layout
-        r = ["flatten-workspace-tree" "mode main"]; # reset layout
-        backspace = ["close-all-windows-but-current" "mode main"];
+        esc = [
+          "reload-config"
+          "mode main"
+        ];
+        f = [
+          "layout floating tiling"
+          "mode main"
+        ]; # Toggle between floating and tiling layout
+        r = [
+          "flatten-workspace-tree"
+          "mode main"
+        ]; # reset layout
+        backspace = [
+          "close-all-windows-but-current"
+          "mode main"
+        ];
 
-        alt-shift-h = ["join-with left" "mode main"];
-        alt-shift-j = ["join-with down" "mode main"];
-        alt-shift-k = ["join-with up" "mode main"];
-        alt-shift-l = ["join-with right" "mode main"];
+        alt-shift-h = [
+          "join-with left"
+          "mode main"
+        ];
+        alt-shift-j = [
+          "join-with down"
+          "mode main"
+        ];
+        alt-shift-k = [
+          "join-with up"
+          "mode main"
+        ];
+        alt-shift-l = [
+          "join-with right"
+          "mode main"
+        ];
 
         down = "volume down";
         up = "volume up";
-        shift-down = ["volume set 0" "mode main"];
+        shift-down = [
+          "volume set 0"
+          "mode main"
+        ];
       };
       # "resize" binding mode
       mode.resize.binding = {
@@ -169,19 +197,19 @@
         esc = "mode main";
       };
       workspace-to-monitor-force-assignment = {
-        "1" = ["Built-in Retina Display"];
-        "2" = ["Built-in Retina Display"];
-        "3" = ["Built-in Retina Display"];
-        "4" = ["Built-in Retina Display"];
+        "1" = [ "Built-in Retina Display" ];
+        "2" = [ "Built-in Retina Display" ];
+        "3" = [ "Built-in Retina Display" ];
+        "4" = [ "Built-in Retina Display" ];
       };
       on-window-detected = [
         {
           "if".app-id = "io.mpv";
-          run = ["layout floating"];
+          run = [ "layout floating" ];
         }
         {
           "if".app-id = "com.valvesoftware.steam";
-          run = ["layout tiling"];
+          run = [ "layout tiling" ];
         }
       ];
     };

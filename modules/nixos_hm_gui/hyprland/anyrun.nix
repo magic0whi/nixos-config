@@ -3,7 +3,8 @@
   # lib,
   # pkgs,
   ...
-}: {
+}:
+{
   services.elephant.enable = true;
   services.walker = {
     enable = true;

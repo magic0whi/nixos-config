@@ -4,10 +4,12 @@
   myvars,
   pkgs,
   ...
-}: {
-  networking.firewall = let
-    hm_cfg = config.home-manager.users.${myvars.username} or {};
-  in
+}:
+{
+  networking.firewall =
+    let
+      hm_cfg = config.home-manager.users.${myvars.username} or { };
+    in
     lib.mkMerge [
       {
         # enable = false; # Disable firewall
@@ -25,14 +27,17 @@
         allowedUDPPorts = lib.optional (builtins.elem pkgs.iperf3 config.environment.systemPackages) 5201;
       }
       {
-        allowedTCPPorts = lib.optional (builtins.elem pkgs.localsend (hm_cfg.home.packages or [])) 53317;
-        allowedUDPPorts = lib.optional (builtins.elem pkgs.localsend (hm_cfg.home.packages or [])) 53317;
+        allowedTCPPorts = lib.optional (builtins.elem pkgs.localsend (hm_cfg.home.packages or [ ])) 53317;
+        allowedUDPPorts = lib.optional (builtins.elem pkgs.localsend (hm_cfg.home.packages or [ ])) 53317;
       }
       # Syncthing
       {
         allowedTCPPorts = lib.optional (hm_cfg.services.syncthing.enable or false) 22000; # TCP Transfer
         # 21027: Syncthing discovery broadcasts on IPv4 and multicasts on IPv6
-        allowedUDPPorts = lib.optionals (hm_cfg.services.syncthing.enable or false) [21027 22000]; # QUIC Transfer
+        allowedUDPPorts = lib.optionals (hm_cfg.services.syncthing.enable or false) [
+          21027
+          22000
+        ]; # QUIC Transfer
       }
       # EasyTier
       {

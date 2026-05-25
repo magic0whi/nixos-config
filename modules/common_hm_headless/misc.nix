@@ -3,7 +3,8 @@
   pkgs,
   lib,
   ...
-}: {
+}:
+{
   # This value determines the Home Manager release that your configuration is compatible with. This helps avoid breakage
   # when a new Home Manager release introduces backwards incompatible changes.
   #
@@ -37,34 +38,41 @@
       sort_dir_first = true;
     };
     plugins.drag = pkgs.yaziPlugins.drag;
-    plugins.recycle-bin =
-      if pkgs.stdenv.isDarwin
-      then pkgs.emptyFile
-      else pkgs.yaziPlugins.recycle-bin;
-    initLua =
-      if pkgs.stdenv.isDarwin
-      then null
-      else ''require("recycle-bin"):setup()'';
-    extraPackages = with pkgs; [ripdrag trash-cli ueberzugpp];
+    plugins.recycle-bin = if pkgs.stdenv.isDarwin then pkgs.emptyFile else pkgs.yaziPlugins.recycle-bin;
+    initLua = if pkgs.stdenv.isDarwin then null else ''require("recycle-bin"):setup()'';
+    extraPackages = with pkgs; [
+      ripdrag
+      trash-cli
+      ueberzugpp
+    ];
     keymap = {
       mgr.prepend_keymap = [
         {
-          on = ["<C-s>"];
+          on = [ "<C-s>" ];
           run = "plugin drag";
           desc = "Drag Files";
         }
         {
-          on = ["R" "b"];
+          on = [
+            "R"
+            "b"
+          ];
           run = "plugin recycle-bin";
           desc = "Open Trash";
         }
         {
-          on = ["g" "w"];
+          on = [
+            "g"
+            "w"
+          ];
           run = "cd ~/Works";
           desc = "Go ~/Works";
         }
         {
-          on = ["g" "a"];
+          on = [
+            "g"
+            "a"
+          ];
           run = "cd ~/Works/AI/ai_instructions";
           desc = "~/Works/AI/ai_instructions";
         }

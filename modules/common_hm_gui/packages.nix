@@ -2,8 +2,10 @@
   config,
   pkgs,
   ...
-}: {
-  home.packages = with pkgs;
+}:
+{
+  home.packages =
+    with pkgs;
     [
       localsend # Alternative to AirDrop
       # discord # Update too frequently, use the web version instead
@@ -22,8 +24,7 @@
       # kicad-small # 3D printing, eletrical engineering (without 3D models)
       geogebra6 # Dynamic mathematics software with graphics, algebra and spreadsheets
       (
-        if pkgs.stdenv.isLinux
-        then
+        if pkgs.stdenv.isLinux then
           (anki-bin.overrideAttrs (prev: {
             # Add env 'QT_IM_MODULE=fcitx' to anki.desktop
             # TIP: `builtins.trace test.buildCommand test.buildCommand` is useful in debugging
@@ -36,7 +37,8 @@
               chmod $perm_bak $out/share/applications/anki.desktop
             '';
           }))
-        else anki-bin
+        else
+          anki-bin
       )
       code-cursor # An AI code editor
       # blender # 3D modeling, currently broken on darwin

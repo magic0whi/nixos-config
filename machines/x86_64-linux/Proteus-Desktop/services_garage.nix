@@ -14,42 +14,45 @@
   myvars,
   pkgs,
   ...
-}: {
-  sops = let
-    restartUnits = ["garage.service"];
-    sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";
-  in {
-    secrets = {
-      "garage_rpc_secret" = {inherit restartUnits sopsFile;};
-      "garage_admin_token" = {inherit restartUnits sopsFile;};
+}:
+{
+  sops =
+    let
+      restartUnits = [ "garage.service" ];
+      sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";
+    in
+    {
+      secrets = {
+        "garage_rpc_secret" = { inherit restartUnits sopsFile; };
+        "garage_admin_token" = { inherit restartUnits sopsFile; };
+      };
+      templates."garage.env" = {
+        inherit restartUnits;
+        content = ''
+          GARAGE_RPC_SECRET=${config.sops.placeholder.garage_rpc_secret}
+          GARAGE_ADMIN_TOKEN=${config.sops.placeholder.garage_admin_token}
+          # TODO: For Prometheus
+          # GARAGE_METRICS_TOKEN=
+        '';
+      };
+      templates."garage-webui.env" = {
+        restartUnits = [ "garage-webui.service" ];
+        content = "API_ADMIN_KEY=${config.sops.placeholder.garage_admin_token}";
+      };
     };
-    templates."garage.env" = {
-      inherit restartUnits;
-      content = ''
-        GARAGE_RPC_SECRET=${config.sops.placeholder.garage_rpc_secret}
-        GARAGE_ADMIN_TOKEN=${config.sops.placeholder.garage_admin_token}
-        # TODO: For Prometheus
-        # GARAGE_METRICS_TOKEN=
-      '';
-    };
-    templates."garage-webui.env" = {
-      restartUnits = ["garage-webui.service"];
-      content = "API_ADMIN_KEY=${config.sops.placeholder.garage_admin_token}";
-    };
-  };
   # systemd.tmpfiles.settings."10-garage-create-dir" = {
   #   "${config.services.garage.settings.data_dir}".d = {group = "storage"; mode = "2775";};
   #   "${config.services.garage.settings.metadata_dir}".d = {group = "storage"; mode = "2775";};
   # };
   systemd.services.garage = {
-    unitConfig.RequiresMountsFor = [myvars.storage_path];
+    unitConfig.RequiresMountsFor = [ myvars.storage_path ];
     serviceConfig = {
       EnvironmentFile = config.sops.templates."garage.env".path;
-      SupplementaryGroups = ["storage"];
+      SupplementaryGroups = [ "storage" ];
       # `DynamicUser=true` implies `ProtectSystem=strict`
       # `metadata_dir` is added defaultly, ref:
       # https://github.com/NixOS/nixpkgs/blob/15f4ee454b1dce334612fa6843b3e05cf546efab/nixos/modules/services/web-servers/garage.nix#L127-L149
-      ReadWritePaths = ["${myvars.storage_path}/garage/snapshots"];
+      ReadWritePaths = [ "${myvars.storage_path}/garage/snapshots" ];
     };
   };
   services.garage = {
@@ -76,23 +79,31 @@
         root_domain = ".s3-pub.${myvars.domain}";
       };
       # admin (3903) is for webui access
-      admin = {api_bind_addr = "127.0.0.1:3903";};
+      admin = {
+        api_bind_addr = "127.0.0.1:3903";
+      };
       replication_factor = 1;
       compression_level = 0; # A value of 0 will let zstd choose a default value (currently 3)
     };
   };
   systemd.services.garage-webui = {
     description = "Garage Web UI";
-    after = ["network.target" "network-online.target"];
-    wants = ["network.target" "network-online.target"];
-    wantedBy = ["multi-user.target"];
+    after = [
+      "network.target"
+      "network-online.target"
+    ];
+    wants = [
+      "network.target"
+      "network-online.target"
+    ];
+    wantedBy = [ "multi-user.target" ];
     serviceConfig = {
       ExecStart = lib.getExe pkgs.garage-webui;
       Restart = "on-failure";
       EnvironmentFile = config.sops.templates."garage-webui.env".path;
       Environment = [
         "PORT=3909"
-        "CONFIG_PATH=${(pkgs.formats.toml {}).generate "config.toml" config.services.garage.settings}"
+        "CONFIG_PATH=${(pkgs.formats.toml { }).generate "config.toml" config.services.garage.settings}"
       ];
     };
   };

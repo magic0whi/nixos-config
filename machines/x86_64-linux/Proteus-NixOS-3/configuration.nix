@@ -2,7 +2,8 @@
   config,
   myvars,
   ...
-}: {
+}:
+{
   time.timeZone = "Europe/London";
   boot.kernelParams = [
     "console=ttyS0,115200"
@@ -15,11 +16,11 @@
   sops.secrets."sb_Proteus-NixOS-1.json" = {
     sopsFile = "${myvars.secrets_dir}/sb_Proteus-NixOS-1.json.sops";
     format = "binary";
-    restartUnits = ["sing-box.service"];
+    restartUnits = [ "sing-box.service" ];
   };
-  networking.firewall.allowedTCPPorts = [443]; # Reality
+  networking.firewall.allowedTCPPorts = [ 443 ]; # Reality
   services.sing-box.enable = true;
   services.sing-box.configFile = config.sops.secrets."sb_Proteus-NixOS-1.json".path;
   ## END sing-box.nix
-  boot.binfmt.emulatedSystems = ["riscv64-linux"]; # Cross compilation
+  boot.binfmt.emulatedSystems = [ "riscv64-linux" ]; # Cross compilation
 }
