@@ -693,15 +693,125 @@ in {
             ]
           )
           10));
+      # Window Rules
+      window_rule = [
+        {
+          match.class = "^imv$";
+          float = true;
+        }
+        {
+          match.class = ''^org\.pulseaudio\.pavucontrol$'';
+          float = true;
+        }
+        {
+          match = {
+            class = "^thunar$";
+            title = "^File Operation Progress$";
+          };
+          float = true;
+        }
+        {
+          match.class = "^yad$";
+          float = true;
+        }
+        {
+          match.class = "^firefox|google-chrome$";
+          idle_inhibit = "focus";
+        }
 
+        # Video Picture-in-Picture
+        {
+          match.tag = "video_pip";
+          float = true;
+          pin = true;
+          size = "480 270";
+          move = "100%-w-5 100%-w-5";
+        }
+        {
+          match = {
+            initial_class = "^firefox$";
+            initial_title = "^Picture-in-Picture$";
+          };
+          tag = "+video_pip";
+        }
+        {
+          match.initial_title = "^Picture\\ in\\ picture$"; # Chrome PiP
+          tag = "+video_pip";
+        }
+
+        # Anki
+        {
+          match = {
+            class = "^anki$";
+            title = "^HyperTTS: Add Audio \\(Collection\\)$";
+          };
+          float = true;
+        }
+        {
+          match = {
+            class = "^anki$";
+            title = "^HyperTTS: Add Audio \\(Collection\\)$";
+          };
+          size = "1090 640";
+        }
+
+        # Inkscape
+        {
+          match = {
+            class = "^org\\.inkscape\\.Inkscape$";
+            title = "^Function Plotter$";
+          };
+          float = true;
+        }
+
+        # Games
+        {
+          match.tag = "game";
+          fullscreen = true;
+          immediate = true;
+        }
+        {
+          match.tag = "game";
+          no_anim = true;
+          no_blur = true;
+          no_shadow = true;
+        }
+        {
+          match.tag = "game";
+          opacity = 1;
+          border_size = 1;
+          rounding = 0;
+        }
+        {
+          match = {
+            initial_class = "^steam_app_\\d+$";
+            initial_title = "negative:^(?i)(.*Launcher.*)$";
+          };
+          tag = "+game";
+        }
+
+        # Previewer
+        {
+          match.tag = "previewer";
+          float = true;
+          no_initial_focus = true;
+          opaque = true;
+        }
+        {
+          match.initial_class = "^(ueberzugpp_.*)";
+          tag = "+previewer";
+        }
+
+        # Qemu
+        {
+          match.initial_class = "^Qemu-system-x86_64$";
+          float = true;
+        }
+      ];
       # windowrule = [
-      #   "match:class ^imv$,float true"
-      #   "match:class ^org\\.pulseaudio\\.pavucontrol$,float true"
-      #   "match:class ^thunar$, match:title ^File Operation Progress$,float true"
       #   "match:class ^xdg-desktop-portal-gtk$,float true"
       #   "match:class ^yad$,float true"
 
-      #   "match:class ^firefox|google-chrome$,idle_inhibit focus"
       #   "match:tag video_pip,float true,pin true,size 480 270,move 100%-w-5 100%-w-5"
       #   # Firefox PiP
       #   "match:initial_class ^firefox$,match:initial_title ^Picture-in-Picture$,tag +video_pip"
