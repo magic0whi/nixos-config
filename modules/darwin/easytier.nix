@@ -180,8 +180,28 @@ in {
         path = [cfg.package "/usr/bin:/bin:/usr/sbin:/sbin"];
         # Emulate Systemd's EnvironmentFile setups inside the Launchd script
         script = ''
-          # `set -a` automatically export all variables
-          ${lib.concatMapStringsSep "\n" (f: "set -a; source ${lib.escapeShellArg f}; set +a") inst.environmentFiles}
+          # Emulate Systemd's EnvironmentFile parsing safely
+          load_env_file() {
+            local file=$1
+            if [ ! -f "$file" ]; then return 2; fi
+
+            while IFS= read -r line || [ -n "$line" ]; do
+              # Skip empty lines and comments
+              [[ "$line" =~ ^[[:space:]]*$ || "$line" =~ ^[[:space:]]*# ]] && continue
+
+              # Split into key and value on the first '='
+              local key="''${line%%=*}"
+              local value="''${line#*=}"
+
+              # Optional: Systemd ignores matching outer quotes, so we strip them here
+              if [[ "$value" == \"*\" ]] || [[ "$value" == \'*\' ]]; then
+                value="''${value:1:-1}"
+              fi
+
+              export "$key"="$value"
+            done < "$file"
+          }
+          ${lib.concatMapStringsSep "\n" (f: "load_env_file ${lib.escapeShellArg f}") inst.environmentFiles}
 
           exec ${lib.escapeShellArgs (["easytier-core"]
             ++ lib.optionals (inst.configServer != null) ["-w" inst.configServer]
@@ -205,10 +225,12 @@ in {
     active_insts;
 
     # Darwin-specific sysctl routing equivalents
-    environment.etc."sysctl.conf".text = lib.mkIf cfg.allowSystemForward ''
-      net.inet.ip.forwarding=1
-      net.inet6.ip6.forwarding=1
-    '';
+    environment.etc = lib.mkIf cfg.allowSystemForward {
+      "sysctl.conf".text = ''
+        net.inet.ip.forwarding=1
+        net.inet6.ip6.forwarding=1
+      '';
+    };
   };
   meta.maintainers = with lib.maintainers; [ltrump myvars.userfullname];
 }

@@ -29,6 +29,7 @@
   };
   services.easytier = {
     enable = true;
+    allowSystemForward = true;
     instances.main = {
       environmentFiles = [config.sops.templates."easytier.env".path];
       settings = {
