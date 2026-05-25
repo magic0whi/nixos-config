@@ -20,17 +20,12 @@
     # gamescope # SteamOS session compositing window manager
 
     ## Creative
-    # blender
-    inkscape # Vector graphics
-    # gimp3 # Image editing, I prefer using figma in browser instead of this one
-    # krita # digital painting
-    # sonic-pi # music programming
-    # kicad # Consumes a lot of storage, as of 7/24/2025, it's broken on macOS
-    # kicad-small # 3D printing, eletrical engineering (without 3D models)
+    # gimp # Image editing, I prefer using figma in browser instead of this one
+    # krita # Digital painting
+    # sonic-pi # Music programming
 
     ## 2D game design
     # ldtk # A modern, versatile 2D level editor
-    # aseprite # Animated sprite editor & pixel art tool
 
     # virt-viewer # VNC connect to VM, used by kubevirt
 
@@ -40,7 +35,6 @@
     imv # simple image viewer
 
     # Video/audio tools
-    # cava # For visualizing audio
     # libva-utils
     # vdpauinfo
     # vulkan-tools
