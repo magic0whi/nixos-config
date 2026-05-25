@@ -9,7 +9,7 @@
   cfg = config.services.sing-box;
   sing-box_dir = "/Library/Application Support/sing-box";
 in {
-  meta.maintainers = with lib.maintainers; [nickcao prince213 myvars.userfullname];
+  meta.maintainers = [myvars.userfullname];
   options.services.sing-box = {
     enable = lib.mkEnableOption "sing-box universal proxy platform";
     package = lib.mkPackageOption pkgs "sing-box" {};
