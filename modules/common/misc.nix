@@ -8,9 +8,13 @@
     if pkgs.stdenv.isDarwin
     then myvars.darwin_state_version
     else myvars.nixos_state_version;
+
   # Add my self-signed CA certificate to the system-wide trust store.
   security.pki.certificateFiles = ["${myvars.secrets_dir}/proteus_ca.pub.pem"];
+
   nixpkgs.config.allowUnfree = true; # Allow chrome, vscode to install
+
+  services.openssh.enable = true;
   ## BEGIN nix.nix
   environment.systemPackages = [pkgs.git]; # Required by flake
   nix = {

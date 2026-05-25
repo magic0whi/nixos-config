@@ -3,7 +3,6 @@
   myvars,
   ...
 }: {
-  services.openssh.enable = true;
   programs.ssh = {
     # Configs will be written to /etc/ssh/ssh_config
     extraConfig = lib.mkMerge [
