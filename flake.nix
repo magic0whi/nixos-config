@@ -74,10 +74,6 @@
       url = "github:numtide/treefmt-nix/790751ff7fd3801feeaf96d7dc416a8d581265ba";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    alejandra = {
-      url = "github:kamadorueda/alejandra/8c4a4a572bee519b04e9bb9207e7d993f55ecb4f";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
   outputs = inputs: import ./main.nix inputs;
 }

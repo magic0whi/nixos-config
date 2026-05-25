@@ -1,5 +1,4 @@
 {
-  alejandra,
   myvars,
   pkgs,
   ...
@@ -12,7 +11,7 @@
         bash-language-server
         vscode-json-languageserver
         yaml-language-server
-        alejandra.packages.${pkgs.stdenv.hostPlatform.system}.default
+        nixfmt
         nixd
       ]
       ++ lib.optionals (!stdenv.hostPlatform.isRiscV64) [nil marksman]; # NOTE: Requires bootstrap GHC
@@ -59,7 +58,7 @@
         {
           name = "nix";
           auto-format = true;
-          formatter.command = "alejandra";
+          formatter.command = "nixfmt";
         }
         {
           name = "cpp";

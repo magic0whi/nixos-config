@@ -1,5 +1,4 @@
 {
-  alejandra,
   deploy-rs,
   nix-darwin,
   nixpkgs,
@@ -15,8 +14,11 @@
   treefmt_eval = for_each_system (pkgs:
     treefmt-nix.lib.evalModule pkgs (_: {
       projectRootFile = "flake.nix"; # Used to find the project root
-      programs.alejandra.enable = true;
-      programs.alejandra.package = alejandra.packages.${pkgs.stdenv.hostPlatform.system}.default;
+      programs.nixfmt = {
+        enable = true;
+        width = 120;
+        package = nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system}.nixfmt;
+      };
     }));
 
   args_fn = let
@@ -102,7 +104,7 @@ in {
   devShells = for_each_system (
     pkgs: {
       default = pkgs.mkShell {
-        buildInputs = [alejandra.packages.${pkgs.stdenv.hostPlatform.system}.default];
+        buildInputs = [nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system}.nixfmt];
         name = "nixos-config";
       };
     }
