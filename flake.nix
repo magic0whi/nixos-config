@@ -3,8 +3,8 @@
   inputs = {
     # Pinned as of 2026-05-04 17:55, branch: nixos-unstable
     # nixpkgs.url = "github:NixOS/nixpkgs/15f4ee454b1dce334612fa6843b3e05cf546efab";
-    # Pinned as of 2026-05-20 17:24, branch: master
-    nixpkgs.url = "github:magic0whi/nixpkgs/e85fc8d32e52a90b9ed293b35823588d7e1da3cd";
+    # Pinned as of 2026-05-20 17:24
+    nixpkgs.url = "github:magic0whi/nixpkgs/main";
     # Pinned as of 2026-04-14 17:55, branch: nixos-unstable
     # nixpkgs-postgresql.url = "github:NixOS/nixpkgs/4c1018dae018162ec878d42fec712642d214fdfa";
     # Pinned as of 2026-05-22 04:08, branch: master
@@ -49,7 +49,8 @@
     };
     # Pinned as of 2026-05-04 15:06
     nix-darwin = {
-      url = "github:nix-darwin/nix-darwin/8c62fba0854ba15c8917aed18894dbccb48a3777";
+      url = "github:magic0whi/nix-darwin/main";
+      # url = "path:/Users/proteus/Works/Reference/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # Pinned as of 2026-04-07 06:59, tag v25.11

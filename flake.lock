@@ -265,18 +265,14 @@
         ]
       },
       "locked": {
-        "lastModified": 1777780666,
-        "narHash": "sha256-8wURyQMdDkGUarSTKOGdCuFfYiwa3HbzwscUfn3STDE=",
-        "owner": "nix-darwin",
-        "repo": "nix-darwin",
-        "rev": "8c62fba0854ba15c8917aed18894dbccb48a3777",
-        "type": "github"
+        "lastModified": 1779703257,
+        "narHash": "sha256-SKIEl+H4BUPytBWuLdKgksFDj9CNSuAeRdWSghHvcvM=",
+        "path": "/Users/proteus/Works/Reference/nix-darwin",
+        "type": "path"
       },
       "original": {
-        "owner": "nix-darwin",
-        "repo": "nix-darwin",
-        "rev": "8c62fba0854ba15c8917aed18894dbccb48a3777",
-        "type": "github"
+        "path": "/Users/proteus/Works/Reference/nix-darwin",
+        "type": "path"
       }
     },
     "nixos-hardware": {
@@ -320,17 +316,17 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1779387973,
-        "narHash": "sha256-3yI/NgsjlcpVqiHcuQIMSLxyDJCNsuimH7gJm44shFE=",
+        "lastModified": 1779543924,
+        "narHash": "sha256-+J7lRO4s7CCBqfzgSkx1QREDwAyYlJ3d6EPiiBMAxzs=",
         "owner": "magic0whi",
         "repo": "nixpkgs",
-        "rev": "e85fc8d32e52a90b9ed293b35823588d7e1da3cd",
+        "rev": "73af391b472eb41780722f74ca7a94c14d10f744",
         "type": "github"
       },
       "original": {
         "owner": "magic0whi",
+        "ref": "main",
         "repo": "nixpkgs",
-        "rev": "e85fc8d32e52a90b9ed293b35823588d7e1da3cd",
         "type": "github"
       }
     },
