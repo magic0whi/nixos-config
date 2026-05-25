@@ -5,6 +5,7 @@
   pkgs,
   ...
 }: {
+  users.users.${myvars.username}.extraGroups = ["docker" "libvirtd"];
   # virtualisation.waydroid.enable = true; # Usage: https://wiki.nixos.org/wiki/Waydroid
   # virtualisation.docker.storageDriver = "btrfs"; # conflict with feature: containerd-snapshotter
   ## BEGIN binfmt.nix
@@ -88,7 +89,10 @@
     } accept comment "Allow Docker/Libvirt to reach auto_redirect ports"
   '';
   networking.firewall.trustedInterfaces = ["virbr0"];
-  systemd.services.docker.path = [pkgs.nftables];
+
+  systemd.services.docker.path =
+    lib.optional (config.virtualisation.docker.daemon.settings.firewall-backend == "nftables") pkgs.nftables;
+
   virtualisation.docker = {
     enable = true;
     daemon.settings = {

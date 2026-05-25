@@ -167,7 +167,6 @@ in {
 
   # Local Action Runner connecting to your Forgejo instance
   # Docker is required to execute Docker-based action labels
-  virtualisation.docker.enable = true;
   services.gitea-actions-runner = let
     default_instance = {
       enable = true;

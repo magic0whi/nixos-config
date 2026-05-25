@@ -116,11 +116,7 @@
   users = {
     defaultUserShell = pkgs.zsh;
     mutableUsers = false; # Don't allow mutate users outside the config
-    # TODO move to NUC/Desktop's per configuration
-    groups = {
-      docker = {};
-      storage = {gid = 1001;};
-    };
+    users.groups.storage.gid = 1001;
     users.${myvars.username} = {
       # Public Keys that can be used to login to all my PCs, MacBooks, and servers.
       #
@@ -138,8 +134,7 @@
       home = "/home/${myvars.username}";
       # initialHashedPassword = myvars.initial_hashed_password;
       isNormalUser = true;
-      # TODO move docker, libvirtd, to NUC/Desktop's per configuration
-      extraGroups = [myvars.username "docker" "input" "libvirtd" "network" "video" "wheel"];
+      extraGroups = [myvars.username "input" "network" "video" "wheel"];
     };
     # root user are heavily used for remote NixOS deployment
     users.root = {

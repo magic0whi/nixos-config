@@ -12,7 +12,6 @@
       {
         # enable = false; # Disable firewall
 
-        # TODO check whether libvirt dnsmasq add rules to allow, and add a optionalString to check if any
         # `systemd.nspawn.<name>.enable` == true
         extraInputRules = ''
           # ip saddr 192.168.1.0/24 accept comment "Allow from LAN"
