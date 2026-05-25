@@ -22,24 +22,15 @@
     machine_path = ./.;
   });
 in {
-  _DEBUG = {inherit name nixpkgs_modules hm_modules;};
+  _DEBUG = {inherit name nixpkgs_modules hm_modules myvars mylib darwin_system;};
   darwin_configurations.${name} = darwin_system;
   # It’s only possible to cross compile between aarch64-darwin and x86_64-darwin
   # Ref: https://nix.dev/tutorials/cross-compilation.html#determining-the-host-platform-config
   # deploy-rs_node.${name} = {
-  #   hostname = let
-  #     ifaces = myvars.networking.hosts_addr.${name};
-  #     ts_iface = builtins.elemAt ifaces 0;
-  #     et_iface = lib.optionalAttrs (builtins.length ifaces >= 2) (builtins.elemAt ifaces 1);
-  #   in
-  #     if et_iface ? ipv4
-  #     then et_iface.ipv4
-  #     else if ts_iface ? ipv4
-  #     then ts_iface.ipv4
-  #     else name;
+  #   ...
   #   profiles.system = {
   #     path = deploy-rs.lib.${system}.activate.darwin darwin_system;
-  #     user = "root";
+  #     ...
   #   };
   # };
 }
