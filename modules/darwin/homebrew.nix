@@ -39,28 +39,28 @@ in
     onActivation = {
       # autoUpdate = true; # Fetch the newest stable branch of Homebrew's git repo
 
-      # upgrade = true; # Upgrade outdated casks, formulae, and App Store apps
+      upgrade = true; # Upgrade outdated casks, formulae, and App Store apps
 
       cleanup = "zap"; # 'zap': Uninstalls all formulae(and related files) not listed in the generated Brewfile
     };
     # Applications to install from Mac App Store using mas. You need to install all these Apps manually first so that
     # your apple account have records for them. otherwise Apple Store will refuse to install them. For details, see
     # https://github.com/mas-cli/mas
-    masApps = {
-      "Microsoft Excel" = 462058435;
-      "Microsoft Outlook" = 985367838;
-      "Microsoft PowerPoint" = 462062816;
-      "Microsoft Word" = 462054704;
-      OneDrive = 823766827;
-      # QQ = 451108668;
-      Telegram = 747648890; # Can be managed by home-manager (home-manager's version crash when sending image)
-      WeChat = 836500024;
-      "WhatsApp Messenger" = 310633997;
+    # masApps = {
+    #   "Microsoft Excel" = 462058435;
+    #   "Microsoft Outlook" = 985367838;
+    #   "Microsoft PowerPoint" = 462062816;
+    #   "Microsoft Word" = 462054704;
+    #   OneDrive = 823766827;
+    #   # QQ = 451108668;
+    #   Telegram = 747648890; # Can be managed by home-manager (home-manager's version crash when sending image)
+    #   WeChat = 836500024;
+    #   "WhatsApp Messenger" = 310633997;
 
-      # "GeoGebra Calculator Suite" = 1504416652; # Managed by home-manager
-      # LocalSend = 1661733229; # Managed by home-manager
-      # sing-box = 6673731168; # Older than sfm in brew cask
-    };
+    #   # "GeoGebra Calculator Suite" = 1504416652; # Managed by home-manager
+    #   # LocalSend = 1661733229; # Managed by home-manager
+    #   # sing-box = 6673731168; # Older than sfm in brew cask
+    # };
     taps = [
       "hashicorp/tap"
       "gcenx/wine" # homebrew-wine - game-porting-toolkit & wine-crossover
