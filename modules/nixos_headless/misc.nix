@@ -116,7 +116,7 @@
   users = {
     defaultUserShell = pkgs.zsh;
     mutableUsers = false; # Don't allow mutate users outside the config
-    users.groups.storage.gid = 1001;
+    groups.storage.gid = 1001;
     users.${myvars.username} = {
       # Public Keys that can be used to login to all my PCs, MacBooks, and servers.
       #
