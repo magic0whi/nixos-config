@@ -86,7 +86,7 @@ in {
               touch $out
             ''
           else
-            builtins.throw ''
+            throw ''
               Library unit tests failed on ${pkgs.stdenv.hostPlatform.system}!
               ${builtins.toJSON lib_test_results}
             '';
