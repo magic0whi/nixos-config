@@ -7,26 +7,28 @@
   pkgs,
   ...
 }: {
-  home.packages = with pkgs; [
-    xdg-utils # Provides cli tools such as `xdg-mime` `xdg-open`
-    xdg-user-dirs
-  ];
-  xdg.configFile."mimeapps.list".force = true;
+  home = {
+    packages = with pkgs; [
+      xdg-utils # Provides cli tools such as `xdg-mime` `xdg-open`
+      xdg-user-dirs
+    ];
+    sessionVariables.BROWSER = "google-chrome-stable"; # Set default applications
+  };
   xdg = {
     enable = true;
+    configFile."mimeapps.list".force = true;
 
     cacheHome = "${config.home.homeDirectory}/.cache";
     configHome = "${config.home.homeDirectory}/.config";
     dataHome = "${config.home.homeDirectory}/.local/share";
     stateHome = "${config.home.homeDirectory}/.local/state";
 
-    # manage $XDG_CONFIG_HOME/mimeapps.list
-    # xdg search all desktop entries from $XDG_DATA_DIRS, check it by command:
+    # Manage $XDG_CONFIG_HOME/mimeapps.list
+    # xdg searches all desktop entries from $XDG_DATA_DIRS, check it by command:
     #   echo $XDG_DATA_DIRS
-    # the system-level desktop entries can be list by command:
-    #   ls -l /run/current-system/sw/share/applications/
-    # the user-level desktop entries can be list by command(user ryan):
-    #   ls /etc/profiles/per-user/<username>/share/applications/
+    # the system-level desktop entries can be list by command: `ls -l /run/current-system/sw/share/applications/`
+    # the user-level desktop entries can be list by command:
+    #   `ls /etc/profiles/per-user/<username>/share/applications/`
     mimeApps = {
       enable = true;
       # let `xdg-open` to open the url with the correct application.
@@ -36,6 +38,8 @@
       in {
         "application/json" = browser;
         "application/pdf" = "org.pwmt.zathura.desktop";
+
+        "inode/directory" = "yazi.desktop";
 
         "text/html" = browser;
         "text/xml" = browser;
