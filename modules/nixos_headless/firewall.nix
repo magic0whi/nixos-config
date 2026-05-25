@@ -50,4 +50,8 @@
         ];
       }
     ];
+  # Let Tailscale auto detect the firewall type (nftables)
+  systemd.services = lib.mkIf config.services.tailscale.enable {
+    tailscaled.environment.TS_DEBUG_FIREWALL_MODE = "auto";
+  };
 }

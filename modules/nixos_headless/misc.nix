@@ -13,13 +13,6 @@
     consoleMode = "max";
   };
   ## END bootloader.nix
-  ## BEGIN nix.nix
-  # TODO: merge to common modules by optionalAttrs
-  nix = {
-    gc.dates = "weekly";
-    settings.auto-optimise-store = true; # Optimise the store after each build
-  };
-  ## END nix.nix
   ## BEGIN ssh.nix
   services.openssh.settings.PasswordAuthentication = false; # Disable password login
   programs.ssh.extraConfig = ''
@@ -70,17 +63,6 @@
   };
   services.resolved.enable = true;
 
-  # Auto detect the firewall type (nftables)
-  systemd.services.tailscaled.environment.TS_DEBUG_FIREWALL_MODE = "auto";
-  # TODO: merge to common modules by optionalAttrs
-  # Tailscale stores its data in /var/lib/tailscale, which is persistent across reboots via impermanence.nix
-  # Ref: https://github.com/NixOS/nixpkgs/blob/nixos-24.11/nixos/modules/services/networking/tailscale.nix
-  services.tailscale = {
-    openFirewall = true; # allow the Tailscale UDP port through the firewall
-    useRoutingFeatures = "client"; # "server" if act as exit node
-    # extraUpFlags = "--accept-routes";
-    # authKeyFile = "/var/lib/tailscale/authkey";
-  };
   services.vnstat.enable = true;
   ## END network.nix
   ## BEGIN journald.nix
