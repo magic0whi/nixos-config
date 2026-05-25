@@ -9,6 +9,7 @@
     defaultEditor = true;
     extraPackages = with pkgs;
       [
+        bash-language-server
         vscode-json-languageserver
         yaml-language-server
         alejandra.packages.${pkgs.stdenv.hostPlatform.system}.default
