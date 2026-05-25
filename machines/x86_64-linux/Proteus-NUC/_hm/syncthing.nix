@@ -9,7 +9,7 @@
     sopsFile = "${myvars.secrets_dir}/${osConfig.networking.hostName}_syncthing.priv.pem.sops";
     format = "binary"; # Required when loading raw files instead of yaml/json structures
     # sops-nix dnn't have restartUnits for home manager
-    # TODO: https://github.com/ryantm/agenix/issues/84
+    # https://github.com/ryantm/agenix/issues/84
     # restartUnits = ["syncthing-init.service" "syncthing.service"];
   };
   services.syncthing = {

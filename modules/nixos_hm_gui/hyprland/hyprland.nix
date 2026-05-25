@@ -693,7 +693,7 @@ in {
             ]
           )
           10));
-      # Window Rules
+      # Window Rules TODO: Review
       window_rule = [
         {
           match.class = "^imv$";
