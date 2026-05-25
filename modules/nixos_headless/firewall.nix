@@ -7,28 +7,48 @@
 }: {
   networking.firewall = let
     hm_cfg = config.home-manager.users.${myvars.username} or {};
-    iperf3_port = 5201;
-    syncthing_port = 22000; # Syncthing TCP/QUIC transfers
-    localsend_port = 53317; # LocalSend (HTTP/TCP)/(Multicast/UDP)
-  in {
-    # enable = false; # Disable firewall
-    allowedTCPPorts =
-      lib.optional (builtins.elem pkgs.iperf3 config.environment.systemPackages) iperf3_port
-      ++ (lib.optional (hm_cfg.services.syncthing.enable or false) syncthing_port)
-      ++ (lib.optional (builtins.elem pkgs.localsend (hm_cfg.home.packages or [])) localsend_port);
+  in
+    lib.mkMerge [
+      {
+        # enable = false; # Disable firewall
 
-    allowedUDPPorts =
-      lib.optional (builtins.elem pkgs.iperf3 config.environment.systemPackages) iperf3_port
-      # 21027: Syncthing discovery broadcasts on IPv4 and multicasts on IPv6
-      ++ (lib.optionals (hm_cfg.services.syncthing.enable or false) [21027 syncthing_port])
-      ++ (lib.optional (builtins.elem pkgs.localsend (hm_cfg.home.packages or [])) localsend_port);
-
-    # TODO check whether libvirt dnsmasq add rules to allow, and add a optionalString to check if any
-    # `systemd.nspawn.<name>.enable` == true
-    extraInputRules = ''
-      # ip saddr 192.168.1.0/24 accept comment "Allow from LAN"
-      ip6 saddr { fe80::/16 } accept comment "Allow from Link-Local / ULA-Prefix (IPv6)"
-      udp dport bootps accept comment "Allow DHCP server (systemd-nspawn)"
-    '';
-  };
+        # TODO check whether libvirt dnsmasq add rules to allow, and add a optionalString to check if any
+        # `systemd.nspawn.<name>.enable` == true
+        extraInputRules = ''
+          # ip saddr 192.168.1.0/24 accept comment "Allow from LAN"
+          ip6 saddr { fe80::/16 } accept comment "Allow from Link-Local / ULA-Prefix (IPv6)"
+          udp dport bootps accept comment "Allow DHCP server (systemd-nspawn)"
+        '';
+      }
+      # Iperf 3
+      {
+        allowedTCPPorts = lib.optional (builtins.elem pkgs.iperf3 config.environment.systemPackages) 5201;
+        allowedUDPPorts = lib.optional (builtins.elem pkgs.iperf3 config.environment.systemPackages) 5201;
+      }
+      {
+        allowedTCPPorts = lib.optional (builtins.elem pkgs.localsend (hm_cfg.home.packages or [])) 53317;
+        allowedUDPPorts = lib.optional (builtins.elem pkgs.localsend (hm_cfg.home.packages or [])) 53317;
+      }
+      # Syncthing
+      {
+        allowedTCPPorts = lib.optional (hm_cfg.services.syncthing.enable or false) 22000; # TCP Transfer
+        # 21027: Syncthing discovery broadcasts on IPv4 and multicasts on IPv6
+        allowedUDPPorts = lib.optionals (hm_cfg.services.syncthing.enable or false) [21027 22000]; # QUIC Transfer
+      }
+      # EasyTier
+      {
+        allowedTCPPortRanges = [
+          {
+            from = 11010;
+            to = 11013;
+          }
+        ];
+        allowedUDPPortRanges = [
+          {
+            from = 11010;
+            to = 11012;
+          }
+        ];
+      }
+    ];
 }

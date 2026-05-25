@@ -5,22 +5,6 @@
   pkgs,
   ...
 }: {
-  networking = lib.optionalAttrs (!pkgs.stdenv.isDarwin) {
-    firewall = {
-      allowedTCPPortRanges = [
-        {
-          from = 11010;
-          to = 11013;
-        }
-      ];
-      allowedUDPPortRanges = [
-        {
-          from = 11010;
-          to = 11012;
-        }
-      ];
-    };
-  };
   sops = let
     restartUnits = map (name: "easytier-${name}.service") (builtins.attrNames config.services.easytier.instances);
     sopsFile = "${myvars.secrets_dir}/common.sops.yaml";
