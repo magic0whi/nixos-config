@@ -6,6 +6,7 @@
   ...
 }:
 let
+  nextcloud_port = 8080;
   restartUnits = [
     "nextcloud-setup.service"
     "nextcloud-cron.service"
@@ -161,7 +162,28 @@ in
   services.nginx.virtualHosts."${config.services.nextcloud.hostName}".listen = [
     {
       addr = "127.0.0.1";
-      port = 8080;
+      port = nextcloud_port;
     }
   ];
+
+  services.traefik.dynamicConfigOptions.http = {
+    # Strict-Transport-Security
+    middlewares.nextcloud-hsts.headers = {
+      stsSeconds = 15552000;
+      stsIncludeSubdomains = true;
+      stsPreload = true; # Adds preload flag to STS header
+      forceSTSHeader = true; # Adds STS header for HTTP connections
+    };
+    routers.nextcloud = {
+      rule = "Host(`nextcloud.${myvars.domain}`)";
+      entryPoints = [ "websecure" ];
+      middlewares = [ "nextcloud-hsts" ];
+      service = "nextcloud";
+      tls = { };
+    };
+    services.nextcloud.loadBalancer = {
+      servers = [ { url = "http://127.0.0.1:${toString nextcloud_port}"; } ];
+      healthCheck.path = "/status.php";
+    };
+  };
 }

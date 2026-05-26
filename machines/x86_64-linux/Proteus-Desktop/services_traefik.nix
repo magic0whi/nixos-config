@@ -65,13 +65,6 @@ in
             "Remote-Name"
           ];
         };
-        # Strict-Transport-Security
-        middlewares.nextcloud-hsts.headers = {
-          stsSeconds = 15552000;
-          stsIncludeSubdomains = true;
-          stsPreload = true; # Adds preload flag to STS header
-          forceSTSHeader = true; # Adds STS header for HTTP connections
-        };
         routers = {
           traefik-dashboard = {
             rule = "Host(`traefik-desktop.${myvars.domain}`)";
@@ -114,13 +107,6 @@ in
             entryPoints = [ "websecure" ];
             middlewares = [ "authelia-auth" ];
             service = "garage-webui";
-            tls = { };
-          };
-          nextcloud = {
-            rule = "Host(`nextcloud.${myvars.domain}`)";
-            entryPoints = [ "websecure" ];
-            middlewares = [ "nextcloud-hsts" ];
-            service = "nextcloud";
             tls = { };
           };
         };
@@ -167,10 +153,6 @@ in
                 "http://127.0.0.1:${port}"; # Default :3909
             }
           ];
-          nextcloud.loadBalancer = {
-            servers = [ { url = "http://127.0.0.1:8080"; } ];
-            healthCheck.path = "/status.php";
-          };
         };
       };
     };
