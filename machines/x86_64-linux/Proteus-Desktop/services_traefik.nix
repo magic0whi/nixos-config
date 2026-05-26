@@ -80,13 +80,6 @@ in
             service = "sb-dashboard";
             tls = { };
           };
-          syncthing = {
-            rule = "Host(`syncthing-desktop.${myvars.domain}`)";
-            entryPoints = [ "websecure" ];
-            middlewares = [ "authelia-auth" ];
-            service = "syncthing-dashboard";
-            tls = { };
-          };
           s3 = {
             rule = ''Host(`s3.${myvars.domain}`) || HostRegexp(`^[^.]+\.s3\.${lib.escapeRegex myvars.domain}$`)'';
             entryPoints = [ "websecure" ];
@@ -112,11 +105,6 @@ in
         };
         services = {
           sb-dashboard.loadBalancer.servers = [ { url = "http://127.0.0.1:9091"; } ];
-          syncthing-dashboard.loadBalancer = {
-            passHostHeader = false;
-            servers = [ { url = "http://${config.home-manager.users.${myvars.username}.services.syncthing.guiAddress}"; } ];
-            healthCheck.path = "/rest/noauth/health";
-          };
           s3.loadBalancer =
             let
               cfg = config.services.garage.settings;
