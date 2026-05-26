@@ -59,6 +59,6 @@ in
       service = "caddy";
       tls = { };
     };
-    services.caddy.loadBalancer.servers = [ { url = "http://127.0.0.1:${caddy_port}"; } ];
+    services.caddy.loadBalancer.servers = [ { url = "http://127.0.0.1:${toString caddy_port}"; } ];
   };
 }
