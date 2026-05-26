@@ -159,7 +159,9 @@ in
       tls = { };
     };
     services.forgejo.loadBalancer = {
-      servers = [ { url = "http://127.0.0.1:${toString config.services.forgejo.settings.server.HTTP_PORT}"; } ];
+      servers = [
+        { url = "http://127.0.0.1:${toString config.services.forgejo.settings.server.HTTP_PORT}"; }
+      ];
       healthCheck.path = "/api/healthz";
     };
   };

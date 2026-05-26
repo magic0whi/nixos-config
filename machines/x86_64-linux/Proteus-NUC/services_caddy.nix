@@ -1,13 +1,13 @@
 {
   config,
   lib,
-  mylib,
   myvars,
   pkgs,
   ...
 }:
 let
   web_root = "/srv/www";
+  caddy_port = 8080;
 in
 {
   services.caddy = {
@@ -15,16 +15,28 @@ in
     # Caddy doesn't need to bind to public ports (80/443) since Traefik handles that. We can tell Caddy's global config
     # not to attempt ACME/HTTPS bindings.
     globalConfig = "auto_https off";
-    virtualHosts."http://notebook.${myvars.domain}:8080" = {
-      listenAddresses = [
-        "127.0.0.1"
-        "[::1]"
-      ];
-      extraConfig = ''
-        # respond "Hello, world!" # For debug
-        root * ${web_root}
-        file_server
-      '';
+    virtualHosts = {
+      "http://notebook.${myvars.domain}:${toString caddy_port}" = {
+        listenAddresses = [
+          "127.0.0.1"
+          "[::1]"
+        ];
+        extraConfig = ''
+          # respond "Hello, world!" # For debug
+          root * ${web_root}/notebook
+          file_server
+        '';
+      };
+      "http://nixos-search.${myvars.domain}:${toString caddy_port}" = {
+        listenAddresses = [
+          "127.0.0.1"
+          "[::1]"
+        ];
+        extraConfig = ''
+          root * ${web_root}/nixos-search
+          file_server
+        '';
+      };
     };
   };
   # For CI deploy
@@ -38,20 +50,15 @@ in
     routers.notebook = {
       rule = "Host(`notebook.${myvars.domain}`)";
       entryPoints = [ "websecure" ];
-      service = "notebook";
+      service = "caddy";
       tls = { };
     };
-    services.notebook.loadBalancer.servers = [
-      {
-        url =
-          let
-            find_first_infix =
-              key: set:
-              builtins.elemAt (lib.attrNames set) (lib.lists.findFirstIndex (i: lib.hasInfix key i) null (lib.attrNames set));
-            port = toString (mylib.get_uri_port (find_first_infix "notebook.${myvars.domain}" config.services.caddy.virtualHosts));
-          in
-          "http://127.0.0.1:${port}";
-      }
-    ];
+    routers.nixos-search = {
+      rule = "Host(`nixos-search.${myvars.domain}`)";
+      entryPoints = [ "websecure" ];
+      service = "caddy";
+      tls = { };
+    };
+    services.caddy.loadBalancer.servers = [ { url = "http://127.0.0.1:${caddy_port}"; } ];
   };
 }

@@ -28,21 +28,22 @@
             "ns1"
           ];
           CNAME = [
-            "aria2"
-            "atuin"
-            "auth"
-            "git"
-            "hass"
+            "aria2" # TODO: Move to Proteus-Desktop
+            "atuin" # TODO: Move to Proteus-Desktop
+            "auth" # TODO: Move to Proteus-Desktop
+            "git" # # TODO: Move to Proteus-Desktop, keep runners on Proteus-NUC
+            "hass" # TODO: Move to Proteus-Desktop
             "immich"
             "jellyfin"
-            "ldap"
-            "navidrome"
-            "notebook"
+            "ldap" # TODO: Move to Proteus-Desktop
+            "navidrome" # TODO: Move to Proteus-Desktop
+            "nixos-search"
+            "notebook" # TODO: Move to Proteus-Desktop
             "paperless"
             "papra"
-            "plane"
-            "postgresql"
-            "ql"
+            "plane" # TODO: Move to Proteus-Desktop
+            "postgresql" # TODO: Move to Proteus-Desktop
+            "ql" # TODO: Move to Proteus-Desktop
             "sb"
             "sunshine"
             "syncthing"
