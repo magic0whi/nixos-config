@@ -53,9 +53,9 @@
       # url = "path:/Users/proteus/Works/Reference/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Pinned as of 2026-04-07 06:59, tag v25.11
+    # Pinned as of 2026-05-27 00:24,
     catppuccin = {
-      url = "github:catppuccin/nix/v25.11";
+      url = "github:catppuccin/nix/823da4d4f1160d7ac395fe459a4e33d9dfe57bb2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # Pinned as of 2026-04-07 06:59, tag v1.13.0

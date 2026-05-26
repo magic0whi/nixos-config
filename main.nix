@@ -12,17 +12,7 @@ let
   for_each_system =
     f: lib.genAttrs (builtins.attrNames (nixos_systems // darwin_systems)) (system: f nixpkgs.legacyPackages.${system});
 
-  treefmt_eval = for_each_system (
-    pkgs:
-    treefmt-nix.lib.evalModule pkgs (_: {
-      projectRootFile = "flake.nix"; # Used to find the project root
-      programs.nixfmt = {
-        enable = true;
-        width = 120;
-        package = nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system}.nixfmt;
-      };
-    })
-  );
+  treefmt_eval = for_each_system (pkgs: treefmt-nix.lib.evalModule pkgs (import ./treefmt.nix pkgs));
 
   args_fn =
     let
@@ -76,7 +66,7 @@ in
   };
   # Merge all the machines into a single attribute set (Multi-arch)
   nixosConfigurations = lib.mergeAttrsList (map (i: i.nixos_configurations or { }) nixos_systems_values);
-  # Packages: iso images
+  # Packages: iso images, TODO, derive ISO from a machine's config is a bad idea
   packages = lib.genAttrs (builtins.attrNames nixos_systems) (system: nixos_systems.${system}.packages or { });
   darwinConfigurations = lib.mergeAttrsList (map (i: i.darwin_configurations or { }) darwin_systems_values);
   deploy = {
@@ -87,7 +77,7 @@ in
   # Currently deploy_checks broken on MacOS
   checks =
     let
-      deploy_checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
+      deploy_checks = builtins.mapAttrs (deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
       my_checks = for_each_system (
         pkgs:
         let

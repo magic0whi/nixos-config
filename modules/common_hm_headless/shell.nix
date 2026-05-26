@@ -77,8 +77,7 @@
     Co = "wl-paste";
     Coimg = "Co --type image";
   };
-  # TODO: Re-enable
-  # catppuccin.fzf.enable = false; # catppuccin fzf is prone to fail on macOS
+  catppuccin.fzf.enable = false; # catppuccin fzf is prone to fail on macOS
   programs = {
     zsh = {
       enable = true;
