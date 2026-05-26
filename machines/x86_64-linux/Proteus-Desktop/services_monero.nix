@@ -4,7 +4,6 @@
   ...
 }:
 {
-  ## BEGIN services_monero.nix
   systemd.services.monero.unitConfig.RequiresMountsFor = [ myvars.storage_path ];
   services.monero = {
     enable = true;
@@ -22,5 +21,4 @@
     rpc.address = "0.0.0.0";
     rpc.restricted = true;
   };
-  ## END services_monero.nix
 }
