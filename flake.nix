@@ -3,13 +3,13 @@
   inputs = {
     # Pinned as of 2026-05-04 17:55, branch: nixos-unstable
     # nixpkgs.url = "github:NixOS/nixpkgs/15f4ee454b1dce334612fa6843b3e05cf546efab";
-    # Pinned as of 2026-05-20 17:24
     nixpkgs.url = "github:magic0whi/nixpkgs/main";
+    # nixpkgs.url = "path:/home/proteus/Works/Reference/nixpkgs";
     # Pinned as of 2026-04-14 17:55, branch: nixos-unstable
     # nixpkgs-postgresql.url = "github:NixOS/nixpkgs/4c1018dae018162ec878d42fec712642d214fdfa";
-    # Pinned as of 2026-05-22 04:08, branch: master
+    # Pinned as of 2026-05-26 19:37, branch: master
     home-manager = {
-      url = "github:nix-community/home-manager/928d72376949e222ea4f07b44828a55b0136422e";
+      url = "github:nix-community/home-manager/1a95e2efb477959b70b4a14c51035975c0481df6";
       # The `follows` keyword in inputs is used for inheritance.
       # Here, `inputs.nixpkgs` of home-manager is kept consistent with the
       # `inputs.nixpkgs` of the current flake, to avoid problems caused by
