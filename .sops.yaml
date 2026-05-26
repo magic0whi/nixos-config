@@ -17,7 +17,7 @@ keys:
 # TIP:Use recovery key if lost access to secret keys
 # SOPS_AGE_KEY=$(nix run nixpkgs#ssh-to-age -- -private-key -i ~/path/to/recovery.priv.key)
 creation_rules:
-## BEGIN Common
+  ## BEGIN Common
   - path_regex: secrets/common\.sops\.yaml$
     key_groups:
       - pgp: [*openpgp]
@@ -32,41 +32,54 @@ creation_rules:
           - *Proteus-NixOS-4
           - *Proteus-NixOS-5
   - path_regex: secrets/sb_client_linux\.json\.sops$
-    key_groups: [{pgp: [*openpgp], age: [*Proteus-NUC, *Proteus-Desktop]}]
+    key_groups: [{ pgp: [*openpgp], age: [*Proteus-NUC, *Proteus-Desktop] }]
   - path_regex: secrets/proteus_server\.priv\.pem\.sops$
-    key_groups: [{pgp: [*openpgp], age: [*Proteus-NUC, *Proteus-MBP14M4P, *Proteus-Desktop]}]
-## END Common
-## BEGIN GCP Compute Engines
+    key_groups:
+      [
+        {
+          pgp: [*openpgp],
+          age: [*Proteus-NUC, *Proteus-MBP14M4P, *Proteus-Desktop],
+        },
+      ]
+  ## END Common
+  ## BEGIN GCP Compute Engines
   - path_regex: secrets/sb_Proteus-NixOS-1\.json\.sops$
     key_groups:
       - pgp: [*openpgp]
         age:
-          [*Proteus-NixOS-0, *Proteus-NixOS-1, *Proteus-NixOS-2, *Proteus-NixOS-3, *Proteus-NixOS-4, *Proteus-NixOS-5]
-## END GCP Compute Engines
-## BEGIN Proteus-NUC
+          [
+            *Proteus-NixOS-0,
+            *Proteus-NixOS-1,
+            *Proteus-NixOS-2,
+            *Proteus-NixOS-3,
+            *Proteus-NixOS-4,
+            *Proteus-NixOS-5,
+          ]
+  ## END GCP Compute Engines
+  ## BEGIN Proteus-NUC
   - path_regex: secrets/Proteus-NUC\.sops\.yaml$
-    key_groups: [{pgp: [*openpgp], age: [*Proteus-NUC]}]
+    key_groups: [{ pgp: [*openpgp], age: [*Proteus-NUC] }]
   - path_regex: secrets/authelia_oidc_rsa\.pem.sops$
-    key_groups: [{pgp: [*openpgp], age: [*Proteus-NUC]}]
-## END Proteus-NixOS
-## BEGIN Proteus-MBP14M4P
+    key_groups: [{ pgp: [*openpgp], age: [*Proteus-NUC] }]
+  ## END Proteus-NixOS
+  ## BEGIN Proteus-MBP14M4P
   - path_regex: secrets/sb_client_darwin\.json\.sops$
-    key_groups: [{pgp: [*openpgp], age: [*Proteus-MBP14M4P]}]
-## END Proteus-MBP14M4P
-## BEGIN Proteus-Desktop
+    key_groups: [{ pgp: [*openpgp], age: [*Proteus-MBP14M4P] }]
+  ## END Proteus-MBP14M4P
+  ## BEGIN Proteus-Desktop
   - path_regex: secrets/Proteus-Desktop\.sops\.yaml$
-    key_groups: [{pgp: [*openpgp], age: [*Proteus-Desktop]}]
+    key_groups: [{ pgp: [*openpgp], age: [*Proteus-Desktop] }]
   - path_regex: secrets/Proteus-Desktop_syncthing\.priv\.pem\.sops$
-    key_groups: [{pgp: [*openpgp], age: [*Proteus-Desktop]}]
-## END Proteus-Desktop
-## BEGIN Trusted Machines (HM)
+    key_groups: [{ pgp: [*openpgp], age: [*Proteus-Desktop] }]
+  ## END Proteus-Desktop
+  ## BEGIN Trusted Machines (HM)
   # NOTE: for user secrets host ssh key cannot be accessed by a regular user
   - path_regex: secrets/nix_secret\.key\.sops$
     key_groups: [pgp: [*openpgp]]
   - path_regex: secrets/common_hm\.sops\.yaml$
     key_groups: [pgp: [*openpgp]]
-## END Trusted Machines (HM)
-## BEGIN Proteus-NUC (HM)
+  ## END Trusted Machines (HM)
+  ## BEGIN Proteus-NUC (HM)
   # TIP: Encrypt in-place since sops matches inputs files for `path_regex`
   # sops encrypt -i secrets/syncthing_proteus-nuc.priv.pem.age
   # TIP: To edit, run
@@ -77,8 +90,8 @@ creation_rules:
     key_groups: [pgp: [*openpgp]]
   - path_regex: secrets/gcloud_project-1\.secret\.json\.sops$
     key_groups: [pgp: [*openpgp]]
-## END Proteus-NUC (HM)
-## BEGIN Proteus-MBP14M4P (HM)
+  ## END Proteus-NUC (HM)
+  ## BEGIN Proteus-MBP14M4P (HM)
   # Encrypt in-place since sops matches inputs files for `path_regex`
   # sops encrypt -i secrets/syncthing_proteus-nuc.priv.pem.age
   # To edit, run

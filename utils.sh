@@ -8,7 +8,7 @@ set -eufo pipefail
 nixos-switch() {
   local name="$1"
   local mode="$2"
-  if [[ "$mode" == "debug" ]]; then
+  if [[ $mode == "debug" ]]; then
     # show details via nix-output-monitor
     nom build ".#nixosConfigurations.$name.config.system.build.toplevel" --show-trace --verbose
     nixos-rebuild switch --sudo --flake ".#$name" --show-trace --verbose
@@ -26,10 +26,10 @@ darwin-build() {
   local mode="$2"
   local target=".#darwinConfigurations.$name.system"
 
-  if [[ "$mode" == "debug" ]]; then
-      nom build "$target" --extra-experimental-features "nix-command flakes" --show-trace --verbose
+  if [[ $mode == "debug" ]]; then
+    nom build "$target" --extra-experimental-features "nix-command flakes" --show-trace --verbose
   else
-      nix build "$target" --extra-experimental-features "nix-command flakes"
+    nix build "$target" --extra-experimental-features "nix-command flakes"
   fi
 }
 
@@ -42,7 +42,7 @@ darwin-switch() {
   local mode="$2"
   local flake_path=".#$name"
 
-  if [[ "$mode" == "debug" ]]; then
+  if [[ $mode == "debug" ]]; then
     sudo darwin-rebuild switch --flake "$flake_path" --show-trace --verbose
   else
     sudo darwin-rebuild switch --flake "$flake_path"
@@ -61,7 +61,7 @@ upload-vm() {
   local name="$1"
   local mode="$2"
   local target=".#$name"
-  if [[ "$mode" == "debug" ]]; then
+  if [[ $mode == "debug" ]]; then
     nom build $target --show-trace --verbose
   else
     nix build $target

@@ -43,13 +43,13 @@ Personal NixOS and nix-darwin system configurations managed as a Flake, featurin
 
 ## Hosts
 
-| Hostname | Type | Architecture | Storage |
-| --- | --- | --- | --- |
-| Proteus-Desktop | Workstation | x86_64-linux | ZFS on LUKS |
-| Proteus-NUC | Home Server | x86_64-linux | ZFS on LUKS |
-| Proteus-NixOS-{0..5} | VPS Instances | x86_64-linux | Btrfs |
-| Proteus-MBP14M4P | Laptop | aarch64-darwin | APFS |
-| Proteus-VF2 | SBC | riscv64-linux | ZFS with Impermanence |
+| Hostname             | Type          | Architecture   | Storage               |
+| -------------------- | ------------- | -------------- | --------------------- |
+| Proteus-Desktop      | Workstation   | x86_64-linux   | ZFS on LUKS           |
+| Proteus-NUC          | Home Server   | x86_64-linux   | ZFS on LUKS           |
+| Proteus-NixOS-{0..5} | VPS Instances | x86_64-linux   | Btrfs                 |
+| Proteus-MBP14M4P     | Laptop        | aarch64-darwin | APFS                  |
+| Proteus-VF2          | SBC           | riscv64-linux  | ZFS with Impermanence |
 
 ## Installation
 
@@ -61,28 +61,37 @@ Personal NixOS and nix-darwin system configurations managed as a Flake, featurin
 ### Steps
 
 1. **Clone this repository:**
-  ```bash
-  git clone --depth=1 https://github.com/magic0whi/nixos_configs_flake.git
-  cd nixos_configs_flake
-  ```
+
+```bash
+git clone --depth=1 https://github.com/magic0whi/nixos_configs_flake.git
+cd nixos_configs_flake
+```
+
 2. **Review and customize disko configuration:**
-  ```bash
-  hx machines/<system>/<hostname>/disko-config.nix
-  ```
+
+```bash
+hx machines/<system>/<hostname>/disko-config.nix
+```
+
 3. **Generate & Modify `hardware-configuration.nix`**
-  ```bash
-  sudo nixos-generate-config --show-hardware-config
-  ```
+
+```bash
+sudo nixos-generate-config --show-hardware-config
+```
+
 4. **Install NixOS:**
-  ```bash
-  sudo nixos-install --flake .#<hostname>
-  ```
+
+```bash
+sudo nixos-install --flake .#<hostname>
+```
+
 5. **Move critical files to `/mnt/persistent`:**
-  ```bash
-  sudo mv /mnt/etc/ssh/* /mnt/persistent/etc/ssh/
-  sudo mv /mnt/etc/machine-id /mnt/persistent/etc/machine-id
-  sudo mv /mnt/var/l{ib,og} /mnt/persistent/var/
-  ```
+
+```bash
+sudo mv /mnt/etc/ssh/* /mnt/persistent/etc/ssh/
+sudo mv /mnt/etc/machine-id /mnt/persistent/etc/machine-id
+sudo mv /mnt/var/l{ib,og} /mnt/persistent/var/
+```
 
 Or use `nixos-anywhere` for unattended installation (example using `Proteus-NixOS-0`):
 
@@ -98,7 +107,7 @@ nix run nixpkgs#nixos-anywhere -- -f .#Proteus-NixOS-0 --phases install root@100
 nix run nixpkgs#nixos-anywhere -- -f .#Proteus-NixOS-0 --phases reboot root@100.74.72.29
 ```
 
-*(Note: IP `100.74.72.29` corresponds to `Proteus-NixOS-0` configured in `vars/networking.nix`)*
+_(Note: IP `100.74.72.29` corresponds to `Proteus-NixOS-0` configured in `vars/networking.nix`)_
 
 ## Usage
 
@@ -128,6 +137,7 @@ zfs list -o name,mountpoint,encryption,canmount,mounted -t filesystem,snapshot
 ## Structure
 
 The repository is organized to separate machine-specific hardware configurations from reusable system modules.
+
 ```plaintext
 .
 ├── flake.nix                  # Main flake configuration
@@ -177,11 +187,13 @@ Each NVMe drive has a LUKS container, then ZFS pools are created across the unlo
 ### Quick Debug
 
 Use the first machine as-is:
+
 ```bash
 nix-repl> (builtins.head _DEBUG.nixos_systems.x86_64-linux._DEBUG.machines)._DEBUG.myvars.networking.hosts_addr.Proteus-NUC
 ```
 
 Or find the specific machine:
+
 ```bash
 nix-repl> (builtins.elemAt _DEBUG.nixos_systems.x86_64-linux._DEBUG.machines 1)._DEBUG.name
 "Proteus-NUC"
@@ -205,8 +217,10 @@ MIT
 ## Acknowledgments
 
 Inspired by:
+
 - [NixOS & Flakes Book](https://nixos-and-flakes.thiscute.world/)
 - [ryan4yin/nix-config](https://github.com/ryan4yin/nix-config)
 
 ASCII Logo:
+
 - [darwin-nix](https://github.com/nix-darwin/nix-darwin)

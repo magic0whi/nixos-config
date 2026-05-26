@@ -7,7 +7,6 @@
 #   - https://docs.flatpak.org/en/latest/sandbox-permissions.html
 # - wechat-uos's flatpak manifest: https://github.com/flathub/com.tencent.WeChat/blob/master/com.tencent.WeChat.yaml
 {
-  lib,
   pkgs,
   mkNixPak,
   ...

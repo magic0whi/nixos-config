@@ -1,4 +1,7 @@
-{ myvars, ... }:
+{
+  # myvars,
+  ...
+}:
 {
   # NixOS's Configuration for Remote Building / Distributed Building
   #
@@ -13,25 +16,25 @@
   # nix.settings.max-jobs = 0;
   nix.distributedBuilds = true;
   nix.buildMachines =
-    let
-      sshUser = myvars.username;
-      # ssh key's path on local machine
-      # sshKey = "/srv/sync_work/3keys/pgp2ssh.priv.key";
-      systems = [
-        # Native arch
-        "x86_64-linux"
-        # Emulated arch using binfmt_misc and qemu-user
-        "aarch64-linux"
-        "riscv64-linux"
-      ];
-      # all available system features are poorly documentd here:
-      # https://github.com/NixOS/nix/blob/e503ead/src/libstore/globals.hh#L673-L687
-      supportedFeatures = [
-        "benchmark"
-        "big-parallel"
-        "kvm"
-      ];
-    in
+    # let
+    #   sshUser = myvars.username;
+    #   # ssh key's path on local machine
+    #   # sshKey = "/srv/sync_work/3keys/pgp2ssh.priv.key";
+    #   systems = [
+    #     # Native arch
+    #     "x86_64-linux"
+    #     # Emulated arch using binfmt_misc and qemu-user
+    #     "aarch64-linux"
+    #     "riscv64-linux"
+    #   ];
+    #   # all available system features are poorly documentd here:
+    #   # https://github.com/NixOS/nix/blob/e503ead/src/libstore/globals.hh#L673-L687
+    #   supportedFeatures = [
+    #     "benchmark"
+    #     "big-parallel"
+    #     "kvm"
+    #   ];
+    # in
     [
       # Nix seems always try to build on the machine remotely
       # to make use of the local machine's high-performance CPU, do not set remote builder's maxJobs too high.
