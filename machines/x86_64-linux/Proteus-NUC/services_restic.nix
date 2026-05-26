@@ -95,7 +95,7 @@
       };
     };
   systemd.tmpfiles.settings = {
-    "01-acl-srv-immich-backups-default"."${config.services.immich.mediaLocation}/backups"."A+".argument = "d:g:storage:rX";
-    "01-acl-srv-immich-backups"."${config.services.immich.mediaLocation}/backups".A.argument = "g:storage:rX";
+    "01-acl-srv-immich-backups-default".${config.services.immich.mediaLocation}."A+".argument = "d:g:storage:rX";
+    "01-acl-srv-immich-backups".${config.services.immich.mediaLocation}.A.argument = "g:storage:rX";
   };
 }
