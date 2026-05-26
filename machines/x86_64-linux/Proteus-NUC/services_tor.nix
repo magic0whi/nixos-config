@@ -1,10 +1,10 @@
+# TODO move to Proteus-Desktop
 {
   lib,
   pkgs,
   ...
 }:
 {
-  ## BEGIN services_tor.nix
   services.tor = {
     enable = true;
     client.enable = true;
@@ -22,5 +22,4 @@
       ];
     };
   };
-  ## END services_tor.nix
 }
