@@ -77,7 +77,7 @@ in
   # Currently deploy_checks broken on MacOS
   checks =
     let
-      deploy_checks = builtins.mapAttrs (deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
+      deploy_checks = builtins.mapAttrs (_: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
       my_checks = for_each_system (
         pkgs:
         let

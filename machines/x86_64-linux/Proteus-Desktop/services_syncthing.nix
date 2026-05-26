@@ -33,7 +33,7 @@
         # Import all known hosts that has attr `syncthing_id` but filter out self
         devices =
           mobile_devices
-          // (builtins.mapAttrs (n: v: { id = v.syncthing_id; }) (
+          // (builtins.mapAttrs (_: v: { id = v.syncthing_id; }) (
             lib.filterAttrs (n: v: v ? syncthing_id && n != config.networking.hostName) myvars.networking.known_hosts
           ));
         folders = {

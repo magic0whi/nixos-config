@@ -100,7 +100,7 @@ in
             ++ lib.lowerChars
             ++ lib.upperChars
             ++ lib.stringToCharacters "0123456789";
-            gen_empt_lst = len: builtins.genList (e: "") (builtins.length len);
+            gen_empt_lst = len: builtins.genList (_: "") (builtins.length len);
             # `builtins.replaceStrings` filters `safe_chars` out
             unsafe_chars = lib.stringToCharacters (builtins.replaceStrings safe_chars (gen_empt_lst safe_chars) path);
             safe_name = builtins.replaceStrings unsafe_chars (gen_empt_lst unsafe_chars) path;
