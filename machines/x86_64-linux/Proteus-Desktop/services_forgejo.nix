@@ -27,9 +27,10 @@
   services.forgejo = {
     enable = true;
     database = {
-      type = "postgres"; # Module will automatically provision PostgreSQL
-      # Prefer UNIX Domain Socket if this is not null
-      socket = "/run/postgresql";
+      type = "postgres";
+      # socket = "/run/postgresql"; # The module will prefer UNIX Domain Socket if this is not null
+      createDatabase = false; # Must be disabled if using remote DB
+      host = "postgresql.${myvars.domain}";
       passwordFile = config.sops.secrets.forgejo_db_password.path;
     };
     lfs.enable = true;
