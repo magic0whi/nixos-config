@@ -5,7 +5,10 @@
   ...
 }:
 let
-  inherit (myvars.base) nixpkgs_modules;
+  inherit (myvars.base)
+    nixpkgs_modules
+    # hm_modules
+    ;
   name = baseNameOf ./.;
   nixos_system = lib.nixosSystem (
     mylib.gen_system_args {
@@ -14,6 +17,7 @@ let
         mylib
         myvars
         nixpkgs_modules
+        # hm_modules
         ;
       machine_path = ./.;
     }

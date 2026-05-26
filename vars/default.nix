@@ -58,6 +58,9 @@
       "modules/nixos_headless/sing-box.nix"
       "modules/nixos_headless/traffic-quota.nix"
     ];
+    hm_modules = map mylib.relative_to_root [
+      "modules/common_hm_headless/misc.nix"
+    ];
   };
   ## END pkgs agnostic functions
   ## BEGIN pkgs dependent variables
