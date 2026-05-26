@@ -276,19 +276,8 @@ in
       authelia_port = toString (mylib.get_uri_port config.services.authelia.instances.main.settings.server.address);
     in
     {
-      middlewares.authelia-auth.forwardAuth = {
-        # Tell Traefik where to ask whether a user is authenticated
-        address = "http://127.0.0.1:${authelia_port}/api/authz/forward-auth?authelia_url=https://auth.${myvars.domain}/";
-        trustForwardHeader = true;
-        authResponseHeaders = [
-          "Remote-User"
-          "Remote-Groups"
-          "Remote-Email"
-          "Remote-Name"
-        ];
-      };
+      middlewares.authelia-auth.forwardAuth.address = "http://127.0.0.1:${authelia_port}/api/authz/forward-auth?authelia_url=https://auth.${myvars.domain}/";
       # Router for the login portal
-      # `tls = {}` enables TLS using the default cert provided above
       routers.authelia = {
         rule = "Host(`auth.${myvars.domain}`)";
         entryPoints = [ "websecure" ];

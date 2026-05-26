@@ -43,10 +43,10 @@
             "plane" # TODO: Move to Proteus-Desktop
             "postgresql" # TODO: Move to Proteus-Desktop
             "ql" # TODO: Move to Proteus-Desktop
-            "sb"
+            "sb-nuc"
             "sunshine"
-            "syncthing"
-            "traefik"
+            "syncthing-nuc"
+            "traefik-nuc"
             # "sftpgo"
           ];
         };

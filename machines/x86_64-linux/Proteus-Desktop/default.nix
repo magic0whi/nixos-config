@@ -10,6 +10,7 @@ let
     myvars.base.nixpkgs_modules
     ++ (map mylib.relative_to_root [
       "modules/nixos_headless/packages.nix"
+      "modules/nixos_headless/services_traefik.nix"
 
       "modules/nixos_gui/kmscon.nix"
     ]);
