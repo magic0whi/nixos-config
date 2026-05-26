@@ -173,6 +173,9 @@
   };
 
   services.resolved.settings.Resolve = {
+    # This triggers recursive queries to the apex domain, which slows down domestic sites. It can also completely break
+    # your internet access if the proxy server goes down while systemd-resolved is fetching DS records for proxied apex
+    # domains like "com"
     DNSSEC = "allow-downgrade";
     Domains = [
       "~${myvars.domain}" # The '~' prefix makes this a routing domain
