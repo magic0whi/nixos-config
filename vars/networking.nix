@@ -31,7 +31,6 @@
             "aria2" # TODO: Move to Proteus-Desktop
             "atuin" # TODO: Move to Proteus-Desktop
             "auth" # TODO: Move to Proteus-Desktop
-            "git" # # TODO: Move to Proteus-Desktop, keep runners on Proteus-NUC
             "hass" # TODO: Move to Proteus-Desktop
             "immich"
             "jellyfin"
@@ -73,6 +72,7 @@
         ipv6 = "fd7a:115c:a1e0::1a01:e318";
         domains.CNAME = [
           "garage"
+          "git"
           "monero"
           "nextcloud"
           "sb-desktop"
