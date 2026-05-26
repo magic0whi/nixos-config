@@ -86,6 +86,23 @@ in
     };
   };
   systemd.services = lib.mkMerge [
+    # Wait for LDAP Online
+    {
+      forgejo = {
+        wants = [ "network-online.target" ];
+        after = [ "network-online.target" ];
+        preStart = lib.mkBefore ''
+          set -eufo pipefail
+
+          echo "Waiting for LDAP (ldap.${myvars.domain}) to be ready..."
+          while ! ${lib.getExe pkgs.netcat} -z ldap.proteus.eu.org 636; do
+            sleep 2
+          done
+          echo "LDAP is online, proceeding with Forgejo startup."
+        '';
+      };
+    }
+    # Add OIDC
     {
       forgejo = {
         preStart = ''
