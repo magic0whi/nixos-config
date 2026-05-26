@@ -11,6 +11,7 @@
 {
   config,
   lib,
+  mylib,
   myvars,
   pkgs,
   ...
@@ -104,6 +105,67 @@
       Environment = [
         "PORT=3909"
         "CONFIG_PATH=${(pkgs.formats.toml { }).generate "config.toml" config.services.garage.settings}"
+      ];
+    };
+  };
+  services.traefik.dynamicConfigOptions.http = {
+    routers = {
+      s3 = {
+        rule = ''Host(`s3.${myvars.domain}`) || HostRegexp(`^[^.]+\.s3\.${lib.escapeRegex myvars.domain}$`)'';
+        entryPoints = [ "websecure" ];
+        service = "s3";
+        tls = { };
+      };
+      s3-pub = {
+        rule = ''Host(`s3-pub.${myvars.domain}`) || HostRegexp(`^[^.]+\.s3-pub\.${lib.escapeRegex myvars.domain}$`)'';
+        entryPoints = [ "websecure" ];
+        service = "s3-pub";
+        tls = { };
+      };
+      garage-webui = {
+        rule = "Host(`garage.${myvars.domain}`)";
+        entryPoints = [ "websecure" ];
+        middlewares = [ "authelia-auth" ];
+        service = "garage-webui";
+        tls = { };
+      };
+    };
+    services = {
+      s3.loadBalancer =
+        let
+          cfg = config.services.garage.settings;
+        in
+        {
+          servers = [ { url = "http://${cfg.s3_api.api_bind_addr}"; } ]; # Default :3900
+          # Probe the admin port
+          healthCheck = {
+            port = toString (mylib.get_uri_port cfg.admin.api_bind_addr);
+            path = "/health";
+          };
+        };
+      s3-pub.loadBalancer =
+        let
+          cfg = config.services.garage.settings;
+        in
+        {
+          servers = [ { url = "http://${cfg.s3_web.bind_addr}"; } ]; # Default :3902
+          # Probe the admin port
+          healthCheck = {
+            port = toString (mylib.get_uri_port cfg.admin.api_bind_addr);
+            path = "/health";
+          };
+        };
+      garage-webui.loadBalancer.servers = [
+        {
+          url =
+            let
+              find_first_prefix = key: list: builtins.elemAt list (lib.lists.findFirstIndex (i: lib.hasPrefix key i) null list);
+              port = lib.last (
+                lib.splitString "=" (find_first_prefix "PORT=" config.systemd.services.garage-webui.serviceConfig.Environment)
+              );
+            in
+            "http://127.0.0.1:${port}"; # Default :3909
+        }
       ];
     };
   };
