@@ -75,7 +75,10 @@
         {
           name = "nix";
           auto-format = true;
-          formatter.command = "nixfmt";
+          formatter = {
+            command = "nixfmt";
+            args = [ "--width=120" ];
+          };
         }
         {
           name = "cpp";
