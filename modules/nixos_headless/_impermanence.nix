@@ -5,7 +5,9 @@
   ...
 }:
 {
-  # NOTE: Impermance can not coexist with nixos-generators, don't import this file if you wanna generate bootable iso
+  # NOTE:
+  # - Impermance can not coexist with nixos-generators, don't import this file if you wanna generate bootable iso
+  # - Impermance is not compatible with `system.etc.overlay.enable`
   # TIP: to show impermanence usage, run `sudo ncdu -x /`
   config = lib.mkIf (config.environment ? persistence) {
     # There are two ways to clear the root filesystem on every boot:

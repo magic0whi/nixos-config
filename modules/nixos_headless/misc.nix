@@ -10,7 +10,7 @@
   boot.loader.efi.canTouchEfiVariables = lib.mkDefault true; # Allow installation process to modify EFI boot variables
   boot.loader.systemd-boot = {
     enable = lib.mkDefault true;
-    configurationLimit = 4; # Limit the boot loader entries
+    configurationLimit = 8; # Limit the boot loader entries
     consoleMode = "max";
   };
   ## END bootloader.nix
@@ -136,9 +136,13 @@
     };
   };
   ## END users.nix
-  ## BEGIN zram.nix
+  ## BEGIN tweaks.nix
   zramSwap.enable = true;
-  ## END zram.nix
+  systemd.oomd.settings.OOM = {
+    DefaultMemoryPressureLimit = "75%";
+    DefaultMemoryPressureDurationSec = "10s";
+  };
+  ## END tweaks.nix
   ## BEGIN security.nix
   # Without polkit, sing-box can't interact with systemd-resolved
   security = {
