@@ -52,7 +52,6 @@
       # insomnia # REST client
       # wireshark # Network analyzer
 
-      super-productivity
       nuclear
 
       # Video/audio tools
@@ -61,5 +60,6 @@
     ++ (lib.optionals pkgs.stdenv.isLinux [
       # blender
       inkscape # Vector graphics
+      super-productivity
     ]);
 }
