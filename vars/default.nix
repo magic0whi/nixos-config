@@ -5,7 +5,7 @@
   userfullname = "Proteus Qian";
   useremail = "sudaku233@outlook.com";
   nixos_state_version = "26.05";
-  darwin_state_version = 6;
+  darwin_state_version = 7;
   github_username = "magic0whi";
   secrets_dir = mylib.relative_to_root "secrets";
   domain = "proteus.eu.org";
