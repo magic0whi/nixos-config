@@ -21,6 +21,7 @@ let
     }
     # 10-bit will cause the internal monitor flickering when using sync mode
     // lib.optionalAttrs config.wayland.windowManager.hyprland.nvidia_sync { bitdepth = 8; };
+
   monitor_1 = monitor_cfg // {
     output = "DP-3";
     position = "auto-up";

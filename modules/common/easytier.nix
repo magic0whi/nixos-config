@@ -11,26 +11,27 @@
       restartUnits = map (name: "easytier-${name}.service") (builtins.attrNames config.services.easytier.instances);
       sopsFile = "${myvars.secrets_dir}/common.sops.yaml";
     in
-    {
-      secrets = {
-        "easytier_network_secret" = {
-          inherit sopsFile;
-        }
-        // lib.optionalAttrs (!pkgs.stdenv.isDarwin) { inherit restartUnits; };
-        "easytier_peer_0" = {
-          inherit sopsFile;
-        }
-        // lib.optionalAttrs (!pkgs.stdenv.isDarwin) { inherit restartUnits; };
+    lib.mapAttrsRecursiveCond (as: !(as ? sopsFile || as ? content))
+      (
+        _: as:
+        lib.mkMerge [
+          as
+          (lib.optionalAttrs (!pkgs.stdenv.isDarwin) { inherit restartUnits; })
+        ]
+      )
+      {
+        secrets = {
+          "easytier_network_secret" = { inherit sopsFile; };
+          "easytier_peer_0" = { inherit sopsFile; };
+        };
+        templates."easytier.env" = {
+          content = ''
+            ET_NETWORK_SECRET=${config.sops.placeholder.easytier_network_secret}
+            # ET_PEERS uses comma delimiter
+            ET_PEERS=udp://${config.sops.placeholder.easytier_peer_0}
+          '';
+        };
       };
-      templates."easytier.env" = {
-        content = ''
-          ET_NETWORK_SECRET=${config.sops.placeholder.easytier_network_secret}
-          # ET_PEERS uses comma delimiter
-          ET_PEERS=udp://${config.sops.placeholder.easytier_peer_0}
-        '';
-      }
-      // lib.optionalAttrs (!pkgs.stdenv.isDarwin) { inherit restartUnits; };
-    };
   services.easytier = {
     enable = true;
     allowSystemForward = true;
@@ -53,11 +54,13 @@
       };
       extraSettings = {
         ipv6 = "${builtins.elemAt (map (i: i.ipv6) myvars.networking.hosts_addr.${config.networking.hostName}) 1}/64";
-        flags = {
-          accept_dns = true; # Enable Magic DNS
-          # relay_all_peer_rpc = true; # Help others hole punching
-        }
-        // lib.optionalAttrs (!pkgs.stdenv.isDarwin) { dev_name = "et-main"; };
+        flags = lib.mkMerge [
+          {
+            accept_dns = true; # Enable Magic DNS
+            # relay_all_peer_rpc = true; # Help others hole punching
+          }
+          (lib.optionalAttrs (!pkgs.stdenv.isDarwin) { dev_name = "et-main"; })
+        ];
         stun_servers = [
           "stun.miwifi.com"
           "stun.chat.bilibili.com"

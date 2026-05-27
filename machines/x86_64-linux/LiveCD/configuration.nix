@@ -29,7 +29,7 @@
     compressImage = true;
     makeEfiBootable = true;
   };
-  services.greetd =
+  services.greetd.settings =
     let
       command = ''sh -c \"$HOME/.wayland-session\"'';
     in

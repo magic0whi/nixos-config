@@ -85,7 +85,7 @@ in
           vm_tests = import ./tests { inherit pkgs; };
         in
         {
-          # nix build .#checks.x86_64-linux.mylib_tests
+          # TIP: `nix build .#checks.x86_64-linux.mylib_tests`
           mylib_tests =
             if lib_test_results == [ ] then
               pkgs.runCommand "lib-tests-passed" { } ''
