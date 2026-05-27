@@ -52,7 +52,7 @@
       "modules/common/misc.nix"
       "modules/common/shell.nix"
 
-      "modules/nixos_headless/_impermanence.nix"
+      "modules/nixos_headless/impermanence.nix"
       "modules/nixos_headless/firewall.nix"
       "modules/nixos_headless/misc.nix"
       "modules/nixos_headless/scx-loader.nix"

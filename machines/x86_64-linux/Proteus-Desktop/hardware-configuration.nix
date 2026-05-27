@@ -21,6 +21,8 @@
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
   boot.zfs.forceImportRoot = false; # Disable backwards compatibility options
+
+  boot.initrd.systemd.enable = true; # Hibernation requirement
   boot.zfs.unsafeAllowHibernation = true; # Make sure not use Swap on ZFS
 
   # Disable zfs-mount, use NixOS systemd mount management

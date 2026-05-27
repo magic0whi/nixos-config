@@ -1,50 +1,16 @@
 { myvars, ... }:
 {
   environment.persistence."/persistent".directories = [ "/srv" ];
-  environment.persistence."/persistent".users.${myvars.username} = {
-    directories = [
-      "Documents"
-      "Downloads"
-      "Games"
-      "KeePassXC"
-      "Music"
-      "Pictures"
-      "Secrets"
-      "Videos"
-      "Works"
+  environment.persistence."/persistent".users.${myvars.username}.directories = [
+    "Games"
+    "Secrets"
+    "Works"
 
-      # Games
-      ".steam" # Steam games
+    # Others
+    ".config/LDtk"
 
-      # Remote desktop
-      ".config/remmina"
-      ".config/freerdp"
-
-      # vscode
-      ".vscode"
-      ".vscode-insiders"
-      ".config/Code/User"
-      ".config/Code - Insiders/User"
-
-      # zed editor
-      ".config/zed"
-
-      # Browsers
-      ".mozilla"
-      ".config/google-chrome"
-
-      # Others
-      ".config/blender"
-      ".config/LDtk"
-
-      # IM
-      ".config/QQ"
-      ".xwechat"
-
-      # Cloud providers
-      ".config/gcloud"
-      ".terraform.d"
-    ];
-    files = [ ];
-  };
+    # IM
+    # ".config/QQ"
+    # ".xwechat"
+  ];
 }

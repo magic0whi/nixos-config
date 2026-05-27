@@ -14,7 +14,6 @@ let
     "modules/common"
 
     "modules/nixos_headless"
-    "modules/nixos_headless/_impermanence.nix"
 
     "modules/nixos_gui"
   ];
@@ -47,20 +46,20 @@ let
       machine_path = ./.;
     }
   );
-  nixos_iso =
-    (lib.nixosSystem (
-      mylib.gen_system_args {
-        inherit
-          name
-          mylib
-          nixpkgs_modules
-          hm_modules
-          ;
-        generate_iso = true;
-        myvars = nuc_myvars;
-        machine_path = ./.;
-      }
-    )).config.system.build.images.iso;
+  # nixos_iso =
+  #   (lib.nixosSystem (
+  #     mylib.gen_system_args {
+  #       inherit
+  #         name
+  #         mylib
+  #         nixpkgs_modules
+  #         hm_modules
+  #         ;
+  #       generate_iso = true;
+  #       myvars = nuc_myvars;
+  #       machine_path = ./.;
+  #     }
+  #   )).config.system.build.images.iso;
 in
 {
   _DEBUG = {
@@ -74,6 +73,6 @@ in
       ;
   };
   nixos_configurations.${name} = nixos_system;
-  packages.${name} = nixos_iso; # generate iso image
+  # packages.${name} = nixos_iso; # generate iso image
   deploy-rs_node.${name} = mylib.gen_deploy-rs_node myvars.networking.hosts_addr.${name} nixos_system;
 }

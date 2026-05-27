@@ -7,7 +7,7 @@
 
     ## Remote Desktop (RDP protocol)
     # remmina
-    # freerdp # Required by remmina
+    # freerdp
 
     ## Custom Hardened Packages
     # nixpaks.qq

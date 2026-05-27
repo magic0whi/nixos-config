@@ -10,7 +10,7 @@ let
   nixpkgs_modules = map mylib.relative_to_root [
     "modules/secrets/common.nix"
     "modules/common"
-    "modules/nixos_headless/_impermanence.nix"
+    "modules/nixos_headless/impermanence.nix"
     "modules/nixos_headless/misc.nix"
     "modules/nixos_headless/packages.nix"
     "modules/nixos_headless/sing-box.nix"
@@ -47,7 +47,6 @@ let
           myvars
           hm_modules
           ;
-        generate_iso = true;
         machine_path = ./.;
         nixpkgs_modules = nixpkgs_modules ++ [
           {

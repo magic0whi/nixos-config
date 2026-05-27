@@ -119,7 +119,6 @@ in
         nixpkgs_modules,
         hm_modules ? [ ],
         machine_path,
-        generate_iso ? false,
         system ? pkgs.stdenv.hostPlatform.system,
       }:
       let
@@ -141,32 +140,23 @@ in
         # Filter out the files with `impermanence.nix` suffix. If it's not a path or string (i.e. an attribute set),
         # return true immediately to keep it
         modules =
-          (
-            if generate_iso then
-              builtins.filter (p: !(builtins.isPath p || builtins.isString p) || !lib.hasSuffix "impermanence.nix" p) nixpkgs_modules
-            else
-              nixpkgs_modules
-          ) # Must wrapped by brace, otherwiese ISO branch skips the later appended modules below
+          nixpkgs_modules
           ++ (
             if pkgs.stdenv.isDarwin then
               [ sops-nix.darwinModules.sops ]
             else
               [
-                sops-nix.nixosModules.sops
-                lanzaboote.nixosModules.lanzaboote
                 catppuccin.nixosModules.catppuccin
                 disko.nixosModules.disko
                 i915-sriov-dkms.nixosModules.default
+                lanzaboote.nixosModules.lanzaboote
+                sops-nix.nixosModules.sops
+                impermanence.nixosModules.impermanence
               ]
-              ++ (lib.optional (!generate_iso) impermanence.nixosModules.impermanence)
           )
           ++ [
             {
-              imports =
-                let
-                  all_machine_files = mylib.scan_path machine_path;
-                in
-                if generate_iso then builtins.filter (p: !lib.hasSuffix "impermanence.nix" p) all_machine_files else all_machine_files;
+              imports = mylib.scan_path machine_path;
               networking.hostName = name;
             }
           ]

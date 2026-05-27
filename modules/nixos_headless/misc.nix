@@ -13,6 +13,7 @@
     configurationLimit = 8; # Limit the boot loader entries
     consoleMode = "max";
   };
+  boot.initrd.systemd.enable = true; # TODO, if networking.hostName = "xxx-iso" then false else true;
   ## END bootloader.nix
   ## BEGIN ssh.nix
   services.openssh.settings.PasswordAuthentication = false; # Disable password login

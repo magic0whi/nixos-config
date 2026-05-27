@@ -90,47 +90,5 @@ lib.runTests {
     expr = (mylib_pkgs.mk_out_of_store_symlink "/home/user/my unsafe path!@#.txt").name;
     expected = "custom_myunsafepath.txt";
   };
-  # Verifies that when generate_iso = true, impermanence.nix files are
-  # correctly filtered out of the nixpkgs_modules array.
-  test_gen_system_args_impermanence_filtered = {
-    expr =
-      let
-        args = mylib_pkgs.gen_system_args {
-          inherit mylib;
-          name = "test-host";
-          myvars.username = "testuser";
-          nixpkgs_modules = [
-            "bar_impermanence.nix"
-            "impermanence.nix"
-          ];
-          hm_modules = [ ];
-          machine_path = ./.; # Using current dir so readDir doesn't crash
-          generate_iso = true;
-        };
-      in
-      builtins.elem "bar_impermanence.nix" args.modules || builtins.elem "impermanence.nix" args.modules;
-    expected = false;
-  };
-  # Verifies that when generate_iso = false, impermanence.nix files are
-  # kept in the module array.
-  test_gen_system_args_impermanence_kept = {
-    expr =
-      let
-        args = mylib_pkgs.gen_system_args {
-          inherit mylib;
-          name = "test-host";
-          myvars.username = "testuser";
-          nixpkgs_modules = [
-            "foo_impermanence.nix"
-            "impermanence.nix"
-          ];
-          hm_modules = [ ];
-          machine_path = ./.;
-          generate_iso = false;
-        };
-      in
-      builtins.elem "foo_impermanence.nix" args.modules && builtins.elem "impermanence.nix" args.modules;
-    expected = true;
-  };
   ## END System Dependent Tests
 }
