@@ -11,9 +11,6 @@
     "virtio_scsi"
     "sd_mod"
   ];
-  boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-intel" ];
-  boot.extraModulePackages = [ ];
   boot.kernelParams = [
     "console=ttyS0,115200"
     "earlyprintk=ttyS0,115200"

@@ -123,7 +123,10 @@
   # - For Intel CPU, add "kvm-intel" to kernelModules.
   #   boot.kernelModules = ["kvm-intel"];
   #   boot.extraModprobeConfig = "options kvm_intel nested=1"; # for intel cpu
-  boot.kernelModules = [ "vfio-pci" ];
+  boot.kernelModules = [
+    "kvm-intel"
+    "vfio-pci"
+  ];
   services.udev.extraRules = ''
     # Bind all i915 VFs (00:02.1 to 00:02.7) to vfio-pci
     ${builtins.concatStringsSep ", " [

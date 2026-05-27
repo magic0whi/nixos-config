@@ -17,9 +17,6 @@
     "sd_mod"
   ]
   ++ lib.optional config.boot.initrd.systemd.network.enable "r8169";
-  boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-intel" ];
-  boot.extraModulePackages = [ ];
   boot.zfs.forceImportRoot = false; # Disable backwards compatibility options
 
   boot.initrd.systemd.enable = true; # Hibernation requirement

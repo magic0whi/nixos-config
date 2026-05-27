@@ -13,11 +13,9 @@
     "uas"
     "sd_mod"
   ];
-  boot.initrd.kernelModules = [ ];
   boot.initrd.systemd.enable = true; # ZFS snapshots auto rollback; Hibernation
 
   # boot.extraModulePackages = [config.boot.kernelPackages.qc71_laptop];
-  boot.kernelModules = [ "kvm-intel" ];
   boot.kernelParams = [
     # "i915.enable_guc=2"
     # "i915.mitigations=off"
