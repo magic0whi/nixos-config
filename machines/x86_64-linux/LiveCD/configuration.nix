@@ -19,7 +19,6 @@
   #       ];
   #     };
   # };
-  users.users.${myvars.username}.initialHashedPassword = myvars.initial_hashed_password;
   security.sudo.wheelNeedsPassword = false;
   services.openssh.settings = {
     PasswordAuthentication = true;
@@ -44,6 +43,7 @@
         user = myvars.username;
       };
     };
+  services.gnome.gnome-keyring.enable = false;
   ## BEGIN iwd.nix
   networking.wireless.iwd.enable = true;
   networking.wireless.iwd.settings.General.Country = "US";

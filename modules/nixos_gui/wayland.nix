@@ -44,7 +44,7 @@
         {
           default_session = {
             # Wayland Desktop Manager is installed only for user
-            command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --remember-session --sessions ${my_sessions}";
+            command = lib.mkDefault "${pkgs.tuigreet}/bin/tuigreet --time --remember --remember-session --sessions ${my_sessions}";
             user = myvars.username;
           };
         };
@@ -60,7 +60,7 @@
   };
   ## BEGIN security.nix
   # Security with gnome-kering
-  services.gnome.gnome-keyring.enable = true;
+  services.gnome.gnome-keyring.enable = lib.mkDefault true;
   security.pam.services = lib.mkMerge [
     { greetd.enableGnomeKeyring = true; }
     # Fixes swaylock
