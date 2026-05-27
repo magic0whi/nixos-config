@@ -13,7 +13,7 @@
         bash-language-server
         vscode-json-languageserver
         yaml-language-server
-        nixfmt
+        nixfmt-rs
         nixd
       ]
       ++ lib.optionals (!stdenv.hostPlatform.isRiscV64) [
