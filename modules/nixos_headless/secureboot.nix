@@ -39,6 +39,6 @@
     enable = true;
     pkiBundle = "/var/lib/sbctl"; # sudo sbctl create-keys
     # allowUnsigned = true; # Useful for first boot
-    # autoEnrollKeys.enable = true;
+    autoEnrollKeys.enable = true;
   };
 }
