@@ -171,7 +171,8 @@ in
                 catppuccin.homeModules.catppuccin
                 sops-nix.homeManagerModules.sops
               ];
-              home-manager.users."${myvars.username}".imports = hm_modules ++ [ (machine_path + "/_hm") ];
+              home-manager.users."${myvars.username}".imports =
+                hm_modules ++ lib.optional (builtins.pathExists (machine_path + "/_hm")) (machine_path + "/_hm");
             }
           ]);
       };
