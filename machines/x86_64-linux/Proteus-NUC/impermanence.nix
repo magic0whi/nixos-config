@@ -6,6 +6,7 @@
       "Documents"
       "Downloads"
       "Games"
+      "KeePassXC"
       "Music"
       "Pictures"
       "Secrets"

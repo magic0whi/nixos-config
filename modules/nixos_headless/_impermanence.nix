@@ -27,7 +27,7 @@
     # `environment.persistence."/persistent".users.${myvars.username}`
     fileSystems."/home".neededForBoot = true;
 
-    # NOTE: impermanence only mounts the directory/file list below to /persistent. If the directory/file already exists in
+    # NOTE: impermanence only mounts the dirs/files list below to /persistent. If the directory/file already exists in
     # the root filesystem, you should move those files/directories to /persistent first!
     environment.persistence."/persistent" = {
       # Sets the mount option x-gvfs-hide on all the bind mounts to hide them from the file manager
@@ -39,8 +39,6 @@
         "/var/log"
         "/var/lib"
       ];
-      # ++ lib.optional config.boot.lanzaboote.enable config.boot.lanzaboote.pkiBundle; # If lanzaboote is enabled. Disable since we got its parent `/var/lib` persistent already
-
       files = [ "/etc/machine-id" ];
 
       users.${myvars.username} = {

@@ -47,6 +47,10 @@
               builtins.attrNames config.services.syncthing.settings.devices
             );
           };
+          "KeePassXC" = {
+            path = "${myvars.storage_path}/share/KeePassXC";
+            devices = builtins.attrNames config.services.syncthing.settings.devices;
+          };
           "Music" = {
             path = "${myvars.storage_path}/share/Music";
             devices = builtins.attrNames config.services.syncthing.settings.devices;
@@ -54,12 +58,6 @@
           "Pictures" = {
             path = "${myvars.storage_path}/share/Pictures";
             devices = builtins.attrNames config.services.syncthing.settings.devices;
-          };
-          "Secrets" = {
-            path = "${myvars.storage_path}/share/Secrets";
-            devices = lib.subtractLists (builtins.attrNames mobile_devices) (
-              builtins.attrNames config.services.syncthing.settings.devices
-            );
           };
           "Works" = {
             path = "${myvars.storage_path}/share/Works";

@@ -81,9 +81,9 @@ creation_rules:
   ## BEGIN Trusted Machines (HM)
   # NOTE: for user secrets host ssh key cannot be accessed by a regular user
   - path_regex: secrets/nix_secret\.key\.sops$
-    key_groups: [pgp: [*openpgp]]
+    key_groups: [{ pgp: [*openpgp], age: [*Proteus-Desktop] }]
   - path_regex: secrets/common_hm\.sops\.yaml$
-    key_groups: [pgp: [*openpgp]]
+    key_groups: [{ pgp: [*openpgp], age: [*Proteus-Desktop] }]
   ## END Trusted Machines (HM)
   ## BEGIN Proteus-NUC (HM)
   # TIP: Encrypt in-place since sops matches inputs files for `path_regex`

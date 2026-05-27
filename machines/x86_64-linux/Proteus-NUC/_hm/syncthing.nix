@@ -44,6 +44,10 @@
               builtins.attrNames config.services.syncthing.settings.devices
             );
           };
+          "KeePassXC" = {
+            path = "${config.home.homeDirectory}/KeePassXC";
+            devices = builtins.attrNames config.services.syncthing.settings.devices;
+          };
           "Music" = {
             path = config.xdg.userDirs.music;
             devices = builtins.attrNames config.services.syncthing.settings.devices;
@@ -54,7 +58,7 @@
           };
           "Secrets" = {
             path = "${config.home.homeDirectory}/Secrets";
-            devices = lib.subtractLists (builtins.attrNames mobile_devices) (
+            devices = lib.subtractLists ((builtins.attrNames mobile_devices) ++ [ "Proteus-Desktop" ]) (
               builtins.attrNames config.services.syncthing.settings.devices
             );
           };
