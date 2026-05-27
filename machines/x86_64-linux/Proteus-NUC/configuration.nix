@@ -12,7 +12,7 @@
   environment.systemPackages = with pkgs; [ bpftrace ]; # powerful tracing tool, ref: https://github.com/bpftrace/bpftrace
   ## BEGIN iwd.nix
   networking.wireless.iwd.enable = true;
-  networking.wireless.iwd.settings.General.Country = "GB";
+  networking.wireless.iwd.settings.General.Country = "US";
   systemd.services.iwd.serviceConfig.ExecStart = [
     # Leave an empty string to remove previous ExecStarts
     ""
