@@ -14,13 +14,14 @@
       };
       "ssh.github.com hf.co" = lib.hm.dag.entryBefore [ "192.168.*" ] {
         user = "git";
+
+        # Only use specific key
         # identityFile = "";
-        identitiesOnly = true; # Prevent sending default identity files first.
+        # identitiesOnly = true; # Prevent sending default identity files first.
       };
       # "192.168.*" = {
       #   identityFile = "/etc/agenix/ssh-key-romantic"; # romantic holds my homelab~
       #   # Specifies that ssh should only use the identity file. Required to prevent sending default identity files
-      #   # first.
       #   identitiesOnly = true;
       # };
     };
