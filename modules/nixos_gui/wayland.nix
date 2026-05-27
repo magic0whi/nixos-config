@@ -44,8 +44,8 @@
         {
           default_session = {
             # Wayland Desktop Manager is installed only for user
-            user = myvars.username;
             command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --remember-session --sessions ${my_sessions}";
+            user = myvars.username;
           };
         };
     };

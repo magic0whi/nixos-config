@@ -58,8 +58,7 @@
   '';
   ## END security.nix
   ## BEGIN shell.nix
-  environment.shells = [ config.users.users.${myvars.username}.shell ]; # Permissible login shells
-  programs.zsh.enableSyntaxHighlighting = true;
+  environment.shells = [ config.users.users.${myvars.username}.shell ]; # Allowed login shells
   ## END shell.nix
   ## BEGIN users.nix
   system.primaryUser = myvars.username;
