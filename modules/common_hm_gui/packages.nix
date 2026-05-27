@@ -40,31 +40,29 @@
       # Video/audio tools
       # cava # For visualizing audio
     ])
-    ++ [
-      (
-        if pkgs.stdenv.isLinux then
-          (pkgs.anki-bin.overrideAttrs (prev: {
-            # Add env 'QT_IM_MODULE=fcitx' to anki.desktop
-            # TIP: `builtins.trace test.buildCommand test.buildCommand` is useful in debugging
-            buildCommand = ''
-              ${prev.buildCommand}
-              unpacked=$(grep -Po '(?<=cp -R )\/nix\/store\/\S+(?=\/share\/applications)' <<< '${prev.buildCommand}')
-              perm_bak=$(stat -c '%a' $out/share/applications/anki.desktop)
-              chmod 644 $out/share/applications/anki.desktop
-              sed 's/^Exec=\(anki\)/Exec=env XCURSOR_SIZE=${toString config.home.pointerCursor.size} QT_IM_MODULE=fcitx \1/' $unpacked/share/applications/anki.desktop > $out/share/applications/anki.desktop
-              chmod $perm_bak $out/share/applications/anki.desktop
-            '';
-          }))
-        else
-          pkgs.anki-bin
-      )
-    ]
-    ++ (lib.optionals pkgs.stdenv.isLinux (
+    ++ lib.singleton (
+      if pkgs.stdenv.isDarwin then
+        pkgs.anki-bin
+      else
+        (pkgs.anki-bin.overrideAttrs (prev: {
+          # Add env 'QT_IM_MODULE=fcitx' to anki.desktop
+          # TIP: `builtins.trace test.buildCommand test.buildCommand` is useful in debugging
+          buildCommand = ''
+            ${prev.buildCommand}
+            unpacked=$(grep -Po '(?<=cp -R )\/nix\/store\/\S+(?=\/share\/applications)' <<< '${prev.buildCommand}')
+            perm_bak=$(stat -c '%a' $out/share/applications/anki.desktop)
+            chmod 644 $out/share/applications/anki.desktop
+            sed 's/^Exec=\(anki\)/Exec=env XCURSOR_SIZE=${toString config.home.pointerCursor.size} QT_IM_MODULE=fcitx \1/' $unpacked/share/applications/anki.desktop > $out/share/applications/anki.desktop
+            chmod $perm_bak $out/share/applications/anki.desktop
+          '';
+        }))
+    )
+    ++ lib.optionals (!pkgs.stdenv.isDarwin) (
       with pkgs;
       [
         # blender
         inkscape # Vector graphics
         super-productivity
       ]
-    ));
+    );
 }

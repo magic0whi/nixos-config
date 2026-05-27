@@ -1,6 +1,8 @@
 {
+  config,
   lib,
   myvars,
+  pkgs,
   ...
 }:
 {
@@ -56,5 +58,14 @@
         publicKey = val.public_key;
       }
     ) myvars.networking.known_hosts;
+  }
+  // lib.optionalAttrs (!pkgs.stdenv.isDarwin) {
+    # TODO: May be unnecessary
+    # extraConfig = lib.optionalString config.home-manager.users.${myvars.username}.services.gpg-agent.enableSshSupport ''
+    #   Host *
+    #     IdentityAgent /run/user/${toString config.users.users.${myvars.username}.uid}/gnupg/S.gpg-agent.ssh
+    # '';
+    # TIP: Use `ssh-add` to add a key to the agent.
+    startAgent = !config.home-manager.users.${myvars.username}.services.gpg-agent.enableSshSupport;
   };
 }

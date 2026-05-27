@@ -15,18 +15,6 @@
   };
   boot.initrd.systemd.enable = true; # TODO, if networking.hostName = "xxx-iso" then false else true;
   ## END bootloader.nix
-  ## BEGIN ssh.nix
-  services.openssh.settings.PasswordAuthentication = false; # Disable password login
-  programs.ssh.extraConfig = ''
-    Host *
-      IdentityAgent /run/user/${toString config.users.users.${myvars.username}.uid}/gnupg/S.gpg-agent.ssh
-  '';
-  # The OpenSSH agent remembers private keys for you. So that you don’t have to type in passphrases every time you make
-  # an SSH connection.
-  # TIP: Use `ssh-add` to add a key to the agent.
-  # NOTE: You cannot use ssh-agent and GnuPG agent with SSH support at the same time
-  # ssh.startAgent = true;
-  ## END ssh.nix
 
   ## BEGIN i18n.nix
   # Select internationalisation properties.
@@ -86,20 +74,6 @@
     '';
   };
   ## END journald.nix
-  ## BEGIN shell.nix
-  programs.zsh = {
-    autosuggestions = {
-      enable = true;
-      highlightStyle = "fg=60";
-      strategy = [
-        "match_prev_cmd"
-        "history"
-        "completion"
-      ];
-    };
-    syntaxHighlighting.enable = true;
-  };
-  ## END shell.nix
   ## BEGIN users.nix
   users = {
     defaultUserShell = pkgs.zsh;

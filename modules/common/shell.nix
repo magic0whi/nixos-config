@@ -2,6 +2,7 @@
   config,
   lib,
   myvars,
+  pkgs,
   ...
 }:
 {
@@ -90,7 +91,20 @@
       autoload -U promptinit && promptinit; setopt PROMPT_SUBST
       PS1='[%{$BRed%}%n%{$Color_Off%}@%{$BBlue%}%m%{$Color_Off%} %{$BBlue%}%3~%{$Color_Off%} %{$BCyan%}%{$Color_Off%}]%{$BGreen%}%(#.#.$)%{$Color_Off%} '
     '';
-  };
+  }
+  // lib.optionalAttrs (!pkgs.stdenv.isDarwin) {
+    autosuggestions = {
+      enable = true;
+      highlightStyle = "fg=60";
+      strategy = [
+        "match_prev_cmd"
+        "history"
+        "completion"
+      ];
+    };
+    syntaxHighlighting.enable = true;
+  }
+  // lib.optionalAttrs pkgs.stdenv.isDarwin { enableSyntaxHighlighting = true; };
   environment.variables = lib.mkIf (config.home-manager.users.${myvars.username}.programs.helix.defaultEditor or false) {
     EDITOR = "hx";
   };

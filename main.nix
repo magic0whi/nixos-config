@@ -100,7 +100,7 @@ in
 
           format_check = treefmt_eval.${pkgs.stdenv.hostPlatform.system}.config.build.check self;
         }
-        // (lib.optionalAttrs pkgs.stdenv.isLinux vm_tests)
+        // lib.optionalAttrs (!pkgs.stdenv.isDarwin) vm_tests
       );
     in
     lib.recursiveUpdate deploy_checks my_checks;

@@ -12,7 +12,13 @@
 
   nixpkgs.config.allowUnfree = true; # Allow chrome, vscode to install
 
-  services.openssh.enable = true;
+  ## BEGIN services_ssh.nix
+  services.openssh = lib.mkMerge [
+    { enable = true; }
+    (lib.optionalAttrs (!pkgs.stdenv.isDarwin) { settings.PasswordAuthentication = lib.mkDefault false; }) # Disable password login
+  ];
+  ## END services_ssh.nix
+
   ## BEGIN nix.nix
   environment.systemPackages = [ pkgs.git ]; # Required by flake
   nix = {
@@ -21,7 +27,7 @@
       automatic = true;
       options = "--delete-older-than 7d";
     }
-    // lib.optionalAttrs pkgs.stdenv.isLinux { dates = "weekly"; };
+    // lib.optionalAttrs (!pkgs.stdenv.isDarwin) { dates = "weekly"; };
     channel.enable = false; # Remove nix-channel related tools & configs, use flakes instead
     # Manual optimise storage: nix-store --optimise
     # https://nixos.org/manual/nix/stable/command-ref/conf-file.html#conf-auto-optimise-store
@@ -57,7 +63,7 @@
       extra-substituters = [ "https://nix-cache.s3-pub.${myvars.domain}/" ];
       extra-trusted-public-keys = [ "s3.${myvars.domain}-1:IxrRwk4uC5ittHeG9menkuajABnrX9cboEWwZz/m4+E=" ];
     }
-    // lib.optionalAttrs pkgs.stdenv.isLinux { auto-optimise-store = true; }; # Optimise the store after each build
+    // lib.optionalAttrs (!pkgs.stdenv.isDarwin) { auto-optimise-store = true; }; # Optimise the store after each build
   };
   ## END nix.nix
   ## BEGIN i18n.nix
@@ -74,7 +80,7 @@
   services.tailscale = {
     enable = lib.mkDefault true;
   } # Start-up: `tailscale up --accept-routes`
-  // lib.optionalAttrs pkgs.stdenv.isLinux {
+  // lib.optionalAttrs (!pkgs.stdenv.isDarwin) {
     # Tailscale stores its data in /var/lib/tailscale, which is persistent across reboots via impermanence.nix
     # Ref: https://github.com/NixOS/nixpkgs/blob/nixos-24.11/nixos/modules/services/networking/tailscale.nix
     openFirewall = true; # allow the Tailscale UDP port through the firewall

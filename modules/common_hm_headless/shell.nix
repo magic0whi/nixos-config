@@ -71,7 +71,7 @@
     targz = "tar -I 'nix run nixpkgs#pigz --' -cvf";
     targzls = "tar -I 'nix run nixpkgs#pigz --' -tvf";
   }
-  // lib.optionalAttrs pkgs.stdenv.isLinux {
+  // lib.optionalAttrs (!pkgs.stdenv.isDarwin) {
     ip = "ip --color=auto";
     Ci = "wl-copy";
     Co = "wl-paste";
