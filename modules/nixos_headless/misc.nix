@@ -122,10 +122,21 @@
   # Without polkit, sing-box can't interact with systemd-resolved
   security = {
     polkit.enable = true;
+    pam = {
+      rssh.enable = true; # PAM auth via forwarded SSH agent, implicitly add `Default env_keep+=SSH_AUTH_SOCK`
+      services.sudo.rssh = true; # passwordless sudo on remote
+    };
     sudo = {
       package = pkgs.sudo.override { withSssd = true; };
-      extraConfig = "Defaults passwd_timeout=0"; # Disable timeout for sudo prompt
+      extraConfig = ''
+        # Disable timeout for sudo prompt
+        Defaults passwd_timeout=0
+      '';
     };
+  };
+  security.sudo-rs = {
+    enable = true;
+    inherit (config.security.sudo) extraConfig;
   };
   system.nssDatabases.sudoers = [ "sss" ]; # Use LDAP to distribute configuration of sudo as well
   sops =

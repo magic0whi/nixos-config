@@ -45,7 +45,6 @@ in
             "${openldap}/etc/schema/cosine.ldif"
             "${myvars.secrets_dir}/rfc2307bis.ldif"
             "${openldap}/etc/schema/inetorgperson.ldif"
-            "${myvars.secrets_dir}/schema.olcSudo"
           ];
           "olcDatabase={0}config".attrs = {
             objectClass = "olcDatabaseConfig";
@@ -133,47 +132,6 @@ in
         objectClass: top
         objectClass: organizationalUnit
         ou: ServiceAccounts
-
-        dn: cn=defaults,ou=Sudoers,${base_dn}
-        objectClass: top
-        objectClass: sudoRole
-        cn: defaults
-        description: Default sudo options
-        sudoOption: env_keep+=SSH_AUTH_SOCK
-        sudoOption: passwd_timeout=0
-
-        # The Sudoer rules order matter
-        # dn: cn=main_user_no_pass_comms,ou=Sudoers,${base_dn}
-        # objectClass: top
-        # objectClass: sudoRole
-        # cn: main_user_no_pass_comms
-        # sudoUser: ${myvars.username}
-        # sudoHost: ALL
-        # sudoRunAsUser: ALL
-        # sudoOption: !authenticate
-        # sudoCommand: /usr/bin/psd-overlay-helper
-        # sudoCommand: /usr/bin/arch-nspawn
-        # sudoCommand: /usr/bin/pacman
-
-        # dn: cn=main_user_no_pass_comms_setenv,ou=Sudoers,${base_dn}
-        # objectClass: top
-        # objectClass: sudoRole
-        # cn: main_user_no_pass_comms_setenv
-        # sudoUser: ${myvars.username}
-        # sudoHost: ALL
-        # sudoRunAsUser: ALL
-        # sudoOption: !authenticate
-        # sudoOption: setenv
-        # sudoCommand: /usr/bin/makechrootpkg
-
-        dn: cn=allow_main_user,ou=Sudoers,${base_dn}
-        objectClass: top
-        objectClass: sudoRole
-        cn: allow_main_user
-        sudoUser: ${myvars.username}
-        sudoHost: ALL
-        sudoRunAsUser: ALL
-        sudoCommand: ALL
 
         dn: uid=${myvars.username},ou=People,${base_dn}
         objectClass: top
