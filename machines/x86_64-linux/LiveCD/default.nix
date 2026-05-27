@@ -19,7 +19,6 @@ let
     "modules/nixos_headless/packages.nix"
     "modules/nixos_headless/power-mgmt.nix"
     "modules/nixos_headless/scx-loader.nix"
-    "modules/nixos_headless/sing-box.nix"
     "modules/nixos_headless/zfs.nix"
 
     "modules/nixos_gui/kmscon.nix"

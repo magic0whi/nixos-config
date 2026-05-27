@@ -19,7 +19,10 @@ in
   };
   services.sing-box = {
     enable = true;
-    configFile = config.sops.secrets."sb_client_linux.json".path;
+    settings = {
+      _secret = config.sops.secrets."sb_client_linux.json".path;
+      quote = false;
+    };
   };
   ## END sing-box.nix
   ## BEGIN systemd_tmpfiles.nix

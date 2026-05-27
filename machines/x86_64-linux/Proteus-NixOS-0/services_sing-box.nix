@@ -11,5 +11,8 @@
     restartUnits = [ "sing-box.service" ];
   };
   services.sing-box.enable = true;
-  services.sing-box.configFile = config.sops.secrets."sb_Proteus-NixOS-1.json".path;
+  services.sing-box.settings = {
+    _secret = config.sops.secrets."sb_Proteus-NixOS-1.json".path;
+    quote = false;
+  };
 }

@@ -13,7 +13,6 @@ let
     "modules/nixos_headless/impermanence.nix"
     "modules/nixos_headless/misc.nix"
     "modules/nixos_headless/packages.nix"
-    "modules/nixos_headless/sing-box.nix"
     "modules/nixos_gui/kmscon.nix"
   ];
   hm_modules = map mylib.relative_to_root [
