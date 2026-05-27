@@ -19,6 +19,12 @@
   #       ];
   #     };
   # };
+  boot.loader.systemd-boot.enable = false;
+  boot.lanzaboote = {
+    enable = true;
+    pkiBundle = "/var/lib/sbctl"; # sudo sbctl create-keys
+    # allowUnsigned = true; # Useful for first boot
+  };
   security.sudo.wheelNeedsPassword = false;
   services.openssh.settings = {
     PasswordAuthentication = true;
