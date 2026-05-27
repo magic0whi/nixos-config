@@ -36,6 +36,8 @@ in
   ## BEGIN hostapd.nix
   boot.extraModulePackages = [ config.boot.kernelPackages.rtl8812au ];
   boot.kernelModules = [ "8812au" ];
+  boot.requiredKernelModules = [ "rtl8812au" ];
+
   sops.secrets.proteus_ap_password = {
     sopsFile = "${myvars.secrets_dir}/Proteus-Desktop.sops.yaml";
     restartUnits = [ "hostapd.service" ];
