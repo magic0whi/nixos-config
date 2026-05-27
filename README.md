@@ -32,7 +32,7 @@ Personal NixOS and nix-darwin system configurations managed as a Flake, featurin
 
 ## Features
 
-- **"Stew" (Hub & Spoke) Refactoring**: An iterative code organization strategy that prevents premature optimization by starting with monolithic domain files (`stew.nix`) and splitting into dedicated modules as complexity grows.
+- **"Miscellaneous" (Hub & Spoke) Refactoring**: An iterative code organization strategy that prevents premature optimization by starting with monolithic domain files (`misc.nix`) and splitting into dedicated modules as complexity grows.
 - **Declarative Disk Management**: Automated partitioning with [Disko](https://github.com/nix-community/disko).
 - **ZFS Root with Impermanence**: Ephemeral root that rolls back to `zroot/root@blank` snapshot on boot.
 - **LUKS Encryption**: Full-disk encryption with systemd in initrd.
@@ -157,9 +157,9 @@ The repository is organized to separate machine-specific hardware configurations
 
 ## Key Design Decisions
 
-### The "Stew" (Hub & Spoke) Code Organization
+### The "Miscellaneous" (Hub & Spoke) Code Organization
 
-To avoid the cognitive overhead of premature file fragmentation, this repository utilizes an organic "Hub and Spoke" module strategy. New packages, services, or configurations for a specific domain (like `modules/nixos_headless/`) are initially dropped into a centralized `stew.nix` file.
+To avoid the cognitive overhead of premature file fragmentation, this repository utilizes an organic "Hub and Spoke" module strategy. New packages, services, or configurations for a specific domain (like `modules/nixos_headless/`) are initially dropped into a centralized `misc.nix` file.
 
 As specific logical units within the stew grow large or complex (e.g., a massive Hyprland config or specific development environments), they are extracted into their own dedicated files (the "spokes") within that directory.
 
