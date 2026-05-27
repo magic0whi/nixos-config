@@ -109,7 +109,7 @@ in
 
   devShells = for_each_system (pkgs: {
     default = pkgs.mkShell {
-      buildInputs = [ nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system}.nixfmt ];
+      buildInputs = [ pkgs.nixfmt-rs ];
       name = "nixos-config";
     };
   });
