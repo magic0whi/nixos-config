@@ -17,6 +17,7 @@ let
     ]);
   hm_modules = map mylib.relative_to_root [
     "modules/common_hm_headless/misc.nix"
+    "modules/common_hm_headless/nix.nix"
     "modules/common_hm_headless/shell.nix"
   ];
   desktop_myvars = myvars;
