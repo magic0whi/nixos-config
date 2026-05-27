@@ -6,9 +6,6 @@
     "Secrets"
     "Works"
 
-    # Others
-    ".config/LDtk"
-
     # IM
     # ".config/QQ"
     # ".xwechat"

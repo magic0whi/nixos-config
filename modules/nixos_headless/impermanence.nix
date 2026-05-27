@@ -40,91 +40,96 @@
     ];
     files = [ "/etc/machine-id" ];
 
-    users.${myvars.username} =
-      let
-        hm_cfg = config.home-manager.users.${myvars.username};
-      in
-      {
-        # The following directories will be passed to /persistent/home/$USER
-        directories = [
-          {
-            directory = ".ssh";
-            mode = "0700";
-          }
+    users = lib.mkIf (config ? home-manager) {
+      ${myvars.username} =
+        let
+          hm_cfg = config.home-manager.users.${myvars.username};
+        in
+        {
+          # The following directories will be passed to /persistent/home/$USER
+          directories = [
+            {
+              directory = ".ssh";
+              mode = "0700";
+            }
 
-          # Misc
-          ".config/pulse"
-          ".pki"
+            # Misc
+            ".config/pulse"
+            ".pki"
 
-          # Cloud native
-          # TODO: Try pulumi - infrastructure as code
-          {
-            directory = ".pulumi";
-            mode = "0700";
-          }
-          {
-            directory = ".aws";
-            mode = "0700";
-          }
-          {
-            directory = ".docker";
-            mode = "0700";
-          }
-          {
-            directory = ".kube";
-            mode = "0700";
-          }
+            # Cloud native
+            # TODO: Try pulumi - infrastructure as code
+            {
+              directory = ".pulumi";
+              mode = "0700";
+            }
+            {
+              directory = ".aws";
+              mode = "0700";
+            }
+            {
+              directory = ".docker";
+              mode = "0700";
+            }
+            {
+              directory = ".kube";
+              mode = "0700";
+            }
 
-          # TODO: Try emacs
-          # doom-emacs
-          # ".config/emacs"
+            # TODO: Try emacs
+            # doom-emacs
+            # ".config/emacs"
 
-          # neovim / remmina / flatpak / ...
-          # Since the `$XDG_DATA_HOME/Trash` is usually `~/.local/share/Trash`
-          # Programs following freedesktop.org trash specification will refuse
-          # to delete files that not coverd by impermance
-          ".local/share"
-          ".local/state"
+            # neovim / remmina / flatpak / ...
+            # Since the `$XDG_DATA_HOME/Trash` is usually `~/.local/share/Trash`
+            # Programs following freedesktop.org trash specification will refuse
+            # to delete files that not coverd by impermance
+            ".local/share"
+            ".local/state"
 
-          # neovim plugins (wakatime & copilot)
-          # ".wakatime"
-          # ".config/github-copilot"
-        ]
-        ++ lib.optional hm_cfg.programs.gpg.enable {
-          directory = ".gnupg";
-          mode = "0700";
-        }
-        ++ lib.optionals hm_cfg.xdg.enable (
-          with hm_cfg.xdg.userDirs;
-          [
-            desktop
-            documents
-            download
-            music
-            pictures
-            projects
-            videos
+            # neovim plugins (wakatime & copilot)
+            # ".wakatime"
+            # ".config/github-copilot"
           ]
-        )
-        ++ lib.optional config.programs.steam.enable ".steam"
-        # Remote Desktop
-        ++ lib.optional (builtins.elem pkgs.remmina hm_cfg.home.packages) ".config/remmina"
-        ++ lib.optional (builtins.elem pkgs.freerdp hm_cfg.home.packages) ".config/freerdp"
-        ++ lib.optionals hm_cfg.programs.vscode.enable [
-          ".vscode"
-          ".vscode-insiders"
-          ".config/Code/User"
-          ".config/Code - Insiders/User"
-        ]
-        # Browsers
-        ++ lib.optional hm_cfg.programs.firefox.enable ".mozilla"
-        ++ lib.optional hm_cfg.programs.google-chrome.enable ".config/google-chrome"
-        ++ lib.optional (builtins.elem pkgs.blender hm_cfg.home.packages) ".config/blender"
-        # Cloud Providers
-        ++ lib.optional (builtins.elem pkgs.google-cloud-sdk hm_cfg.home.packages) ".config/gcloud"
-        ++ lib.optional (builtins.elem pkgs.terraform hm_cfg.home.packages) ".config/terraform.d"
-        ++ lib.optional (builtins.elem pkgs.keepassxc hm_cfg.home.packages) "KeePassXC";
-        # files = [".wakatime.cfg"];
-      };
+          ++ lib.optional hm_cfg.programs.gpg.enable {
+            directory = ".gnupg";
+            mode = "0700";
+          }
+          ++ lib.optionals hm_cfg.xdg.enable (
+            map (p: baseNameOf p) (
+              with hm_cfg.xdg.userDirs;
+              [
+                desktop
+                documents
+                download
+                music
+                pictures
+                projects
+                videos
+              ]
+            )
+          )
+          ++ lib.optional config.programs.steam.enable ".steam"
+          # Remote Desktop
+          ++ lib.optional (builtins.elem pkgs.remmina hm_cfg.home.packages) ".config/remmina"
+          ++ lib.optional (builtins.elem pkgs.freerdp hm_cfg.home.packages) ".config/freerdp"
+          ++ lib.optionals hm_cfg.programs.vscode.enable [
+            ".vscode"
+            ".vscode-insiders"
+            ".config/Code/User"
+            ".config/Code - Insiders/User"
+          ]
+          # Browsers
+          ++ lib.optional hm_cfg.programs.firefox.enable ".mozilla"
+          ++ lib.optional hm_cfg.programs.google-chrome.enable ".config/google-chrome"
+          ++ lib.optional (builtins.elem pkgs.blender hm_cfg.home.packages) ".config/blender"
+          # Cloud Providers
+          ++ lib.optional (builtins.elem pkgs.google-cloud-sdk hm_cfg.home.packages) ".config/gcloud"
+          ++ lib.optional (builtins.elem pkgs.terraform hm_cfg.home.packages) ".config/terraform.d"
+          ++ lib.optional (builtins.elem pkgs.keepassxc hm_cfg.home.packages) "KeePassXC"
+          ++ lib.optional (builtins.elem pkgs.ldtk hm_cfg.home.packages) ".config/LDtk";
+          # files = [".wakatime.cfg"];
+        };
+    };
   };
 }
