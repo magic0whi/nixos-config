@@ -1,9 +1,8 @@
-{ pkgs, ... }:
+{ lib, pkgs, ... }:
 {
   # List packages installed in system profile. To search, run: `nix search nixpkgs "^firefox"`
   environment.systemPackages =
-    with pkgs;
-    [
+    (with pkgs; [
       # System Monitoring
       # strace # system call monitoring
       # sysstat
@@ -20,10 +19,8 @@
       # parted
       cryptsetup # dm-crypt tools
       # nfs-utils # Linux user-space NFS utilities
-    ]
-    ++ lib.optionals (!stdenv.hostPlatform.isRiscV64) [
-      ltrace # library call monitoring
-    ];
+    ])
+    ++ lib.optional (!pkgs.stdenv.hostPlatform.isRiscV64) pkgs.ltrace; # library call monitoring
   # BCC - Tools for BPF-based Linux IO analysis, networking, monitoring, and more. Ref: https://github.com/iovisor/bcc
   # programs.bcc.enable = true;
 }

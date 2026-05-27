@@ -1,4 +1,5 @@
-_: {
+{ lib, pkgs, ... }:
+{
   ## BEGIN browsers.nix
   programs.firefox.enable = true;
   ## END browsers.nix

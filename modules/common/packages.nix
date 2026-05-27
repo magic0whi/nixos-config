@@ -1,9 +1,8 @@
 # These a packages available both on Linux & Darwin
-{ pkgs, ... }:
+{ lib, pkgs, ... }:
 {
   environment.systemPackages =
-    with pkgs;
-    [
+    (with pkgs; [
       # Misc
       findutils
       tree
@@ -36,26 +35,29 @@
       # System Tools
       pciutils # lspci
       usbutils # lsusb
-    ]
-    ++ lib.optionals pkgs.stdenv.isLinux [
-      # Misc
-      file
-      # which # Zsh built-in it
+    ])
+    ++ lib.optionals pkgs.stdenv.isLinux (
+      with pkgs;
+      [
+        # Misc
+        file
+        # which # Zsh built-in it
 
-      # Archives
-      zip
-      unzipNLS
+        # Archives
+        zip
+        unzipNLS
 
-      # Text Processing, ref: https://github.com/learnbyexample/Command-line-text-processing
-      gnused # GNU sed, very powerful(mainly for replacing text in files)
-      gawk # GNU awk, a pattern scanning and processing language
-      jq # A lightweight and flexible command-line JSON processor
+        # Text Processing, ref: https://github.com/learnbyexample/Command-line-text-processing
+        gnused # GNU sed, very powerful(mainly for replacing text in files)
+        gawk # GNU awk, a pattern scanning and processing language
+        jq # A lightweight and flexible command-line JSON processor
 
-      # Networking Tools
-      # dnsutils # `dig` + `nslookup`
+        # Networking Tools
+        # dnsutils # `dig` + `nslookup`
 
-      # System Call Monitoring
-      # tcpdump # network sniffer
-      # lsof # list open files
-    ];
+        # System Call Monitoring
+        # tcpdump # network sniffer
+        # lsof # list open files
+      ]
+    );
 }
