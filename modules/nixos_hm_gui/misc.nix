@@ -22,15 +22,5 @@
   services.psd.enable = true;
   # Enable Ozone Wayland support in Chromium and Electron based applications
   home.sessionVariables.NIXOS_OZONE_WL = "1";
-  # https://github.com/nix-community/home-manager/blob/master/modules/programs/chromium.nix
-  programs.google-chrome = {
-    enable = true;
-    # https://wiki.archlinux.org/title/Chromium#Native_Wayland_support
-    commandLineArgs = [
-      "--ozone-platform-hint=auto"
-      "--enable-wayland-ime" # Make it use text-input-v1, which works for kwin 5.27 and weston
-      # "--enable-features=Vulkan" # Enable hardware acceleration - vulkan api
-    ];
-  };
   ## END browsers.nix
 }
