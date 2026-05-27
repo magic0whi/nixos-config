@@ -1,4 +1,4 @@
-# To edit secret files, run `nix run nixpkgs#sops -- secrets/secrets.yaml`
+# TIP: To edit secret files, run `nix run nixpkgs#sops -- secrets/secrets.yaml`
 keys:
   # cat /etc/ssh/ssh_host_ed25519_key.pub | nix run nixpkgs#ssh-to-age
   # gpg --list-public-keys --with-colons | grep fpr | awk -F: '{print $10}' | head -n1
@@ -60,6 +60,12 @@ creation_rules:
   - path_regex: secrets/Proteus-NUC\.sops\.yaml$
     key_groups: [{ pgp: [*openpgp], age: [*Proteus-NUC] }]
   - path_regex: secrets/authelia_oidc_rsa\.pem.sops$
+    key_groups: [{ pgp: [*openpgp], age: [*Proteus-NUC] }]
+  - path_regex: secrets/secureboot_PK\.key\.sops$
+    key_groups: [{ pgp: [*openpgp], age: [*Proteus-NUC] }]
+  - path_regex: secrets/secureboot_KEK\.key\.sops$
+    key_groups: [{ pgp: [*openpgp], age: [*Proteus-NUC] }]
+  - path_regex: secrets/secureboot_db\.key\.sops$
     key_groups: [{ pgp: [*openpgp], age: [*Proteus-NUC] }]
   ## END Proteus-NixOS
   ## BEGIN Proteus-MBP14M4P
