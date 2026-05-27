@@ -5,7 +5,6 @@
   ...
 }:
 {
-  ## BEGIN gpg.nix
   programs.gpg = {
     # https://www.gnupg.org/gph/en/manual/x334.html
     publicKeys = [
@@ -64,5 +63,4 @@
     defaultCacheTtl = 4 * 60 * 60; # 4 hours
     sshKeys = myvars.gpg2ssh_keygrip; # Run 'gpg --export-ssh-key gpg-key!' to export public key
   };
-  ## END gpg.nix
 }
