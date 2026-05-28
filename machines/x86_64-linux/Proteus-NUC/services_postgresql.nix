@@ -1,11 +1,18 @@
 {
   config,
   lib,
+  machineConfigs,
   myvars,
   # nixpkgs-postgresql,
   pkgs,
   ...
 }:
+let
+  machine_config = {
+    authelia = machineConfigs.${myvars.networking.find_host "auth"}.config;
+    paperless = machineConfigs.${myvars.networking.find_host "paperless"}.config;
+  };
+in
 {
   networking.firewall.allowedTCPPorts = [ config.services.postgresql.settings.port ];
   sops.secrets =
@@ -79,8 +86,9 @@
     ensureDatabases = [
       "mydatabase" # TODO: For learning
       "atuin"
-      config.services.paperless.user
-      config.services.authelia.instances.main.user
+      machine_config.paperless.services.paperless.user
+      machine_config.authelia.services.authelia.instances.main.user
+      # (builtins.trace machine_config.authelia machine_config.authelia.services.authelia.instances.main.user)
       "nextcloud"
     ];
     ensureUsers = [
@@ -97,11 +105,11 @@
         ensureDBOwnership = true;
       }
       {
-        name = config.services.paperless.user;
+        name = machine_config.paperless.services.paperless.user;
         ensureDBOwnership = true;
       }
       {
-        name = config.services.authelia.instances.main.user;
+        name = machine_config.authelia.services.authelia.instances.main.user;
         ensureDBOwnership = true;
       }
       {

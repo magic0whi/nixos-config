@@ -59,8 +59,6 @@ creation_rules:
   ## BEGIN Proteus-NUC
   - path_regex: secrets/Proteus-NUC\.sops\.yaml$
     key_groups: [{ pgp: [*openpgp], age: [*Proteus-NUC] }]
-  - path_regex: secrets/authelia_oidc_rsa\.pem.sops$
-    key_groups: [{ pgp: [*openpgp], age: [*Proteus-NUC] }]
   - path_regex: secrets/secureboot_PK\.key\.sops$
     key_groups: [{ pgp: [*openpgp], age: [*Proteus-NUC] }]
   - path_regex: secrets/secureboot_KEK\.key\.sops$
@@ -73,6 +71,8 @@ creation_rules:
     key_groups: [{ pgp: [*openpgp], age: [*Proteus-MBP14M4P] }]
   ## END Proteus-MBP14M4P
   ## BEGIN Proteus-Desktop
+  - path_regex: secrets/authelia_oidc_rsa\.pem.sops$
+    key_groups: [{ pgp: [*openpgp], age: [*Proteus-Desktop] }]
   - path_regex: secrets/Proteus-Desktop\.sops\.yaml$
     key_groups: [{ pgp: [*openpgp], age: [*Proteus-Desktop] }]
   - path_regex: secrets/Proteus-Desktop_syncthing\.priv\.pem\.sops$

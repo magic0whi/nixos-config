@@ -1,4 +1,12 @@
+{ lib }:
 {
+  _find_host =
+    hosts_addr: cn:
+    builtins.head (
+      builtins.attrNames (
+        lib.filterAttrs (_: host: lib.any (iface: builtins.elem cn (iface.domains.CNAME or [ ])) host) hosts_addr
+      )
+    );
   soa_serial = "2026052805";
   hosts_addr = {
     # ============================================

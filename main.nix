@@ -26,7 +26,9 @@ let
     {
       # The args given to other nix files
       inherit lib system nix-darwin;
-      myvars = myvars // (myvars.mk_for_pkgs pkgs);
+      myvars = lib.recursiveUpdate (myvars // myvars.mk_for_pkgs pkgs) {
+        networking.find_host = with myvars.networking; _find_host hosts_addr;
+      };
       mylib = mylib // (mylib.mk_for_pkgs pkgs);
       machineConfigs = with self; nixosConfigurations // darwinConfigurations;
     };

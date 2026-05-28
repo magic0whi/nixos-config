@@ -66,11 +66,6 @@ in
         et_iface = lib.optionalAttrs (builtins.length ifaces >= 2) (builtins.elemAt ifaces 1);
       in
       et_iface.ipv4 or ts_iface.ipv4 or nixos_system.config.networking.hostName;
-    # if et_iface ? ipv4
-    # then et_iface.ipv4
-    # else if ts_iface ? ipv4
-    # then ts_iface.ipv4
-    # else nixos_system.config.networking.hostName;
     sshUser = "root";
     interactiveSudo = false; # Since we use 'root' user to ssh
     profiles.system = {
