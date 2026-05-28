@@ -14,7 +14,7 @@ let
 
   treefmt_eval = for_each_system (pkgs: treefmt-nix.lib.evalModule pkgs (import ./treefmt.nix pkgs));
 
-  args_fn =
+  gen_args =
     let
       mylib = import ./libs { inherit inputs; };
       myvars = import ./vars { inherit lib mylib; };
@@ -30,27 +30,19 @@ let
       mylib = mylib // (mylib.mk_for_pkgs pkgs);
       machineConfigs = with self; nixosConfigurations // darwinConfigurations;
     };
-  import_each_system = supported_systems: lib.genAttrs supported_systems (system: import ./machines (args_fn system));
+  import_each_system = supported_systems: lib.genAttrs supported_systems (system: import ./machines (gen_args system));
   ## END Functions
 
   ## BEGIN Variables
-  nixos_systems =
-    let
-      supported_nixos_systems = [
-        "x86_64-linux"
-        # "aarch64-linux"
-        # "riscv64-linux" # Disable temporary, NOTE: Remove closures that has GHC dependency
-      ];
-    in
-    import_each_system supported_nixos_systems;
-  darwin_systems =
-    let
-      supported_darwin_systems = [
-        # "x86_64-darwin"
-        "aarch64-darwin"
-      ];
-    in
-    import_each_system supported_darwin_systems;
+  nixos_systems = import_each_system [
+    "x86_64-linux"
+    # "aarch64-linux"
+    # "riscv64-linux" # Disable temporary, NOTE: Remove closures that has GHC dependency
+  ];
+  darwin_systems = import_each_system [
+    # "x86_64-darwin"
+    "aarch64-darwin"
+  ];
   nixos_systems_values = builtins.attrValues nixos_systems;
   darwin_systems_values = builtins.attrValues darwin_systems;
   ## END Variables
@@ -60,7 +52,7 @@ in
   _DEBUG = {
     inherit
       inputs
-      args_fn
+      gen_args
       nixos_systems
       darwin_systems
       ;
