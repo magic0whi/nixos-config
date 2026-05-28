@@ -5,6 +5,7 @@
   ...
 }:
 {
+  systemd.services.navidrome.unitConfig.RequiresMountsFor = [ myvars.storagePath ];
   services.navidrome = {
     enable = true;
     settings = {

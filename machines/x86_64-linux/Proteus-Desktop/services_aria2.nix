@@ -7,6 +7,7 @@ let
   path_prefix = myvars.storagePath;
 in
 {
+  systemd.services.aria2.unitConfig.RequiresMountsFor = [ myvars.storagePath ];
   sops.secrets.aria2_rpc_secret = {
     sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
     restartUnits = [ "aria2.service" ];

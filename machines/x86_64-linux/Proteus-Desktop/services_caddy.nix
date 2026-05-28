@@ -11,6 +11,7 @@ let
   caddy_port = 8080;
 in
 {
+  systemd.services.caddy.unitConfig.RequiresMountsFor = [ myvars.storagePath ];
   # systemd.tmpfiles.settings."10-caddy-create-web-root".${web_root}.d = {
   #   user = config.services.caddy.user;
   #   group = config.services.caddy.user;
