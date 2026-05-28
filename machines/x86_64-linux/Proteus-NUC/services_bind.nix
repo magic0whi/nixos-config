@@ -86,7 +86,7 @@
         mutable = true;
         soa = {
           rName = myvars.useremail;
-          serial = "2026052802";
+          serial = myvars.networking.soa_serial;
         };
         networks = [
           {

@@ -4,7 +4,7 @@
   ...
 }:
 let
-  path_prefix = "/srv";
+  path_prefix = myvars.storage_path;
 in
 {
   sops.secrets.aria2_rpc_secret = {

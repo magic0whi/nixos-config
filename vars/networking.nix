@@ -1,4 +1,5 @@
 {
+  soa_serial = "2026052804";
   hosts_addr = {
     # ============================================
     # Homelab's Physical Machines (TODO: Try KubeVirt)
@@ -28,8 +29,6 @@
             "ns1"
           ];
           CNAME = [
-            "aria2" # TODO: Move to Proteus-Desktop
-            "atuin" # TODO: Move to Proteus-Desktop
             "auth" # TODO: Move to Proteus-Desktop
             "hass" # TODO: Move to Proteus-Desktop
             "immich"
@@ -70,17 +69,19 @@
         ipv4 = "100.89.227.22";
         ipv6 = "fd7a:115c:a1e0::1a01:e318";
         domains.CNAME = [
+          "*.s3"
+          "*.s3-pub"
+          "aria2"
+          "atuin"
           "garage"
           "git"
           "ldap"
           "monero"
           "nextcloud"
+          "s3"
+          "s3-pub"
           "sb-desktop"
           "syncthing-desktop"
-          "s3"
-          "*.s3"
-          "s3-pub"
-          "*.s3-pub"
           "traefik-desktop"
         ];
       }
