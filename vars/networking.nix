@@ -7,7 +7,7 @@
         lib.filterAttrs (_: host: lib.any (iface: builtins.elem cn (iface.domains.CNAME or [ ])) host) hostAddrs
       )
     );
-  soaSerial = "2026052806";
+  soaSerial = "2026052808";
   hostAddrs = {
     # ============================================
     # Homelab's Physical Machines (TODO: Try KubeVirt)
@@ -39,7 +39,6 @@
           CNAME = [
             "immich"
             "jellyfin"
-            "navidrome" # TODO: Move to Proteus-Desktop
             "nixos-search"
             "notebook" # TODO: Move to Proteus-Desktop
             "paperless"
@@ -85,6 +84,7 @@
           "hass"
           "ldap"
           "monero"
+          "navidrome"
           "nextcloud"
           "s3"
           "s3-pub"
