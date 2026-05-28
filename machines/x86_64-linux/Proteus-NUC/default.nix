@@ -16,6 +16,8 @@ let
     "modules/nixos_headless"
 
     "modules/nixos_gui"
+
+    "modules/services/traefik.nix"
   ];
   hm_modules = map mylib.relative_to_root [
     "modules/common_hm_headless"
