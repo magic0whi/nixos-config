@@ -5,7 +5,7 @@
   ...
 }@args:
 let
-  machines = map (i: import i args) (mylib.scan_path ./${system});
+  machines = map (i: import i args) (mylib.scanPath ./${system});
 in
 {
   _DEBUG = { inherit machines; }; # TIP: Use 'builtins.elemAt lists index' to keep lazy eval

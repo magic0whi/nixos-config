@@ -7,7 +7,7 @@ in
   # Use path relative to the root of the project
   relativeToRoot = lib.path.append ../.;
 
-  scan_path =
+  scanPath =
     p:
     map (fn: p + "/${fn}") (
       builtins.attrNames (
@@ -152,7 +152,7 @@ in
           )
           ++ [
             {
-              imports = mylib.scan_path machine_path;
+              imports = mylib.scanPath machine_path;
               networking.hostName = name;
             }
           ]
