@@ -7,7 +7,7 @@
   nixos_state_version = "26.05";
   darwin_state_version = 7;
   github_username = "magic0whi";
-  secrets_dir = mylib.relative_to_root "secrets";
+  secrets_dir = mylib.relativeToRoot "secrets";
   domain = "proteus.eu.org";
   tailnet = "tailba6c3f.ts.net";
   networking = import ./networking.nix { inherit lib; };
@@ -45,7 +45,7 @@
   };
 
   base = {
-    nixpkgs_modules = map mylib.relative_to_root [
+    nixpkgs_modules = map mylib.relativeToRoot [
       "modules/secrets"
 
       "modules/common/easytier.nix"
@@ -58,7 +58,7 @@
       "modules/nixos_headless/scx-loader.nix"
       "modules/nixos_headless/traffic-quota.nix"
     ];
-    hm_modules = map mylib.relative_to_root [
+    hm_modules = map mylib.relativeToRoot [
       "modules/common_hm_headless/misc.nix"
     ];
   };

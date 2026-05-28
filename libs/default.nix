@@ -5,7 +5,7 @@ in
 {
   ## BEGIN pkgs agnostic functions
   # Use path relative to the root of the project
-  relative_to_root = lib.path.append ../.;
+  relativeToRoot = lib.path.append ../.;
 
   scan_path =
     p:

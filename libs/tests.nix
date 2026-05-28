@@ -9,8 +9,8 @@ let
 in
 lib.runTests {
   ## BEGIN System Agnostic Tests
-  test_relative_to_root = {
-    expr = mylib.relative_to_root "test_dir";
+  test_relativeToRoot = {
+    expr = mylib.relativeToRoot "test_dir";
     expected = ../. + "/test_dir";
   };
 

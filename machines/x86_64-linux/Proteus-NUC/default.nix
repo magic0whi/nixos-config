@@ -7,7 +7,7 @@
 }:
 let
   name = baseNameOf ./.;
-  nixpkgs_modules = map mylib.relative_to_root [
+  nixpkgs_modules = map mylib.relativeToRoot [
     "modules/secrets"
 
     "modules/overlays"
@@ -20,7 +20,7 @@ let
 
     "modules/services/traefik.nix"
   ];
-  hm_modules = map mylib.relative_to_root [
+  hm_modules = map mylib.relativeToRoot [
     "modules/common_hm_headless"
 
     "modules/common_hm_gui"

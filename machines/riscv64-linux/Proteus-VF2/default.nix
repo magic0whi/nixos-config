@@ -7,7 +7,7 @@
 }:
 let
   name = baseNameOf ./.;
-  nixpkgs_modules = map mylib.relative_to_root [
+  nixpkgs_modules = map mylib.relativeToRoot [
     "modules/secrets/common.nix"
     "modules/common"
     "modules/nixos_headless/impermanence.nix"
@@ -15,7 +15,7 @@ let
     "modules/nixos_headless/packages.nix"
     "modules/nixos_gui/kmscon.nix"
   ];
-  hm_modules = map mylib.relative_to_root [
+  hm_modules = map mylib.relativeToRoot [
     "modules/common_hm_headless/git.nix"
     "modules/common_hm_headless/helix.nix"
     "modules/common_hm_headless/packages.nix"

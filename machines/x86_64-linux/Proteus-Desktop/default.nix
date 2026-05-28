@@ -9,7 +9,7 @@ let
   name = baseNameOf ./.;
   nixpkgs_modules =
     myvars.base.nixpkgs_modules
-    ++ (map mylib.relative_to_root [
+    ++ (map mylib.relativeToRoot [
       "modules/nixos_headless/kernel-compat.nix"
       "modules/nixos_headless/packages.nix"
       "modules/services/traefik.nix"
@@ -17,7 +17,7 @@ let
 
       "modules/nixos_gui/kmscon.nix"
     ]);
-  hm_modules = map mylib.relative_to_root [
+  hm_modules = map mylib.relativeToRoot [
     "modules/common_hm_headless/misc.nix"
     "modules/common_hm_headless/nix.nix"
     "modules/common_hm_headless/shell.nix"
