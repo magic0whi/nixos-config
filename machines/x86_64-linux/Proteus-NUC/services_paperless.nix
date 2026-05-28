@@ -52,9 +52,9 @@
     enable = true;
     settings = {
       PAPERLESS_DBENGINE = "postgresql";
-      PAPERLESS_DBHOST = "/run/postgresql";
-      # PAPERLESS_DBHOST = "postgresql.${myvars.domain}";
-      # PAPERLESS_DBSSLMODE = "require";
+      # PAPERLESS_DBHOST = "/run/postgresql"; # Unix socket
+      PAPERLESS_DBHOST = "postgresql.${myvars.domain}";
+      PAPERLESS_DBSSLMODE = "require";
       PAPERLESS_DBNAME = config.services.paperless.user;
       PAPERLESS_DBUSER = config.services.paperless.user;
 

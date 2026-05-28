@@ -23,9 +23,9 @@
       };
       templates."immich.env" = {
         inherit restartUnits;
-        # content = "DB_PASSWORD=${config.sops.placeholder.immich_db_password}";
-        # Immich don't use env DB_PASSWORD when using unix socket to connect the DB
-        content = "DB_URL=postgresql://${config.services.immich.database.user}:${config.sops.placeholder.immich_db_password}@/${config.services.immich.database.user}";
+        content = "DB_PASSWORD=${config.sops.placeholder.immich_db_password}";
+        # NOTE: Immich don't use env DB_PASSWORD when using unix socket to connect the DB
+        # content = "DB_URL=postgresql://${config.services.immich.database.user}:${config.sops.placeholder.immich_db_password}@/${config.services.immich.database.user}";
       };
     };
   systemd.tmpfiles.settings.immich.${config.services.immich.mediaLocation}.e.mode = lib.mkForce "0750";
@@ -33,7 +33,7 @@
     enable = true;
     group = "storage";
     host = "127.0.0.1";
-    # database.host = "postgresql.${myvars.domain}"; # Default: "/run/postgresql"
+    database.host = "postgresql.${myvars.domain}"; # Default: "/run/postgresql", Unix socket
     secretsFile = config.sops.templates."immich.env".path;
     mediaLocation = "/srv/immich";
     # Ref: https://immich.proteus.eu.org/admin/system-settings?isOpen=authentication -> Export as JSON
