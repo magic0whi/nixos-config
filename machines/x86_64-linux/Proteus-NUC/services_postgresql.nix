@@ -9,8 +9,8 @@
 }:
 let
   machine_config = {
-    authelia = machineConfigs.${myvars.networking.find_host "auth"}.config;
-    paperless = machineConfigs.${myvars.networking.find_host "paperless"}.config;
+    authelia = machineConfigs.${myvars.networking.findHost "auth"}.config;
+    paperless = machineConfigs.${myvars.networking.findHost "paperless"}.config;
   };
 in
 {
