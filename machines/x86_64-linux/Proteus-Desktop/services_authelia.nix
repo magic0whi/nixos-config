@@ -74,8 +74,9 @@ in
       ];
       session.redis.host = config.services.redis.servers.authelia.unixSocket;
       storage.postgres = {
-        address = "unix:///run/postgresql/.s.PGSQL.${toString config.services.postgresql.settings.port}";
-        # address = "tcp://postgresql.${myvars.domain}:${toString config.services.postgresql.settings.port}";
+        # Unix socket
+        # address = "unix:///run/postgresql/.s.PGSQL.${toString config.services.postgresql.settings.port}";
+        address = "tcp://postgresql.${myvars.domain}:${toString config.services.postgresql.settings.port}";
         # tls.minimum_version = "TLS1.3";
         database = config.services.authelia.instances.main.user;
         schema = "public";

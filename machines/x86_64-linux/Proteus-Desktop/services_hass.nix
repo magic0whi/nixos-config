@@ -72,7 +72,7 @@
         discovery_url = "https://auth.${myvars.domain}/.well-known/openid-configuration";
         display_name = "Authelia";
         features = {
-          automatic_user_linking = true; # It's recommended to only enable this temporarily
+          automatic_user_linking = false; # NOTE: It's recommended to only enable this temporarily
           automatic_person_creation = true;
         };
       };
