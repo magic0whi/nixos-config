@@ -26,19 +26,21 @@
   #      ```
   #    2. Never leave the device and never sent over the network.
   # 2. Or just use hardware security keys like Yubikey/CanoKey.
-  ssh_authorized_keys = [
+  sshAuthorizedKeys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHBAm5d2IeApyfv8zLb7IMpex7wVHkCV86ztON7HFTkn openpgp:0xB17F9ED3"
   ];
+  gitSigningKey = "73EDF7A727CC3B5F329863DBFC4881A7361DF34E";
   # Use an [A]uthenticate subkey, run `gpg --list-secret-keys --with-keygrip` to show its keygrip
-  git_signingkey = "73EDF7A727CC3B5F329863DBFC4881A7361DF34E";
-  gpg2ssh_keygrip = [ "94BDB192359497927D5AA4AC76D238BA1BFEFE57" ];
+  gpgKeygrip = [ "94BDB192359497927D5AA4AC76D238BA1BFEFE57" ];
 
-  catppuccin_flavor = "mocha";
-  catppuccin_accent = "pink";
+  catppuccin = {
+    flavor = "mocha";
+    accent = "pink";
+  };
 
-  storage_path = "/mnt/storage/data";
+  storagePath = "/mnt/storage/data";
 
-  backup_times = {
+  backupTimes = {
     forgejo = "02:00:00";
     paperless = "02:15:00";
     postgresql = "02:20:00";

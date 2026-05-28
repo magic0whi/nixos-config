@@ -46,14 +46,14 @@
   #   "${config.services.garage.settings.metadata_dir}".d = {group = "storage"; mode = "2775";};
   # };
   systemd.services.garage = {
-    unitConfig.RequiresMountsFor = [ myvars.storage_path ];
+    unitConfig.RequiresMountsFor = [ myvars.storagePath ];
     serviceConfig = {
       EnvironmentFile = config.sops.templates."garage.env".path;
       SupplementaryGroups = [ "storage" ];
       # `DynamicUser=true` implies `ProtectSystem=strict`
       # `metadata_dir` is added defaultly, ref:
       # https://github.com/NixOS/nixpkgs/blob/15f4ee454b1dce334612fa6843b3e05cf546efab/nixos/modules/services/web-servers/garage.nix#L127-L149
-      ReadWritePaths = [ "${myvars.storage_path}/garage/snapshots" ];
+      ReadWritePaths = [ "${myvars.storagePath}/garage/snapshots" ];
     };
   };
   services.garage = {
@@ -61,11 +61,11 @@
     package = pkgs.garage_2;
     # https://garagehq.deuxfleurs.fr/documentation/reference-manual/configuration/
     settings = {
-      # metadata_dir = "${myvars.storage_path}/garage/meta"; # Garage recommends placing metadata on SSD
-      metadata_snapshots_dir = "${myvars.storage_path}/garage/snapshots";
+      # metadata_dir = "${myvars.storagePath}/garage/meta"; # Garage recommends placing metadata on SSD
+      metadata_snapshots_dir = "${myvars.storagePath}/garage/snapshots";
       metadata_auto_snapshot_interval = "6h";
       disable_scrub = true; # ZFS will take this job
-      data_dir = "${myvars.storage_path}/garage/data";
+      data_dir = "${myvars.storagePath}/garage/data";
       rpc_bind_addr = "127.0.0.1:3901";
       rpc_public_addr = "127.0.0.1:3901";
       # s3_api (3900) is for common access

@@ -4,10 +4,10 @@
   ...
 }:
 {
-  systemd.services.monero.unitConfig.RequiresMountsFor = [ myvars.storage_path ];
+  systemd.services.monero.unitConfig.RequiresMountsFor = [ myvars.storagePath ];
   services.monero = {
     enable = true;
-    dataDir = "${myvars.storage_path}/monero";
+    dataDir = "${myvars.storagePath}/monero";
     extraConfig = ''
       # log-file=${config.services.monero.dataDir}/monero.log
       # log-level=0

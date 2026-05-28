@@ -159,7 +159,7 @@ in
           mode = "raidz2";
           datasets.data = {
             type = "zfs_fs";
-            mountpoint = myvars.storage_path;
+            mountpoint = myvars.storagePath;
             mountOptions = [ "nofail" ];
             options.canmount = "on";
           };

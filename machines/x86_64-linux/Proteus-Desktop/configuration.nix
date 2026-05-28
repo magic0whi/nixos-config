@@ -28,12 +28,12 @@ in
   ## BEGIN systemd_tmpfiles.nix
   # systemd.tmpfiles.settings = {
   #   # Setgid so new files inherit group; give rw to group members
-  #   "00-create-data-share"."${myvars.storage_path}/share".d = {group = "storage"; mode = "2775";};
+  #   "00-create-data-share"."${myvars.storagePath}/share".d = {group = "storage"; mode = "2775";};
   #   # Even with setgid, services may create files with restrictive umasks. Lock in permissions with default ACLs
   #   # TIP: You may change type to `A+` to recursively modify exists dirs/files' ACLs
   #   # TIP: Run `getfacl /path` to show rule list
-  #   "01-acl-data-share-default"."${myvars.storage_path}/share"."a+".argument = "d:g:storage:rwX";
-  #   "01-acl-data-share"."${myvars.storage_path}/share".a.argument = "g:storage:rwX";
+  #   "01-acl-data-share-default"."${myvars.storagePath}/share"."a+".argument = "d:g:storage:rwX";
+  #   "01-acl-data-share"."${myvars.storagePath}/share".a.argument = "g:storage:rwX";
   # };
   ## END systemd_tmpfiles.nix
   ## BEGIN hostapd.nix

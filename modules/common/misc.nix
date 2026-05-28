@@ -77,7 +77,7 @@
   ## BEGIN users.nix
   users.users.${myvars.username} = {
     description = myvars.userFullName;
-    openssh.authorizedKeys.keys = myvars.ssh_authorized_keys;
+    openssh.authorizedKeys.keys = myvars.sshAuthorizedKeys;
   };
   ## END users.nix
   ## BEGIN tailscale.nix

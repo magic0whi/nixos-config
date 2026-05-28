@@ -91,7 +91,7 @@
     # ];
     signing = {
       format = "openpgp";
-      key = myvars.git_signingkey;
+      key = myvars.gitSigningKey;
       signByDefault = true;
     };
   };

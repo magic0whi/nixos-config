@@ -57,7 +57,7 @@
     };
     dump = {
       enable = true;
-      interval = myvars.backup_times.forgejo;
+      interval = myvars.backupTimes.forgejo;
       type = "tar.zst";
     };
   };

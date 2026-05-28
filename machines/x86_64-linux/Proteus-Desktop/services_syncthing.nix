@@ -14,7 +14,7 @@
   # If without `users.groups.storage` and rely on LDAP group
   # systemd.services.syncthing.serviceConfig.SupplementaryGroups = ["storage"];
 
-  systemd.services.syncthing.unitConfig.RequiresMountsFor = [ myvars.storage_path ];
+  systemd.services.syncthing.unitConfig.RequiresMountsFor = [ myvars.storagePath ];
   services.syncthing = {
     enable = true;
     openDefaultPorts = true;
@@ -38,29 +38,29 @@
           ));
         folders = {
           "Documents" = {
-            path = "${myvars.storage_path}/share/Documents";
+            path = "${myvars.storagePath}/share/Documents";
             devices = builtins.attrNames config.services.syncthing.settings.devices; # All devices
           };
           "Games" = {
-            path = "${myvars.storage_path}/share/Games";
+            path = "${myvars.storagePath}/share/Games";
             devices = lib.subtractLists (builtins.attrNames mobile_devices) (
               builtins.attrNames config.services.syncthing.settings.devices
             );
           };
           "KeePassXC" = {
-            path = "${myvars.storage_path}/share/KeePassXC";
+            path = "${myvars.storagePath}/share/KeePassXC";
             devices = builtins.attrNames config.services.syncthing.settings.devices;
           };
           "Music" = {
-            path = "${myvars.storage_path}/share/Music";
+            path = "${myvars.storagePath}/share/Music";
             devices = builtins.attrNames config.services.syncthing.settings.devices;
           };
           "Pictures" = {
-            path = "${myvars.storage_path}/share/Pictures";
+            path = "${myvars.storagePath}/share/Pictures";
             devices = builtins.attrNames config.services.syncthing.settings.devices;
           };
           "Works" = {
-            path = "${myvars.storage_path}/share/Works";
+            path = "${myvars.storagePath}/share/Works";
             devices = lib.subtractLists (builtins.attrNames mobile_devices) (
               builtins.attrNames config.services.syncthing.settings.devices
             );

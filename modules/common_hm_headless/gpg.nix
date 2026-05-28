@@ -61,6 +61,6 @@
     pinentry.package = lib.mkDefault pkgs.pinentry-curses;
     enableSshSupport = true;
     defaultCacheTtl = 4 * 60 * 60; # 4 hours
-    sshKeys = myvars.gpg2ssh_keygrip; # Run 'gpg --export-ssh-key gpg-key!' to export public key
+    sshKeys = myvars.gpgKeygrip; # Run 'gpg --export-ssh-key gpg-key!' to export public key
   };
 }

@@ -100,8 +100,7 @@
   catppuccin = {
     # Enable Catppuccin globally
     enable = lib.mkDefault true;
-    accent = myvars.catppuccin_accent;
-    flavor = myvars.catppuccin_flavor;
+    inherit (myvars.catppuccin) accent flavor;
   };
   ## END catppuccin.nix
 }

@@ -86,7 +86,7 @@
 
     exporter = {
       enable = true;
-      onCalendar = myvars.backup_times.paperless;
+      onCalendar = myvars.backupTimes.paperless;
       directory = "/srv/Backups/paperless-export";
       settings.no-archive = true;
       settings.no-thumbnail = true;
