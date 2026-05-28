@@ -23,24 +23,24 @@
       }
       # Iperf 3
       {
-        allowedTCPPorts = lib.optional (builtins.elem pkgs.iperf3 config.environment.systemPackages) 5201;
-        allowedUDPPorts = lib.optional (builtins.elem pkgs.iperf3 config.environment.systemPackages) 5201;
+        allowedTCPPorts = lib.mkIf (builtins.elem pkgs.iperf3 config.environment.systemPackages) [ 5201 ];
+        allowedUDPPorts = lib.mkIf (builtins.elem pkgs.iperf3 config.environment.systemPackages) [ 5201 ];
       }
       {
-        allowedTCPPorts = lib.optional (builtins.elem pkgs.localsend (hm_cfg.home.packages or [ ])) 53317;
-        allowedUDPPorts = lib.optional (builtins.elem pkgs.localsend (hm_cfg.home.packages or [ ])) 53317;
+        allowedTCPPorts = lib.mkIf (builtins.elem pkgs.localsend (hm_cfg.home.packages or [ ])) [ 53317 ];
+        allowedUDPPorts = lib.mkIf (builtins.elem pkgs.localsend (hm_cfg.home.packages or [ ])) [ 53317 ];
       }
       # Syncthing
       {
-        allowedTCPPorts = lib.optional (hm_cfg.services.syncthing.enable or false) 22000; # TCP Transfer
+        allowedTCPPorts = lib.mkIf (hm_cfg.services.syncthing.enable or false) [ 22000 ]; # TCP Transfer
         # 21027: Syncthing discovery broadcasts on IPv4 and multicasts on IPv6
-        allowedUDPPorts = lib.optionals (hm_cfg.services.syncthing.enable or false) [
+        allowedUDPPorts = lib.mkIf (hm_cfg.services.syncthing.enable or false) [
           21027
           22000
         ]; # QUIC Transfer
       }
       # EasyTier
-      {
+      (lib.mkIf config.services.easytier.enable {
         allowedTCPPortRanges = [
           {
             from = 11010;
@@ -53,7 +53,7 @@
             to = 11012;
           }
         ];
-      }
+      })
     ];
   # Let Tailscale auto detect the firewall type (nftables)
   systemd.services = lib.mkIf config.services.tailscale.enable {

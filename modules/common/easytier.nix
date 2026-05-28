@@ -59,7 +59,7 @@
             accept_dns = true; # Enable Magic DNS
             # relay_all_peer_rpc = true; # Help others hole punching
           }
-          (lib.optionalAttrs (!pkgs.stdenv.isDarwin) { dev_name = "et-main"; })
+          (lib.mkIf (!pkgs.stdenv.isDarwin) { dev_name = "et-main"; })
         ];
         stun_servers = [
           "stun.miwifi.com"
