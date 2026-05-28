@@ -34,7 +34,7 @@
         devices =
           mobile_devices
           // (builtins.mapAttrs (_: v: { id = v.syncthing_id; }) (
-            lib.filterAttrs (n: v: v ? syncthing_id && n != config.networking.hostName) myvars.networking.known_hosts
+            lib.filterAttrs (n: v: v ? syncthing_id && n != config.networking.hostName) myvars.networking.knownHosts
           ));
         folders = {
           "Documents" = {

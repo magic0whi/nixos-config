@@ -39,7 +39,7 @@
                 }
                 Port 22
             ''
-          ) "" myvars.networking.hosts_addr
+          ) "" myvars.networking.hostAddrs
         ))
       ];
       # Define the host key for remote builders so that Nix can verify all the remote builders.
@@ -47,7 +47,7 @@
       knownHosts = lib.mapAttrs (
         name: val:
         let
-          ifaces = myvars.networking.hosts_addr.${name} or [ ];
+          ifaces = myvars.networking.hostAddrs.${name} or [ ];
           ts_iface = lib.optionalAttrs (ifaces != [ ]) (builtins.elemAt ifaces 0);
           et_iface = lib.optionalAttrs (builtins.length ifaces >= 2) (builtins.elemAt ifaces 1);
         in
@@ -59,7 +59,7 @@
           ++ ((lib.optional (et_iface ? ipv4) et_iface.ipv4) ++ (lib.optional (et_iface ? ipv6) et_iface.ipv6));
           publicKey = val.public_key;
         }
-      ) myvars.networking.known_hosts;
+      ) myvars.networking.knownHosts;
     }
     ## END Common
     ## BEGIN NixOS

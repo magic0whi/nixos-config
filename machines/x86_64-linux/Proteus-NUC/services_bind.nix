@@ -31,13 +31,13 @@
     ]
     ++ (lib.concatMap (
       iface: lib.optional (iface ? ipv4) iface.ipv4
-    ) myvars.networking.hosts_addr.${config.networking.hostName});
+    ) myvars.networking.hostAddrs.${config.networking.hostName});
     listenOnIpv6 = [
       "::1"
     ]
     ++ (lib.concatMap (
       iface: lib.optional (iface ? ipv6) iface.ipv6
-    ) myvars.networking.hosts_addr.${config.networking.hostName});
+    ) myvars.networking.hostAddrs.${config.networking.hostName});
     # Inject the variables into the raw extraOptions string for DoT and DoH
     extraOptions = ''
       # Strictly Authoritative-Only Mode, implies 'empty-zones-enable no'
@@ -86,7 +86,7 @@
         mutable = true;
         soa = {
           rName = myvars.useremail;
-          serial = myvars.networking.soa_serial;
+          serial = myvars.networking.soaSerial;
         };
         networks = [
           {
@@ -120,7 +120,7 @@
                 ]
               ) iface
             ) ifaces
-          ) (lib.filterAttrs (name: _: builtins.elem name allowed_hosts) myvars.networking.hosts_addr);
+          ) (lib.filterAttrs (name: _: builtins.elem name allowed_hosts) myvars.networking.hostAddrs);
       };
     };
   };
@@ -191,10 +191,10 @@
     DNS =
       (lib.concatMap (
         iface: lib.optional (iface ? ipv4) "${iface.ipv4}#${myvars.domain}"
-      ) myvars.networking.hosts_addr.${config.networking.hostName})
+      ) myvars.networking.hostAddrs.${config.networking.hostName})
       ++ (lib.concatMap (
         iface: lib.optional (iface ? ipv6) "${iface.ipv6}#${myvars.domain}"
-      ) myvars.networking.hosts_addr.${config.networking.hostName});
+      ) myvars.networking.hostAddrs.${config.networking.hostName});
   };
 
   # Trust Island

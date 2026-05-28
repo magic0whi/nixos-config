@@ -5,7 +5,7 @@
   ...
 }:
 let
-  ifaces = myvars.networking.hosts_addr.${config.networking.hostName};
+  ifaces = myvars.networking.hostAddrs.${config.networking.hostName};
   iface_wire = builtins.elemAt ifaces 2;
   iface_wlan = builtins.elemAt ifaces 3;
 in

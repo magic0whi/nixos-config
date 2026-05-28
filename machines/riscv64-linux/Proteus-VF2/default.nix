@@ -152,5 +152,5 @@ in
   };
   nixos_configurations.${name} = nixos_system;
   packages.${name} = nixos_sd_image; # Generate iso image
-  deploy-rs_node.${name} = mylib.genDeployNode myvars.networking.hosts_addr.${name} nixos_system;
+  deploy-rs_node.${name} = mylib.genDeployNode myvars.networking.hostAddrs.${name} nixos_system;
 }

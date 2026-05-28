@@ -1,14 +1,14 @@
 { lib }:
 {
   _find_host =
-    hosts_addr: cn:
+    hostAddrs: cn:
     builtins.head (
       builtins.attrNames (
-        lib.filterAttrs (_: host: lib.any (iface: builtins.elem cn (iface.domains.CNAME or [ ])) host) hosts_addr
+        lib.filterAttrs (_: host: lib.any (iface: builtins.elem cn (iface.domains.CNAME or [ ])) host) hostAddrs
       )
     );
-  soa_serial = "2026052805";
-  hosts_addr = {
+  soaSerial = "2026052805";
+  hostAddrs = {
     # ============================================
     # Homelab's Physical Machines (TODO: Try KubeVirt)
     # ============================================
@@ -208,7 +208,7 @@
       }
     ];
   };
-  known_hosts =
+  knownHosts =
     let
       github_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl";
     in
