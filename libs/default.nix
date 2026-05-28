@@ -17,7 +17,7 @@ in
           (builtins.readDir p)
       )
     );
-  get_uri_port =
+  getURIPort =
     uri:
     let
       # 1. Strip scheme ("https://", "http://", etc.)

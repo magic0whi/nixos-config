@@ -139,7 +139,7 @@
           servers = [ { url = "http://${cfg.s3_api.api_bind_addr}"; } ]; # Default :3900
           # Probe the admin port
           healthCheck = {
-            port = toString (mylib.get_uri_port cfg.admin.api_bind_addr);
+            port = toString (mylib.getURIPort cfg.admin.api_bind_addr);
             path = "/health";
           };
         };
@@ -151,7 +151,7 @@
           servers = [ { url = "http://${cfg.s3_web.bind_addr}"; } ]; # Default :3902
           # Probe the admin port
           healthCheck = {
-            port = toString (mylib.get_uri_port cfg.admin.api_bind_addr);
+            port = toString (mylib.getURIPort cfg.admin.api_bind_addr);
             path = "/health";
           };
         };
