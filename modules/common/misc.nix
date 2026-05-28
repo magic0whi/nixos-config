@@ -5,10 +5,10 @@
   ...
 }:
 {
-  system.stateVersion = if pkgs.stdenv.isDarwin then myvars.darwin_state_version else myvars.nixos_state_version;
+  system.stateVersion = if pkgs.stdenv.isDarwin then myvars.darwinStateVersion else myvars.nixosStateVersion;
 
   # Add my self-signed CA certificate to the system-wide trust store.
-  security.pki.certificateFiles = [ "${myvars.secrets_dir}/proteus_ca.pub.pem" ];
+  security.pki.certificateFiles = [ "${myvars.secretsDir}/proteus_ca.pub.pem" ];
 
   nixpkgs.config.allowUnfree = true; # Allow chrome, vscode to install
 
@@ -76,7 +76,7 @@
   ## END i18n.nix
   ## BEGIN users.nix
   users.users.${myvars.username} = {
-    description = myvars.userfullname;
+    description = myvars.userFullName;
     openssh.authorizedKeys.keys = myvars.ssh_authorized_keys;
   };
   ## END users.nix

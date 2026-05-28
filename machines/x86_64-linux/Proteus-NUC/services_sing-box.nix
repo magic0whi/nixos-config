@@ -5,7 +5,7 @@
 }:
 {
   sops.secrets."sb_client_linux.json" = {
-    sopsFile = "${myvars.secrets_dir}/sb_client_linux.json.sops";
+    sopsFile = "${myvars.secretsDir}/sb_client_linux.json.sops";
     format = "binary";
     restartUnits = [ "sing-box.service" ];
   };

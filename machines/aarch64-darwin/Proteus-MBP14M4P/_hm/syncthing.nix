@@ -7,12 +7,12 @@
 }:
 {
   sops.secrets."${osConfig.networking.hostName}_syncthing.priv.pem" = {
-    sopsFile = "${myvars.secrets_dir}/${osConfig.networking.hostName}_syncthing.priv.pem.sops";
+    sopsFile = "${myvars.secretsDir}/${osConfig.networking.hostName}_syncthing.priv.pem.sops";
     format = "binary";
   };
   services.syncthing = {
     key = config.sops.secrets."${osConfig.networking.hostName}_syncthing.priv.pem".path;
-    cert = "${myvars.secrets_dir}/${osConfig.networking.hostName}_syncthing.pub.pem";
+    cert = "${myvars.secretsDir}/${osConfig.networking.hostName}_syncthing.pub.pem";
     settings =
       let
         mobile_devices = {

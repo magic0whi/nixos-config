@@ -18,7 +18,7 @@ in
 {
   sops.secrets =
     let
-      sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";
+      sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
     in
     {
       nextcloud_db_password = { inherit sopsFile restartUnits; };

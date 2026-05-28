@@ -12,7 +12,7 @@
     {
       secrets.hass_oidc_secret = {
         inherit restartUnits;
-        sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";
+        sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
       };
       templates."hass_secrets.yaml" = {
         inherit restartUnits;

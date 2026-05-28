@@ -13,7 +13,7 @@ in
   boot.binfmt.emulatedSystems = [ "riscv64-linux" ]; # Cross compilation
   ## BEGIN sing-box.nix
   sops.secrets."sb_client_linux.json" = {
-    sopsFile = "${myvars.secrets_dir}/sb_client_linux.json.sops";
+    sopsFile = "${myvars.secretsDir}/sb_client_linux.json.sops";
     format = "binary";
     restartUnits = [ "sing-box.service" ];
   };
@@ -42,7 +42,7 @@ in
   boot.requiredKernelModules = [ "rtl8812au" ];
 
   sops.secrets.proteus_ap_password = {
-    sopsFile = "${myvars.secrets_dir}/Proteus-Desktop.sops.yaml";
+    sopsFile = "${myvars.secretsDir}/Proteus-Desktop.sops.yaml";
     restartUnits = [ "hostapd.service" ];
   };
   services.hostapd = {

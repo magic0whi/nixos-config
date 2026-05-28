@@ -11,7 +11,7 @@
     {
       secrets.atuin_db_password = {
         inherit restartUnits;
-        sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";
+        sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
       };
       templates."atuin.env" = {
         inherit restartUnits;

@@ -9,7 +9,7 @@
   sops =
     let
       restartUnits = map (name: "easytier-${name}.service") (builtins.attrNames config.services.easytier.instances);
-      sopsFile = "${myvars.secrets_dir}/common.sops.yaml";
+      sopsFile = "${myvars.secretsDir}/common.sops.yaml";
     in
     lib.mapAttrsRecursiveCond (as: !(as ? sopsFile || as ? content))
       (

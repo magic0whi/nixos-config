@@ -7,7 +7,7 @@
 {
   sops =
     let
-      sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";
+      sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
       restartUnits = [
         "immich-machine-learning.service"
         "immich-server.service"

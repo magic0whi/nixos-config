@@ -23,7 +23,7 @@
   ## BEGIN sing-box.nix
   ## BEGIN sing-box.nix
   sops.secrets."sb_Proteus-NixOS-6.json" = {
-    sopsFile = "${myvars.secrets_dir}/sb_Proteus-NixOS-6.json.sops";
+    sopsFile = "${myvars.secretsDir}/sb_Proteus-NixOS-6.json.sops";
     format = "binary";
     restartUnits = [ "sing-box.service" ];
   };

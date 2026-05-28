@@ -34,7 +34,7 @@
     ## BEGIN ACTIVATION SCRIPT trust_custom_ca.sh
     echo "Checking self-signed CA in macOS System Keychain..."
 
-    CA_CERT="${myvars.secrets_dir}/proteus_ca.pub.pem"
+    CA_CERT="${myvars.secretsDir}/proteus_ca.pub.pem"
     CA_NAME="Homo home"
 
     # 1. Get the SHA-1 fingerprint of current self-signed certificate file on disk

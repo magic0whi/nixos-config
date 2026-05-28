@@ -5,7 +5,7 @@
   ...
 }:
 let
-  server_pub_crt = "${myvars.secrets_dir}/proteus_server.pub.pem";
+  server_pub_crt = "${myvars.secretsDir}/proteus_server.pub.pem";
 in
 {
   networking.firewall = {
@@ -16,7 +16,7 @@ in
     allowedUDPPorts = [ 443 ]; # QUIC
   };
   sops.secrets."traefik_server.priv.pem" = {
-    sopsFile = "${myvars.secrets_dir}/proteus_server.priv.pem.sops";
+    sopsFile = "${myvars.secretsDir}/proteus_server.priv.pem.sops";
     format = "binary";
     owner = config.systemd.services.traefik.serviceConfig.User;
     restartUnits = [ "traefik.service" ];

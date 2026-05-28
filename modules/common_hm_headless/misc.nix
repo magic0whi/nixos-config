@@ -10,7 +10,7 @@
   #
   # You can update Home Manager without changing this value. See the Home Manager release notes for a list of state
   # version changes in each release.
-  home.stateVersion = myvars.nixos_state_version;
+  home.stateVersion = myvars.nixosStateVersion;
   programs.home-manager.enable = true; # Let Home Manager install and manage itself.
   ## BEGIN pip.nix
   # Use mirror for pip install

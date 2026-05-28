@@ -142,7 +142,7 @@
   sops =
     let
       restartUnits = [ "sssd.service" ];
-      sopsFile = "${myvars.secrets_dir}/common.sops.yaml";
+      sopsFile = "${myvars.secretsDir}/common.sops.yaml";
     in
     {
       secrets."sssd_ldap_default_authtok" = { inherit sopsFile restartUnits; };

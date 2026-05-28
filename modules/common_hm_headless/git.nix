@@ -24,8 +24,8 @@
     package = pkgs.emptyDirectory; # Already in `environment.systemPackages`, set to dummy package
     lfs.enable = true; # Used by huggingface models
     settings = {
-      user.name = myvars.userfullname;
-      user.email = myvars.useremail;
+      user.name = myvars.userFullName;
+      user.email = myvars.email;
       init.defaultBranch = "main";
       trim.bases = "develop,master,main"; # For git-trim
       push.autoSetupRemote = true;
@@ -35,8 +35,8 @@
       url = {
         # New machines that lacks of a SSH Agent / key may not able to clone repo anonymously
         # Replace https with ssh
-        # "ssh://git@ssh.github.com:443/${myvars.github_username}" = {
-        #   insteadOf = "https://github.com/${myvars.github_username}";
+        # "ssh://git@ssh.github.com:443/${myvars.githubUsername}" = {
+        #   insteadOf = "https://github.com/${myvars.githubUsername}";
         # };
         # "ssh://git@gitlab.com/" = {
         #   insteadOf = "https://gitlab.com/";

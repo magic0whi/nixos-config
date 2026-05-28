@@ -85,7 +85,7 @@
         };
         mutable = true;
         soa = {
-          rName = myvars.useremail;
+          rName = myvars.email;
           serial = myvars.networking.soaSerial;
         };
         networks = [
@@ -205,7 +205,7 @@
   # nix run nixpkgs#dig -- @100.64.161.20 161.64.100.in-addr.arpa DNSKEY +noall +answer | nix shell nixpkgs#ldns.examples --command ldns-key2ds -n /dev/stdin
   sops =
     let
-      sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";
+      sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
       restartUnits = [ "bind.service" ];
       owner = config.systemd.services.bind.serviceConfig.User;
       mode = "0600";

@@ -52,7 +52,7 @@ in
           "cn=schema".includes = with pkgs; [
             "${openldap}/etc/schema/core.ldif"
             "${openldap}/etc/schema/cosine.ldif"
-            "${myvars.secrets_dir}/rfc2307bis.ldif"
+            "${myvars.secretsDir}/rfc2307bis.ldif"
             "${openldap}/etc/schema/inetorgperson.ldif"
           ];
           "olcDatabase={0}config".attrs = {
@@ -150,11 +150,11 @@ in
         objectClass: posixAccount
         objectClass: shadowAccount
         uid: ${myvars.username}
-        cn: ${myvars.userfullname}
+        cn: ${myvars.userFullName}
         sn: Qian
         givenName: Proteus
         title: Qiansan
-        mail: ${myvars.useremail}
+        mail: ${myvars.email}
         labeledURI: http://misc.s3-pub.proteus.eu.org/siameseemoji_agadmqeaaspumeu.png
         loginShell: /bin/zsh
         uidNumber: ${toString config.users.users.${myvars.username}.uid}

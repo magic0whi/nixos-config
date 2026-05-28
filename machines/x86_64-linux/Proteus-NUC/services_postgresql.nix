@@ -25,13 +25,13 @@ in
     {
       "postgresql_server.priv.pem" = {
         inherit restartUnits;
-        sopsFile = "${myvars.secrets_dir}/proteus_server.priv.pem.sops";
+        sopsFile = "${myvars.secretsDir}/proteus_server.priv.pem.sops";
         format = "binary";
         owner = config.systemd.services.postgresql.serviceConfig.User;
       };
       postgres_ldap_bind_pw = {
         inherit restartUnits;
-        sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";
+        sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
       };
     };
   # Ref: https://github.com/NixOS/nixpkgs/blob/549bd84d6279f9852cae6225e372cc67fb91a4c1/nixos/modules/services/databases/postgresql.nix#L684
@@ -79,7 +79,7 @@ in
     settings = {
       ssl = true;
       ssl_min_protocol_version = "TLSv1.3";
-      ssl_cert_file = "${myvars.secrets_dir}/proteus_server.pub.pem";
+      ssl_cert_file = "${myvars.secretsDir}/proteus_server.pub.pem";
       ssl_key_file = config.sops.secrets."postgresql_server.priv.pem".path;
       hba_file = lib.mkForce config.sops.templates."pg_hba_auth.conf".path;
     };

@@ -20,7 +20,7 @@
   sops =
     let
       restartUnits = [ "garage.service" ];
-      sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";
+      sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
     in
     {
       secrets = {

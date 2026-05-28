@@ -8,7 +8,7 @@
 {
   sops =
     let
-      sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";
+      sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
       restartUnits = [
         "paperless-scheduler.service"
         "paperless-task-queue.service"

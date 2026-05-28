@@ -11,7 +11,7 @@
 {
   sops =
     let
-      sopsFile = "${myvars.secrets_dir}/common.sops.yaml";
+      sopsFile = "${myvars.secretsDir}/common.sops.yaml";
       restartUnits = [ "restic-backups-${config.networking.hostName}.service" ];
       owner = config.services.restic.backups.${config.networking.hostName}.user;
     in

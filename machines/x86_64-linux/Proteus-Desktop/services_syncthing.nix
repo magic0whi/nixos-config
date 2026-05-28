@@ -6,7 +6,7 @@
 }:
 {
   sops.secrets."${config.networking.hostName}_syncthing.priv.pem" = {
-    sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}_syncthing.priv.pem.sops";
+    sopsFile = "${myvars.secretsDir}/${config.networking.hostName}_syncthing.priv.pem.sops";
     format = "binary";
     restartUnits = [ "syncthing.service" ];
   };
@@ -20,7 +20,7 @@
     openDefaultPorts = true;
     group = "storage"; # Don't work for a LDAP group
     key = config.sops.secrets."${config.networking.hostName}_syncthing.priv.pem".path;
-    cert = "${myvars.secrets_dir}/${config.networking.hostName}_syncthing.pub.pem";
+    cert = "${myvars.secretsDir}/${config.networking.hostName}_syncthing.pub.pem";
     settings =
       let
         mobile_devices = {

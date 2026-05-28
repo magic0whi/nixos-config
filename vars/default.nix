@@ -2,12 +2,12 @@
 {
   ## BEGIN pkgs agnostic variables
   username = "proteus";
-  userfullname = "Proteus Qian";
-  useremail = "sudaku233@outlook.com";
-  nixos_state_version = "26.05";
-  darwin_state_version = 7;
-  github_username = "magic0whi";
-  secrets_dir = mylib.relativeToRoot "secrets";
+  userFullName = "Proteus Qian";
+  email = "sudaku233@outlook.com";
+  nixosStateVersion = "26.05";
+  darwinStateVersion = 7;
+  githubUsername = "magic0whi";
+  secretsDir = mylib.relativeToRoot "secrets";
   domain = "proteus.eu.org";
   tailnet = "tailba6c3f.ts.net";
   networking = import ./networking.nix { inherit lib; };

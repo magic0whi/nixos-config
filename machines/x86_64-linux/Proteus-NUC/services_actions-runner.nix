@@ -14,7 +14,7 @@ in
 {
   sops =
     let
-      sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";
+      sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
     in
     {
       # Generate the runner token for the global runner

@@ -11,7 +11,7 @@ in
 {
   sops.secrets =
     let
-      sopsFile = "${myvars.secrets_dir}/${config.networking.hostName}.sops.yaml";
+      sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
       owner = config.services.authelia.instances.main.user;
     in
     {
@@ -22,7 +22,7 @@ in
       authelia_oidc_hmac = { inherit sopsFile owner restartUnits; };
       "authelia_oidc_rsa.pem" = {
         inherit owner restartUnits;
-        sopsFile = "${myvars.secrets_dir}/authelia_oidc_rsa.pem.sops";
+        sopsFile = "${myvars.secretsDir}/authelia_oidc_rsa.pem.sops";
         format = "binary";
       };
     };
