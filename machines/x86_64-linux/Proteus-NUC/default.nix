@@ -48,20 +48,6 @@ let
       machine_path = ./.;
     }
   );
-  # nixos_iso =
-  #   (lib.nixosSystem (
-  #     mylib.gen_system_args {
-  #       inherit
-  #         name
-  #         mylib
-  #         nixpkgs_modules
-  #         hm_modules
-  #         ;
-  #       generate_iso = true;
-  #       myvars = nuc_myvars;
-  #       machine_path = ./.;
-  #     }
-  #   )).config.system.build.images.iso;
 in
 {
   _DEBUG = {
