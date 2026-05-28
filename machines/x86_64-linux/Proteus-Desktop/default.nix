@@ -12,7 +12,7 @@ let
     ++ (map mylib.relative_to_root [
       "modules/nixos_headless/kernel-compat.nix"
       "modules/nixos_headless/packages.nix"
-      "modules/nixos_headless/services_traefik.nix"
+      "modules/services/traefik.nix"
       "modules/nixos_headless/zfs.nix"
 
       "modules/nixos_gui/kmscon.nix"
