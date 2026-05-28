@@ -29,7 +29,6 @@
             "ns1"
           ];
           CNAME = [
-            "auth" # TODO: Move to Proteus-Desktop
             "hass" # TODO: Move to Proteus-Desktop
             "immich"
             "jellyfin"
@@ -73,6 +72,7 @@
           "*.s3-pub"
           "aria2"
           "atuin"
+          "auth"
           "garage"
           "git"
           "ldap"
