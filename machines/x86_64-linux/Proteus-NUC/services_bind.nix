@@ -29,15 +29,11 @@
     listenOn = [
       "127.0.0.1"
     ]
-    ++ (lib.concatMap (
-      iface: lib.optional (iface ? ipv4) iface.ipv4
-    ) myvars.networking.hostAddrs.${config.networking.hostName});
+    ++ (builtins.catAttrs "ipv4" myvars.networking.hostAddrs.${config.networking.hostName});
     listenOnIpv6 = [
       "::1"
     ]
-    ++ (lib.concatMap (
-      iface: lib.optional (iface ? ipv6) iface.ipv6
-    ) myvars.networking.hostAddrs.${config.networking.hostName});
+    ++ (builtins.catAttrs "ipv6" myvars.networking.hostAddrs.${config.networking.hostName});
     # Inject the variables into the raw extraOptions string for DoT and DoH
     extraOptions = ''
       # Strictly Authoritative-Only Mode, implies 'empty-zones-enable no'
@@ -188,13 +184,13 @@
         "~${lib.removeSuffix ".zone" zone.file}"
     ) config.services.bind.zones);
 
-    DNS =
-      (lib.concatMap (
-        iface: lib.optional (iface ? ipv4) "${iface.ipv4}#${myvars.domain}"
-      ) myvars.networking.hostAddrs.${config.networking.hostName})
-      ++ (lib.concatMap (
-        iface: lib.optional (iface ? ipv6) "${iface.ipv6}#${myvars.domain}"
-      ) myvars.networking.hostAddrs.${config.networking.hostName});
+    DNS = (
+      lib.concatMap (
+        iface:
+        lib.optional (iface ? ipv4) "${iface.ipv4}#${myvars.domain}"
+        ++ lib.optional (iface ? ipv6) "${iface.ipv6}#${myvars.domain}"
+      ) myvars.networking.hostAddrs.${config.networking.hostName}
+    );
   };
 
   # Trust Island
