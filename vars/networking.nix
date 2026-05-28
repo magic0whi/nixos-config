@@ -1,5 +1,5 @@
 {
-  soa_serial = "2026052804";
+  soa_serial = "2026052805";
   hosts_addr = {
     # ============================================
     # Homelab's Physical Machines (TODO: Try KubeVirt)
