@@ -4,7 +4,6 @@
   ...
 }:
 {
-  # time.timeZone = "Europe/London";
   hardware.graphics.extraPackages = with pkgs; [
     intel-media-driver
     intel-compute-runtime-legacy1

@@ -59,9 +59,8 @@
       homeassistant = {
         name = "Proteus' Homo";
         unit_system = "metric"; # or "us_customary"
-        latitude = config.home-manager.users.${myvars.username}.services.gammastep.settings.manual.lat;
-        longitude = config.home-manager.users.${myvars.username}.services.gammastep.settings.manual.lon;
-        time_zone = "Asia/Hong_Kong";
+        inherit (myvars) latitude longitude;
+        time_zone = config.time.timeZone;
       };
       logger.default = "info";
       # https://wiki.nixos.org/wiki/Home_Assistant#Automations,_Scenes,_and_Scripts_from_the_UI

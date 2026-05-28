@@ -2,8 +2,9 @@
 # fatigue if you are working in front of the screen at night. Ref: https://gitlab.com/chinstrap/gammastep
 # Works on X11 & Wayland
 {
-  pkgs,
   lib,
+  myvars,
+  pkgs,
   ...
 }:
 {
@@ -34,8 +35,8 @@
       manual = {
         # Set geological position to Bilibili's headquarter, Shanghai, China.
         # https://www.openstreetmap.org/node/7190124016
-        lat = "31.3113626";
-        lon = "121.5020943";
+        lat = myvars.latitude;
+        lon = myvars.longitude;
       };
     };
   };

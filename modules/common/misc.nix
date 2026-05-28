@@ -72,7 +72,7 @@
   ## END nix.nix
   ## BEGIN i18n.nix
   # NOTE: On macOS, Please set [Set time zone automatically using your current location] to false in [System Settings]
-  time.timeZone = lib.mkDefault "Asia/Hong_Kong";
+  time.timeZone = lib.mkDefault myvars.timeZone;
   ## END i18n.nix
   ## BEGIN users.nix
   users.users.${myvars.username} = {

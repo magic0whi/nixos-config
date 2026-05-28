@@ -4,7 +4,6 @@
   ...
 }:
 {
-  # time.timeZone = "Asia/Hong_Kong";
   sops.secrets."sb_client_darwin.json" = {
     sopsFile = "${myvars.secretsDir}/sb_client_darwin.json.sops";
     format = "binary";

@@ -8,6 +8,11 @@
   darwinStateVersion = 7;
   githubUsername = "magic0whi";
   secretsDir = mylib.relativeToRoot "secrets";
+
+  latitude = "31.3113626";
+  longitude = "121.5020943";
+  timeZone = "Asia/Hong_Kong"; # Main timezone
+
   domain = "proteus.eu.org";
   tailnet = "tailba6c3f.ts.net";
   networking = import ./networking.nix { inherit lib; };
