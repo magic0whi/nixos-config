@@ -64,7 +64,7 @@
   };
   ## END pkgs agnostic functions
   ## BEGIN pkgs dependent variables
-  mk_for_pkgs = pkgs: {
+  mkForPkgs = pkgs: {
     monospace = {
       name = "Iosevka Nerd Font Mono";
       package = pkgs.nerd-fonts.iosevka;

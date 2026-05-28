@@ -17,7 +17,7 @@ in
           (builtins.readDir p)
       )
     );
-  getURIPort =
+  getUriPort =
     uri:
     let
       # 1. Strip scheme ("https://", "http://", etc.)
@@ -59,7 +59,7 @@ in
     else
       null;
 
-  gen_deploy-rs_node = ifaces: nixos_system: {
+  genDeployNode = ifaces: nixos_system: {
     hostname =
       let
         ts_iface = builtins.elemAt ifaces 0;
@@ -75,9 +75,9 @@ in
   };
   ## END pkgs agnostic functions
   ## BEGIN pkgs dependent functions
-  mk_for_pkgs = pkgs: {
+  mkForPkgs = pkgs: {
     # Create a symlink of dir/file out of /nix/store (with prefix `custom_`)
-    mk_out_of_store_symlink =
+    mkOutOfStoreSymlink =
       path:
       let
         path_str = toString path;
@@ -106,7 +106,7 @@ in
       pkgs.runCommandLocal name { } "ln -s ${lib.escapeShellArg path_str} $out";
 
     # Args to generate nixosSystem/darwinSystem
-    gen_system_args =
+    genOsConfiguration =
       {
         name,
         machineConfigs ? { },

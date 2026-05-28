@@ -19,7 +19,7 @@ let
     "modules/darwin_hm"
   ];
   darwin_system = nix-darwin.lib.darwinSystem (
-    mylib.gen_system_args {
+    mylib.genOsConfiguration {
       inherit
         name
         mylib

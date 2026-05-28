@@ -273,7 +273,7 @@ in
 
   services.traefik.dynamicConfigOptions.http =
     let
-      authelia_port = toString (mylib.getURIPort config.services.authelia.instances.main.settings.server.address);
+      authelia_port = toString (mylib.getUriPort config.services.authelia.instances.main.settings.server.address);
     in
     {
       middlewares.authelia-auth.forwardAuth.address = "http://127.0.0.1:${authelia_port}/api/authz/forward-auth?authelia_url=https://auth.${myvars.domain}/";

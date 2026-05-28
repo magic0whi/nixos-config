@@ -24,7 +24,7 @@ let
     "modules/nixos_hm_headless/shell.nix"
   ];
   nixos_system = lib.nixosSystem (
-    mylib.gen_system_args {
+    mylib.genOsConfiguration {
       inherit
         name
         mylib
@@ -39,7 +39,7 @@ let
   # TODO: WIP, broken
   nixos_sd_image =
     (inputs.nixpkgs.lib.nixosSystem (
-      mylib.gen_system_args {
+      mylib.genOsConfiguration {
         inherit
           name
           mylib
@@ -152,5 +152,5 @@ in
   };
   nixos_configurations.${name} = nixos_system;
   packages.${name} = nixos_sd_image; # Generate iso image
-  deploy-rs_node.${name} = mylib.gen_deploy-rs_node myvars.networking.hosts_addr.${name} nixos_system;
+  deploy-rs_node.${name} = mylib.genDeployNode myvars.networking.hosts_addr.${name} nixos_system;
 }

@@ -11,7 +11,7 @@ let
     ;
   name = baseNameOf ./.;
   nixos_system = lib.nixosSystem (
-    mylib.gen_system_args {
+    mylib.genOsConfiguration {
       inherit
         name
         mylib
@@ -34,5 +34,5 @@ in
       ;
   };
   nixos_configurations.${name} = nixos_system;
-  deploy-rs_node.${name} = mylib.gen_deploy-rs_node myvars.networking.hosts_addr.${name} nixos_system;
+  deploy-rs_node.${name} = mylib.genDeployNode myvars.networking.hosts_addr.${name} nixos_system;
 }

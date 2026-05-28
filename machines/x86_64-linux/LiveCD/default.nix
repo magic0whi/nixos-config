@@ -48,7 +48,7 @@ let
     "modules/nixos_hm_gui/xdg.nix"
   ];
   nixos_system = lib.nixosSystem (
-    mylib.gen_system_args {
+    mylib.genOsConfiguration {
       inherit
         name
         mylib
