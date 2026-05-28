@@ -24,8 +24,10 @@
     package = pkgs.emptyDirectory; # Already in `environment.systemPackages`, set to dummy package
     lfs.enable = true; # Used by huggingface models
     settings = {
-      user.name = myvars.userFullName;
-      user.email = myvars.email;
+      user = {
+        name = myvars.userFullName;
+        inherit (myvars) email;
+      };
       init.defaultBranch = "main";
       trim.bases = "develop,master,main"; # For git-trim
       push.autoSetupRemote = true;
