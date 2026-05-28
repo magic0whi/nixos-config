@@ -6,7 +6,7 @@
   ...
 }:
 let
-  nextcloud_port = 8080;
+  nextcloud_port = 8081;
   restartUnits = [
     "nextcloud-setup.service"
     "nextcloud-cron.service"
@@ -33,6 +33,17 @@ in
       # Add RequiresMountsFor to wait for storage mounted
       (lib.genAttrs clean_units (_: {
         unitConfig.RequiresMountsFor = [ myvars.storagePath ];
+        wants = [ "network-online.target" ];
+        after = [ "network-online.target" ];
+        preStart = lib.mkBefore ''
+          # set -eufo pipefail
+
+          echo "Waiting for LDAP (ldap.${myvars.domain}) to be ready..."
+          while ! ${lib.getExe pkgs.netcat} -z ldap.proteus.eu.org 636; do
+            sleep 2
+          done
+          echo "LDAP is online, proceeding with Forgejo startup."
+        '';
       }))
       # https://wiki.nixos.org/wiki/Nextcloud#Dynamic_configuration
       {
