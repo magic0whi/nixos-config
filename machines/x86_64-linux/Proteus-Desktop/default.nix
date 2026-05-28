@@ -12,10 +12,12 @@ let
     ++ (map mylib.relativeToRoot [
       "modules/nixos_headless/kernel-compat.nix"
       "modules/nixos_headless/packages.nix"
-      "modules/services/traefik.nix"
       "modules/nixos_headless/zfs.nix"
 
       "modules/nixos_gui/kmscon.nix"
+
+      "modules/services/traefik.nix"
+      "modules/services/docker.nix"
     ]);
   hm_modules = map mylib.relativeToRoot [
     "modules/common_hm_headless/misc.nix"
