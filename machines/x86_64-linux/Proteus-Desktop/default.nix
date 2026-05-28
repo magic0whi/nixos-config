@@ -1,5 +1,6 @@
 {
   lib,
+  machineConfigs,
   mylib,
   myvars,
   ...
@@ -26,6 +27,7 @@ let
     mylib.gen_system_args {
       inherit
         name
+        machineConfigs
         mylib
         nixpkgs_modules
         hm_modules

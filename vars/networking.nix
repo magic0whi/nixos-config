@@ -34,7 +34,6 @@
             "hass" # TODO: Move to Proteus-Desktop
             "immich"
             "jellyfin"
-            "ldap" # TODO: Move to Proteus-Desktop
             "navidrome" # TODO: Move to Proteus-Desktop
             "nixos-search"
             "notebook" # TODO: Move to Proteus-Desktop
@@ -73,6 +72,7 @@
         domains.CNAME = [
           "garage"
           "git"
+          "ldap"
           "monero"
           "nextcloud"
           "sb-desktop"

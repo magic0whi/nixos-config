@@ -114,6 +114,7 @@ in
     gen_system_args =
       {
         name,
+        machineConfigs ? { },
         mylib,
         myvars,
         nixpkgs_modules,
@@ -132,7 +133,7 @@ in
           i915-sriov-dkms
           ;
         specialArgs = inputs // {
-          inherit mylib myvars;
+          inherit machineConfigs mylib myvars;
         };
       in
       {

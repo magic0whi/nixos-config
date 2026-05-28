@@ -28,6 +28,7 @@ let
       inherit lib system nix-darwin;
       myvars = myvars // (myvars.mk_for_pkgs pkgs);
       mylib = mylib // (mylib.mk_for_pkgs pkgs);
+      machineConfigs = with self; nixosConfigurations // darwinConfigurations;
     };
   import_each_system = supported_systems: lib.genAttrs supported_systems (system: import ./machines (args_fn system));
   ## END Functions
