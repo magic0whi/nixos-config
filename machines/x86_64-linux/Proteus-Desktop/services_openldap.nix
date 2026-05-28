@@ -16,11 +16,13 @@ let
         ) myvars.networking.hosts_addr
       )
     );
-  authelia_machine = machineConfigs.${find_host "auth"};
-  forgejo_machine = machineConfigs.${find_host "git"};
-  immich_machine = machineConfigs.${find_host "immich"};
-  paperless_machine = machineConfigs.${find_host "paperless"};
-  postgresql_machine = machineConfigs.${find_host "postgresql"};
+  machines = {
+    authelia = machineConfigs.${find_host "auth"};
+    forgejo = machineConfigs.${find_host "git"};
+    immich = machineConfigs.${find_host "immich"};
+    paperless = machineConfigs.${find_host "paperless"};
+    postgresql = machineConfigs.${find_host "postgresql"};
+  };
 
   openldap_port = 636; # OpenLDAP (Secure)
   openldap_backend_port = 389;
@@ -185,48 +187,48 @@ in
         description: Dedicated LDAP account for authenticating database user
         userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$2/qpzCZL/QW5fczhx60Bwg$64zn/anj0LiNqsupuKnr5UA7B+Ejm3H+JL29NgSqwVs
 
-        dn: uid=${postgresql_machine.config.systemd.services.postgresql.serviceConfig.User},ou=ServiceAccounts,${base_dn}
+        dn: uid=${machines.postgresql.config.systemd.services.postgresql.serviceConfig.User},ou=ServiceAccounts,${base_dn}
         objectClass: top
         objectClass: person
         objectClass: organizationalPerson
         objectClass: inetOrgPerson
-        uid: ${postgresql_machine.config.systemd.services.postgresql.serviceConfig.User}
+        uid: ${machines.postgresql.config.systemd.services.postgresql.serviceConfig.User}
         o: Proteus Homelab
         cn: PostgreSQL Database Auth Service
         sn: Service
         description: Dedicated LDAP account for authenticating database user
         userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$gAW72T0XdGEPASN6Lw93pw$IoCTZ5kgwFaGAAt92SBp36hglEn/oU3BvY4et8xRY68
 
-        dn: uid=${immich_machine.config.services.immich.user},ou=ServiceAccounts,${base_dn}
+        dn: uid=${machines.immich.config.services.immich.user},ou=ServiceAccounts,${base_dn}
         objectClass: top
         objectClass: person
         objectClass: organizationalPerson
         objectClass: inetOrgPerson
-        uid: ${immich_machine.config.services.immich.user}
+        uid: ${machines.immich.config.services.immich.user}
         o: Proteus Homelab
         cn: Immich Database Auth Service
         sn: Service
         description: Dedicated LDAP account for authenticating database user
         userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$OEpAKFVxRbsfk8djqOY2yg$scRgt8huwIp6bmRTbKxHdf5YzDqbc+sv5O6FdnF59+s
 
-        dn: uid=${paperless_machine.config.services.paperless.user},ou=ServiceAccounts,${base_dn}
+        dn: uid=${machines.paperless.config.services.paperless.user},ou=ServiceAccounts,${base_dn}
         objectClass: top
         objectClass: person
         objectClass: organizationalPerson
         objectClass: inetOrgPerson
-        uid: ${paperless_machine.config.services.paperless.user}
+        uid: ${machines.paperless.config.services.paperless.user}
         o: Proteus Homelab
         sn: Service
         cn: Paperless Database Auth Service
         description: Dedicated LDAP account for authenticating database user
         userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$ZCKwwHl/8qfXSbgipXXHww$XJWgXYKm8jy4WxhITOkBDLWZi0GhfCLYwpSrgtkhMus
 
-        dn: uid=${authelia_machine.config.services.authelia.instances.main.user},ou=ServiceAccounts,${base_dn}
+        dn: uid=${machines.authelia.config.services.authelia.instances.main.user},ou=ServiceAccounts,${base_dn}
         objectClass: top
         objectClass: person
         objectClass: organizationalPerson
         objectClass: inetOrgPerson
-        uid: ${authelia_machine.config.services.authelia.instances.main.user}
+        uid: ${machines.authelia.config.services.authelia.instances.main.user}
         o: Proteus Homelab
         sn: Service
         cn: Authelia Service & Authelia Database Auth Service
@@ -257,12 +259,12 @@ in
         description: Dedicated LDAP account for SSSD to query the directory
         userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$I71nfOU2bdoCUvbHZ6lcaA$uCcQtwCSNYzjnx8KlyaU6nb0zDZQHiL2Cf9IGLskr8M
 
-        dn: uid=${forgejo_machine.config.services.forgejo.user},ou=ServiceAccounts,${base_dn}
+        dn: uid=${machines.forgejo.config.services.forgejo.user},ou=ServiceAccounts,${base_dn}
         objectClass: top
         objectClass: person
         objectClass: organizationalPerson
         objectClass: inetOrgPerson
-        uid: ${forgejo_machine.config.services.forgejo.user}
+        uid: ${machines.forgejo.config.services.forgejo.user}
         o: Proteus Homelab
         sn: Service
         cn: Forgejo Database Auth Service
