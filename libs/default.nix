@@ -149,7 +149,8 @@ in
                 lanzaboote.nixosModules.lanzaboote
                 sops-nix.nixosModules.sops
                 impermanence.nixosModules.impermanence
-                niks3.nixosModules.default
+                niks3.nixosModules.niks3
+                niks3.nixosModules.niks3-auto-upload
               ]
           )
           ++ [

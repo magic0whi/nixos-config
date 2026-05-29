@@ -12,6 +12,7 @@ in
   sops =
     let
       restartUnits = [ "niks3.service" ];
+      sopsFile = "${myvars.secretsDir}/common_hm.sops.yaml";
     in
     {
       secrets = {
@@ -20,17 +21,15 @@ in
           inherit restartUnits;
         };
         aws_access_key = {
-          sopsFile = "${myvars.secretsDir}/common_hm.sops.yaml";
+          inherit sopsFile restartUnits;
           owner = cfg.user;
-          inherit restartUnits;
         };
         aws_secret_key = {
-          sopsFile = "${myvars.secretsDir}/common_hm.sops.yaml";
+          inherit sopsFile restartUnits;
           owner = cfg.user;
-          inherit restartUnits;
         };
         niks3_api_token = {
-          sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
+          sopsFile = "${myvars.secretsDir}/common.sops.yaml";
           owner = cfg.user;
           inherit restartUnits;
         };
@@ -69,22 +68,7 @@ in
     signKeyFiles = [ config.sops.secrets."nix_secret.key".path ];
 
     # Used to generate landing page with usage instructions and public keys, which is uploaded to the S3 bucket.
-    cacheUrl = "https://niks3.${myvars.domain}";
-
-    oidc.providers = {
-      authelia = {
-        issuer = "https://auth.${myvars.domain}";
-        audience = "https://niks3.${myvars.domain}";
-        boundClaims = {
-          # repository_owner = [ "myorg" ];
-          groups = [
-            "storage"
-            "nix-builders"
-          ];
-        };
-        # boundSubject = [ "repo:myorg/*:*" ];
-      };
-    };
+    cacheUrl = "https://nix-cache.s3-pub.${myvars.domain}";
   };
   services.traefik.dynamicConfigOptions.http = {
     routers.niks3 = {
@@ -93,6 +77,6 @@ in
       service = "niks3";
       tls = { };
     };
-    services.niks3.loadBalancer.servers = [ { url = config.services.niks3.httpAddr; } ];
+    services.niks3.loadBalancer.servers = [ { url = "http://${config.services.niks3.httpAddr}"; } ];
   };
 }

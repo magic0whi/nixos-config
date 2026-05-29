@@ -57,6 +57,7 @@
 
       "modules/common/easytier.nix"
       "modules/common/misc.nix"
+      "modules/common/niks3-auto-upload.nix"
       "modules/common/shell.nix"
 
       "modules/nixos_headless/impermanence.nix"
