@@ -20,6 +20,7 @@ let
       "modules/services/docker.nix"
     ]);
   hm_modules = map mylib.relativeToRoot [
+    "modules/common_hm_headless/helix.nix"
     "modules/common_hm_headless/misc.nix"
     "modules/common_hm_headless/nix.nix"
     "modules/common_hm_headless/shell.nix"
