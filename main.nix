@@ -61,7 +61,6 @@ in
   };
   # Merge all the machines into a single attribute set (Multi-arch)
   nixosConfigurations = lib.mergeAttrsList (map (i: i.nixos_configurations or { }) nixos_systems_values);
-  # Packages: iso images, TODO, derive ISO from a machine's config is a bad idea
   packages = lib.genAttrs (builtins.attrNames nixos_systems) (system: nixos_systems.${system}.packages or { });
   darwinConfigurations = lib.mergeAttrsList (map (i: i.darwin_configurations or { }) darwin_systems_values);
   deploy = {

@@ -1,3 +1,4 @@
+# Derive LiveCD from a machine's config is a bad idea, so I use a standalone machine config instead
 {
   config,
   myvars,
@@ -26,6 +27,7 @@
     # allowUnsigned = true; # Useful for first boot
   };
   security.sudo.wheelNeedsPassword = false;
+  security.sudo-rs.wheelNeedsPassword = false;
   services.openssh.settings = {
     PasswordAuthentication = true;
     PermitRootLogin = "yes";
