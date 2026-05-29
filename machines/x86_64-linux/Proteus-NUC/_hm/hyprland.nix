@@ -24,7 +24,7 @@ let
 
   monitor_1 = monitor_cfg // {
     output = "DP-3";
-    position = "auto-up";
+    position = "auto-right";
     scale = 1.67;
   };
 in
