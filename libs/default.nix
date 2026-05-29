@@ -126,6 +126,7 @@ in
           catppuccin
           disko
           i915-sriov-dkms
+          niks3
           ;
         specialArgs = inputs // {
           inherit machineConfigs mylib myvars;
@@ -148,6 +149,7 @@ in
                 lanzaboote.nixosModules.lanzaboote
                 sops-nix.nixosModules.sops
                 impermanence.nixosModules.impermanence
+                niks3.nixosModules.default
               ]
           )
           ++ [

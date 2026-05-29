@@ -12,7 +12,7 @@
       ) hostAddrs.${name}
     ) null (builtins.attrNames hostAddrs);
 
-  soaSerial = "2026052900";
+  soaSerial = "2026052901";
   hostAddrs = {
     # ============================================
     # Homelab's Physical Machines (TODO: Try KubeVirt)
@@ -86,6 +86,7 @@
           "monero"
           "navidrome"
           "nextcloud"
+          "niks3"
           "notebook"
           "papra"
           "plane"

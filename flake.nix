@@ -75,6 +75,13 @@
       url = "github:numtide/treefmt-nix/790751ff7fd3801feeaf96d7dc416a8d581265ba";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    niks3 = {
+      url = "github:Mic92/niks3/v1.6.0";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        treefmt-nix.follows = "treefmt-nix";
+      };
+    };
   };
   outputs = inputs: import ./main.nix inputs;
 }

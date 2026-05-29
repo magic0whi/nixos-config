@@ -1,0 +1,98 @@
+{
+  config,
+  machineConfigs,
+  myvars,
+  ...
+}:
+let
+  cfg = config.services.niks3;
+  machine_config_s3 = machineConfigs.${myvars.networking.findHost "s3"}.config;
+in
+{
+  sops =
+    let
+      restartUnits = [ "niks3.service" ];
+    in
+    {
+      secrets = {
+        niks3_db_password = {
+          sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
+          inherit restartUnits;
+        };
+        aws_access_key = {
+          sopsFile = "${myvars.secretsDir}/common_hm.sops.yaml";
+          owner = cfg.user;
+          inherit restartUnits;
+        };
+        aws_secret_key = {
+          sopsFile = "${myvars.secretsDir}/common_hm.sops.yaml";
+          owner = cfg.user;
+          inherit restartUnits;
+        };
+        niks3_api_token = {
+          sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
+          owner = cfg.user;
+          inherit restartUnits;
+        };
+        "nix_secret.key" = {
+          sopsFile = "${myvars.secretsDir}/nix_secret.key.sops";
+          format = "binary";
+          owner = cfg.user;
+          inherit restartUnits;
+        };
+      };
+      templates."niks3.env" = {
+        content = ''
+          CONN_URL=postgres://${cfg.user}:${config.sops.placeholder.niks3_db_password}@postgresql.${myvars.domain}/${cfg.user}?sslmode=require
+        '';
+        inherit restartUnits;
+      };
+    };
+  systemd.services.niks3.serviceConfig.EnvironmentFile = config.sops.templates."niks3.env".path;
+  services.niks3 = {
+    enable = true;
+    httpAddr = "127.0.0.1:5751";
+
+    database.connectionString = "$CONN_URL";
+    s3 = {
+      endpoint = "s3.${myvars.domain}";
+      bucket = "nix-cache";
+      region = machine_config_s3.services.garage.settings.s3_api.s3_region;
+      useSSL = true;
+      accessKeyFile = config.sops.secrets.aws_access_key.path;
+      secretKeyFile = config.sops.secrets.aws_secret_key.path;
+    };
+
+    apiTokenFile = config.sops.secrets.niks3_api_token.path;
+
+    # Signing keys for NAR signing
+    signKeyFiles = [ config.sops.secrets."nix_secret.key".path ];
+
+    # Used to generate landing page with usage instructions and public keys, which is uploaded to the S3 bucket.
+    cacheUrl = "https://niks3.${myvars.domain}";
+
+    oidc.providers = {
+      authelia = {
+        issuer = "https://auth.${myvars.domain}";
+        audience = "https://niks3.${myvars.domain}";
+        boundClaims = {
+          # repository_owner = [ "myorg" ];
+          groups = [
+            "storage"
+            "nix-builders"
+          ];
+        };
+        # boundSubject = [ "repo:myorg/*:*" ];
+      };
+    };
+  };
+  services.traefik.dynamicConfigOptions.http = {
+    routers.niks3 = {
+      rule = "Host(`niks3.${myvars.domain}`)";
+      entryPoints = [ "websecure" ];
+      service = "niks3";
+      tls = { };
+    };
+    services.niks3.loadBalancer.servers = [ { url = config.services.niks3.httpAddr; } ];
+  };
+}

@@ -258,6 +258,30 @@
         "type": "github"
       }
     },
+    "niks3": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "treefmt-nix": [
+          "treefmt-nix"
+        ]
+      },
+      "locked": {
+        "lastModified": 1778839878,
+        "narHash": "sha256-S2nSP6YWUz8I2uRZuAY93FoAAUa9TiZetLzjBv1n5vk=",
+        "owner": "Mic92",
+        "repo": "niks3",
+        "rev": "c29f3641de064545d75f00318cd45bea2b4ea1d0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Mic92",
+        "ref": "v1.6.0",
+        "repo": "niks3",
+        "type": "github"
+      }
+    },
     "nix-darwin": {
       "inputs": {
         "nixpkgs": [
@@ -366,6 +390,7 @@
         "i915-sriov-dkms": "i915-sriov-dkms",
         "impermanence": "impermanence",
         "lanzaboote": "lanzaboote",
+        "niks3": "niks3",
         "nix-darwin": "nix-darwin",
         "nixos-hardware": "nixos-hardware",
         "nixpak": "nixpak",

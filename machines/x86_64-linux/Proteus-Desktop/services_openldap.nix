@@ -13,6 +13,7 @@ let
     immich = machineConfigs.${myvars.networking.findHost "immich"}.config;
     paperless = machineConfigs.${myvars.networking.findHost "paperless"}.config;
     postgresql = machineConfigs.${myvars.networking.findHost "postgresql"}.config;
+    niks3 = machineConfigs.${myvars.networking.findHost "niks3"}.config;
   };
 
   openldap_port = 636; # OpenLDAP (Secure)
@@ -261,6 +262,18 @@ in
         cn: Forgejo Database Auth Service
         description: Dedicated LDAP account for authenticating database user
         userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$Lk6YxoylMGkd2YaTXwYl2g$D/13/TdjrjezdOg3zhEgeI6UJvH9BMZb/xjNPcg17BE
+
+        dn: uid=${machine_config.niks3.services.niks3.user},ou=ServiceAccounts,${base_dn}
+        objectClass: top
+        objectClass: person
+        objectClass: organizationalPerson
+        objectClass: inetOrgPerson
+        uid: ${machine_config.niks3.services.niks3.user}
+        o: Proteus Homelab
+        sn: Service
+        cn: Niks3 Database Auth Service
+        description: Dedicated LDAP account for authenticating database user
+        userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$P2vBvDvBSv852DZE6hK+KQ$Mx9X6tARLOFI/r8mDnyN9ib6xEXj+XtRY3kLYaXrxqs
 
         dn: cn=storage,ou=Group,${base_dn}
         objectClass: top
