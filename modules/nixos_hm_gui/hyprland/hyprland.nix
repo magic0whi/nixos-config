@@ -734,16 +734,28 @@ in
             ]
           ) 10
         ));
-      # Window Rules TODO: Review
       window_rule = [
+        ## Windows That Better Float
         {
-          match.class = "^imv$";
+          match.class = "^(${
+            builtins.concatStringsSep "|" [
+              "imv"
+              ''org\.pulseaudio\.pavucontrol''
+              "yad"
+            ]
+          })$";
           float = true;
         }
+        # Inkscape
         {
-          match.class = ''^org\.pulseaudio\.pavucontrol$'';
+          match = {
+            class = "^org\\.inkscape\\.Inkscape$";
+            title = "^Function Plotter$";
+          };
           float = true;
         }
+
+        ## Pop-up Windows
         {
           match = {
             class = "^thunar$";
@@ -751,16 +763,19 @@ in
           };
           float = true;
         }
+        # Screensharing (xdg-desktop-portal-hyprland)
         {
-          match.class = "^yad$";
+          match.title = "^Select what to share$";
           float = true;
         }
+        # Browsers
         {
           match.class = "^firefox|google-chrome$";
           idle_inhibit = "focus";
+          opaque = true;
         }
 
-        # Video Picture-in-Picture
+        ## Video Picture-in-Picture
         {
           match.tag = "video_pip";
           float = true;
@@ -768,6 +783,7 @@ in
           size = "480 270";
           move = "100%-w-5 100%-w-5";
         }
+        # Firefox PiP
         {
           match = {
             initial_class = "^firefox$";
@@ -775,8 +791,9 @@ in
           };
           tag = "+video_pip";
         }
+        # Chrome PiP
         {
-          match.initial_title = "^Picture\\ in\\ picture$"; # Chrome PiP
+          match.initial_title = "^Picture\\ in\\ picture$";
           tag = "+video_pip";
         }
 
@@ -787,45 +804,24 @@ in
             title = "^HyperTTS: Add Audio \\(Collection\\)$";
           };
           float = true;
-        }
-        {
-          match = {
-            class = "^anki$";
-            title = "^HyperTTS: Add Audio \\(Collection\\)$";
-          };
           size = "1090 640";
-        }
-
-        # Inkscape
-        {
-          match = {
-            class = "^org\\.inkscape\\.Inkscape$";
-            title = "^Function Plotter$";
-          };
-          float = true;
         }
 
         # Games
         {
           match.tag = "game";
+          border_size = 1;
           fullscreen = true;
           immediate = true;
-        }
-        {
-          match.tag = "game";
           no_anim = true;
           no_blur = true;
           no_shadow = true;
-        }
-        {
-          match.tag = "game";
           opacity = 1;
-          border_size = 1;
           rounding = 0;
         }
         {
           match = {
-            initial_class = "^steam_app_\\d+$";
+            initial_class = ''^steam_app_\d+$'';
             initial_title = "negative:^(?i)(.*Launcher.*)$";
           };
           tag = "+game";
@@ -842,40 +838,7 @@ in
           match.initial_class = "^(ueberzugpp_.*)";
           tag = "+previewer";
         }
-
-        # Qemu
-        {
-          match.initial_class = "^Qemu-system-x86_64$";
-          float = true;
-        }
       ];
-      # windowrule = [
-      #   "match:class ^xdg-desktop-portal-gtk$,float true"
-      #   "match:class ^yad$,float true"
-
-      #   "match:tag video_pip,float true,pin true,size 480 270,move 100%-w-5 100%-w-5"
-      #   # Firefox PiP
-      #   "match:initial_class ^firefox$,match:initial_title ^Picture-in-Picture$,tag +video_pip"
-      #   "match:initial_title ^Picture\\ in\\ picture$,tag +video_pip" # Chrome PiP
-
-      #   "match:class ^anki$,match:title ^HyperTTS: Add Audio \\(Collection\\)$,float true"
-      #   "match:class ^anki$,match:title ^HyperTTS: Add Audio \\(Collection\\)$,size 1090 640"
-
-      #   "match:class ^org\\.inkscape\\.Inkscape$,match:title ^Function Plotter$,float true"
-      #   "match:class ^org\\.inkscape\\.Inkscape$,match:title ^Function Plotter$,float true"
-
-      #   # Game
-      #   "match:tag game,fullscreen true,immediate true"
-      #   "match:tag game,no_anim true,no_blur true,no_shadow true"
-      #   "match:tag game,opacity 1,border_size 1,rounding 0"
-      #   # Steam Proton Games
-      #   "match:initial_class ^steam_app_\\d+$,match:initial_title negative:^(?i)(.*Launcher.*)$,tag +game"
-
-      #   # Previewer
-      #   "match:tag previewer,float true,no_initial_focus true,opaque true"
-      #   "match:initial_class ^(ueberzugpp_.*),tag +previewer"
-      #   # "match:initial_class ^Qemu-system-x86_64$,float true"
-      # ];
     };
   };
   # For dbus' loginctl lock/unlock
