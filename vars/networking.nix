@@ -2,11 +2,16 @@
 {
   _find_host =
     hostAddrs: cn:
-    builtins.head (
-      builtins.attrNames (
-        lib.filterAttrs (_: host: lib.any (iface: builtins.elem cn (iface.domains.CNAME or [ ])) host) hostAddrs
-      )
-    );
+    lib.findFirst (
+      name:
+      lib.any (
+        iface:
+        builtins.elem cn (iface.domains.CNAME or [ ])
+        || builtins.elem cn (iface.domains.A or [ ])
+        || builtins.elem cn (iface.domains.AAAA or [ ])
+      ) hostAddrs.${name}
+    ) null (builtins.attrNames hostAddrs);
+
   soaSerial = "2026052900";
   hostAddrs = {
     # ============================================
@@ -29,7 +34,7 @@
         # Don't forget update the SOA Serial
         domains = {
           A = [
-            "@"
+            "@" # TODO: Move NS to Proteus-Desktop
             "ns1"
           ];
           AAAA = [

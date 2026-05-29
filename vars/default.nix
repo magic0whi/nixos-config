@@ -63,6 +63,7 @@
       "modules/nixos_headless/firewall.nix"
       "modules/nixos_headless/misc.nix"
       "modules/nixos_headless/scx-loader.nix"
+      "modules/nixos_headless/systemd-resolved.nix"
       "modules/nixos_headless/traffic-quota.nix"
     ];
     hm_modules = map mylib.relativeToRoot [

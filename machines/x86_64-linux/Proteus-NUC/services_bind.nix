@@ -168,32 +168,6 @@
     };
   };
 
-  services.resolved.settings.Resolve = {
-    # This triggers recursive queries to the apex domain, which slows down domestic sites. It can also completely break
-    # your internet access if the proxy server goes down while systemd-resolved is fetching DS records for proxied apex
-    # domains like "com"
-    DNSSEC = if config.services.sing-box.enable then false else "allow-downgrade";
-    Domains = [
-      "~${myvars.domain}" # The '~' prefix makes this a routing domain
-    ]
-    ++ (lib.mapAttrsToList (
-      _: zone:
-      if (lib.isDerivation zone.file) then
-        "~${lib.removeSuffix ".zone" zone.file.name}"
-      else
-        "~${lib.removeSuffix ".zone" zone.file}"
-    ) config.services.bind.zones);
-
-    DNS = (
-      lib.concatMap (
-        iface:
-        lib.optional (iface ? ipv4) "${iface.ipv4}#${myvars.domain}"
-        ++ lib.optional (iface ? ipv6) "${iface.ipv6}#${myvars.domain}"
-      ) myvars.networking.hostAddrs.${config.networking.hostName}
-    );
-  };
-
-  # Trust Island
   # NOTE: To get a DS records for reverse zone, query the zone apex (`proteus.eu.org`, `161.64.100.in-addr.arpa`
   # `0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa`)
   # nix run nixpkgs#dig -- @100.64.161.20 161.64.100.in-addr.arpa DNSKEY +noall +answer | nix shell nixpkgs#bind --command dnssec-dsfromkey -f - 161.64.100.in-addr.arpa
@@ -255,6 +229,7 @@
           };
         };
     };
+
   systemd.services.bind.preStart =
     let
       zones_pubs = [
@@ -275,24 +250,8 @@
         '')
       ];
     in
-    # Generate the install commands for all pub keys (main + reverse)
+    # Generate the install commands for all public keys
     lib.concatMapStringsSep "\n" (
       file: "install -m 0644 ${file} ${config.services.bind.directory}/${file.name}"
     ) zones_pubs;
-
-  environment.etc."dnssec-trust-anchors.d/${myvars.domain}.positive".text = ''
-    ${myvars.domain}. IN DS 40751 15 2 EFFF70FD3922613584774DE050E31D5A3FFF988E45EB5C75296BF448B5B01FCF
-  '';
-  environment.etc."dnssec-trust-anchors.d/ts_v4_rev_zone.positive".text = ''
-    100.in-addr.arpa. IN DS 16452 15 2 673360156B641DBA72909952F230FA34A6FA8D8D249A8A8A55C05A94EC6794FF
-  '';
-  environment.etc."dnssec-trust-anchors.d/ts_v6_rev_zone.positive.positive".text = ''
-    0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa. IN DS 2790 15 2 B90A8FDD8D504FC3182F57750FC433EF8D43AFA8ABE6716A3DC49BFBCCD5F3EA
-  '';
-  environment.etc."dnssec-trust-anchors.d/et_v4_rev_zone.positive".text = ''
-    0.0.10.in-addr.arpa. IN DS 3009 15 2 E93B662038A9985D4A4BAEA2F619593EF4699EAFA08612BD7C3FCD00691FA85C
-  '';
-  environment.etc."dnssec-trust-anchors.d/et_v6_rev_zone.positive.positive".text = ''
-    0.0.0.0.7.7.8.9.a.b.c.d.e.f.d.f.ip6.arpa. IN DS 1147 15 2 2DCEF637F1D130E0CF63F33FEF81C99E01C8B187A8AE75A3985545400FF4A763
-  '';
 }
