@@ -1,4 +1,4 @@
-## To restore a clean backup:
+## TIP: To restore a clean backup:
 # 1. psql "host=postgresql.proteus.eu.org port=5432 user=postgres dbname=postgres sslmode=require" -t -A -c "
 #   SELECT 'DROP DATABASE IF EXISTS ' || quote_ident(datname) || ';'
 #   FROM pg_database
@@ -102,6 +102,8 @@ in
       ssl_key_file = config.sops.secrets."postgresql_server.priv.pem".path;
       hba_file = lib.mkForce config.sops.templates."pg_hba_auth.conf".path;
     };
+    # NOTE: DO NOT USE `services.postgresql.authentication`, because I use SOPS-templateed
+    # `services.postgresql.settings.hba_file` instead
     ensureDatabases = [
       "mydatabase" # TODO: For learning
       "atuin"
@@ -109,7 +111,6 @@ in
       machine_config.authelia.services.authelia.instances.main.user
       # (builtins.trace machine_config.authelia machine_config.authelia.services.authelia.instances.main.user)
       "nextcloud"
-      machine_config.immich.services.immich.database.user
     ];
     ensureUsers = [
       {
@@ -136,24 +137,7 @@ in
         name = "nextcloud";
         ensureDBOwnership = true;
       }
-      {
-        name = machine_config.immich.services.immich.database.user;
-        ensureDBOwnership = true;
-        ensureClauses.login = true;
-      }
     ];
-    # Immich
-    extensions = ps: [
-      ps.pgvector
-      ps.vectorchord
-    ];
-    settings = {
-      shared_preload_libraries = [ "vchord.so" ];
-      search_path = "\"$user\", public, vectors";
-    };
-
-    # DO NOT USE `services.postgresql.authentication`, because I use SOPS-templateed
-    # `services.postgresql.settings.hba_file` instead
   };
   services.postgresqlBackup = {
     enable = true;
@@ -177,40 +161,4 @@ in
   systemd.services.postgresqlBackup.serviceConfig.ExecStartPost = [
     "+${pkgs.coreutils}/bin/chmod -R g+r ${config.services.postgresqlBackup.location}"
   ];
-
-  systemd.services.postgresql-setup.serviceConfig.ExecStartPost =
-    let
-      extensions = [
-        "unaccent"
-        "uuid-ossp"
-        "cube"
-        "earthdistance"
-        "pg_trgm"
-        "vector"
-        "vchord"
-      ];
-      sqlFile = pkgs.writeText "immich-pgvectors-setup.sql" ''
-        -- save previous version of vectorchord to trigger reindex on update
-        SELECT COALESCE(installed_version, ''') AS vchord_version_before FROM pg_available_extensions WHERE name = 'vchord' \gset
-
-        ${lib.concatMapStringsSep "\n" (ext: "CREATE EXTENSION IF NOT EXISTS \"${ext}\";") extensions}
-        ${lib.concatMapStringsSep "\n" (ext: "ALTER EXTENSION \"${ext}\" UPDATE;") extensions}
-        ALTER SCHEMA public OWNER TO ${machine_config.immich.services.immich.database.user};
-
-        -- trigger reindex if vectorchord updates
-        -- https://docs.immich.app/administration/postgres-standalone/#updating-vectorchord
-        SELECT COALESCE(installed_version, ''') AS vchord_version_after FROM pg_available_extensions WHERE name = 'vchord' \gset
-
-        SELECT (:'vchord_version_before' != ''' AND :'vchord_version_before' != :'vchord_version_after') AS has_vchord_updated \gset
-        \if :has_vchord_updated
-          REINDEX INDEX face_index;
-          REINDEX INDEX clip_index;
-        \endif
-      '';
-    in
-    [
-      ''
-        ${lib.getExe' config.services.postgresql.package "psql"} -d "${machine_config.immich.services.immich.database.name}" -f "${sqlFile}"
-      ''
-    ];
 }
