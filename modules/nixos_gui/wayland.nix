@@ -6,6 +6,7 @@
   ...
 }:
 {
+  ## BEGIN Session Manager
   services = {
     # https://wiki.archlinux.org/title/Greetd
     greetd = {
@@ -49,15 +50,23 @@
           };
         };
     };
-    gvfs.enable = true; # Mount, trash, and other functionalities
-    tumbler.enable = true; # Thumbnail support for images
   };
+  ## END Session Manager
+  ## BEGIN xdg.nix
   xdg.portal = {
     enable = true;
     wlr.enable = true;
-    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+    extraPortals = [
+      pkgs.xdg-desktop-portal-gtk
+    ]
+    # Screensharing, put this on home manager will not take effect
+    ++
+      lib.optional config.home-manager.users.${myvars.username}.wayland.windowManager.hyprland.enable
+        pkgs.xdg-desktop-portal-hyprland;
+
     config.common.default = [ "gtk" ]; # Use xdg-desktop-portal-gtk for every portal interface
   };
+  ## END xdg.nix
   ## BEGIN security.nix
   # Security with gnome-kering
   services.gnome.gnome-keyring.enable = lib.mkDefault true;
@@ -71,5 +80,9 @@
   ## END security.nix
   ## BEGIN misc.nix
   programs.dconf.enable = true;
+  services = {
+    gvfs.enable = true; # Mount, trash, and other functionalities
+    tumbler.enable = true; # Thumbnail support for images
+  };
   ## END misc.nix
 }

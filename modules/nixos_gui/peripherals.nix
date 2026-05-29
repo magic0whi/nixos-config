@@ -14,7 +14,8 @@
     jack.enable = true;
     wireplumber.enable = true;
   };
-  security.rtkit.enable = true; # rtkit is optional but recommended
+  # rtkit allows Pipewire to use the realtime scheduler for increased performance.
+  security.rtkit.enable = true;
   # Bluetooth
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;
