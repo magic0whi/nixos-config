@@ -5,13 +5,17 @@
 #   restic-<Hostname> <Snapshot ID> --target /tmp/restic-restore
 {
   config,
+  machineConfigs,
   myvars,
   ...
 }:
+let
+  machine_config_s3 = machineConfigs.${myvars.networking.findHost "s3"}.config;
+in
 {
   sops =
     let
-      sopsFile = "${myvars.secretsDir}/common.sops.yaml";
+      sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
       restartUnits = [ "restic-backups-${config.networking.hostName}.service" ];
       owner = config.services.restic.backups.${config.networking.hostName}.user;
     in
@@ -21,13 +25,14 @@
         restic_password = {
           inherit sopsFile restartUnits owner;
         };
-        restic_aws_secret_access_key = { inherit sopsFile restartUnits; };
+        restic_aws_access_key = { inherit sopsFile restartUnits; };
+        restic_aws_secret_key = { inherit sopsFile restartUnits; };
       };
       templates."restic.env" = {
         inherit restartUnits owner;
         content = ''
-          AWS_ACCESS_KEY_ID=GKa80ba5756034df47aadc5b8f
-          AWS_SECRET_ACCESS_KEY=${config.sops.placeholder.restic_aws_secret_access_key}
+          AWS_ACCESS_KEY_ID=${config.sops.placeholder.restic_aws_access_key}
+          AWS_SECRET_ACCESS_KEY=${config.sops.placeholder.restic_aws_secret_key}
         '';
       };
     };
@@ -58,7 +63,7 @@
         extraBackupArgs = [ "--limit-upload ${toString (50 * 1024)}" ];
         # Limit upload speed to 50 MB/s, unit is KiB/s
         extraOptions = [
-          "s3.region=cn-east1-a"
+          "s3.region=${machine_config_s3.services.garage.settings.s3_api.s3_region}"
           "read-concurrency=4" # Read concurrency for better throughput on ZFS
         ];
         # Paths to exclude from backup
