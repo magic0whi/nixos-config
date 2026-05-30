@@ -1,5 +1,6 @@
 {
   lib,
+  machineConfigs,
   mylib,
   myvars,
   ...
@@ -16,6 +17,7 @@ let
         name
         mylib
         myvars
+        machineConfigs
         nixpkgs_modules
         # hm_modules
         ;
