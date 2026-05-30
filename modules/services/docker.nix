@@ -36,12 +36,9 @@
           # Do NOT bypass FakeIP traffic. Let sing-box handle it.
           ip daddr 198.18.0.0/15 return
 
-          # Bypass everything else from Docker & Libvirt
-          ip saddr {
-            172.17.0.0/16, # Docker Default
-            172.18.0.0/16, # Docker Custom
-            172.20.0.0/14, # Extra Containers
-          } ct mark set 0x00002024
+          # Bypass everything else from Docker
+          # Skip 172.19.0.1/30
+          ip saddr { 172.16.0.0/15, 172.19.0.4-172.31.255.255 } ct mark set 0x00002024
         }
       '';
     };
