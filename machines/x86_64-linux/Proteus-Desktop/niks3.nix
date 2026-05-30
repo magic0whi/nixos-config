@@ -47,7 +47,9 @@ in
         inherit restartUnits;
       };
     };
+
   systemd.services.niks3.serviceConfig.EnvironmentFile = config.sops.templates."niks3.env".path;
+
   services.niks3 = {
     enable = true;
     httpAddr = "127.0.0.1:5751";
@@ -70,6 +72,7 @@ in
     # Used to generate landing page with usage instructions and public keys, which is uploaded to the S3 bucket.
     cacheUrl = "https://nix-cache.s3-pub.${myvars.domain}";
   };
+
   services.traefik.dynamicConfigOptions.http = {
     routers.niks3 = {
       rule = "Host(`niks3.${myvars.domain}`)";
