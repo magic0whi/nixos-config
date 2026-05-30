@@ -72,6 +72,7 @@ in
     };
     # https://github.com/authelia/authelia/blob/8a7b642dd78f29c76d126b6f53806472b2a360bd/config.template.yml
     settings = {
+      log.level = "info";
       theme = "dark";
       default_2fa_method = "totp";
       server.address = "tcp://127.0.0.1:9092"; # Use the new server.address syntax required by the module
@@ -160,11 +161,20 @@ in
         };
         # Map the custom claim policy, ref:
         # https://www.authelia.com/integration/openid-connect/openid-connect-1.0-claims/#custom-claims
-        claims_policies.nextcloud_userinfo.custom_claims = {
+        claims_policies = {
           # Give the 'is_nextcloud_admin' claim policy access to the user attributes 'is_nextcloud_admin'
-          is_nextcloud_admin = { }; # Authelia do implicit mapping {attribute = "is_nextcloud_admin";};
-          # Give the 'homeDirectory' claim policy access to the ldap extra attributes 'home_directory'
-          # homeDirectory = {attribute = "home_directory";};
+          nextcloud_userinfo_policy.custom_claims = {
+            is_nextcloud_admin = { }; # Authelia do implicit mapping {attribute = "is_nextcloud_admin";};
+            # Give the 'homeDirectory' claim policy access to the ldap extra attributes 'home_directory'
+            # homeDirectory = {attribute = "home_directory";};
+          };
+          # https://www.authelia.com/integration/openid-connect/openid-connect-1.0-claims/#restore-functionality-prior-to-claims-parameter
+          niks3_legacy.id_token = [
+            "preferred_username"
+            "name"
+            "email"
+            "groups"
+          ];
         };
         # Bind the claim to the `nextcloud_userinfo` scope
         scopes.nextcloud_userinfo.claims = [
@@ -243,7 +253,7 @@ in
             client_secret = "$pbkdf2-sha512$310000$Nf0RYQUukNM3r/FVDi/YDA$RCvY0zSeZFvJgr4F4bubUdBfWbMiL2rQe7oKjoj0995XQNaDrzl4ZfVBDoyBjVipQIVgIvTCcSRN2Ak6Vv7jfQ";
             require_pkce = true;
             pkce_challenge_method = "S256";
-            claims_policy = "nextcloud_userinfo";
+            claims_policy = "nextcloud_userinfo_policy";
             redirect_uris = [ "https://nextcloud.${myvars.domain}/apps/oidc_login/oidc" ];
             scopes = [
               "openid"
@@ -280,6 +290,36 @@ in
               "groups"
             ];
             token_endpoint_auth_method = "client_secret_post";
+          }
+          # {
+          #   client_id = "niks3_auth_code";
+          #   client_name = "Niks3 Auth Code Test";
+          #   client_secret = "$pbkdf2-sha512$310000$3oNLFhvo3pg1e/YTke0dQw$VOx0ZqszL4IFhY5bMaeEwQOicTq4.egK3HaPrxG5BRoQfv.FPT35EKZW9ZPkEtj4LYy2wJR2BQM3DCdXxRLaBg";
+          #   claims_policy = "niks3_legacy";
+          #   # authorization_policy = "one_factor";
+          #   redirect_uris = [
+          #     "http://localhost:8000/callback"
+          #     "http://127.0.0.1:8000/callback"
+          #   ];
+          #   scopes = [
+          #     "openid"
+          #     "groups"
+          #     "offline_access" # Allow refresh token
+          #   ];
+          #   response_types = [ "code" ]; # Explicitly define to satisfy the offline_access validator
+          #   grant_types = [
+          #     "authorization_code"
+          #     "refresh_token" # Allows refresh token without user auth, althrough not suitable for git actions
+          #   ];
+          # }
+          {
+            client_id = "niks3_yajuusexnpai";
+            client_name = "Niks3 Client Credentials Test";
+            client_secret = "$pbkdf2-sha512$310000$3oNLFhvo3pg1e/YTke0dQw$VOx0ZqszL4IFhY5bMaeEwQOicTq4.egK3HaPrxG5BRoQfv.FPT35EKZW9ZPkEtj4LYy2wJR2BQM3DCdXxRLaBg";
+            grant_types = [ "client_credentials" ];
+            # Niks3 requires a signed JWT, force Authelia to issue a signed JWT access token instead of access token only
+            access_token_signed_response_alg = "RS256";
+            audience = [ "niks3_client_creds" ]; # Whitelist the requested audience
           }
         ];
       };
