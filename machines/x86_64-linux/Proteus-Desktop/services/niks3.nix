@@ -72,24 +72,12 @@ in
     # Used to generate landing page with usage instructions and public keys, which is uploaded to the S3 bucket.
     cacheUrl = "https://nix-cache.s3-pub.${myvars.domain}";
 
-    oidc.providers = {
-      # authelia_auth_code = {
-      #   issuer = "https://auth.${myvars.domain}";
-      #   audience = "niks3_auth_code";
-      #   boundClaims = {
-      #     groups = [
-      #       "storage"
-      #       "nix-builders"
-      #     ];
-      #   };
-      # };
-      authelia_client_creds = {
-        issuer = "https://auth.${myvars.domain}";
-        audience = "niks3_client_creds";
-        boundClaims.client_id = [ "niks3_yajuusexnpai" ];
-        # We cannot modify to GitHub OIDC Subject Format:
-        # identity_providers: oidc: claims_policies: niks3_git_info: custom_claims: claim with name 'sub' can't be used in a claims policy as it's a standard claim
-      };
+    oidc.providers.authelia = {
+      issuer = "https://auth.${myvars.domain}";
+      audience = "niks3";
+      boundClaims.client_id = [ "niks3_yajuusexnpai" ];
+      # We cannot modify to GitHub OIDC Subject Format:
+      # identity_providers: oidc: claims_policies: niks3_git_info: custom_claims: claim with name 'sub' can't be used in a claims policy as it's a standard claim
     };
   };
 

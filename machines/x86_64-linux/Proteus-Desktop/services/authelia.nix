@@ -291,27 +291,6 @@ in
             ];
             token_endpoint_auth_method = "client_secret_post";
           }
-          # {
-          #   client_id = "niks3_auth_code";
-          #   client_name = "Niks3 Auth Code Test";
-          #   client_secret = "$pbkdf2-sha512$310000$3oNLFhvo3pg1e/YTke0dQw$VOx0ZqszL4IFhY5bMaeEwQOicTq4.egK3HaPrxG5BRoQfv.FPT35EKZW9ZPkEtj4LYy2wJR2BQM3DCdXxRLaBg";
-          #   claims_policy = "niks3_legacy";
-          #   # authorization_policy = "one_factor";
-          #   redirect_uris = [
-          #     "http://localhost:8000/callback"
-          #     "http://127.0.0.1:8000/callback"
-          #   ];
-          #   scopes = [
-          #     "openid"
-          #     "groups"
-          #     "offline_access" # Allow refresh token
-          #   ];
-          #   response_types = [ "code" ]; # Explicitly define to satisfy the offline_access validator
-          #   grant_types = [
-          #     "authorization_code"
-          #     "refresh_token" # Allows refresh token without user auth, althrough not suitable for git actions
-          #   ];
-          # }
           {
             client_id = "niks3_yajuusexnpai";
             client_name = "Niks3 Client Credentials Test";
@@ -319,7 +298,7 @@ in
             grant_types = [ "client_credentials" ];
             # Niks3 requires a signed JWT, force Authelia to issue a signed JWT access token instead of access token only
             access_token_signed_response_alg = "RS256";
-            audience = [ "niks3_client_creds" ]; # Whitelist the requested audience
+            audience = [ "niks3" ]; # Whitelist the requested audience
           }
         ];
       };
