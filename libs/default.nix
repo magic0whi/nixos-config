@@ -109,7 +109,7 @@ in
     genOsConfiguration =
       {
         name,
-        machineConfigs ? { },
+        machineConfigs ? (throw "Are you forget to import `machineConfigs` in the machine's apex config?"),
         mylib,
         myvars,
         nixpkgs_modules,
