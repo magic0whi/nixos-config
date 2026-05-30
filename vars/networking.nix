@@ -32,9 +32,30 @@
         ipv4 = "100.64.161.20";
         ipv6 = "fd7a:115c:a1e0::cd3a:a114";
         # Don't forget update the SOA Serial
+        domains.CNAME = [
+          "immich"
+          "jellyfin"
+          "nixos-search"
+          "paperless"
+          "sb-nuc"
+          "sunshine"
+          "syncthing-nuc"
+          "traefik-nuc"
+          # "sftpgo"
+        ];
+      }
+      {
+        ipv4 = "10.0.0.2";
+        ipv6 = "fdfe:dcba:9877::2";
+      }
+    ];
+    Proteus-Desktop = [
+      {
+        ipv4 = "100.89.227.22";
+        ipv6 = "fd7a:115c:a1e0::1a01:e318";
         domains = {
           A = [
-            "@" # TODO: Move NS to Proteus-Desktop
+            "@"
             "ns1"
           ];
           AAAA = [
@@ -42,21 +63,35 @@
             "ns1"
           ];
           CNAME = [
-            "immich"
-            "jellyfin"
-            "nixos-search"
-            "paperless"
-            "sb-nuc"
-            "sunshine"
-            "syncthing-nuc"
-            "traefik-nuc"
-            # "sftpgo"
+            "*.s3"
+            "*.s3-pub"
+            "aria2"
+            "atuin"
+            "auth"
+            "garage"
+            "git"
+            "hass"
+            "ldap"
+            "monero"
+            "navidrome"
+            "nextcloud"
+            "niks3"
+            "notebook"
+            "papra"
+            "plane"
+            "postgresql"
+            "ql"
+            "s3"
+            "s3-pub"
+            "sb-desktop"
+            "syncthing-desktop"
+            "traefik-desktop"
           ];
         };
       }
       {
-        ipv4 = "10.0.0.2";
-        ipv6 = "fdfe:dcba:9877::2";
+        ipv4 = "10.0.0.3";
+        ipv6 = "fdfe:dcba:9877::3";
         domains = {
           A = [
             "@"
@@ -67,41 +102,6 @@
             "ns1"
           ];
         };
-      }
-    ];
-    Proteus-Desktop = [
-      {
-        ipv4 = "100.89.227.22";
-        ipv6 = "fd7a:115c:a1e0::1a01:e318";
-        domains.CNAME = [
-          "*.s3"
-          "*.s3-pub"
-          "aria2"
-          "atuin"
-          "auth"
-          "garage"
-          "git"
-          "hass"
-          "ldap"
-          "monero"
-          "navidrome"
-          "nextcloud"
-          "niks3"
-          "notebook"
-          "papra"
-          "plane"
-          "postgresql"
-          "ql"
-          "s3"
-          "s3-pub"
-          "sb-desktop"
-          "syncthing-desktop"
-          "traefik-desktop"
-        ];
-      }
-      {
-        ipv4 = "10.0.0.3";
-        ipv6 = "fdfe:dcba:9877::3";
       }
       { name = "enp4s0"; }
       {
