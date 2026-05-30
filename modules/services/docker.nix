@@ -67,6 +67,14 @@
 
   virtualisation.docker = {
     enable = true;
+    package = pkgs.docker_29.override {
+      version = "29.5.2";
+      cliRev = "v29.5.2";
+      mobyRev = "docker-v29.5.2";
+
+      cliHash = "sha256-kHgDZVr6mAyCtZ6bSG9FWV0GhWDfXLXzHYFrmjFzO9w=";
+      mobyHash = "sha256-lux7tTyF6vm5wuIXs+z3Ygd2v4JjgHbRvOXNA4kjNtg=";
+    };
     # storageDriver = "btrfs"; # conflict with feature: containerd-snapshotter
     daemon.settings = {
       firewall-backend = "nftables"; # Requires >= docker 29
