@@ -13,10 +13,16 @@ utils := absolute_path("utils.sh")
 default:
     @just --list
 
-# Run eval tests on Proteus-NUC
+# Run eval tests on machine
 [group('nix')]
-test:
-    nom build --show-trace --verbose -o /tmp/result .#nixosConfigurations.Proteus-NUC.config.system.build.toplevel
+[linux]
+test name:
+    nom build --show-trace --verbose -o /tmp/result .#nixosConfigurations.{{ name }}.config.system.build.toplevel
+
+[group('nix')]
+[macos]
+test name:
+    nom build --show-trace --verbose -o /tmp/result .#darwinConfigurations.{{ name }}.config.system.build.toplevel
 
 # Update all the flake inputs
 [group('nix')]
@@ -56,15 +62,8 @@ gc:
 
 # Enter a shell session which has all the necessary tools for this flake
 [group('nix')]
-[linux]
 shell:
-    nix shell nixpkgs#git nixpkgs#neovim github:serokell/deploy-rs
-
-# Enter a shell session which has all the necessary tools for this flake
-[group('nix')]
-[macos]
-shell:
-    nix shell nixpkgs#git nixpkgs#neovim
+    nix develop .# -c zsh
 
 # Format the nix files in this repo
 [group('nix')]
