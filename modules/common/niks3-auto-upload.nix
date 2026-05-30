@@ -39,21 +39,6 @@
 
         echo "$TOKEN" > $RUNTIME_DIRECTORY/niks3-oidc-token
         chown --reference=$RUNTIME_DIRECTORY $RUNTIME_DIRECTORY/niks3-oidc-token
-        # EXPIRES_IN=$(echo "$RESPONSE" | jq -r '.expires_in // 3600')
-
-        # if [ -z "$TOKEN" ]; then
-        #   echo "Failed to fetch token. Authelia response:" >&2
-        #   echo "$RESPONSE" >&2
-        #   exit 1
-        # fi
-
-        # # Format Expiration to RFC 3339
-        # EXPIRES_AT=$(date -u -d "+$EXPIRES_IN seconds" +"%Y-%m-%dT%H:%M:%SZ")
-
-        # jq -n \
-        #   --arg token "$TOKEN" \
-        #   --arg expires_at "$EXPIRES_AT" \
-        #   '{token: $token, expires_at: $expires_at}'
       ''}"
     ];
   };
