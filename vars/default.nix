@@ -67,9 +67,6 @@
       "modules/nixos_headless/systemd-resolved.nix"
       "modules/nixos_headless/traffic-quota.nix"
     ];
-    hm_modules = map mylib.relativeToRoot [
-      "modules/common_hm_headless/misc.nix"
-    ];
   };
   ## END pkgs agnostic functions
   ## BEGIN pkgs dependent variables
