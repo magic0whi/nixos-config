@@ -73,7 +73,6 @@
       tarzstls = "tar -I 'zstd -T0' -tvf";
       targz = "tar -I 'nix run nixpkgs#pigz --' -cvf";
       targzls = "tar -I 'nix run nixpkgs#pigz --' -tvf";
-
     }
 
     (lib.optionalAttrs (!pkgs.stdenv.isDarwin) {
@@ -167,6 +166,36 @@
 
           rghx() {
             rg -LSP "$1" | fzf | cut -d: -f1 | xargs hx
+          }
+
+          rgstich() {
+            rg -LSP "$1" \
+              | fzf --delimiter=: \
+                --with-nth=1.. \
+                --preview 'echo "=== SELECTED ==="; printf "%s\n" {+}' \
+                --preview-label 'Selection' \
+              | cut -d: -f1 \
+              | sort -u \
+              | while IFS= read file; do
+                  echo "=== $file ==="
+                  cat "$file"
+                done \
+            | hx
+          }
+
+          fdstich() {
+            fd -u . ./ '.*' \
+              | fzf --delimiter=: \
+                --with-nth=1.. \
+                --preview 'echo "=== SELECTED ==="; printf "%s\n" {+}' \
+                --preview-label 'Selection' \
+              | cut -d: -f1 \
+              | sort -u \
+              | while IFS= read -r file; do
+                  echo "=== $file ==="
+                  cat "$file"
+                done \
+            | hx
           }
 
           export PATH="$PATH:${local_bin}:${go_bin}:${rust_bin}"
