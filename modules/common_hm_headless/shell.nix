@@ -59,18 +59,21 @@
       ssh = "TERM=xterm-256color ssh";
       sshot = "ssh -o 'ConnectTimeout=10' -o 'IdentitiesOnly=no' -o 'UserKnownHostsFile=/dev/null' -o 'StrictHostKeyChecking=no'"; # One-time SSH session
       sshstop = "ssh -O stop"; # Close a persistent SSH session
+
       status = "systemctl status";
       show = "systemctl show";
       is-active = "systemctl is-active";
       start = "sudo systemctl start";
       stop = "sudo systemctl stop";
       restart = "sudo systemctl restart";
+
       tarxz = "tar -I xz -cvf";
       tarxzls = "tar -I xz -tvf";
       tarzst = "tar -I 'zstd -T0' -cvf";
       tarzstls = "tar -I 'zstd -T0' -tvf";
       targz = "tar -I 'nix run nixpkgs#pigz --' -cvf";
       targzls = "tar -I 'nix run nixpkgs#pigz --' -tvf";
+
     }
 
     (lib.optionalAttrs (!pkgs.stdenv.isDarwin) {
@@ -160,6 +163,10 @@
             done
 
             echo "Exported $success/''${#KEYS[@]} keys to $OUTPUT_DIR"
+          }
+
+          rghx() {
+            rg -LSP "$1" | fzf | cut -d: -f1 | xargs hx
           }
 
           export PATH="$PATH:${local_bin}:${go_bin}:${rust_bin}"
