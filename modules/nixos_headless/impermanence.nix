@@ -25,8 +25,10 @@
   ...
 }:
 {
-  fileSystems."/persistent".neededForBoot = true;
-  fileSystems."/home".neededForBoot = true;
+  fileSystems = lib.mkMerge [
+    { "/persistent".neededForBoot = true; }
+    (lib.mkIf (config ? home-manager) { "/home".neededForBoot = true; })
+  ];
 
   environment.persistence."/persistent" = {
     # Sets the mount option x-gvfs-hide on all the bind mounts to hide them from the file manager
