@@ -12,14 +12,6 @@
   # version changes in each release.
   home.stateVersion = myvars.nixosStateVersion;
   programs.home-manager.enable = true; # Let Home Manager install and manage itself.
-  ## BEGIN pip.nix
-  # Use mirror for pip install
-  xdg.configFile."pip/pip.conf".text = ''
-    [global]
-    index-url = https://mirror.nju.edu.cn/pypi/web/simple
-    format = columns
-  '';
-  ## END pip.nix
   ## BEGIN btop.nix
   # Alternative to htop/nmon
   programs.btop = {
@@ -103,4 +95,19 @@
     inherit (myvars.catppuccin) accent flavor;
   };
   ## END catppuccin.nix
+  ## BEGIN pip.nix
+  # Use mirror for pip install
+  xdg.configFile."pip/pip.conf".text = ''
+    [global]
+    index-url = https://mirror.nju.edu.cn/pypi/web/simple
+    format = columns
+  '';
+  ## END pip.nix
+  ## BEGIN direnv.nix
+  programs.direnv = {
+    enable = true;
+    nix-direnv.enable = true;
+    enableZshIntegration = true;
+  };
+  ## END direnv.nix
 }
