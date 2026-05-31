@@ -57,12 +57,12 @@
 
       "modules/common/easytier.nix"
       "modules/common/misc.nix"
-      "modules/common/niks3-auto-upload.nix"
       "modules/common/shell.nix"
 
-      "modules/nixos_headless/impermanence.nix"
       "modules/nixos_headless/firewall.nix"
+      "modules/nixos_headless/impermanence.nix"
       "modules/nixos_headless/misc.nix"
+      "modules/nixos_headless/niks3-auto-upload.nix"
       "modules/nixos_headless/scx-loader.nix"
       "modules/nixos_headless/systemd-resolved.nix"
       "modules/nixos_headless/traffic-quota.nix"
