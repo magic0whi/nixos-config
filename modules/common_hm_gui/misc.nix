@@ -19,7 +19,7 @@
     # Use gnome-keyring as password store
     package =
       if (!pkgs.stdenv.isDarwin) then
-        pkgs.vscode.override { commandLineArgs = [ "--password-store=gnome" ]; }
+        pkgs.vscode.override { commandLineArgs = [ "--password-store=gnome-libsecret" ]; }
       else
         pkgs.vscode;
     # Let vscode sync and update its configuration & extensions across devices, using github account
