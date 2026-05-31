@@ -2,7 +2,7 @@
 ERRORS_FOUND=0
 
 # nix build .#checks.x86_64-linux.mylib_tests || ERRORS_FOUND=1
-nix build .#checks.x86_64-linux.format_check || ERRORS_FOUND=1
+nix build .#checks.x86_64-linux.treefmt || ERRORS_FOUND=1
 
 # Run Git's built-in whitespace check on staged changes
 if ! git --no-pager diff --cached --check; then

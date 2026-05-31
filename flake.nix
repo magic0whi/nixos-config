@@ -1,5 +1,5 @@
 {
-  description = "Proteus Qian's nix configuration for NixOS & nix-darwin";
+  description = "Proteus' nix configuration for NixOS & nix-darwin";
   inputs = {
     # Pinned as of 2026-05-04 17:55, branch: nixos-unstable
     # nixpkgs.url = "github:NixOS/nixpkgs/15f4ee454b1dce334612fa6843b3e05cf546efab";
@@ -82,6 +82,14 @@
         treefmt-nix.follows = "treefmt-nix";
       };
     };
+    flake-parts.url = "github:hercules-ci/flake-parts";
   };
-  outputs = inputs: import ./main.nix inputs;
+  outputs =
+    inputs:
+    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+      imports = [
+        ./main.nix
+        ./treefmt.nix
+      ];
+    };
 }
