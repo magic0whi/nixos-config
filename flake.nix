@@ -87,8 +87,16 @@
   outputs =
     inputs:
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+      debug = true;
+      systems = [
+        "aarch64-darwin"
+        "x86_64-linux"
+        # "riscv64-linux" # Disable temporary, NOTE: Remove closures that has GHC dependency
+      ];
       imports = [
         ./main.nix
+        ./checks.nix
+        ./dev-shells.nix
         ./treefmt.nix
       ];
     };

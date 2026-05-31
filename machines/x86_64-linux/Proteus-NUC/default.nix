@@ -1,8 +1,8 @@
 {
-  lib,
   machineConfigs,
   mylib,
   myvars,
+  nixpkgs,
   ...
 }:
 let
@@ -38,7 +38,7 @@ let
     # `lspci -Dnnd 10de::03xx | cut -f1 -d' '`
     dgpu_pci_ids = "0000:01:00.0";
   };
-  nixos_system = lib.nixosSystem (
+  nixos_system = nixpkgs.lib.nixosSystem (
     mylib.genOsConfiguration {
       inherit
         name

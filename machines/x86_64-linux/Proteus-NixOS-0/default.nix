@@ -1,8 +1,8 @@
 {
-  lib,
   machineConfigs,
   mylib,
   myvars,
+  nixpkgs,
   ...
 }:
 let
@@ -11,7 +11,7 @@ let
     # hm_modules
     ;
   name = baseNameOf ./.;
-  nixos_system = lib.nixosSystem (
+  nixos_system = nixpkgs.lib.nixosSystem (
     mylib.genOsConfiguration {
       inherit
         name

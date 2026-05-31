@@ -1,7 +1,7 @@
 {
-  lib,
   mylib,
   myvars,
+  nixpkgs,
   ...
 }:
 let
@@ -47,7 +47,7 @@ let
     "modules/nixos_hm_gui/hyprland"
     "modules/nixos_hm_gui/xdg.nix"
   ];
-  nixos_system = lib.nixosSystem (
+  nixos_system = nixpkgs.lib.nixosSystem (
     mylib.genOsConfiguration {
       inherit
         name

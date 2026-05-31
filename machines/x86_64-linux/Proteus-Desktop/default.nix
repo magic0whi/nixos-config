@@ -1,8 +1,8 @@
 {
-  lib,
   machineConfigs,
   mylib,
   myvars,
+  nixpkgs,
   ...
 }:
 let
@@ -26,7 +26,7 @@ let
     "modules/common_hm_headless/shell.nix"
   ];
   desktop_myvars = myvars;
-  nixos_system = lib.nixosSystem (
+  nixos_system = nixpkgs.lib.nixosSystem (
     mylib.genOsConfiguration {
       inherit
         name
