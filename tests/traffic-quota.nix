@@ -8,17 +8,17 @@ pkgs.testers.runNixOSTest {
     let
       shared_cfg = {
         imports = [ ../modules/nixos_headless/traffic-quota.nix ];
-        services.traffic-quota.enable = true;
+        services.trafficQuota.enable = true;
       };
     in
     {
       machine_normal = {
         imports = [ shared_cfg ];
-        services.traffic-quota.limit = 196;
+        services.trafficQuota.limit = 196;
       };
       machine_exceeded = {
         imports = [ shared_cfg ];
-        services.traffic-quota.limit = 0;
+        services.trafficQuota.limit = 0;
       };
     };
 

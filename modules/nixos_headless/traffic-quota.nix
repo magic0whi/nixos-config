@@ -5,7 +5,7 @@
   ...
 }:
 let
-  cfg = config.services.traffic-quota;
+  cfg = config.services.trafficQuota;
   script = pkgs.writeShellScript "check-traffic-quota" ''
     set -eufo pipefail
 
@@ -37,7 +37,7 @@ let
   '';
 in
 {
-  options.services.traffic-quota = {
+  options.services.trafficQuota = {
     enable = lib.mkEnableOption "traffic quota checker";
     limit = lib.mkOption {
       type = lib.types.int;

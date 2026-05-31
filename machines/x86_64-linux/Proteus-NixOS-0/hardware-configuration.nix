@@ -22,5 +22,5 @@
 
   nixpkgs.hostPlatform = "x86_64-linux";
 
-  services.traffic-quota.enable = true;
+  services.trafficQuota.enable = true;
 }
