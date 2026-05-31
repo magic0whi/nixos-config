@@ -32,6 +32,7 @@ Personal NixOS and nix-darwin system configurations managed as a Flake, featurin
 
 ## Features
 
+- **Decoupled Modules**: Modules are decoupled, allowing fast services transfer with least modifications (e.g., just change the registered subdomains in [var/networking](./var/networking.nix), imported modules in [./machines/x86_64-linux/Proteus-NixOS-0/default.nix](./machines/x86_64-linux/Proteus-NixOS-0/default.nix), deploy new machine, deploy old machine, done)
 - **"Miscellaneous" (Hub & Spoke) Refactoring**: An iterative code organization strategy that prevents premature optimization by starting with monolithic domain files (`misc.nix`) and splitting into dedicated modules as complexity grows.
 - **Declarative Disk Management**: Automated partitioning with [Disko](https://github.com/nix-community/disko).
 - **ZFS Root with Impermanence**: Ephemeral root that rolls back to `zroot/root@blank` snapshot on boot.
@@ -202,6 +203,19 @@ nix-repl> (builtins.elemAt _DEBUG.nixos_systems.x86_64-linux._DEBUG.machines 1).
 ## License
 
 MIT
+
+## AI Disclosure
+
+Claude Sonnet 4.6 to assist in
+
+- Git messages
+
+I use Gemini 3.1 Pro to assist in
+
+- Generate prototype
+- Debugging
+
+Currently I don't run vibe coding directly.
 
 ## References
 
