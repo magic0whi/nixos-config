@@ -52,11 +52,7 @@
   #   regardless of bridge name or port changes across restarts.
   # =============================================================================
   networking.firewall.extraInputRules = lib.mkIf config.services.sing-box.enable ''
-    ip saddr {
-      172.17.0.0/16, # Docker Default
-      172.18.0.0/16, # Docker Custom
-      172.20.0.0/14, # Extra Containers
-    } accept comment "Allow Docker to reach auto_redirect ports"
+    ip saddr { 172.16.0.0/15, 172.19.0.4-172.31.255.255 } accept comment "Allow Docker to reach auto_redirect ports"
   '';
   systemd.services.docker.path = lib.mkIf (config.virtualisation.docker.daemon.settings.firewall-backend == "nftables") [
     pkgs.nftables
