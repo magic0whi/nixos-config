@@ -72,22 +72,6 @@
     };
   };
   ## END yazi.nix
-
-  ## BEGIN direnv.nix
-  # programs.direnv = {
-  #   enable = true;
-  #   nix-direnv.enable = true;
-  # };
-  ## END direnv.nix
-
-  ## BEGIN neovim.nix
-  # programs.neovim = {
-  #   enable = true;
-  #   viAlias = true;
-  #   vimAlias = true;
-  # };
-  ## END neovim.nix
-
   ## BEGIN catppuccin.nix
   catppuccin = {
     # Enable Catppuccin globally
@@ -95,19 +79,4 @@
     inherit (myvars.catppuccin) accent flavor;
   };
   ## END catppuccin.nix
-  ## BEGIN pip.nix
-  # Use mirror for pip install
-  xdg.configFile."pip/pip.conf".text = ''
-    [global]
-    index-url = https://mirror.nju.edu.cn/pypi/web/simple
-    format = columns
-  '';
-  ## END pip.nix
-  ## BEGIN direnv.nix
-  programs.direnv = {
-    enable = true;
-    nix-direnv.enable = true;
-    enableZshIntegration = true;
-  };
-  ## END direnv.nix
 }

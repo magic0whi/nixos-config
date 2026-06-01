@@ -1,5 +1,5 @@
 {
-  # config,
+  config,
   myvars,
   pkgs,
   ...
@@ -25,7 +25,7 @@
         marksman
       ]; # NOTE: Requires bootstrap GHC
     settings = {
-      # theme = "gruvbox"; # Disable if use catpuccin
+      theme = if config.catppuccin.enable then "catppuccin-${myvars.catppuccin.flavor}" else "gruvbox"; # Disable if use catpuccin
       editor = {
         bufferline = "multiple";
         color-modes = true;
