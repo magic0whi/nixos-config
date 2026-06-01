@@ -15,7 +15,7 @@ _: {
   ## BEGIN latex.nix
   programs.tex-fmt = {
     enable = true;
-    setting = {
+    settings = {
       wraplen = 120;
       wrapmin = 120;
       format-tables = true;
