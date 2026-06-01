@@ -17,7 +17,7 @@ let
     {
       # The args given to other nix files
       inherit lib system;
-      inherit (inputs) nix-darwin nixpkgs;
+      inherit (inputs) nix-darwin nixpkgs nixos-hardware;
       myvars = lib.recursiveUpdate (myvars // myvars.mkForPkgs pkgs) {
         networking.findHost = with myvars.networking; _find_host hostAddrs;
       };
@@ -31,7 +31,7 @@ let
   nixos_systems = import_each_system [
     "x86_64-linux"
     # "aarch64-linux"
-    # "riscv64-linux" # Disable temporary, NOTE: Remove derivations that has GHC dependency
+    "riscv64-linux" # Disable temporary, NOTE: Remove derivations that has GHC dependency
   ];
   darwin_systems = import_each_system [ "aarch64-darwin" ];
   nixos_systems_values = builtins.attrValues nixos_systems;

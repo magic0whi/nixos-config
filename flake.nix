@@ -94,7 +94,7 @@
       systems = [
         "aarch64-darwin"
         "x86_64-linux"
-        # "riscv64-linux" # Disable temporary, NOTE: Remove closures that has GHC dependency
+        "riscv64-linux" # Disable temporary, NOTE: Remove closures that has GHC dependency
       ];
       imports = [
         ./main.nix
