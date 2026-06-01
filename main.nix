@@ -31,7 +31,7 @@ let
   nixos_systems = import_each_system [
     "x86_64-linux"
     # "aarch64-linux"
-    "riscv64-linux" # Disable temporary, NOTE: Remove derivations that has GHC dependency
+    "riscv64-linux"
   ];
   darwin_systems = import_each_system [ "aarch64-darwin" ];
   nixos_systems_values = builtins.attrValues nixos_systems;
