@@ -76,6 +76,7 @@
             "navidrome"
             "nextcloud"
             "niks3"
+            "noogle"
             "notebook"
             "papra"
             "plane"

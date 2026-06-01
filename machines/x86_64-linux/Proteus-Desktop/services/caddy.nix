@@ -45,6 +45,13 @@ in
           file_server
         '';
       };
+      "http://noogle.${myvars.domain}:${toString caddy_port}" = {
+        listenAddresses = [
+          "127.0.0.1"
+          "[::1]"
+        ];
+        extraConfig = "root * ${web_root}/noogle";
+      };
     };
   };
   # For CI deploy
