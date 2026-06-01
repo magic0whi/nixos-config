@@ -89,7 +89,7 @@
       services.sudo.rssh = true; # passwordless sudo on remote
     };
     sudo = {
-      package = pkgs.sudo.override { withSssd = true; };
+      package = if config.services.sssd.enable then pkgs.sudo.override { withSssd = true; } else pkgs.sudo;
       extraConfig = ''
         # Disable timeout for sudo prompt
         Defaults passwd_timeout=0
