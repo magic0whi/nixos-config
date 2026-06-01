@@ -35,9 +35,7 @@
           -d "grant_type=client_credentials" \
           -d "audience=niks3") # Explicitly request the audience, otherwise you will get `"aud": []`
 
-        TOKEN=$(echo "$RESPONSE" | ${lib.getExe pkgs.jq} -r '.access_token // empty')
-
-        echo "$TOKEN" > $RUNTIME_DIRECTORY/niks3-oidc-token
+        echo "$RESPONSE" | ${lib.getExe pkgs.jq} -r '.access_token // empty' > $RUNTIME_DIRECTORY/niks3-oidc-token
         chown --reference=$RUNTIME_DIRECTORY $RUNTIME_DIRECTORY/niks3-oidc-token
       ''}"
     ];
