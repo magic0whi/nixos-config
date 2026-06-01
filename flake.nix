@@ -63,8 +63,11 @@
       url = "github:nix-community/disko/v1.13.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Pinned as of 2026-04-07 07:00
-    nixos-hardware.url = "github:NixOS/nixos-hardware/c775c2772ba56e906cbeb4e0b2db19079ef11ff7";
+    # Pinned as of 2026-05-31 19:34
+    nixos-hardware = {
+      url = "github:NixOS/nixos-hardware/b76b5639c0593e0aeb0b5879ad62d4b30596c144";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # Pinned as of 2026-05-04 18:35, tag: 2026.03.05
     i915-sriov-dkms = {
       url = "github:strongtz/i915-sriov-dkms/2026.05.03";
