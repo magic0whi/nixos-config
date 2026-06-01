@@ -46,7 +46,13 @@ in
     deploy = {
       interactiveSudo = true;
       fastConnection = true;
-      nodes = lib.mergeAttrsList (map (i: i.deploy-rs_nodes or { }) nixos_systems_values);
+      nodes =
+        let
+          machine_blacklist = [ "Proteus-VF2" ];
+        in
+        lib.filterAttrs (name: _: !builtins.elem name machine_blacklist) (
+          lib.mergeAttrsList (map (i: i.deploy-rs_nodes or { }) nixos_systems_values)
+        );
     };
   };
   perSystem =
@@ -62,6 +68,7 @@ in
           ;
       };
       packages = nixos_systems.${system}.packages or { };
-      checks = (inputs.deploy-rs.lib.${system}.deployChecks self.deploy); # Currently deploy-rs check broken on MacOS
+      # Currently deploy-rs check broken on MacOS/riscv64-linux
+      checks = if system != "riscv64-linux" then (inputs.deploy-rs.lib.${system}.deployChecks self.deploy) else { };
     };
 }
