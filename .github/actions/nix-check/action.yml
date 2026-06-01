@@ -29,4 +29,4 @@ runs:
           --inputs-from . \
           nixpkgs#nix-fast-build -- \
           --skip-cached --no-nom \
-          --flake "./#checks.${{ inputs.system }}.mylib_tests"
+          --flake "./#checks.${{ inputs.system }}.mylib"
