@@ -74,43 +74,6 @@
     '';
   };
   ## END journald.nix
-  ## BEGIN users.nix
-  users = {
-    defaultUserShell = pkgs.zsh;
-    mutableUsers = false; # Don't allow mutate users outside the config
-    groups.storage.gid = 1001;
-    users.${myvars.username} = {
-      # Public Keys that can be used to login to all my PCs, MacBooks, and servers.
-      #
-      # Since the authority range is pretty large, we must strengthen its security:
-      # - The corresponding private key must be:
-      #   1. Generated locally on every trusted client via:
-      #     ```bash
-      #     # KDF: bcrypt with 256 rounds, takes 2s on Apple M2):
-      #     # Passphrase: digits + letters + symbols, 12+ chars
-      #     ssh-keygen -t ed25519 -a 256 -C "ryan@xxx" -f ~/.ssh/xxx`
-      #     ```
-      #   2. Never leave the device and never sent over the network.
-      # - Or just use hardware security keys like Yubikey/CanoKey.
-      uid = 1000;
-      home = "/home/${myvars.username}";
-      # initialHashedPassword = myvars.initial_hashed_password;
-      isNormalUser = true;
-      extraGroups = [
-        myvars.username
-        "input"
-        "network"
-        "video"
-        "wheel"
-      ];
-    };
-    # root user are heavily used for remote NixOS deployment
-    users.root = {
-      # initialHashedPassword = config.users.users."${myvars.username}".initialHashedPassword;
-      openssh.authorizedKeys.keys = config.users.users."${myvars.username}".openssh.authorizedKeys.keys;
-    };
-  };
-  ## END users.nix
   ## BEGIN tweaks.nix
   zramSwap.enable = true;
   systemd.oomd.settings.OOM = {

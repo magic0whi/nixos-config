@@ -62,11 +62,5 @@
   ## END shell.nix
   ## BEGIN users.nix
   system.primaryUser = myvars.username;
-  users.users.${myvars.username} = {
-    home = "/Users/${myvars.username}"; # home-manager needs it
-    # nix-darwin doesn't have `users.defaultUserShell`. If this don't work, try
-    # `chsh -s /run/current-system/sw/bin/zsh`
-    shell = pkgs.zsh;
-  };
   ## END users.nix
 }
