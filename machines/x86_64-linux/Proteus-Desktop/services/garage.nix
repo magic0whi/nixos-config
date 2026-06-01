@@ -6,7 +6,7 @@
 # 5. Create the bucket: `garage -h <full-node-id>@127.0.0.1:3901 bucket create nix-cache`
 # 6. Create the access key: `garage -h <full-node-id>@127.0.0.1:3901 key create nixbuilder`
 # 7. Allow the key to access the bucket:
-#   `garage -h <full-node-id>@127.0.0.1:3901 bucket allow --read --write nix-cache --owner --key nixbuilder`
+#   `garage -h <full-node-id>@127.0.0.1:3901 bucket allow --read --write --owner nix-cache --key nixbuilder`
 # 8. Allow bucket-as-website bucket-as-website: garage -h <full-node-id>@127.0.0.1:3901 bucket website --allow nix-cache
 {
   config,
