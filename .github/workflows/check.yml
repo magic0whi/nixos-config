@@ -14,23 +14,42 @@ jobs:
           # - os: ubuntu-latest
           #   system: riscv64-linux
     runs-on: ${{ matrix.os }}
-    steps:
+    steps: &nix_steps
       - name: Set up Git repository
         uses: actions/checkout@v6.0.2
-      - name: Run Nix Check
-        uses: ./.github/actions/nix-check
-        with:
-          system: ${{ matrix.system }}
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v22
+
+      - name: Magic Nix Cache
+        if: github.server_url == 'https://github.com'
+        uses: DeterminateSystems/magic-nix-cache-action@v13
+
+      - name: Proteus' Nix Cache
+        if: github.server_url != 'https://github.com'
+        shell: bash
+        run: |
+          sed -i -e 's|^\(extra-substituters\ = \)|\1https://nix-cache.s3-pub.proteus.eu.org/ |' \
+          -e 's|^\(extra-trusted-public-keys\ =\ \)|\1s3.proteus.eu.org-1:IxrRwk4uC5ittHeG9menkuajABnrX9cboEWwZz/m4+E= |' \
+          /etc/nix/nix.conf
+
+      - name: Run nix flake check
+        shell: bash
+        run: |
+          nix run \
+            --inputs-from . \
+            nixpkgs#nix-fast-build -- \
+            --skip-cached --no-nom \
+            --flake "./#checks.${{ matrix.system }}.mylib"
+
   check-macos:
     name: Run Flake checks (aarch64-darwin)
     # Only run macOS checks on GitHub, skip them on Forgejo
     if: github.server_url == 'https://github.com'
-    # Use a dynamic runs-on so Forgejo doesn't hang waiting for a macos runner before evaluating the `if` condition
-    runs-on: ${{ github.server_url == 'https://github.com' && 'macos-latest' || 'ubuntu-latest' }}
-    steps:
-      - name: Set up Git repository
-        uses: actions/checkout@v6.0.2
-      - name: Run Nix Check
-        uses: ./.github/actions/nix-check
-        with:
-          system: aarch64-darwin
+    strategy:
+      matrix:
+        # Use a dynamic runs-on so Forgejo doesn't hang waiting for a macos runner before evaluating the `if` condition
+        os: ${{ fromJSON(github.server_url == 'https://github.com' && '["macos-latest"]' || '["ubuntu-latest"]') }}
+        system: [aarch64-darwin]
+    runs-on: ${{ matrix.os }}
+    steps: *nix_steps
