@@ -76,17 +76,4 @@
     })
   ];
   ## END users.nix
-  ## BEGIN sing-box.nix
-  # services.sing-box.package = pkgs.sing-box.overrideAttrs(final: _: {
-  #   version = "1.13.0";
-  #   src = pkgs.fetchFromGitHub {
-  #     owner = "SagerNet";
-  #     repo = "sing-box";
-  #     tag = "v${final.version}";
-  #     # Use lib.fakeHash generate dummy hash
-  #     hash = "sha256-lhkz/mXydZz5iJllqSp4skA4+jxs8oUmon/oFs98Zfc=";
-  #   };
-  #   vendorHash = "sha256-vVLaG0PV1OXA+YL67BnrHJiSkNVzJbZ8TeMKbO2rMu0=";
-  # });
-  ## END sing-box.nix
 }
