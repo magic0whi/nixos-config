@@ -82,7 +82,7 @@
         treefmt-nix.follows = "treefmt-nix";
       };
     };
-    flake-parts.url = "github:hercules-ci/flake-parts";
+    flake-parts.url = "github:hercules-ci/flake-parts/f7c1a2d347e4c52d5fb8d10cb4d94b5884e546fb";
   };
   outputs =
     inputs:
