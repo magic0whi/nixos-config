@@ -1,9 +1,13 @@
 {
+  # config,
   myvars,
   pkgs,
   ...
 }:
 {
+  # For debug
+  # xdg.configFile."helix/languages.toml".source =
+  #   config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/Works/test/helix_lanaguages.toml";
   programs.helix = {
     enable = true;
     defaultEditor = true;
@@ -119,6 +123,8 @@
           };
         };
         texlab.config.texlab = {
+          formatterLineLength = 120;
+          latexFormatter = "tex-fmt";
           chktex = {
             onOpenAndSave = true;
             onEdit = true;
