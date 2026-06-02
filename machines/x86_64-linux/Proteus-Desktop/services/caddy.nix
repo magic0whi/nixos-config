@@ -68,7 +68,7 @@ in
   services.traefik.dynamicConfigOptions.http = {
     routers.caddy = {
       rule = lib.concatStringsSep " || " (
-        map (i: "Host(`${lib.removeSuffix ":${toString caddy_port}" (lib.removePrefix "http://" i)})") (
+        map (i: "Host(`${lib.removeSuffix ":${toString caddy_port}" (lib.removePrefix "http://" i)}`)") (
           builtins.attrNames config.services.caddy.virtualHosts
         )
       );
