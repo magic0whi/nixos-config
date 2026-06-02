@@ -12,7 +12,7 @@
       ) hostAddrs.${name}
     ) null (builtins.attrNames hostAddrs);
 
-  soaSerial = "2026052901";
+  soaSerial = "2026052902";
   hostAddrs = {
     # ============================================
     # Homelab's Physical Machines (TODO: Try KubeVirt)
@@ -35,7 +35,6 @@
         domains.CNAME = [
           "immich"
           "jellyfin"
-          "nixos-search"
           "paperless"
           "sb-nuc"
           "sunshine"
@@ -76,6 +75,7 @@
             "navidrome"
             "nextcloud"
             "niks3"
+            "nixos-search"
             "noogle"
             "notebook"
             "papra"
