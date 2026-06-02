@@ -32,6 +32,7 @@ in
         extraConfig = ''
           # respond "Hello, world!" # For debug
           root * ${web_root}/notebook
+          # file_server directive is required if serve static files from disk
           file_server
         '';
       };
@@ -50,7 +51,10 @@ in
           "127.0.0.1"
           "[::1]"
         ];
-        extraConfig = "root * ${web_root}/noogle";
+        extraConfig = ''
+          root * ${web_root}/noogle
+          file_server
+        '';
       };
     };
   };
