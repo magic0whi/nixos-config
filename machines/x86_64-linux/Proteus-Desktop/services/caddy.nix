@@ -8,7 +8,6 @@
 let
   # web_root = "/srv/www";
   web_root = "${myvars.storagePath}/www";
-  caddy_port = 8080;
 in
 {
   systemd.services.caddy.unitConfig.RequiresMountsFor = [ myvars.storagePath ];
@@ -24,7 +23,7 @@ in
     # not to attempt ACME/HTTPS bindings.
     globalConfig = "auto_https off";
     virtualHosts = {
-      "http://notebook.${myvars.domain}:${toString caddy_port}" = {
+      "http://notebook.${myvars.domain}:${toString myvars.networking.caddyPort}" = {
         listenAddresses = [
           "127.0.0.1"
           "[::1]"
@@ -36,7 +35,7 @@ in
           file_server
         '';
       };
-      "http://nixos-search.${myvars.domain}:${toString caddy_port}" = {
+      "http://nixos-search.${myvars.domain}:${toString myvars.networking.caddyPort}" = {
         listenAddresses = [
           "127.0.0.1"
           "[::1]"
@@ -46,7 +45,7 @@ in
           file_server
         '';
       };
-      "http://noogle.${myvars.domain}:${toString caddy_port}" = {
+      "http://noogle.${myvars.domain}:${toString myvars.networking.caddyPort}" = {
         listenAddresses = [
           "127.0.0.1"
           "[::1]"
@@ -68,7 +67,7 @@ in
   services.traefik.dynamicConfigOptions.http = {
     routers.caddy = {
       rule = lib.concatStringsSep " || " (
-        map (i: "Host(`${lib.removeSuffix ":${toString caddy_port}" (lib.removePrefix "http://" i)}`)") (
+        map (i: "Host(`${lib.removeSuffix ":${toString myvars.networking.caddyPort}" (lib.removePrefix "http://" i)}`)") (
           builtins.attrNames config.services.caddy.virtualHosts
         )
       );
@@ -76,6 +75,6 @@ in
       service = "caddy";
       tls = { };
     };
-    services.caddy.loadBalancer.servers = [ { url = "http://127.0.0.1:${toString caddy_port}"; } ];
+    services.caddy.loadBalancer.servers = [ { url = "http://127.0.0.1:${toString myvars.networking.caddyPort}"; } ];
   };
 }

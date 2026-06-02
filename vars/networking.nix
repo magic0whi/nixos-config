@@ -11,6 +11,7 @@
         || builtins.elem cn (iface.domains.AAAA or [ ])
       ) hostAddrs.${name}
     ) null (builtins.attrNames hostAddrs);
+  caddyPort = 8080;
 
   soaSerial = "2026052902";
   hostAddrs = {
