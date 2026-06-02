@@ -43,6 +43,7 @@
       middlewares = [ "strip-backend-prefix" ];
       service = "nixos-search_backend";
       tls = { };
+      priority = 100; # Higher has greater proirity
     };
     services.nixos-search_backend.loadBalancer.servers = [
       { url = "http://127.0.0.1:${toString config.services.opensearch.settings."http.port"}"; }

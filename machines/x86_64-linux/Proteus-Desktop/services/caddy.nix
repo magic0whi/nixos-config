@@ -67,6 +67,7 @@ in
       entryPoints = [ "websecure" ];
       service = "caddy";
       tls = { };
+      priority = 10;
     };
     services.caddy.loadBalancer.servers = [ { url = "http://127.0.0.1:${toString myvars.networking.caddyPort}"; } ];
   };
