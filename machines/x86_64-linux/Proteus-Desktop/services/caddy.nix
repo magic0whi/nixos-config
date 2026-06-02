@@ -66,14 +66,12 @@ in
     ];
   };
   services.traefik.dynamicConfigOptions.http = {
-    routers.notebook = {
-      rule = "Host(`notebook.${myvars.domain}`)";
-      entryPoints = [ "websecure" ];
-      service = "caddy";
-      tls = { };
-    };
-    routers.nixos-search = {
-      rule = "Host(`nixos-search.${myvars.domain}`)";
+    routers.caddy = {
+      rule = lib.concatStringsSep " || " (
+        map (i: "Host(`${lib.removeSuffix ":${toString caddy_port}" (lib.removePrefix "http://" i)})") (
+          builtins.attrNames config.services.caddy.virtualHosts
+        )
+      );
       entryPoints = [ "websecure" ];
       service = "caddy";
       tls = { };
