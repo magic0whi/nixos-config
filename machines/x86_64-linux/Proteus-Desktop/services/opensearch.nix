@@ -29,6 +29,9 @@
       extraConfig = ''
         root * ${web_root}/nixos-search
         file_server
+        # https://caddyserver.com/docs/caddyfile/patterns#single-page-apps-spas
+        try_files {path} /index.html
+        encode
       '';
     };
 

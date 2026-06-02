@@ -33,16 +33,8 @@ in
           root * ${web_root}/notebook
           # file_server directive is required if serve static files from disk
           file_server
-        '';
-      };
-      "http://nixos-search.${myvars.domain}:${toString myvars.networking.caddyPort}" = {
-        listenAddresses = [
-          "127.0.0.1"
-          "[::1]"
-        ];
-        extraConfig = ''
-          root * ${web_root}/nixos-search
-          file_server
+          # Enable compress
+          encode
         '';
       };
       "http://noogle.${myvars.domain}:${toString myvars.networking.caddyPort}" = {
@@ -53,6 +45,7 @@ in
         extraConfig = ''
           root * ${web_root}/noogle
           file_server
+          encode
         '';
       };
     };
