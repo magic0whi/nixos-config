@@ -115,6 +115,7 @@
         }
       ];
       language-server = {
+        yaml-language-server.config.yaml.format.singleQuote = true;
         ltex = {
           command = "ltex-ls";
           config.ltex = {
