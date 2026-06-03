@@ -55,17 +55,33 @@
     nixpkgs_modules = map mylib.relativeToRoot [
       "modules/secrets"
 
+      # "modules/common/default.nix"
       "modules/common/easytier.nix"
+      # "modules/common/fonts.nix"
       "modules/common/misc.nix"
+      "modules/common/nix.nix"
+      # "modules/common/packages.nix"
       "modules/common/shell.nix"
+      # "modules/common/ssh.nix"
+      "modules/common/tailscale.nix"
 
+      # "modules/nixos_headless/default.nix"
+      # "modules/nixos_headless/fhs.nix"
       "modules/nixos_headless/firewall.nix"
+      # "modules/nixos_headless/fonts.nix"
       "modules/nixos_headless/impermanence.nix"
+      # "modules/nixos_headless/kernel-compat.nix"
       "modules/nixos_headless/misc.nix"
       "modules/nixos_headless/niks3-auto-upload.nix"
+      # "modules/nixos_headless/packages.nix"
+      # "modules/nixos_headless/power-mgmt.nix"
+      # "modules/nixos_headless/remote-build.nix"
       "modules/nixos_headless/scx-loader.nix"
+      # "modules/nixos_headless/secureboot.nix"
+      "modules/nixos_headless/sssd.nix"
       "modules/nixos_headless/systemd-resolved.nix"
       "modules/nixos_headless/traffic-quota.nix"
+      # "modules/nixos_headless/zfs.nix"
     ];
   };
   ## END pkgs agnostic functions

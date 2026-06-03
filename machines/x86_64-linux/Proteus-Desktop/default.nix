@@ -16,8 +16,8 @@ let
 
       "modules/nixos_gui/kmscon.nix"
 
-      "modules/services/traefik.nix"
       "modules/services/docker.nix"
+      "modules/services/traefik.nix"
     ]);
   hm_modules = map mylib.relativeToRoot [
     "modules/common_hm_headless/helix.nix"
