@@ -48,6 +48,17 @@ in
           encode
         '';
       };
+      "http://test.${myvars.domain}:${toString myvars.networking.caddyPort}" = {
+        listenAddresses = [
+          "127.0.0.1"
+          "[::1]"
+        ];
+        extraConfig = ''
+          root * ${web_root}/test
+          file_server
+          encode
+        '';
+      };
     };
   };
   # For CI deploy
