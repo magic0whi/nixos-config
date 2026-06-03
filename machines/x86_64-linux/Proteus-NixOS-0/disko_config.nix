@@ -12,8 +12,8 @@
           size = "512M";
           content = {
             type = "filesystem";
-            mountpoint = "/boot";
             format = "vfat";
+            mountpoint = "/boot";
             extraArgs = [
               "-F32"
               "-S4096"
@@ -27,37 +27,39 @@
           content = {
             type = "btrfs";
             extraArgs = [ "-f" ]; # Override existing partition
-            # Subvolumes must set a mountpoint in order to be mounted,
-            # unless their parent is mounted
+            # Subvolumes must set a mountpoint in order to be mounted, unless their parent is mounted
             subvolumes = {
-              # Subvolume name is different from mountpoint
-              "@root" = {
+              "/rootfs" = {
                 mountpoint = "/";
-                mountOptions = [ "compress=zstd" ];
+                mountOptions = [
+                  "compress=zstd"
+                  "noatime"
+                ];
               };
-              # Subvolume name is the same as the mountpoint
-              "@home" = {
-                mountpoint = "/home";
-                mountOptions = [ "compress=zstd" ];
-              };
-              "@nix" = {
+              "/nix" = {
                 mountpoint = "/nix";
                 mountOptions = [
                   "compress=zstd"
                   "noatime"
                 ];
               };
+              "/home" = {
+                mountpoint = "/home";
+                mountOptions = [
+                  "compress=zstd"
+                  "noatime"
+                ];
+              };
               "@persistent" = {
+                # TODO rename
                 mountpoint = "/persistent";
                 mountOptions = [ "compress=zstd" ];
               };
               # Subvolume for the swapfile
               "@swap" = {
+                # TODO rename
                 mountpoint = "/.swapvol";
-                mountOptions = [
-                  "compress=zstd"
-                  "noatime"
-                ];
+                mountOptions = [ "noatime" ];
                 swap = {
                   swapfile.size = "2G";
                   # swapfile2.size = "20M";
