@@ -175,6 +175,7 @@
         ipv6 = "fdfe:dcba:9877::9";
       }
     ];
+    Proteus-VF2 = [ { ipv4 = "192.168.1.26"; } ];
     # Proteus-NixOS-6.ipv4 = "100.126.174.68";
     # Orange Pi 5 - ARM
     # RJ45 port 1 - enP4p65s0

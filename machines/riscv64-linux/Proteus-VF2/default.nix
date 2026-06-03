@@ -31,8 +31,34 @@ let
         name
         mylib
         myvars
-        nixpkgs_modules
         ;
+      nixpkgs_modules =
+        nixpkgs_modules
+        ++ [ nixos-hardware.nixosModules.starfive-visionfive-2 ]
+        ++ [
+          {
+            nixpkgs.overlays = [
+              (_final: prev: {
+                # Python 3.13 is the current default python3 in nixpkgs unstable
+                python3 = prev.python3.override {
+                  packageOverrides = _pyfinal: pyprev: {
+                    numpy = pyprev.numpy.overridePythonAttrs (_oldAttrs: {
+                      doCheck = false;
+                    });
+                  };
+                };
+                # Also override python313 explicitly in case any package references it directly
+                python313 = prev.python313.override {
+                  packageOverrides = _pyfinal: pyprev: {
+                    numpy = pyprev.numpy.overridePythonAttrs (_oldAttrs: {
+                      doCheck = false;
+                    });
+                  };
+                };
+              })
+            ];
+          }
+        ];
       machine_path = ./.;
     }
   );
@@ -54,9 +80,6 @@ let
           sdImage.compressImage = false;
 
           users.users.nixos.password = "test123";
-
-          networking.interfaces.end0.useDHCP = true;
-          networking.interfaces.end1.useDHCP = true;
 
           security.sudo-rs.enable = lib.mkForce false;
         }
