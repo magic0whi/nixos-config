@@ -43,16 +43,6 @@
       ExecStart = "${config.boot.zfs.package}/sbin/zfs rollback -r zroot/root@blank";
     };
   };
-  # boot.initrd.systemd.services."zfs-rollback-home" = {
-  #   description = "Rollback zroot/home@blank in initrd";
-  #   wantedBy = ["zfs-import.target"];
-  #   after = ["zfs-import-zroot.service"];
-  #   before = ["sysroot.mount"];
-  #   serviceConfig = {
-  #     Type = "oneshot";
-  #     ExecStart = "${config.boot.zfs.package}/sbin/zfs rollback -r zroot/home@blank";
-  #   };
-  # };
 
   # disko will take care of filesystems.*, swapDevices, boot.resumeDevice, boot.initrd.luks.devices
 

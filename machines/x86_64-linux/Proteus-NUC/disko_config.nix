@@ -106,7 +106,8 @@ in
         # Performance
         dnodesize = "auto";
         normalization = "formD";
-        relatime = "on";
+        # relatime = "on"; # Updates atime only when the existing atime is older than the mtime
+        atime = "off"; # Disable atime at all
 
         compression = "zstd";
 
@@ -121,15 +122,15 @@ in
         root = {
           type = "zfs_fs";
           mountpoint = "/";
+          # `com.sun:auto-snapshot` is used by options `services.zfs.autoSnapshot.*`
           options."com.sun:auto-snapshot" = "false";
           postCreateHook = "zfs list -t snapshot -H -o name | grep -E '^${zroot}/root@blank$' || zfs snapshot ${zroot}/root@blank";
         };
+        # TODO Remove when I ready to move to impermanence on /home
         home = {
-          # `com.sun:auto-snapshot` is used by options `services.zfs.autoSnapshot.*`
           type = "zfs_fs";
           mountpoint = "/home";
           options."com.sun:auto-snapshot" = "false";
-          # postCreateHook = "zfs list -t snapshot -H -o name | grep -E '^${zroot}/home@blank$' || zfs snapshot ${zroot}/home@blank";
         };
         "home/root" = {
           type = "zfs_fs";
@@ -139,7 +140,6 @@ in
           type = "zfs_fs";
           mountpoint = "/nix";
           options."com.sun:auto-snapshot" = "false";
-          options.atime = "off";
         };
         persistent = {
           type = "zfs_fs";

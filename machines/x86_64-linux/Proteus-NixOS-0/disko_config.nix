@@ -53,7 +53,10 @@
               "@persistent" = {
                 # TODO rename
                 mountpoint = "/persistent";
-                mountOptions = [ "compress=zstd" ];
+                mountOptions = [
+                  "compress=zstd"
+                  "noatime"
+                ];
               };
               # Subvolume for the swapfile
               "@swap" = {
