@@ -6,6 +6,7 @@
   ...
 }:
 let
+  certs_dir = "/var/lib/opensearch/config/certs";
   sec_cfg =
     let
       gen_empt_yml =
@@ -53,7 +54,7 @@ let
                       openid_connect_url = "https://auth.${myvars.domain}/.well-known/openid-configuration";
                       frontend_url = "https://nixos-search.${myvars.domain}/backend";
                       client_id = "nixos-search";
-                      client_secret = "@OIDC_CLIENT_SECRET@";
+                      client_secret = "@OIDC_CLIENT_SECRET@"; # Placeholder for `sd`
                     };
                   };
                   authentication_backend.type = "noop";
@@ -94,6 +95,7 @@ let
             }
           ];
           cluster_permissions = [
+            "cluster:monitor/main"
             "cluster:monitor/state"
             "cluster:monitor/health"
           ];
@@ -149,8 +151,15 @@ let
     };
 in
 {
-  environment.systemPackages = with pkgs; [ opensearch-cli ];
+
+  sops.secrets.nixos-search_client_secret = {
+    sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
+    restartUnits = [ "opensearch.service" ];
+  };
+
   networking.firewall.allowedTCPPorts = [ config.services.opensearch.settings."http.port" ];
+
+  environment.systemPackages = [ pkgs.opensearch-cli ];
   services.opensearch = {
     enable = true;
     # package = pkgs.opensearch.overrideAttrs (old: {
@@ -184,17 +193,15 @@ in
       # Traefik handles TLS, but I cannot disable it as securityadmin.sh reports "Unrecognized SSL message, plaintext
       # connection?" and exit
       "plugins.security.ssl.http.enabled" = true;
-      "plugins.security.ssl.http.pemkey_filepath" = "/var/lib/opensearch/config/opensearch.key";
-      "plugins.security.ssl.http.pemcert_filepath" = "/var/lib/opensearch/config/opensearch.crt";
-      "plugins.security.ssl.http.pemtrustedcas_filepath" = "/var/lib/opensearch/config/opensearch.crt";
+      "plugins.security.ssl.http.pemkey_filepath" = "${certs_dir}/opensearch.key";
+      "plugins.security.ssl.http.pemcert_filepath" = "${certs_dir}/opensearch.crt";
+      "plugins.security.ssl.http.pemtrustedcas_filepath" = "${certs_dir}/opensearch.crt";
       "plugins.security.ssl.transport.enabled" = true;
-      # "plugins.security.ssl.transport.server.pemcert_filepath" = "/var/lib/opensearch/certs/server.pem";
-      # "plugins.security.ssl.transport.client.pemcert_filepath" = "/var/lib/opensearch/certs/client.pem";
-      "plugins.security.ssl.transport.pemkey_filepath" = "/var/lib/opensearch/config/opensearch.key";
-      "plugins.security.ssl.transport.pemcert_filepath" = "/var/lib/opensearch/config/opensearch.crt";
+      "plugins.security.ssl.transport.pemkey_filepath" = "${certs_dir}/opensearch.key";
+      "plugins.security.ssl.transport.pemcert_filepath" = "${certs_dir}/opensearch.crt";
       # PEM file containing the root CA(s)
-      "plugins.security.ssl.transport.pemtrustedcas_filepath" = "/var/lib/opensearch/config/opensearch.crt";
-      "transport.ssl.enforce_hostname_verification" = false;
+      "plugins.security.ssl.transport.pemtrustedcas_filepath" = "${certs_dir}/opensearch.crt";
+      # "transport.ssl.enforce_hostname_verification" = false;
     };
   };
   services.caddy.virtualHosts."http://nixos-search.${myvars.domain}:${toString myvars.networking.caddyPort}" =
@@ -231,28 +238,21 @@ in
       servers = [ { url = "https://127.0.0.1:${toString config.services.opensearch.settings."http.port"}"; } ];
     };
   };
-  sops.secrets.nixos-search_client_secret = {
-    sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
-    restartUnits = [ "opensearch.service" ];
-  };
 
   systemd.services.opensearch =
     let
       cfg = config.services.opensearch;
     in
     {
-      path = [ pkgs.opensearch-cli ];
       serviceConfig = {
         RuntimeDirectory = "opensearch";
         RuntimeDirectoryMode = "0700";
         LoadCredential = "nixos-search_client_secret:${config.sops.secrets.nixos-search_client_secret.path}";
       };
       preStart = lib.mkBefore ''
-        CERT_DIR="${cfg.dataDir}/config/security"
-        if [ ! -d $CERT_DIR ]; then
+        if [ ! -d "${certs_dir}" ]; then
           echo "Generating mandatory internal Transport TLS certificates..."
-          mkdir -p "$CERT_DIR"
-          cd "$CERT_DIR"
+          mkdir -p "${certs_dir}"
 
           ${lib.getExe pkgs.openssl} req -x509 -newkey rsa:2048 -keyout ${
             cfg.settings."plugins.security.ssl.transport.pemkey_filepath"
@@ -260,43 +260,42 @@ in
             builtins.concatStringsSep "/" (
               lib.reverseList (lib.splitString "," (builtins.head cfg.settings."plugins.security.authcz.admin_dn"))
             )
-          }'
+          }' \
+            -addext "subjectAltName=IP:127.0.0.1,DNS:localhost,DNS:nixos-search.${myvars.domain}"
 
-          chown -R opensearch:opensearch "$CERT_DIR"
-          chmod 600 "$CERT_DIR"/*.pem
+          chown -R opensearch:opensearch "${certs_dir}"
+          chmod 600 "${certs_dir}"/*
         fi
       '';
-      # Override the default HTTP plain wait for OpenSearch finish script which cause infinite loop when SSL enabled
+      # Override the default HTTP plain wait script, avoids the deadlock where OpenSearch would never finish
+      # starting when SSL enabled
       serviceConfig.ExecStartPost = lib.mkForce [
         (pkgs.writeShellScript "opensearch-setup-security" ''
           echo "Injecting OIDC secrets and applying OpenSearch security config..."
 
           ${lib.concatLines (lib.mapAttrsToList (filename: drv: "cp ${drv} $RUNTIME_DIRECTORY/${filename}") sec_cfg)}
+          # `cp` preserves the permission from /nix/store
+          chmod 600 "$RUNTIME_DIRECTORY/config.yml"
 
           SECRET_VAL=$(cat $CREDENTIALS_DIRECTORY/nixos-search_client_secret)
-          # cp preserves the permission from /nix/store
-          chmod 600 "$RUNTIME_DIRECTORY/config.yml"
           cat "$RUNTIME_DIRECTORY/config.yml" | ${pkgs.sd}/bin/sd "@OIDC_CLIENT_SECRET@" "$SECRET_VAL" | ${lib.getExe' pkgs.moreutils "sponge"} "$RUNTIME_DIRECTORY/config.yml"
-          echo "DEBUG: after subst"
+
+          # Wait for yellow status, I dropped the `-f` so 401 also treated as success
+          while ! ${lib.getExe pkgs.curl} -sS --cacert ${cfg.settings."plugins.security.ssl.transport.pemcert_filepath"} \
+            https://${cfg.settings."network.host"}:${toString cfg.settings."http.port"} 2>/dev/null; do
+            sleep 1
+          done
 
           # Apply the configuration to the OpenSearch index
           export JAVA_HOME="${pkgs.jdk21_headless}"
-          # We cannot wait for opensearch start as without setup it will never complete start
-          while ! ${lib.getExe pkgs.bash} ${config.services.opensearch.package}/plugins/opensearch-security/tools/securityadmin.sh \
-              -cacert ${cfg.settings."plugins.security.ssl.transport.pemcert_filepath"} \
-              -cert ${cfg.settings."plugins.security.ssl.transport.pemcert_filepath"} \
-              -key ${cfg.settings."plugins.security.ssl.transport.pemkey_filepath"} \
-              -cd "$RUNTIME_DIRECTORY" \
-              -icl \
-              -nhnv \
-              -h ${config.services.opensearch.settings."network.host"} \
-              -p ${toString config.services.opensearch.settings."http.port"}; do
-            sleep 5
-          done
-
-          # Clean up securely
-          # shred -u "$RUNTIME_DIRECTORY/config.yml"
-          # rm -rf "$RUNTIME_DIRECTORY"
+          ${lib.getExe pkgs.bash} ${config.services.opensearch.package}/plugins/opensearch-security/tools/securityadmin.sh \
+            -cacert ${cfg.settings."plugins.security.ssl.transport.pemcert_filepath"} \
+            -cert ${cfg.settings."plugins.security.ssl.transport.pemcert_filepath"} \
+            -key ${cfg.settings."plugins.security.ssl.transport.pemkey_filepath"} \
+            -cd "$RUNTIME_DIRECTORY" \
+            -icl \
+            -h ${config.services.opensearch.settings."network.host"} \
+            -p ${toString config.services.opensearch.settings."http.port"}
         '')
       ];
     };
