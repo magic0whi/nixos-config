@@ -874,5 +874,4 @@ in
   programs.hyprlock.enable = false;
   programs.swaylock.enable = if config.programs.hyprlock.enable then false else true;
   home.pointerCursor.hyprcursor.enable = true;
-  services.cliphist.enable = true;
 }

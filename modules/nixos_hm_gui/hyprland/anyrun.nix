@@ -10,6 +10,7 @@
     enable = true;
     systemd.enable = true;
   };
+  # services.cliphist.enable = true;
   # options.programs.anyrun = {
   #   menu_script = lib.mkOption {
   #     type = lib.types.path;
