@@ -44,13 +44,13 @@ Personal NixOS and nix-darwin system configurations managed as a Flake, featurin
 
 ## Hosts
 
-| Hostname             | Type          | Architecture   | Storage               |
-| -------------------- | ------------- | -------------- | --------------------- |
-| Proteus-Desktop      | Workstation   | x86_64-linux   | ZFS on LUKS           |
-| Proteus-NUC          | Home Server   | x86_64-linux   | ZFS on LUKS           |
-| Proteus-NixOS-{0..5} | VPS Instances | x86_64-linux   | Btrfs                 |
-| Proteus-MBP14M4P     | Laptop        | aarch64-darwin | APFS                  |
-| Proteus-VF2          | SBC           | riscv64-linux  | ZFS with Impermanence |
+| Hostname             | Type          | Architecture   | Storage     |
+| -------------------- | ------------- | -------------- | ----------- |
+| Proteus-Desktop      | Workstation   | x86_64-linux   | ZFS on LUKS |
+| Proteus-NUC          | Home Server   | x86_64-linux   | ZFS on LUKS |
+| Proteus-NixOS-{0..5} | VPS Instances | x86_64-linux   | Btrfs       |
+| Proteus-MBP14M4P     | Laptop        | aarch64-darwin | APFS        |
+| Proteus-VF2          | SBC           | riscv64-linux  | BTRFS       |
 
 ## Installation
 
@@ -98,17 +98,17 @@ Or use `nixos-anywhere` for unattended installation (example using `Proteus-NixO
 
 ```bash
 nix run nixpkgs#nixos-anywhere -- -f .#Proteus-NixOS-0 \
---phases kexec root@100.74.72.29 \
---kexec https://gh-proxy.org/https://github.com/nix-community/nixos-images/releases/download/nixos-25.05/nixos-kexec-installer-noninteractive-x86_64-linux.tar.gz
-nix run nixpkgs#nixos-anywhere -- -f .#Proteus-NixOS-0 --phases disko --disko-mode format root@100.74.72.29
-nix run nixpkgs#nixos-anywhere -- -f .#Proteus-NixOS-0 --phases disko --disko-mode mount root@100.74.72.29
-nix run nixpkgs#nixos-anywhere -- -f .#Proteus-NixOS-0 --phases install root@100.74.72.29
+  --phases kexec root@<IP> \
+  --kexec https://gh-proxy.org/https://github.com/nix-community/nixos-images/releases/download/nixos-25.05/nixos-kexec-installer-noninteractive-x86_64-linux.tar.gz
+nix run nixpkgs#nixos-anywhere -- -f .#Proteus-NixOS-0 --phases disko --disko-mode format root@<IP>
+nix run nixpkgs#nixos-anywhere -- -f .#Proteus-NixOS-0 --phases disko --disko-mode mount root@<IP>
+nix run nixpkgs#nixos-anywhere -- -f .#Proteus-NixOS-0 --phases install root@<IP>
 # Check everything ok, then move critical files to `/mnt/persistent`, see above
 # Finally reboot
-nix run nixpkgs#nixos-anywhere -- -f .#Proteus-NixOS-0 --phases reboot root@100.74.72.29
+nix run nixpkgs#nixos-anywhere -- -f .#Proteus-NixOS-0 --phases reboot root@<IP>
 ```
 
-_(Note: IP `100.74.72.29` corresponds to `Proteus-NixOS-0` configured in `vars/networking.nix`)_
+_(Note: `<IP>` shall corresponds to `Proteus-NixOS-0` registered in [var/networking](./var/networking.nix))_
 
 ## Usage
 
@@ -129,40 +129,29 @@ deploy [-s] --targets \
 -- --show-trace --verbose
 ```
 
-### List ZFS volumes
-
-```bash
-zfs list -o name,mountpoint,encryption,canmount,mounted -t filesystem,snapshot
-```
-
 ## Structure
 
 The repository is organized to separate machine-specific hardware configurations from reusable system modules.
 
 ```plaintext
 .
-├── flake.nix                  # Main flake configuration
+├── flake.nix
 ├── Justfile                   # Command runner shortcuts
 ├── machines/                  # Host-specific configurations grouped by architecture
-│   ├── aarch64-darwin/        # macOS hosts (e.g., Proteus-MBP14M4P)
-│   ├── riscv64-linux/         # RISC-V SBCs
-│   └── x86_64-linux/          # Workstations, servers, and VPS nodes
+│   ├── aarch64-darwin/
+│   ├── riscv64-linux/
+│   └── x86_64-linux/
 ├── modules/                   # Reusable configurations
-│   ├── common*/               # Shared across OSes (gui/headless)
+│   ├── common*/               # Shared across OSes (GUI/headless)
 │   ├── darwin*/               # nix-darwin specific modules
 │   ├── nixos_*/               # NixOS specific modules (system and home-manager)
-│   └── overlays/              # Custom packages (e.g., wechat, qq)
+│   └── overlays/              # Custom packages (e.g., Wechat, QQ)
+├── services/                  # Shared services modules
 ├── secrets/                   # sops-nix encrypted secrets and keys
 └── vars/                      # Global variables and networking definitions
 ```
 
-## Key Design Decisions
-
-### The "Miscellaneous" (Hub & Spoke) Code Organization
-
-To avoid the cognitive overhead of premature file fragmentation, this repository utilizes an organic "Hub and Spoke" module strategy. New packages, services, or configurations for a specific domain (like `modules/nixos_headless/`) are initially dropped into a centralized `misc.nix` file.
-
-As specific logical units within the stew grow large or complex (e.g., a massive Hyprland config or specific development environments), they are extracted into their own dedicated files (the "spokes") within that directory.
+## Notes
 
 ### Ephemeral Root
 
@@ -180,10 +169,6 @@ boot.initrd.systemd.services."zfs-rollback-root" = {
   };
 };
 ```
-
-### LUKS + ZFS
-
-Each NVMe drive has a LUKS container, then ZFS pools are created across the unlocked devices for redundancy and flexibility (RAID-0 striping for performance or raidz2 for balanced performance & redundancy).
 
 ### Quick Debug
 
