@@ -14,7 +14,7 @@ let
     "modules/common/ssh.nix"
 
     "modules/nixos_headless/fhs.nix"
-    "modules/nixos_headless/kernel-compat.nix"
+    "modules/nixos_headless/krnl-compat.nix"
     "modules/nixos_headless/misc.nix"
     "modules/nixos_headless/packages.nix"
     "modules/nixos_headless/power-mgmt.nix"
