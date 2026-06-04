@@ -39,6 +39,7 @@ let
                   };
                   authentication_backend.type = "internal";
                 };
+                # OIDC, https://docs.opensearch.org/latest/security/authentication-backends/openid-connect/
                 openid_auth_domain = {
                   http_enabled = true;
                   transport_enabled = true;
@@ -176,10 +177,13 @@ in
       "http.cors.allow-headers" = "X-Requested-With,X-Auth-Token,Content-Type,Content-Length,Authorization";
 
       "plugins.security.disabled" = false;
+      # OpenSearch reads cert's DN back formatted according to RFC 2253
       "plugins.security.authcz.admin_dn" = [ "C=CN,O=proteus,CN=opensearch" ];
 
       # Mandatory TLS for internal transport
-      "plugins.security.ssl.http.enabled" = true; # Traefik handles TLS, but I can't disable it as Unrecognized SSL message, plaintext connection?
+      # Traefik handles TLS, but I cannot disable it as securityadmin.sh reports "Unrecognized SSL message, plaintext
+      # connection?" and exit
+      "plugins.security.ssl.http.enabled" = true;
       "plugins.security.ssl.http.pemkey_filepath" = "/var/lib/opensearch/config/opensearch.key";
       "plugins.security.ssl.http.pemcert_filepath" = "/var/lib/opensearch/config/opensearch.crt";
       "plugins.security.ssl.http.pemtrustedcas_filepath" = "/var/lib/opensearch/config/opensearch.crt";
@@ -232,7 +236,6 @@ in
     restartUnits = [ "opensearch.service" ];
   };
 
-  # OIDC, https://docs.opensearch.org/latest/security/authentication-backends/openid-connect/
   systemd.services.opensearch =
     let
       cfg = config.services.opensearch;
@@ -253,10 +256,10 @@ in
 
           ${lib.getExe pkgs.openssl} req -x509 -newkey rsa:2048 -keyout ${
             cfg.settings."plugins.security.ssl.transport.pemkey_filepath"
-          } -out ${cfg.settings."plugins.security.ssl.transport.pemcert_filepath"} -sha256 -days 3650 -nodes -subj '${
-            # TODO: Need reverse
-            builtins.replaceStrings [ "," ] [ "/" ]
-              "/${builtins.head config.services.opensearch.settings."plugins.security.authcz.admin_dn"}"
+          } -out ${cfg.settings."plugins.security.ssl.transport.pemcert_filepath"} -sha256 -days 3650 -nodes -subj '/${
+            builtins.concatStringsSep "/" (
+              lib.reverseList (lib.splitString "," (builtins.head cfg.settings."plugins.security.authcz.admin_dn"))
+            )
           }'
 
           chown -R opensearch:opensearch "$CERT_DIR"
