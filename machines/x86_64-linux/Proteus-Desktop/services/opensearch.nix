@@ -1,20 +1,196 @@
 {
   config,
+  lib,
   myvars,
   pkgs,
   ...
 }:
+let
+  sec_cfg =
+    let
+      gen_empt_yml =
+        n: type:
+        pkgs.writers.writeYAML n {
+          _meta = {
+            inherit type;
+            config_version = 2;
+          };
+        };
+    in
+    {
+      "config.yml" = (
+        pkgs.writers.writeYAML "config.yml" {
+          _meta = {
+            type = "config";
+            config_version = 2;
+          };
+          config = {
+            dynamic = {
+              http.anonymous_auth_enabled = false;
+              authc = {
+                # For nixos-search
+                basic_auth_domain = {
+                  http_enabled = true;
+                  transport_enabled = true;
+                  order = 0;
+                  http_authenticator = {
+                    type = "basic";
+                    challenge = false; # Allows unauthenticated requests to fall through to OIDC
+                  };
+                  authentication_backend.type = "internal";
+                };
+                openid_auth_domain = {
+                  http_enabled = true;
+                  transport_enabled = true;
+                  order = 1;
+                  http_authenticator = {
+                    type = "openid";
+                    challenge = true;
+                    config = {
+                      subject_key = "preferred_username";
+                      roles_key = "groups";
+                      openid_connect_url = "https://auth.${myvars.domain}/.well-known/openid-configuration";
+                      frontend_url = "https://nixos-search.${myvars.domain}/backend";
+                      client_id = "nixos-search";
+                      client_secret = "@OIDC_CLIENT_SECRET@";
+                    };
+                  };
+                  authentication_backend.type = "noop";
+                };
+              };
+            };
+          };
+        }
+      );
+
+      "internal_users.yml" = pkgs.writers.writeYAML "internal_users.yml" {
+        _meta = {
+          type = "internalusers";
+          config_version = 2;
+        };
+        # Define your internal HTTP Basic Auth user here
+        aWVSALXpZv = {
+          hash = "$2y$12$VstyWtAiIsDOOQJYhbgJju37W12oyOPRL7iI4XFUn.7WSGZ83d1JW";
+          reserved = false;
+        };
+      };
+
+      "roles.yml" = pkgs.writers.writeYAML "roles.yml" {
+        _meta = {
+          type = "roles";
+          config_version = 2;
+        };
+        metrics = {
+          reserved = false;
+          hidden = false;
+          index_permissions = [
+            {
+              index_patterns = [ "*" ];
+              allowed_actions = [
+                "indices:monitor/settings/get"
+                "indices:monitor/stats"
+              ];
+            }
+          ];
+          cluster_permissions = [
+            "cluster:monitor/state"
+            "cluster:monitor/health"
+          ];
+          tenant_permissions = [ ];
+        };
+        # proteus = {
+        #   reserved = false;
+        #   hidden = false;
+        #   index_permissions = [
+        #     {
+        #       index_patterns = [ "proteus_*" ];
+        #       allowed_actions = [ "*" ];
+        #     }
+        #   ];
+        #   cluster_permissions = [
+        #     "indices:data/write/bulk"
+        #     "indices:data/read/scroll"
+        #   ];
+        #   tenant_permissions = [ ];
+        # };
+      };
+
+      # Assign users to roles
+      "roles_mapping.yml" = pkgs.writers.writeYAML "roles_mapping.yml" (
+        {
+          _meta = {
+            config_version = 2;
+            type = "rolesmapping";
+          };
+        }
+        // (builtins.mapAttrs
+          (name: users: {
+            reserved = if name == "all_access" then true else false;
+            hidden = false;
+            backend_roles = [ ]; # If a user possesses any of the roles listed, they are granted the this role
+            hosts = [ ];
+            users = users;
+            and_backend_roles = [ ]; # A user must possess ALL of the backend roles listed here to be granted this role.
+          })
+          {
+            all_access = [ myvars.username ];
+            metrics = [ "aWVSALXpZv" ];
+            readall = [ "aWVSALXpZv" ];
+          }
+        )
+      );
+
+      # Satisfy securityadmin.sh with remaining blanks
+      "nodes_dn.yml" = gen_empt_yml "nodes_dn.yml" "nodesdn";
+      "action_groups.yml" = gen_empt_yml "action_groups.yml" "actiongroups";
+      "tenants.yml" = gen_empt_yml "tenants.yml" "tenants";
+      "whitelist.yml" = gen_empt_yml "whitelist.yml" "whitelist";
+    };
+in
 {
   environment.systemPackages = with pkgs; [ opensearch-cli ];
-  networking.firewall.allowedTCPPorts = [ 9200 ];
+  networking.firewall.allowedTCPPorts = [ config.services.opensearch.settings."http.port" ];
   services.opensearch = {
     enable = true;
+    # package = pkgs.opensearch.overrideAttrs (old: {
+    #   postInstall = (old.postInstall or "") + ''
+    #     # Nixpkgs removes opensearch-cli, breaking opensearch-keystore, replace the broken keystore script with a no-op
+    #     # to prevent the NixOS preStart from crashing.
+    #     cat <<EOF > $out/bin/opensearch-keystore
+    #     #!${lib.getExe pkgs.bash}
+    #     set -e -o pipefail
+
+    #     OPENSEARCH_MAIN_CLASS=org.opensearch.tools.cli.keystore.KeyStoreCli \\
+    #       OPENSEARCH_ADDITIONAL_CLASSPATH_DIRECTORIES=lib/tools/keystore-cli \\
+    #       ${lib.getExe pkgs.opensearch-cli} \\
+    #       "\$@"
+    #     EOF
+    #     chmod +x $out/bin/opensearch-keystore
+    #   '';
+    # });
     settings = {
       "network.host" = "127.0.0.1";
       "http.cors.enabled" = "true";
       "http.cors.allow-origin" = "https://nixos-search.${myvars.domain}";
       "http.cors.allow-credentials" = "true";
       "http.cors.allow-headers" = "X-Requested-With,X-Auth-Token,Content-Type,Content-Length,Authorization";
+
+      "plugins.security.disabled" = false;
+      "plugins.security.authcz.admin_dn" = [ "C=CN,O=proteus,CN=opensearch" ];
+
+      # Mandatory TLS for internal transport
+      "plugins.security.ssl.http.enabled" = true; # Traefik handles TLS, but I can't disable it as Unrecognized SSL message, plaintext connection?
+      "plugins.security.ssl.http.pemkey_filepath" = "/var/lib/opensearch/config/opensearch.key";
+      "plugins.security.ssl.http.pemcert_filepath" = "/var/lib/opensearch/config/opensearch.crt";
+      "plugins.security.ssl.http.pemtrustedcas_filepath" = "/var/lib/opensearch/config/opensearch.crt";
+      "plugins.security.ssl.transport.enabled" = true;
+      # "plugins.security.ssl.transport.server.pemcert_filepath" = "/var/lib/opensearch/certs/server.pem";
+      # "plugins.security.ssl.transport.client.pemcert_filepath" = "/var/lib/opensearch/certs/client.pem";
+      "plugins.security.ssl.transport.pemkey_filepath" = "/var/lib/opensearch/config/opensearch.key";
+      "plugins.security.ssl.transport.pemcert_filepath" = "/var/lib/opensearch/config/opensearch.crt";
+      # PEM file containing the root CA(s)
+      "plugins.security.ssl.transport.pemtrustedcas_filepath" = "/var/lib/opensearch/config/opensearch.crt";
+      "transport.ssl.enforce_hostname_verification" = false;
     };
   };
   services.caddy.virtualHosts."http://nixos-search.${myvars.domain}:${toString myvars.networking.caddyPort}" =
@@ -45,8 +221,95 @@
       tls = { };
       priority = 100; # Higher has greater proirity
     };
-    services.nixos-search_backend.loadBalancer.servers = [
-      { url = "http://127.0.0.1:${toString config.services.opensearch.settings."http.port"}"; }
-    ];
+    serversTransports.ignorecert.insecureSkipVerify = true;
+    services.nixos-search_backend.loadBalancer = {
+      serversTransport = "ignorecert";
+      servers = [ { url = "https://127.0.0.1:${toString config.services.opensearch.settings."http.port"}"; } ];
+    };
   };
+  sops.secrets.nixos-search_client_secret = {
+    sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
+    restartUnits = [ "opensearch.service" ];
+  };
+
+  # OIDC, https://docs.opensearch.org/latest/security/authentication-backends/openid-connect/
+  systemd.services.opensearch =
+    let
+      cfg = config.services.opensearch;
+    in
+    {
+      path = [ pkgs.opensearch-cli ];
+      serviceConfig = {
+        RuntimeDirectory = "opensearch";
+        RuntimeDirectoryMode = "0700";
+        LoadCredential = "nixos-search_client_secret:${config.sops.secrets.nixos-search_client_secret.path}";
+      };
+      preStart = lib.mkBefore ''
+        CERT_DIR="${cfg.dataDir}/config/security"
+        if [ ! -d $CERT_DIR ]; then
+          echo "Generating mandatory internal Transport TLS certificates..."
+          mkdir -p "$CERT_DIR"
+          cd "$CERT_DIR"
+
+          ${lib.getExe pkgs.openssl} req -x509 -newkey rsa:2048 -keyout ${
+            cfg.settings."plugins.security.ssl.transport.pemkey_filepath"
+          } -out ${cfg.settings."plugins.security.ssl.transport.pemcert_filepath"} -sha256 -days 3650 -nodes -subj '${
+            # TODO: Need reverse
+            builtins.replaceStrings [ "," ] [ "/" ]
+              "/${builtins.head config.services.opensearch.settings."plugins.security.authcz.admin_dn"}"
+          }'
+
+          chown -R opensearch:opensearch "$CERT_DIR"
+          chmod 600 "$CERT_DIR"/*.pem
+        fi
+      '';
+      # Override the default HTTP plain wait for OpenSearch finish script which cause infinite loop when SSL enabled
+      serviceConfig.ExecStartPost = lib.mkForce [
+        (pkgs.writeShellScript "opensearch-setup-security" ''
+          echo "Injecting OIDC secrets and applying OpenSearch security config..."
+
+          ${lib.concatLines (lib.mapAttrsToList (filename: drv: "cp ${drv} $RUNTIME_DIRECTORY/${filename}") sec_cfg)}
+
+          SECRET_VAL=$(cat $CREDENTIALS_DIRECTORY/nixos-search_client_secret)
+          # cp preserves the permission from /nix/store
+          chmod 600 "$RUNTIME_DIRECTORY/config.yml"
+          cat "$RUNTIME_DIRECTORY/config.yml" | ${pkgs.sd}/bin/sd "@OIDC_CLIENT_SECRET@" "$SECRET_VAL" | ${lib.getExe' pkgs.moreutils "sponge"} "$RUNTIME_DIRECTORY/config.yml"
+          echo "DEBUG: after subst"
+
+          # Apply the configuration to the OpenSearch index
+          export JAVA_HOME="${pkgs.jdk21_headless}"
+          # We cannot wait for opensearch start as without setup it will never complete start
+          while ! ${lib.getExe pkgs.bash} ${config.services.opensearch.package}/plugins/opensearch-security/tools/securityadmin.sh \
+              -cacert ${cfg.settings."plugins.security.ssl.transport.pemcert_filepath"} \
+              -cert ${cfg.settings."plugins.security.ssl.transport.pemcert_filepath"} \
+              -key ${cfg.settings."plugins.security.ssl.transport.pemkey_filepath"} \
+              -cd "$RUNTIME_DIRECTORY" \
+              -icl \
+              -nhnv \
+              -h ${config.services.opensearch.settings."network.host"} \
+              -p ${toString config.services.opensearch.settings."http.port"}; do
+            sleep 5
+          done
+
+          # Clean up securely
+          # shred -u "$RUNTIME_DIRECTORY/config.yml"
+          # rm -rf "$RUNTIME_DIRECTORY"
+        '')
+      ];
+    };
+  services.authelia.instances.main.settings.identity_providers.oidc.clients = [
+    {
+      client_id = "nixos-search";
+      client_name = "NixOS Search";
+      client_secret = "$pbkdf2-sha512$310000$ABGWSADqYSUeeF5ZDQlhNg$c4aee7uOMUwHOHv5myhhu.VNxwEBhBnNUAI1DjutkmICQ33W1QnJA0k8cQkpEOubCa5jGrFC.e6Un4QuKnu0YQ";
+      redirect_uris = [ "https://nixos-search.${myvars.domain}/auth/callback" ];
+      scopes = [
+        "openid"
+        "profile"
+        "email"
+        "groups"
+      ];
+      token_endpoint_auth_method = "client_secret_post";
+    }
+  ];
 }
