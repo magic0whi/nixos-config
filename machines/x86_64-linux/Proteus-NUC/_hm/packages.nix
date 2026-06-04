@@ -10,4 +10,5 @@
     gemini-cli
     witr
   ];
+  programs.obsidian.enable = true;
 }
