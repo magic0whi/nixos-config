@@ -1,3 +1,4 @@
+# TODO try yabai
 { config, ... }:
 {
   # Highlight focused windows with colored borders
