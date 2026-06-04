@@ -20,10 +20,8 @@
         nixfmt-rs
         nixd
       ]
-      ++ lib.optionals (!stdenv.hostPlatform.isRiscV64) [
-        nil
-        marksman
-      ]; # NOTE: Requires bootstrap GHC
+      # NOTE: Requires bootstrap GHC
+      ++ lib.optionals (!stdenv.hostPlatform.isRiscV64) [ marksman ];
     settings = {
       theme = if config.catppuccin.enable then "catppuccin-${myvars.catppuccin.flavor}" else "gruvbox"; # Disable if use catpuccin
       editor = {
