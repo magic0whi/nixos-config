@@ -53,14 +53,13 @@
 
   base = {
     nixpkgs_modules = map mylib.relativeToRoot [
-      "modules/secrets"
-
       # "modules/common/default.nix"
       "modules/common/easytier.nix"
       # "modules/common/fonts.nix"
       "modules/common/misc.nix"
       "modules/common/nix.nix"
       # "modules/common/packages.nix"
+      "modules/common/secrets.nix"
       "modules/common/shell.nix"
       # "modules/common/ssh.nix"
       "modules/common/tailscale.nix"
