@@ -4,9 +4,6 @@
   myvars,
   ...
 }:
-let
-  server_pub_crt = "${myvars.secretsDir}/proteus_server.pub.pem";
-in
 {
   networking.firewall = {
     allowedTCPPorts = [
@@ -52,38 +49,42 @@ in
       };
     };
     # Dynamic configuration defines routing rules, backend services, and certificate management.
-    dynamicConfigOptions = {
-      # Establish the default fallback certificate.
-      # This is critical for TCP clients (like `ldapsearch`) that do not send Server Name Indication (SNI) data during
-      # the TLS handshake. Without this, Traefik serves an untrusted dummy certificate.
-      tls.stores.default.defaultCertificate = {
-        certFile = server_pub_crt;
-        keyFile = config.sops.secrets."traefik_server.priv.pem".path;
-      };
-      # For other domains
-      # tls.certificates = [{certFile = server_pub_crt; keyFile = config.sops.secrets."traefik_server.priv.pem".path;}];
-      http = {
-        middlewares.authelia-auth.forwardAuth = {
-          # Tell Traefik where to ask whether a user is authenticated
-          address = lib.mkDefault "https://auth.${myvars.domain}/api/authz/forward-auth?authelia_url=https://auth.${myvars.domain}/";
-          trustForwardHeader = true;
-          authResponseHeaders = [
-            "Remote-User"
-            "Remote-Groups"
-            "Remote-Email"
-            "Remote-Name"
-          ];
+    dynamicConfigOptions =
+      let
+        server_pub_crt = "${myvars.secretsDir}/proteus_server.pub.pem";
+      in
+      {
+        # Establish the default fallback certificate.
+        # This is critical for TCP clients (like `ldapsearch`) that do not send Server Name Indication (SNI) data during
+        # the TLS handshake. Without this, Traefik serves an untrusted dummy certificate.
+        tls.stores.default.defaultCertificate = {
+          certFile = server_pub_crt;
+          keyFile = config.sops.secrets."traefik_server.priv.pem".path;
         };
-        routers = {
-          traefik-dashboard = {
-            # rule = "Host(`example.${myvars.domain}`)";
-            entryPoints = [ "websecure" ];
-            middlewares = [ "authelia-auth" ]; # `authelia-auth` Protect the dashboard
-            service = "api@internal";
-            tls = { }; # enables TLS using the default cert
+        # For other domains
+        # tls.certificates = [{certFile = server_pub_crt; keyFile = config.sops.secrets."traefik_server.priv.pem".path;}];
+        http = {
+          middlewares.authelia-auth.forwardAuth = {
+            # Tell Traefik where to ask whether a user is authenticated
+            address = lib.mkDefault "https://auth.${myvars.domain}/api/authz/forward-auth?authelia_url=https://auth.${myvars.domain}/";
+            trustForwardHeader = true;
+            authResponseHeaders = [
+              "Remote-User"
+              "Remote-Groups"
+              "Remote-Email"
+              "Remote-Name"
+            ];
+          };
+          routers = {
+            traefik-dashboard = {
+              # rule = "Host(`example.${myvars.domain}`)";
+              entryPoints = [ "websecure" ];
+              middlewares = [ "authelia-auth" ]; # `authelia-auth` Protect the dashboard
+              service = "api@internal";
+              tls = { }; # enables TLS using the default cert
+            };
           };
         };
       };
-    };
   };
 }
