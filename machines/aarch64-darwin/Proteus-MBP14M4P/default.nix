@@ -9,7 +9,6 @@
 let
   name = baseNameOf ./.;
   nixpkgs_modules = map mylib.relativeToRoot [
-    "modules/secrets"
     "modules/common"
     "modules/darwin"
   ];
