@@ -74,7 +74,7 @@
   ## END yazi.nix
   ## BEGIN catppuccin.nix
   catppuccin = {
-    # Enable Catppuccin globally
+    autoEnable = true; # Whether to enable all Catppuccin integrations by default
     enable = lib.mkDefault true;
     inherit (myvars.catppuccin) accent flavor;
   };
