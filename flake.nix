@@ -1,27 +1,26 @@
 {
   description = "Proteus' nix configuration for NixOS & nix-darwin";
   inputs = {
-    # Pinned as of 2026-05-04 17:55, branch: nixos-unstable
-    # nixpkgs.url = "github:NixOS/nixpkgs/15f4ee454b1dce334612fa6843b3e05cf546efab";
-    nixpkgs.url = "github:magic0whi/nixpkgs/main";
+    # Pinned as of 2026-06-05 18:10, branch: nixos-unstable
+    nixpkgs.url = "github:magic0whi/nixpkgs/nixos-unstable";
     # nixpkgs.url = "path:/home/proteus/Works/Reference/nixpkgs";
     # Pinned as of 2026-04-14 17:55, branch: nixos-unstable
     # nixpkgs-postgresql.url = "github:NixOS/nixpkgs/4c1018dae018162ec878d42fec712642d214fdfa";
-    # Pinned as of 2026-05-26 19:37, branch: master
+    # Pinned as of 2026-06-05 18:10, branch: master
     home-manager = {
-      url = "github:nix-community/home-manager/1a95e2efb477959b70b4a14c51035975c0481df6";
+      url = "github:nix-community/home-manager/447fd9ff62501dae7206dfe180ee89f8de27b7d5";
       # The `follows` keyword in inputs is used for inheritance.
       # Here, `inputs.nixpkgs` of home-manager is kept consistent with the
       # `inputs.nixpkgs` of the current flake, to avoid problems caused by
       # different versions of nixpkgs dependencies.
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Pinned as of 2026-04-07 06:58
+    # Pinned as of 2026-06-05 18:12
     lanzaboote = {
-      url = "github:nix-community/lanzaboote/v1.0.0";
+      url = "github:nix-community/lanzaboote/e780b8e19d405b6906d759d270bbc125d221e81a";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Pinned as of 2026-04-07 06:53
+    # Pinned as of 2026-06-05 18:13
     impermanence = {
       url = "github:nix-community/impermanence/7b1d382faf603b6d264f58627330f9faa5cba149";
       inputs = {
@@ -29,59 +28,58 @@
         home-manager.follows = "home-manager";
       };
     };
-    # Pinned as of 2026-04-07 06:54
+    # Pinned as of 2026-06-05 18:11
     nixpak = {
-      url = "github:nixpak/nixpak/4f8cbe437ba7e047ed4582b35b8140124b9562b5";
+      url = "github:nixpak/nixpak/ad5ac7d24a505db29671edadfe6a8f985aa6e94e";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Pinned as of 2026-04-14 10:53
+    # Pinned as of 2026-06-05 18:13
     sops-nix = {
-      url = "github:Mic92/sops-nix/d4971dd58c6627bfee52a1ad4237637c0a2fb0cd";
+      url = "github:Mic92/sops-nix/9ed65852b6257fbeae4355bc24ecfea307ca759a";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Pinned as of 2026-04-07 06:56
+    # Pinned as of 2026-06-05 18:14
     deploy-rs = {
-      # url = "github:serokell/deploy-rs/77c906c0ba56aabdbc72041bf9111b565cdd6171";
-      url = "github:magic0whi/deploy-rs/bb43e402c802e73bfce4b66a34db2c26bf31a127";
+      url = "github:magic0whi/deploy-rs/heitor-lassarote";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-compat.follows = "lanzaboote/pre-commit/flake-compat";
       };
     };
-    # Pinned as of 2026-05-04 15:06
+    # Pinned as of 2026-06-05 18:14
     nix-darwin = {
       url = "github:magic0whi/nix-darwin/main";
       # url = "path:/Users/proteus/Works/Reference/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Pinned as of 2026-05-27 00:24,
+    # Pinned as of 2026-06-05 18:14,
     catppuccin = {
-      url = "github:catppuccin/nix/823da4d4f1160d7ac395fe459a4e33d9dfe57bb2";
+      url = "github:catppuccin/nix/fd265813d18cc39bc0d27750c47a09766a535162";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Pinned as of 2026-04-07 06:59, tag v1.13.0
+    # Pinned as of 2026-06-05 18:15
     disko = {
-      url = "github:nix-community/disko/v1.13.0";
+      url = "github:nix-community/disko/115e5211780054d8a890b41f0b7734cafad54dfe";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Pinned as of 2026-05-31 19:34
+    # Pinned as of 2026-06-05 18:16
     nixos-hardware = {
-      url = "github:NixOS/nixos-hardware/b76b5639c0593e0aeb0b5879ad62d4b30596c144";
+      url = "github:NixOS/nixos-hardware/4ed851c979641e28597a05086332d75cdc9e395f";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Pinned as of 2026-05-04 18:35, tag: 2026.03.05
+    # Pinned as of 2026-06-05 18:16
     i915-sriov-dkms = {
-      url = "github:strongtz/i915-sriov-dkms/2026.05.03";
+      url = "github:strongtz/i915-sriov-dkms/2421d3ff8c27a967ffc2c6a1d19e0f3790ace5a0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Pinned as of 2026-05-16 00:09
+    # Pinned as of 2026-06-05 18:17
     treefmt-nix = {
-      url = "github:numtide/treefmt-nix/790751ff7fd3801feeaf96d7dc416a8d581265ba";
+      url = "github:numtide/treefmt-nix/db947814a175b7ca6ded66e21383d938df01c227";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Pinned as of 2026-06-05 17:31
+    # Pinned as of 2026-06-05 18:17
     niks3 = {
-      url = "github:Mic92/niks3/v1.6.0";
+      url = "github:Mic92/niks3/c9a54708e881d51a76309168c5cda516bb2daeb0";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         treefmt-nix.follows = "treefmt-nix";
@@ -90,14 +88,19 @@
     # Pinned as of 2026-06-05 17:32
     flake-parts.url = "github:hercules-ci/flake-parts/f7c1a2d347e4c52d5fb8d10cb4d94b5884e546fb";
     # Pinned as of 2026-06-05 17:32
-    lix-module = {
-      url = "https://git.lix.systems/lix-project/nixos-module/archive/1688100bba140492658d597f6b307c327f35c780.tar.gz";
+    lix = {
+      url = "https://git.lix.systems/lix-project/lix/archive/c13ca9adcfb39914efcb88e18c628e95e2ba51e9.tar.gz";
       inputs = {
         nixpkgs.follows = "nixpkgs";
-        lix = {
-          url = "https://git.lix.systems/lix-project/lix/archive/2.95.3.tar.gz";
-          inputs.nixpkgs.follows = "nixpkgs";
-        };
+        nix_2_18.inputs.nixpkgs.follows = "nixpkgs";
+      };
+    };
+    lix-module = {
+      url = "https://git.lix.systems/lix-project/nixos-module/archive/727d859b6f5f3289ce49fe26146b3f006387d457.tar.gz";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        lix.follows = "lix";
+        flake-utils.inputs.systems.follows = "deploy-rs/utils/systems";
       };
     };
   };
