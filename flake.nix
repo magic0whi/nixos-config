@@ -86,6 +86,16 @@
       };
     };
     flake-parts.url = "github:hercules-ci/flake-parts/f7c1a2d347e4c52d5fb8d10cb4d94b5884e546fb";
+    lix-module = {
+      url = "https://git.lix.systems/lix-project/nixos-module/archive/727d859b6f5f3289ce49fe26146b3f006387d457.tar.gz";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        lix = {
+          url = "https://git.lix.systems/lix-project/lix/archive/2.95.3.tar.gz";
+          inputs.nixpkgs.follows = "nixpkgs";
+        };
+      };
+    };
   };
   outputs =
     inputs:
@@ -97,9 +107,10 @@
         "riscv64-linux"
       ];
       imports = [
-        ./main.nix
         ./checks.nix
         ./dev-shells.nix
+        ./main.nix
+        ./module-args.nix
         ./treefmt.nix
       ];
     };

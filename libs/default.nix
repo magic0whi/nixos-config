@@ -119,14 +119,15 @@ in
       }:
       let
         inherit (inputs)
-          home-manager
-          impermanence
-          lanzaboote
-          sops-nix
           catppuccin
           disko
+          home-manager
           i915-sriov-dkms
+          impermanence
+          lanzaboote
+          lix-module
           niks3
+          sops-nix
           ;
         specialArgs = inputs // {
           inherit machineConfigs mylib myvars;
@@ -140,17 +141,20 @@ in
           nixpkgs_modules
           ++ (
             if pkgs.stdenv.isDarwin then
-              [ sops-nix.darwinModules.sops ]
+              [
+                lix-module.darwinModules.lixFromNixpkgs
+                sops-nix.darwinModules.sops
+              ]
             else
               [
-                catppuccin.nixosModules.catppuccin
                 disko.nixosModules.disko
                 i915-sriov-dkms.nixosModules.default
-                lanzaboote.nixosModules.lanzaboote
-                sops-nix.nixosModules.sops
                 impermanence.nixosModules.impermanence
+                lanzaboote.nixosModules.lanzaboote
+                lix-module.nixosModules.default
                 niks3.nixosModules.niks3
                 niks3.nixosModules.niks3-auto-upload
+                sops-nix.nixosModules.sops
               ]
           )
           ++ [
