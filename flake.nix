@@ -41,7 +41,8 @@
     };
     # Pinned as of 2026-04-07 06:56
     deploy-rs = {
-      url = "github:serokell/deploy-rs/77c906c0ba56aabdbc72041bf9111b565cdd6171";
+      # url = "github:serokell/deploy-rs/77c906c0ba56aabdbc72041bf9111b565cdd6171";
+      url = "github:magic0whi/deploy-rs/bb43e402c802e73bfce4b66a34db2c26bf31a127";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-compat.follows = "lanzaboote/pre-commit/flake-compat";
@@ -78,6 +79,7 @@
       url = "github:numtide/treefmt-nix/790751ff7fd3801feeaf96d7dc416a8d581265ba";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # Pinned as of 2026-06-05 17:31
     niks3 = {
       url = "github:Mic92/niks3/v1.6.0";
       inputs = {
@@ -85,9 +87,11 @@
         treefmt-nix.follows = "treefmt-nix";
       };
     };
+    # Pinned as of 2026-06-05 17:32
     flake-parts.url = "github:hercules-ci/flake-parts/f7c1a2d347e4c52d5fb8d10cb4d94b5884e546fb";
+    # Pinned as of 2026-06-05 17:32
     lix-module = {
-      url = "https://git.lix.systems/lix-project/nixos-module/archive/727d859b6f5f3289ce49fe26146b3f006387d457.tar.gz";
+      url = "https://git.lix.systems/lix-project/nixos-module/archive/1688100bba140492658d597f6b307c327f35c780.tar.gz";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         lix = {
