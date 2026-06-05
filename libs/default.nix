@@ -175,7 +175,7 @@ in
                 sops-nix.homeManagerModules.sops
               ];
               home-manager.users."${myvars.username}".imports =
-                hm_modules ++ lib.optional (builtins.pathExists (machine_path + "/_hm")) (machine_path + "/_hm");
+                hm_modules ++ lib.optional (builtins.pathExists "${machine_path}/_hm") "${machine_path}/_hm";
             }
           ]);
       };
