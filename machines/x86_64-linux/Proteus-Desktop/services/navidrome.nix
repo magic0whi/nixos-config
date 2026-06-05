@@ -11,7 +11,7 @@
     settings = {
       BaseUrl = "https://navidrome.${myvars.domain}";
       # MusicFolder = config.home-manager.users.${myvars.username}.xdg.userDirs.music;
-      MusicFolder = myvars.storagePath;
+      MusicFolder = "${myvars.storagePath}/share/Music";
       ExtAuth = {
         TrustedSources = "127.0.0.1/32,::1/128";
         LogoutURL = "https://auth.${myvars.domain}/logout?rd=https://navidrome.${myvars.domain}";
