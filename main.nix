@@ -62,10 +62,10 @@ in
       debug = {
         inherit
           inputs
-          gen_args
           nixos_systems
           darwin_systems
           ;
+        args = gen_args system;
       };
       packages = nixos_systems.${system}.packages or { };
       # Currently deploy-rs check broken on MacOS/riscv64-linux

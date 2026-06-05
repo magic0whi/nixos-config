@@ -7,8 +7,9 @@
 }:
 let
   restartUnits = map (name: "authelia-${name}.service") (builtins.attrNames config.services.authelia.instances);
+  # host services that requires OIDC
   allowed_hosts = lib.unique (
-    lib.foldl' (acc: cn: acc ++ lib.singleton (myvars.networking.findHost cn))
+    builtins.foldl' (acc: cn: acc ++ lib.singleton (myvars.networking.findHost cn))
       [ ]
       [
         "git"

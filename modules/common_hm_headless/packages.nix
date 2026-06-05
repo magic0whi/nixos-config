@@ -94,7 +94,7 @@
     )
     ++ (
       if pkgs.stdenv.hostPlatform.isRiscV64 then
-        [ pkgs.pkgs.deploy-rs ]
+        [ pkgs.deploy-rs ]
       else
         [ deploy-rs.packages.${pkgs.stdenv.hostPlatform.system}.deploy-rs ]
     );

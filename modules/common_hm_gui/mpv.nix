@@ -110,7 +110,7 @@
       Low = {
         # Currently mpv.nix doesn't support hm.dag,
         # see https://github.com/nix-community/home-manager/blob/master/modules/programs/mpv.nix
-        "\#\nglsl-shaders-clr\n\#" = "Placeholder";
+        "#\nglsl-shaders-clr\n#" = "Placeholder";
         profile-desc = "240p/360p, enable scalling twice to achieve 4x";
         profile-cond = "p[\"video-params/w\"]<=678 and p[\"video-params/h\"]<=381"; # 1080 * 1.414213 / 4 = 381.8
         profile = "common";
@@ -121,7 +121,7 @@
         ];
       };
       SD = {
-        "\#\nglsl-shaders-clr\n\#" = "Placeholder";
+        "#\nglsl-shaders-clr\n#" = "Placeholder";
         profile-desc = "480p/576p";
         # 1080 / 16 * 9 = 607.5
         profile-cond =
@@ -135,7 +135,7 @@
       };
       HD30 = {
         # 1080 * 1.414213 / 2 = 763.7
-        "\#\nglsl-shaders-clr\n\#" = "Placeholder";
+        "#\nglsl-shaders-clr\n#" = "Placeholder";
         profile-desc = "640p/720p 30fps";
         profile-cond =
           "(p[\"video-params/w\"]<1358 and p[\"video-params/h\"]<764)"
@@ -148,7 +148,7 @@
         ];
       };
       HD60 = {
-        "\#\nglsl-shaders-clr\n\#" = "Placeholder";
+        "#\nglsl-shaders-clr\n#" = "Placeholder";
         profile-desc = "640p/720p 60fps";
         profile-cond =
           "(p[\"video-params/w\"]<1358 and p[\"video-params/h\"]<764)"
@@ -165,12 +165,12 @@
         sigmoid-upscaling = false;
       };
       KrigBilateral = {
-        "\#\nglsl-shaders-clr\n\#" = "Placeholder";
+        "#\nglsl-shaders-clr\n#" = "Placeholder";
         profile = "common";
         glsl-shaders-append = "${pkgs.mpv-shim-default-shaders}/share/mpv-shim-default-shaders/shaders/KrigBilateral.glsl";
       };
       FHD = {
-        "\#\nglsl-shaders-clr\n\#" = "Placeholder";
+        "#\nglsl-shaders-clr\n#" = "Placeholder";
         profile-desc = "1080p";
         profile-cond =
           "(p[\"video-params/w\"]<=1920 and p[\"video-params/h\"]<=1080)"
@@ -178,7 +178,7 @@
         profile = "KrigBilateral";
       };
       UHD30 = {
-        "\#\nglsl-shaders-clr\n\#" = "Placeholder";
+        "#\nglsl-shaders-clr\n#" = "Placeholder";
         profile-desc = "4k 30fps: use SSIM to downscale";
         profile-cond = "(p[\"video-params/w\"]>2560 or p[\"video-params/h\"]>1440) and p[\"estimated-vf-fps\"]<31";
         profile = "common";
@@ -190,7 +190,7 @@
         linear-downscaling = false;
       };
       UHD60 = {
-        "\#\nglsl-shaders-clr\n\#" = "Placeholder";
+        "#\nglsl-shaders-clr\n#" = "Placeholder";
         profile-desc = "4k high fps: use w.o. any glsl-shaders";
         profile-cond = "(p[\"video-params/w\"]>1920 or p[\"video-params/h\"]>1080) and p[\"estimated-vf-fps\"]>=31";
         profile = "common";
