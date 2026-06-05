@@ -1,1 +1,0 @@
-../Proteus-NixOS-0/default.nix
