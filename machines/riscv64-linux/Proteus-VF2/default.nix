@@ -10,8 +10,8 @@ let
   name = baseNameOf ./.;
   nixpkgs_modules = map mylib.relativeToRoot [
     # "modules/common/easytier.nix"
-    "modules/common/misc.nix"
-    "modules/common/nix.nix"
+    # "modules/common/misc.nix"
+    # "modules/common/nix.nix"
     # "modules/common/secrets.nix"
     # "modules/common/shell.nix"
     # "modules/common/ssh.nix"
