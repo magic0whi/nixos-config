@@ -51,7 +51,6 @@
         # The substituter will be appended to the default substituters when fetching packages.
         extra-substituters = [
           "https://nix-cache.s3-pub.${myvars.domain}"
-          "https://cache.lix.systems/nix-cache-info"
           "https://hyprland.cachix.org"
         ];
         extra-trusted-public-keys = [
