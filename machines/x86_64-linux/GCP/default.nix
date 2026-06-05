@@ -6,10 +6,7 @@
   ...
 }:
 let
-  inherit (myvars.base)
-    nixpkgs_modules
-    # hm_modules
-    ;
+  nixpkgs_modules = myvars.base.nixpkgs_modules ++ [ ./_common ];
   names = map (p: baseNameOf p) (mylib.scanPath ./.);
   nixos_configurations =
     let

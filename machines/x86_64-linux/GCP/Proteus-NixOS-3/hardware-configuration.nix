@@ -1,1 +1,0 @@
-../Proteus-NixOS-0/hardware-configuration.nix
