@@ -142,7 +142,7 @@ in
           ++ (
             if pkgs.stdenv.isDarwin then
               [
-                lix-module.darwinModules.lixFromNixpkgs
+                lix-module.darwinModules.default
                 sops-nix.darwinModules.sops
               ]
             else
