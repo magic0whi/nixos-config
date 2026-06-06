@@ -37,7 +37,9 @@ jobs:
 
       - name: Run nix flake check
         run: |
-          nix eval .#checks
+          nix eval .#checks.${{ matrix.system }} --apply builtins.attrNames --json \
+            | jq -r '.[] | ".#checks.${{ matrix.system }}.\(.)"' \
+            | xargs nix build --no-link
 
   check-macos:
     name: Run Flake checks (aarch64-darwin)
