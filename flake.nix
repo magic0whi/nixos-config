@@ -90,10 +90,7 @@
     # Pinned as of 2026-06-05 17:32
     lix = {
       url = "https://git.lix.systems/lix-project/lix/archive/c13ca9adcfb39914efcb88e18c628e95e2ba51e9.tar.gz";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        nix_2_18.inputs.nixpkgs.follows = "nixpkgs";
-      };
+      inputs.nixpkgs.follows = "nixpkgs";
     };
     lix-module = {
       url = "https://git.lix.systems/lix-project/nixos-module/archive/727d859b6f5f3289ce49fe26146b3f006387d457.tar.gz";
