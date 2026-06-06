@@ -19,7 +19,15 @@
               "-S4096"
               "-nBOOT"
             ];
-            mountOptions = [ "umask=0077" ];
+            mountOptions = [
+              "umask=0077"
+              "utf8" # supersedes iocharset
+              # "iocharset=utf8" # Prevents character encoding issues
+              # Keeps long filenames intact while preserving short-name compatibility for picky UEFI firmware or Windows dual-boot tools
+              "shortname=mixed"
+              # "errors=remount-ro"
+              "discard"
+            ];
           };
         };
         root = {
@@ -39,6 +47,8 @@
               "/nix" = {
                 mountpoint = "/nix";
                 mountOptions = [
+                  "nodatacow"
+                  "discard=async"
                   "compress=zstd"
                   "noatime"
                 ];
@@ -46,6 +56,7 @@
               "/home" = {
                 mountpoint = "/home";
                 mountOptions = [
+                  "discard=async"
                   "compress=zstd"
                   "noatime"
                 ];
@@ -54,6 +65,7 @@
                 # TODO rename
                 mountpoint = "/persistent";
                 mountOptions = [
+                  "discard=async"
                   "compress=zstd"
                   "noatime"
                 ];
@@ -62,7 +74,10 @@
               "@swap" = {
                 # TODO rename
                 mountpoint = "/.swapvol";
-                mountOptions = [ "noatime" ];
+                mountOptions = [
+                  "discard=async"
+                  "noatime"
+                ];
                 swap = {
                   swapfile.size = "2G";
                   # swapfile2.size = "20M";

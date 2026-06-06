@@ -30,7 +30,15 @@
                   "-S4096"
                   "-nBOOT"
                 ];
-                mountOptions = [ "umask=0077" ];
+                mountOptions = [
+                  "umask=0077"
+                  "utf8" # supersedes iocharset
+                  # "iocharset=utf8" # Prevents character encoding issues
+                  # Keeps long filenames intact while preserving short-name compatibility for picky UEFI firmware or Windows dual-boot tools
+                  "shortname=mixed"
+                  # "errors=remount-ro"
+                  "discard"
+                ];
               };
             };
             root = {
@@ -46,6 +54,7 @@
                   "/rootfs" = {
                     mountpoint = "/";
                     mountOptions = [
+                      "discard=async"
                       "compress=zstd"
                       "noatime"
                     ];
@@ -53,6 +62,7 @@
                   "/nix" = {
                     mountpoint = "/nix";
                     mountOptions = [
+                      "discard=async"
                       "compress=zstd"
                       "noatime"
                     ];
@@ -60,18 +70,26 @@
                   "/home" = {
                     mountpoint = "/home";
                     mountOptions = [
+                      "discard=async"
                       "compress=zstd"
                       "noatime"
                     ];
                   };
                   "/persistent" = {
                     mountpoint = "/persistent";
-                    mountOptions = [ "compress=zstd" ];
+                    mountOptions = [
+                      "discard=async"
+                      "compress=zstd"
+                    ];
                   };
                   "/swap" = {
                     mountpoint = "/.swapvol";
                     swap.hibernate-test.size = "8G";
-                    mountOptions = [ "noatime" ];
+                    mountOptions = [
+                      "nodatacow"
+                      "discard=async"
+                      "noatime"
+                    ];
                   };
                 };
               };
