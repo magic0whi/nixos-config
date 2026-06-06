@@ -19,20 +19,21 @@ jobs:
         uses: actions/checkout@v6.0.2
 
       - name: Install Lix
+        if: github.server_url == 'https://github.com'
+        uses: samueldr/lix-gha-installer-action@f5e94192f565f53d84f41a056956dc0d3183b343
+
+      - name: Install Lix (Single User)
+        if: github.server_url != 'https://github.com'
         uses: canidae-solutions/lix-quick-install-action@v4.0.1
         with:
           github_access_token: ${{ secrets.ACCESS_TOKEN_GITHUB }}
+          lix_conf: |
+            extra-substituters = https://nix-cache.s3-pub.proteus.eu.org/
+            extra-trusted-public-keys = s3.proteus.eu.org-1:IxrRwk4uC5ittHeG9menkuajABnrX9cboEWwZz/m4+E=
 
       - name: Magic Nix Cache
         if: github.server_url == 'https://github.com'
         uses: DeterminateSystems/magic-nix-cache-action@v13
-
-      - name: Proteus' Nix Cache
-        if: github.server_url != 'https://github.com'
-        run: |
-          sed -i -e 's|^\(extra-substituters\ = \)|\1https://nix-cache.s3-pub.proteus.eu.org/ |' \
-          -e 's|^\(extra-trusted-public-keys\ =\ \)|\1s3.proteus.eu.org-1:IxrRwk4uC5ittHeG9menkuajABnrX9cboEWwZz/m4+E= |' \
-          /etc/nix/nix.conf
 
       - name: Run nix flake check
         run: |

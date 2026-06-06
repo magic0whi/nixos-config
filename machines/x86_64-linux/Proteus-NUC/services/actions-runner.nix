@@ -34,25 +34,26 @@ in
       };
     };
 
-  systemd.services =
-    # Wait for LDAP Online
-    (
-      lib.genAttrs clean_runner_units (_: {
-        serviceConfig.ExecStartPre = lib.mkAfter [
-          (pkgs.writeShellScript "wait-for-forgejo" ''
-            set -eufo pipefail
+  systemd.services = lib.genAttrs clean_runner_units (_: {
 
-            echo "Waiting for Forgejo to be online..."
-            # Retry until Forgejo reports status=pass
-            while [ "$(${lib.getExe pkgs.curl} -sSf https://git.${myvars.domain}/api/healthz | ${lib.getExe pkgs.jq} -r '.status')" != "pass" ]; do
-              sleep 1
-            done
+    serviceConfig = {
+      SupplementaryGroups = [ "kvm" ];
+      ExecStartPre = lib.mkAfter [
+        # Wait for LDAP Online
+        (pkgs.writeShellScript "wait-for-forgejo" ''
+          set -eufo pipefail
 
-            echo "Forgejo is online, proceeding with runner startup."
-          '')
-        ];
-      })
-    );
+          echo "Waiting for Forgejo to be online..."
+          # Retry until Forgejo reports status=pass
+          while [ "$(${lib.getExe pkgs.curl} -sSf https://git.${myvars.domain}/api/healthz | ${lib.getExe pkgs.jq} -r '.status')" != "pass" ]; do
+            sleep 1
+          done
+
+          echo "Forgejo is online, proceeding with runner startup."
+        '')
+      ];
+    };
+  });
 
   # Local Action Runner connecting to Forgejo instance
   # Docker is required to execute Docker-based action labels
@@ -64,9 +65,9 @@ in
         url = "https://git.${myvars.domain}";
         tokenFile = config.sops.templates."forgejo_runner_token.env".path;
         labels = [
-          "debian-latest:docker://node:20-bookworm"
+          # "debian-latest:docker://node:20-bookworm"
           # Fake the ubuntu name, because node provides no ubuntu builds
-          "ubuntu-latest:docker://node:20-bookworm"
+          "ubuntu-latest:docker://catthehacker/ubuntu:runner-latest"
           # "ubuntu-24.04-arm:docker://node:20-bookworm"
         ];
         # https://gitea.com/gitea/act_runner/src/commit/40dcee0991c3bd33b657bb77aa1f2f46d69cc0e2/internal/pkg/config/config.example.yaml
@@ -75,7 +76,11 @@ in
           runner.capacity = 3; # Set to your desired number of simultaneous jobs
           runner.envs.NODE_EXTRA_CA_CERTS = "/etc/ssl/certs/ca-certificates.crt";
           container = {
-            options = "-v ${config.security.pki.caBundle}:/etc/ssl/certs/ca-certificates.crt:ro";
+            options = builtins.concatStringsSep " " [
+              "-v ${config.security.pki.caBundle}:/etc/ssl/certs/ca-certificates.crt:ro"
+              "--security-opt seccomp=unconfined"
+              "--device=/dev/kvm"
+            ];
             valid_volumes = [ config.security.pki.caBundle ];
             force_pull = false;
           };
