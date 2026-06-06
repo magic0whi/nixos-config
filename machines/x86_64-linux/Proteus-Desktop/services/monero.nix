@@ -19,6 +19,6 @@
     '';
     prune = true;
     rpc.address = "0.0.0.0";
-    rpc.restricted = true;
+    rpc.restricted = true; # restrict RPC to view only commands (`restricted-rpc`)
   };
 }
