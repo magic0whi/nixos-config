@@ -18,11 +18,10 @@ jobs:
       - name: Set up Git repository
         uses: actions/checkout@v6.0.2
 
-      - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@v22
+      - name: Install Lix
+        uses: samueldr/lix-gha-installer-action@f5e94192f565f53d84f41a056956dc0d3183b343
         with:
-          github-server-url: https://github.com
-          github-token: ${{ secrets.ACCESS_TOKEN_GITHUB }}
+          github_access_token: ${{ secrets.ACCESS_TOKEN_GITHUB }}
 
       - name: Magic Nix Cache
         if: github.server_url == 'https://github.com'
@@ -37,11 +36,7 @@ jobs:
 
       - name: Run nix flake check
         run: |
-          nix run \
-            --inputs-from . \
-            nixpkgs#nix-fast-build -- \
-            --skip-cached --no-nom \
-            --flake "./#checks.${{ matrix.system }}.mylib"
+          nix eval .#checks
 
   check-macos:
     name: Run Flake checks (aarch64-darwin)
