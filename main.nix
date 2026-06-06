@@ -69,6 +69,10 @@ in
       };
       packages = nixos_systems.${system}.packages or { };
       # Currently deploy-rs check broken on MacOS/riscv64-linux
-      checks = if system != "riscv64-linux" then (inputs.deploy-rs.lib.${system}.deployChecks self.deploy) else { };
+      checks =
+        if (system != "riscv64-linux") && (system != "aarch64-darwin") then
+          (inputs.deploy-rs.lib.${system}.deployChecks self.deploy)
+        else
+          { };
     };
 }
