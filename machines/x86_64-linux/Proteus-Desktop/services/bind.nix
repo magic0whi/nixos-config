@@ -53,7 +53,11 @@
       # Which of my doors are they knocking on?
       allow-proxy-on { 127.0.0.1; ::1; };
 
+      # Do not allow access to cache
+      allow-query-cache { none; };
+      # Who can request zone transfers (full zone dump)
       allow-transfer { none; };
+      # Who can dynamic DNS updates (add/remove records on the fly).
       allow-update { none; };
       server-id none;
 
