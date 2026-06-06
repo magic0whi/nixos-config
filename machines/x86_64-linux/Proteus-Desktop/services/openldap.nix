@@ -71,7 +71,7 @@ in
             olcSuffix = base_dn;
             olcRootDN = manager_dn;
             # TIP: To generate password digest
-            # `slappasswd -o module-load=argon2 -h '{ARGON2}'`
+            # `nix shell nixpkgs#openldap -c slappasswd -o module-load=argon2 -h '{ARGON2}'`
             # or `slappasswd -o module-load=pw-pbkdf2.la -h '{PBKDF2-SHA512}'``
             # To verify:
             # `systemd-ask-password -n | nix run nixpkgs#libargon2 -- "$(echo -n 'jIm9hSEdZYbgTAjqXx85IQ' | base64 -d)" -id -v 13 -m 16 -t 2 -p 1`
@@ -163,6 +163,19 @@ in
         homeDirectory: ${config.users.users.${myvars.username}.home}
         description: Primary personal account
         userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$arVKdAqitf39aAVGaLS5Qw$AtzBSJDhT9vsiLg6ZhZDuHxH5euYqlVmGSE+EWjlxqs
+
+        dn: uid=father,ou=People,${base_dn}
+        objectClass: top
+        objectClass: person
+        objectClass: organizationalPerson
+        objectClass: inetOrgPerson
+        uid: father
+        cn: Father Family
+        sn: Family
+        givenName: Father
+        mail: father@${myvars.domain}
+        description: Account for self-hosted services
+        userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$Qy12Udyu8BwhldnhxmpVsw$xk5lHJKFZtLYFUICPiDu2DhPL5vgZFRe9SIrt8dSw8Q
 
         dn: uid=atuin,ou=ServiceAccounts,${base_dn}
         objectClass: top

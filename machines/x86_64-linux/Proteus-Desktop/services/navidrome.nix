@@ -12,10 +12,10 @@
       BaseUrl = "https://navidrome.${myvars.domain}";
       # MusicFolder = config.home-manager.users.${myvars.username}.xdg.userDirs.music;
       MusicFolder = "${myvars.storagePath}/share/Music";
-      ExtAuth = {
-        TrustedSources = "127.0.0.1/32,::1/128";
-        LogoutURL = "https://auth.${myvars.domain}/logout?rd=https://navidrome.${myvars.domain}";
-      };
+      # ExtAuth = {
+      #   TrustedSources = "127.0.0.1/32,::1/128";
+      #   LogoutURL = "https://auth.${myvars.domain}/logout?rd=https://navidrome.${myvars.domain}";
+      # };
     };
   };
   # If use ~/Music
@@ -28,7 +28,7 @@
       navidrome = {
         rule = "Host(`navidrome.${myvars.domain}`)";
         entryPoints = [ "websecure" ];
-        middlewares = [ "authelia-auth" ];
+        # middlewares = [ "authelia-auth" ]; # OIDC doesn't play well for clients
         service = "navidrome";
         tls = { };
       };
