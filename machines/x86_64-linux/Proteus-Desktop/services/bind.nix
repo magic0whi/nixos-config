@@ -19,6 +19,7 @@
     # directory = "/srv/bind";
 
     # Access-control of what networks are allowed for recursive queries
+    cacheNetworks = [ "none" ]; # Do not allow access to cache
     # cacheNetworks = [
     #   "127.0.0.0/8" "::1/128"
     #   "100.64.0.0/10" "fd7a:115c:a1e0::/48"
