@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v6.0.2
 
       - name: Enable unprivileged user namespaces
-        if: github.server_url == 'https://github.com'
+        if: github.server_url == 'https://github.com' && matrix.system != 'aarch64-darwin'
         run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
 
       - name: Install Lix
