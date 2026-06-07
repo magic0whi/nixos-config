@@ -37,8 +37,9 @@ jobs:
 
       - name: Run nix flake check
         run: |
+          # Disable deploy-* since they are very huge and prone to exhaust rate limit
           nix eval .#checks.${{ matrix.system }} --apply builtins.attrNames --json \
-            | jq -r '.[] | ".#checks.${{ matrix.system }}.\(.)"' \
+            | jq -r '.[] | select(startswith("deploy-") | not) | ".#checks.${{ matrix.system }}.\(.)"' \
             | xargs nix build --no-link
 
   check-macos:
