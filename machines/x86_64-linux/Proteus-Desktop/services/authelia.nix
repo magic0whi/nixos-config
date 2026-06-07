@@ -176,7 +176,7 @@ in
             # homeDirectory = {attribute = "home_directory";};
           };
           # https://www.authelia.com/integration/openid-connect/openid-connect-1.0-claims/#restore-functionality-prior-to-claims-parameter
-          niks3_legacy.id_token = [
+          opensearch_policy.id_token = [
             "preferred_username"
             "name"
             "email"
@@ -319,6 +319,7 @@ in
               "groups"
             ];
             token_endpoint_auth_method = "client_secret_post";
+            claims_policy = "opensearch_policy"; # https://github.com/opensearch-project/security/issues/2040
           }
         ];
       };

@@ -57,7 +57,9 @@ let
                       client_secret = "@OIDC_CLIENT_SECRET@"; # Placeholder for `sd`
                       openid_connect_idp = {
                         enable_ssl = true;
-                        pemtrustedcas_filepath = config.security.pki.caBundle;
+                        # trust_all = true;
+                        verify_hostnames = false;
+                        pemtrustedcas_filepath = "${myvars.secretsDir}/proteus_ca.pub.pem";
                       };
                     };
                   };
