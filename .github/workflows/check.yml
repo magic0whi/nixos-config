@@ -18,6 +18,10 @@ jobs:
       - name: Set up Git repository
         uses: actions/checkout@v6.0.2
 
+      - name: Enable unprivileged user namespaces
+        if: github.server_url == 'https://github.com'
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+
       - name: Install Lix
         if: github.server_url == 'https://github.com'
         uses: samueldr/lix-gha-installer-action@f5e94192f565f53d84f41a056956dc0d3183b343
