@@ -72,7 +72,12 @@ let
         };
         # Define your internal HTTP Basic Auth user here
         aWVSALXpZv = {
+          # mkpasswd -m bcrypt
           hash = "$2y$12$VstyWtAiIsDOOQJYhbgJju37W12oyOPRL7iI4XFUn.7WSGZ83d1JW";
+          reserved = false;
+        };
+        flake-info = {
+          hash = "$2b$05$Jf88fBHj.b3me96NjfKdCeoqnWpkX8UJ5HNEEJx6xfZA82j98vWkG";
           reserved = false;
         };
       };
@@ -91,6 +96,7 @@ let
               allowed_actions = [
                 "indices:monitor/settings/get"
                 "indices:monitor/stats"
+                "indices:admin/aliases/get"
               ];
             }
           ];
@@ -98,6 +104,38 @@ let
             "cluster:monitor/main"
             "cluster:monitor/state"
             "cluster:monitor/health"
+          ];
+          tenant_permissions = [ ];
+        };
+        flake-info = {
+          reserved = false;
+          hidden = false;
+          index_permissions = [
+            {
+              index_patterns = [
+                "nixos-*"
+                "*-nixos-*"
+                "latest-*"
+              ];
+              allowed_actions = [
+                # Required for push
+                "indices:data/read/*"
+                # Required to index new documents
+                "indices:data/write/*"
+                # Required for ExistsStrategy::Recreate
+                "indices:admin/create"
+                "indices:admin/delete"
+                "indices:admin/get" # Required for check_index (HEAD request)
+                # Required for write_alias
+                "indices:admin/aliases/get"
+                "indices:admin/aliases/delete"
+                "indices:admin/aliases/put"
+              ];
+            }
+          ];
+          cluster_permissions = [
+            "cluster:monitor/main"
+            "indices:data/write/bulk"
           ];
           tenant_permissions = [ ];
         };
@@ -139,6 +177,7 @@ let
             all_access = [ myvars.username ];
             metrics = [ "aWVSALXpZv" ];
             readall = [ "aWVSALXpZv" ];
+            flake-info = [ "flake-info" ];
           }
         )
       );
