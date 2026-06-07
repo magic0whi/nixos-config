@@ -115,9 +115,12 @@
       language-server = {
         yaml-language-server.config.yaml.format.singleQuote = true;
         ltex = {
-          command = "ltex-ls";
+          command = "ltex-ls-plus";
           config.ltex = {
-            language = "en-US";
+            # language = "zh-CN"; # default "en-US"
+            hiddenFalsePositives.en-US = [
+              ''{"rule": "UPPERCASE_SENTENCE_START", "sentence": "^[a-z][a-z0-9-_]+$"}''
+            ];
             dictionary = fromTOML (builtins.readFile "${myvars.secretsDir}/ltex_dict.toml");
           };
         };
