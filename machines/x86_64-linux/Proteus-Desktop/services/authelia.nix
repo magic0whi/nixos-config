@@ -76,7 +76,13 @@ in
       log.level = "info";
       theme = "dark";
       default_2fa_method = "totp";
-      server.address = "tcp://127.0.0.1:9092"; # Use the new server.address syntax required by the module
+      server = {
+        address = "tcp://127.0.0.1:9092"; # Use the new server.address syntax required by the module
+        timeouts = {
+          read = "120s";
+          write = "120s";
+        };
+      };
       session.cookies = [
         {
           # This allows the login cookie to work across all your subdomains
@@ -302,10 +308,10 @@ in
             audience = [ "niks3" ]; # Whitelist the requested audience
           }
           {
-            client_id = "nixos-search";
-            client_name = "NixOS Search";
+            client_id = "opensearch-dashboards";
+            client_name = "OpenSearch Dashboards";
             client_secret = "$pbkdf2-sha512$310000$ABGWSADqYSUeeF5ZDQlhNg$c4aee7uOMUwHOHv5myhhu.VNxwEBhBnNUAI1DjutkmICQ33W1QnJA0k8cQkpEOubCa5jGrFC.e6Un4QuKnu0YQ";
-            redirect_uris = [ "https://nixos-search.${myvars.domain}/auth/callback" ];
+            redirect_uris = [ "https://opensearch-dashboards.${myvars.domain}/auth/openid/login" ];
             scopes = [
               "openid"
               "profile"

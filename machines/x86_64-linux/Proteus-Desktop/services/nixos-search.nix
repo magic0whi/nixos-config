@@ -47,14 +47,18 @@ let
                   order = 1;
                   http_authenticator = {
                     type = "openid";
-                    challenge = true;
+                    challenge = false;
                     config = {
                       subject_key = "preferred_username";
                       roles_key = "groups";
                       openid_connect_url = "https://auth.${myvars.domain}/.well-known/openid-configuration";
-                      frontend_url = "https://nixos-search.${myvars.domain}/backend";
-                      client_id = "nixos-search";
+                      frontend_url = "https://opensearch-dashboards.${myvars.domain}";
+                      client_id = "opensearch-dashboards";
                       client_secret = "@OIDC_CLIENT_SECRET@"; # Placeholder for `sd`
+                      openid_connect_idp = {
+                        enable_ssl = true;
+                        pemtrustedcas_filepath = config.security.pki.caBundle;
+                      };
                     };
                   };
                   authentication_backend.type = "noop";
@@ -70,15 +74,20 @@ let
           type = "internalusers";
           config_version = 2;
         };
-        # Define your internal HTTP Basic Auth user here
         aWVSALXpZv = {
           # mkpasswd -m bcrypt
           hash = "$2y$12$VstyWtAiIsDOOQJYhbgJju37W12oyOPRL7iI4XFUn.7WSGZ83d1JW";
           reserved = false;
+          description = "You Know, for Search";
         };
         flake-info = {
           hash = "$2b$05$Jf88fBHj.b3me96NjfKdCeoqnWpkX8UJ5HNEEJx6xfZA82j98vWkG";
           reserved = false;
+        };
+        kibanaserver = {
+          hash = "$2b$05$.WcUOSIvwcP41tmzwfMS6O2V6sdhG3yH3ubL7rlF6GOchCOxgu5ei";
+          reserved = true;
+          description = "Dashboards service user";
         };
       };
 
@@ -116,7 +125,9 @@ let
                 "nixos-*"
                 "*-nixos-*"
                 "latest-*"
+                "group-*-manual-*"
               ];
+              # https://docs.opensearch.org/latest/security/access-control/permissions/
               allowed_actions = [
                 # Required for push
                 "indices:data/read/*"
@@ -127,9 +138,11 @@ let
                 "indices:admin/delete"
                 "indices:admin/get" # Required for check_index (HEAD request)
                 # Required for write_alias
+                "indices:admin/aliases"
                 "indices:admin/aliases/get"
                 "indices:admin/aliases/delete"
                 "indices:admin/aliases/put"
+                "indices:admin/mapping/put"
               ];
             }
           ];
@@ -178,6 +191,7 @@ let
             metrics = [ "aWVSALXpZv" ];
             readall = [ "aWVSALXpZv" ];
             flake-info = [ "flake-info" ];
+            kibana_server = [ "kibanaserver" ];
           }
         )
       );
@@ -191,7 +205,7 @@ let
 in
 {
 
-  sops.secrets.nixos-search_client_secret = {
+  sops.secrets.opensearch-dashboards_client_secret = {
     sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
     restartUnits = [ "opensearch.service" ];
   };
@@ -201,22 +215,29 @@ in
   environment.systemPackages = [ pkgs.opensearch-cli ];
   services.opensearch = {
     enable = true;
-    # package = pkgs.opensearch.overrideAttrs (old: {
-    #   postInstall = (old.postInstall or "") + ''
-    #     # Nixpkgs removes opensearch-cli, breaking opensearch-keystore, replace the broken keystore script with a no-op
-    #     # to prevent the NixOS preStart from crashing.
-    #     cat <<EOF > $out/bin/opensearch-keystore
-    #     #!${lib.getExe pkgs.bash}
-    #     set -e -o pipefail
+    logging = ''
+      status = error
 
-    #     OPENSEARCH_MAIN_CLASS=org.opensearch.tools.cli.keystore.KeyStoreCli \\
-    #       OPENSEARCH_ADDITIONAL_CLASSPATH_DIRECTORIES=lib/tools/keystore-cli \\
-    #       ${lib.getExe pkgs.opensearch-cli} \\
-    #       "\$@"
-    #     EOF
-    #     chmod +x $out/bin/opensearch-keystore
-    #   '';
-    # });
+      appender.console.type = Console
+      appender.console.name = console
+      appender.console.layout.type = PatternLayout
+      appender.console.layout.pattern = [%d{ISO8601}][%-5p][%-25c{1.}] [%node_name]%marker %m%n
+
+      rootLogger.level = info
+      rootLogger.appenderRef.console.ref = console
+
+      # Suppress noisy JobSweeper INFO logs
+      logger.jobsweeper.name = org.opensearch.jobscheduler.sweeper.JobSweeper
+      logger.jobsweeper.level = warn
+
+      # Suppress BackendRegistry auth noise (uncomment once OIDC is fixed)
+      # logger.backendregistry.name = org.opensearch.security.auth.BackendRegistry
+      # logger.backendregistry.level = error
+
+      # JWT debug tracing (your original config)
+      logger.securityjwt.name = com.amazon.dlic.auth.http.jwt
+      logger.securityjwt.level = trace
+    '';
     settings = {
       "network.host" = "127.0.0.1";
       "http.cors.enabled" = "true";
@@ -286,7 +307,7 @@ in
       serviceConfig = {
         RuntimeDirectory = "opensearch";
         RuntimeDirectoryMode = "0700";
-        LoadCredential = "nixos-search_client_secret:${config.sops.secrets.nixos-search_client_secret.path}";
+        LoadCredential = "opensearch-dashboards_client_secret:${config.sops.secrets.opensearch-dashboards_client_secret.path}";
       };
       preStart = lib.mkBefore ''
         if [ ! -d "${certs_dir}" ]; then
@@ -316,13 +337,23 @@ in
           # `cp` preserves the permission from /nix/store
           chmod 600 "$RUNTIME_DIRECTORY/config.yml"
 
-          SECRET_VAL=$(cat $CREDENTIALS_DIRECTORY/nixos-search_client_secret)
+          SECRET_VAL=$(cat $CREDENTIALS_DIRECTORY/opensearch-dashboards_client_secret)
           cat "$RUNTIME_DIRECTORY/config.yml" | ${pkgs.sd}/bin/sd "@OIDC_CLIENT_SECRET@" "$SECRET_VAL" | ${lib.getExe' pkgs.moreutils "sponge"} "$RUNTIME_DIRECTORY/config.yml"
 
-          # Wait for yellow status, I dropped the `-f` so 401 also treated as success
-          while ! ${lib.getExe pkgs.curl} -sS --cacert ${cfg.settings."plugins.security.ssl.transport.pemcert_filepath"} \
-            https://${cfg.settings."network.host"}:${toString cfg.settings."http.port"} 2>/dev/null; do
-            sleep 1
+          # Wait for yellow status
+          while true; do
+            RESPONSE=$(${lib.getExe pkgs.curl} -u aWVSALXpZv:X8gPHnzL52wFEekuxsfQ9cSh -sS --cacert ${
+              cfg.settings."plugins.security.ssl.transport.pemcert_filepath"
+            } \
+              "https://${cfg.settings."network.host"}:${
+                toString cfg.settings."http.port"
+              }/_cluster/health?wait_for_status=yellow&timeout=1s" 2>/dev/null || echo "{}")
+
+            HEALTH=$(echo "$RESPONSE" | ${lib.getExe pkgs.jq} -r '.status // "red"')
+            if [ "$HEALTH" = "yellow" ] || [ "$HEALTH" = "green" ]; then
+              break
+            fi
+            sleep 2
           done
 
           # Apply the configuration to the OpenSearch index

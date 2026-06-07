@@ -13,7 +13,7 @@
     ) null (builtins.attrNames hostAddrs);
   caddyPort = 8080;
 
-  soaSerial = "2026052902";
+  soaSerial = "2026052903";
   hostAddrs = {
     # ============================================
     # Homelab's Physical Machines (TODO: Try KubeVirt)
@@ -79,6 +79,7 @@
             "nixos-search"
             "noogle"
             "notebook"
+            "opensearch-dashboards"
             "papra"
             "plane"
             "postgresql"
