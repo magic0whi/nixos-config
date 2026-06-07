@@ -7,6 +7,7 @@
 {
   home.packages =
     (with pkgs; [
+      feishin
       localsend # Alternative to AirDrop
       # discord # Update too frequently, use the web version instead
 
