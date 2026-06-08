@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ lib, pkgs, ... }:
 {
   # Audio(PipeWire)
   environment.systemPackages = [ pkgs.pulseaudio ]; # Provides `pactl`, which is required by some apps (e.g. sonic-pi)
@@ -47,6 +47,7 @@
   # `sudo udevadm test -a add /devices/pci0000:00/0000:00:14.0/usb4/4-1/4-1:1.0/host0/target0:0:0/0:0:0:0/block/sda`
   services.udev.extraRules = ''
     # USB SSD Trim
-    ACTION=="add|change", SUBSYSTEM=="scsi_disk", ATTRS{idVendor}=="152d", ATTRS{idProduct}=="a583", ATTR{provisioning_mode}="unmap"
+    ACTION=="change", SUBSYSTEM=="scsi_disk", ATTRS{idVendor}=="152d", ATTRS{idProduct}=="a583", ATTR{provisioning_mode}="unmap"
+    ACTION=="add", SUBSYSTEM=="block", ATTRS{idVendor}=="152d", ATTRS{idProduct}=="a583", RUN+="${lib.getExe' pkgs.systemd "udevadm"} trigger --action=change --subsystem-match=scsi_disk"
   '';
 }
