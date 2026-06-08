@@ -36,8 +36,12 @@
   ## END dbus.nix
 
   ## BEGIN sysctl.nix
-  boot.kernel.sysctl."net.ipv4.tcp_congestion_control" = "bbr";
-  boot.kernel.sysctl."net.core.default_qdisc" = "cake";
+  boot.kernel.sysctl = {
+    "net.ipv4.tcp_congestion_control" = "bbr";
+    "net.core.default_qdisc" = "cake";
+    "net.ipv4.tcp_fastopen" = 3; # Enable TFO on both outgoing and incoming
+    "net.ipv4.tcp_mtu_probing" = 1; # Do MTU discovery when ICMP black hole detected
+  };
   ## END sysctl.nix
 
   ## BEGIN network.nix
@@ -74,6 +78,7 @@
   };
   ## END journald.nix
   ## BEGIN tweaks.nix
+  # TIP: `swapon -s` to list swaps and their priority
   zramSwap.enable = true;
   systemd.oomd.settings.OOM = {
     DefaultMemoryPressureLimit = "75%";
