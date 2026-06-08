@@ -1,5 +1,6 @@
-{
+_: {
   disko.devices.disk.main = {
+    imageSize = "4G"; # Used for NixOS disk image generation, which can be used with `dd` on low RAM devices
     type = "disk";
     device = "/dev/disk/by-id/scsi-0Google_PersistentDisk_proteus-nixos-1";
     content = {

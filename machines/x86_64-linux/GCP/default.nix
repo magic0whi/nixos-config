@@ -38,6 +38,7 @@ in
       ;
   };
   inherit nixos_configurations;
+  packages = builtins.mapAttrs (_: nixos_system: nixos_system.config.system.build.diskoImages) nixos_configurations;
   deploy-rs_nodes = builtins.mapAttrs (
     name: nixos_system: mylib.genDeployNode myvars.networking.hostAddrs.${name} nixos_system
   ) nixos_configurations;
