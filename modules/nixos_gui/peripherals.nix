@@ -41,4 +41,12 @@
       };
     };
   };
+  # To test:
+  # `udevadm info --query=path --name=/dev/sda`
+  # `sudo udevadm test -a add $(ls -d /sys/block/sda/device/scsi_disk/*)`
+  # `sudo udevadm test -a add /devices/pci0000:00/0000:00:14.0/usb4/4-1/4-1:1.0/host0/target0:0:0/0:0:0:0/block/sda`
+  services.udev.extraRules = ''
+    # USB SSD Trim
+    ACTION=="add|change", SUBSYSTEM=="scsi_disk", ATTRS{idVendor}=="152d", ATTRS{idProduct}=="a583", ATTR{provisioning_mode}="unmap"
+  '';
 }
