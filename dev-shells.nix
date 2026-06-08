@@ -1,12 +1,9 @@
 _: {
   perSystem =
-    { pkgs, ... }:
+    { config, pkgs, ... }:
     {
       devShells.default = pkgs.mkShell {
-        buildInputs = with pkgs; [
-          nixfmt-rs
-          prettier
-        ];
+        buildInputs = [ config.treefmt.build.wrapper ] ++ builtins.attrValues config.treefmt.build.programs;
         name = "nixos-config";
       };
     };
