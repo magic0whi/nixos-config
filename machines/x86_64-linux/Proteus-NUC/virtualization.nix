@@ -71,6 +71,7 @@
     "kvm-intel"
     "vfio-pci"
   ];
+  # To dry-run, run `sudo udevadm test -a add /sys/bus/pci/devices/0000:00:02.1`
   services.udev.extraRules = ''
     # Bind all i915 VFs (00:02.1 to 00:02.7) to vfio-pci
     ${builtins.concatStringsSep ", " [
@@ -78,14 +79,12 @@
       ''KERNEL=="${builtins.head (lib.splitString "." myvars.igpu_pci_ids)}.[1-7]"''
       ''ATTR{vendor}=="0x8086", ATTR{device}=="0x9a60"''
       ''DRIVER!="vfio-pci"''
-      ''RUN+="/bin/sh -c '${
-        builtins.concatStringsSep "; " [
-          ''echo \$kernel > /sys/bus/pci/devices/\$kernel/driver/unbind''
-          ''echo vfio-pci > /sys/bus/pci/devices/\$kernel/driver_override''
-          "modprobe vfio-pci"
-          ''echo \$kernel > /sys/bus/pci/drivers/vfio-pci/bind''
-        ]
-      }'"''
+      ''RUN+="${pkgs.writeShellScript "i915-bind-to-vfio-pci" ''
+        echo $1 > /sys/bus/pci/devices/$1/driver/unbind
+        echo vfio-pci > /sys/bus/pci/devices/$1/driver_override
+        ${lib.getExe' pkgs.kmod "modprobe"} vfio-pci
+        echo $1 > /sys/bus/pci/drivers/vfio-pci/bind
+      ''} $kernel"''
     ]}
   '';
   virtualisation = {
