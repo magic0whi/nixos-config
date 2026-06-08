@@ -1,5 +1,5 @@
-# TODO move to Proteus-Desktop
 {
+  config,
   lib,
   pkgs,
   ...
@@ -22,4 +22,31 @@
       ];
     };
   };
+  ## START i2pd.nix
+  # Ref: https://i2pd.readthedocs.io/en/latest/user-guide/configuration/
+  networking.firewall.allowedTCPPorts = with config.services.i2pd; [
+    port
+  ];
+  services.i2pd = {
+    enable = true;
+    enableIPv6 = true;
+    port = 11451;
+    upnp.enable = true;
+    reseed = {
+      verify = true;
+      proxy = "socks://127.0.0.1:2080";
+      urls = [
+        "https://reseed.i2p-projekt.de/"
+        "https://i2p.mooo.com/netDb/"
+        "https://netdb.i2p2.no/"
+      ];
+    };
+    proto = {
+      http.enable = true; # Web console
+      # httpProxy.enable = true;
+      socksProxy.enable = true;
+      sam.enable = true;
+    };
+  };
+  ## END i2pd.nix
 }
