@@ -21,4 +21,17 @@
     };
     wantedBy = [ "multi-user.target" ];
   };
+  # systemd.services.custom-sleep-actions = {
+  #   description = "Customized sleep actions";
+  #   before = [ "sleep.target" ];
+  #   wantedBy = [ "sleep.target" ];
+  #   unitConfig.StopWhenUnneeded = true; # Remove running status for oneshot
+  #   serviceConfig = {
+  #     Type = "oneshot";
+  #     RemainAfterExit = true; # Keeping running status during the sleep
+  #     # `-` allows fail
+  #     ExecStart = [ "-${pkgs.systemd}/bin/systemctl stop sing-box@config.service" ];
+  #     ExecStop = [ "-${pkgs.systemd}/bin/systemctl start sing-box@config.service" ];
+  #   };
+  # };
 }
