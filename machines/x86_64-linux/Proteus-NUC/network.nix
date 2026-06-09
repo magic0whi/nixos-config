@@ -30,6 +30,8 @@ _: {
         };
       };
     networks."10-wlo1" = {
+      matchConfig.Name = "wlo1";
+      DHCP = "yes";
       networkConfig.IgnoreCarrierLoss = "3s";
       dhcpV4Config.RouteMetric = 20;
       ipv6AcceptRAConfig.RouteMetric = 20;
