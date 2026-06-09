@@ -59,6 +59,38 @@
       ip saddr 192.168.122.0/24 accept comment "Allow Libvirt to reach auto_redirect ports"
     '';
   };
+  systemd.network = {
+    netdevs."20-macvtap0" = {
+      netdevConfig = {
+        Kind = "macvtap";
+        Name = "macvtap0";
+      };
+      macvtapConfig.Mode = "vepa";
+    };
+    networks = {
+      "10-enp46s0" = {
+        matchConfig.Name = "enp46s0";
+        linkConfig.RequiredForOnline = "carrier"; # for `systemd-networkd-wait-online.service`. carroer = cable plugged
+        macvtap = [ "macvtap0" ];
+        DHCP = "no";
+        networkConfig = {
+          IPv6AcceptRA = false;
+          LinkLocalAddressing = false;
+          MulticastDNS = false; # mDNS resolve local hostname (e.g., `.local`), without needing a DNS
+          LLMNR = false; # hardening, Link-Local Multicast Name Resolution is a fallback when DNS cannot be reached
+        };
+        # The `Metric` option is for static routes while the `RouteMetric` option is for setups not using static routes.
+        dhcpV4Config.RouteMetric = 10;
+        ipv6AcceptRAConfig.RouteMetric = 10;
+      };
+      "20-macvtap0" = {
+        matchConfig.Name = "macvtap0";
+        DHCP = "yes";
+        dhcpV4Config.RouteMetric = 10;
+        ipv6AcceptRAConfig.RouteMetric = 10;
+      };
+    };
+  };
   # Enable nested virtualization, required by security containers and nested vm.
   # This should be set per host in /hosts, not here.
   # - For AMD CPU, add "kvm-amd" to kernelModules.
