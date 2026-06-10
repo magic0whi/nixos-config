@@ -59,7 +59,7 @@
       ip saddr 192.168.122.0/24 accept comment "Allow Libvirt to reach auto_redirect ports"
     '';
   };
-  systemd.network = {
+  systemd.network = lib.mkIf (!config.services.sing-box.enable) {
     netdevs."20-macvtap0" = {
       netdevConfig = {
         Kind = "macvtap";
