@@ -19,8 +19,11 @@
   ## END syncthing_tray.nix
 
   ## BEGIN browsers.nix
-  services.psd.enable = true;
+  services.psd.enable = true; # profile-sync-daemon
   # Enable Ozone Wayland support in Chromium and Electron based applications
   home.sessionVariables.NIXOS_OZONE_WL = "1";
   ## END browsers.nix
+  ## START game.nix
+  programs.lutris.enable = true;
+  ## END game.n
 }

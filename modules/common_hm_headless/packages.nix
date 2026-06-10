@@ -8,6 +8,8 @@
   # programs.yt-dlp.enable = !pkgs.stdenv.hostPlatform.isRiscV64;
   home.packages =
     (with pkgs; [
+      ytfzf # find and watch youtube videos from the terminal
+      powertop
       fastfetch
       bc
       ## Modern CLI Tools, replacement of grep/sed/...

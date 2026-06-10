@@ -9,8 +9,6 @@
     (with pkgs; [
       feishin
       localsend # Alternative to AirDrop
-      # discord # Update too frequently, use the web version instead
-
       libnotify # notify-send
 
       moonlight-qt # Remote desktop client
@@ -25,7 +23,7 @@
       # kicad-small # 3D printing, eletrical engineering (without 3D models)
       geogebra6 # Dynamic mathematics software with graphics, algebra and spreadsheets
       code-cursor # An AI code editor
-      # blender # 3D modeling, currently broken on darwin
+      blender # 3D modeling, currently broken on darwin
       musescore # Music notation
       # reaper # Audio production
 
@@ -66,4 +64,5 @@
         super-productivity
       ]
     );
+  programs.discord.enable = true; # Update too frequently, it is recommend to use the web version instead
 }

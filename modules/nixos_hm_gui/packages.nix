@@ -2,6 +2,8 @@
 {
   home.packages = with pkgs; [
     telegram-desktop # Instant messaging
+    imv # simple image viewer
+    loupe # Simple image viewer application written with GTK4 and Rust
 
     # foliate # e-book viewer(.epub/.mobi/...),do not support .pdf
 
@@ -33,7 +35,6 @@
     # Audio control
     pavucontrol
     pulsemixer
-    imv # simple image viewer
 
     # Video/audio tools
     # libva-utils
@@ -41,5 +42,6 @@
     # vulkan-tools
     # mesa-demos # Run `nix shell nixpkgs#mesa-demos -c glxgears` instead
     # clinfo # Run `nix run nixpkgs#clinfo` instead
+    gnuplot
   ];
 }

@@ -8,6 +8,7 @@
       # sysstat
       # iotop
       # nmon
+      # nethogs # net top, grouping bandwidth by process
 
       # System Tools
       psmisc # killall/pstree/prtstat/fuser/...
@@ -17,6 +18,7 @@
       # A tool that reads information about your system's hardware from the BIOS according to the SMBIOS/DMI standard
       # dmidecode
       # parted
+      # nvme-cli
       cryptsetup # dm-crypt tools
       # nfs-utils # Linux user-space NFS utilities
     ])

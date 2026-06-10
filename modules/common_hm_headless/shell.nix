@@ -7,7 +7,8 @@
 }:
 {
   home.packages = with pkgs; [
-    tlrc # tldr written in Rust
+    # tlrc # Official tldr written in Rust
+    tealdeer # tldr written in Rust
     fd # Search for files by name, faster than `find`
     (ripgrep.override { withPCRE2 = true; }) # search for files by its content, replacement of `grep`
   ];

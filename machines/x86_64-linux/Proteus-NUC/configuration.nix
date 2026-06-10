@@ -20,4 +20,7 @@
   systemd.network.links."80-iwd".enable = false; # Or
   # environment.etc."systemd/network/80-iwd.link".source = lib.mkForce (mylib.mkOutOfStoreSymlink "/dev/null");
   ## END iwd.nix
+  ## START thunderbolt.nix
+  services.hardware.bolt.enable = true;
+  ## END thunderbolt.nix
 }
