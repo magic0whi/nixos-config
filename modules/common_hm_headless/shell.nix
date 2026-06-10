@@ -62,11 +62,17 @@
       sshstop = "ssh -O stop"; # Close a persistent SSH session
 
       status = "systemctl status";
+      status-user = "systemctl --user status";
       show = "systemctl show";
+      show-user = "systemctl --user show";
       is-active = "systemctl is-active";
+      is-active-user = "systemctl --user is-active";
       start = "sudo systemctl start";
+      start-user = "systemctl --user start";
       stop = "sudo systemctl stop";
+      stop-user = "systemctl --user stop";
       restart = "sudo systemctl restart";
+      restart-user = "systemctl --user restart";
 
       tarxz = "tar -I xz -cvf";
       tarxzls = "tar -I xz -tvf";
