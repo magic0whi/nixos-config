@@ -73,6 +73,25 @@ in
       user = "root";
     };
   };
+
+  mkCaddyVHost = rootPath: {
+    listenAddresses = [
+      "127.0.0.1"
+      "[::1]"
+    ];
+    extraConfig = ''
+      # respond "Hello, world!" # For debug
+      root * ${rootPath}
+
+      # file_server directive is required if serve static files from disk
+      file_server
+      # If you want directory listings
+      # file_server browse
+
+      # Enable compress, default zstd
+      encode
+    '';
+  };
   ## END pkgs agnostic functions
   ## BEGIN pkgs dependent functions
   mkForPkgs = pkgs: {

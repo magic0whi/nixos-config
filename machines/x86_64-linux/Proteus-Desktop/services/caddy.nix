@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  mylib,
   myvars,
   pkgs,
   ...
@@ -23,39 +24,21 @@ in
     # not to attempt ACME/HTTPS bindings.
     globalConfig = "auto_https off";
     virtualHosts = {
-      "http://notebook.${myvars.domain}:${toString myvars.networking.caddyPort}" = {
+      "http://notebook.${myvars.domain}:${toString myvars.networking.caddyPort}" = mylib.mkCaddyVHost "${web_root}/notebook";
+      "http://noogle.${myvars.domain}:${toString myvars.networking.caddyPort}" = mylib.mkCaddyVHost "${web_root}/noogle";
+      "http://algo-archive.${myvars.domain}:${toString myvars.networking.caddyPort}" = {
         listenAddresses = [
           "127.0.0.1"
           "[::1]"
         ];
         extraConfig = ''
           # respond "Hello, world!" # For debug
-          root * ${web_root}/notebook
+          root * ${web_root}/algorithm-archive
+
           # file_server directive is required if serve static files from disk
-          file_server
-          # Enable compress
-          encode
-        '';
-      };
-      "http://noogle.${myvars.domain}:${toString myvars.networking.caddyPort}" = {
-        listenAddresses = [
-          "127.0.0.1"
-          "[::1]"
-        ];
-        extraConfig = ''
-          root * ${web_root}/noogle
-          file_server
-          encode
-        '';
-      };
-      "http://test.${myvars.domain}:${toString myvars.networking.caddyPort}" = {
-        listenAddresses = [
-          "127.0.0.1"
-          "[::1]"
-        ];
-        extraConfig = ''
-          root * ${web_root}/test
-          file_server
+          file_server browse
+
+          # Enable compress, default zstd
           encode
         '';
       };

@@ -13,7 +13,7 @@
     ) null (builtins.attrNames hostAddrs);
   caddyPort = 8080;
 
-  soaSerial = "2026052903";
+  soaSerial = "2026061000";
   hostAddrs = {
     # ============================================
     # Homelab's Physical Machines (TODO: Try KubeVirt)
@@ -65,6 +65,7 @@
           CNAME = [
             "*.s3"
             "*.s3-pub"
+            "algo-archive"
             "aria2"
             "atuin"
             "auth"
