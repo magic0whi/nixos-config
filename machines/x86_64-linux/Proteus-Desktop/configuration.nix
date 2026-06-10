@@ -13,6 +13,7 @@
   # };
   ## END systemd_tmpfiles.nix
   ## vaapi.nix
-  hardware.graphics.extraPackages = [ pkgs.vaapi-intel-hybrid ];
+  # hybrid have VAProfileVP9Profile0 support
+  hardware.graphics.extraPackages = [ (pkgs.intel-vaapi-driver.override { enableHybridCodec = true; }) ];
   ## vaapi.nix
 }
