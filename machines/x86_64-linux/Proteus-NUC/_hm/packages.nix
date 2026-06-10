@@ -9,6 +9,7 @@
     act # Run your GitHub Actions locally
     gemini-cli
     witr
+    intel-undervolt
   ];
   programs.obsidian.enable = true;
 }

@@ -117,4 +117,7 @@ in
     internalInterfaces = [ iface_wlan.name ]; # The interface acting as the hotspot
   };
   ## END hostapd.nix
+  ## vaapi.nix
+  hardware.graphics.extraPackages = [ pkgs.vaapi-intel-hybrid ];
+  ## vaapi.nix
 }

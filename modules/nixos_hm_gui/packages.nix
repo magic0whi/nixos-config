@@ -36,12 +36,13 @@
     pavucontrol
     pulsemixer
 
+    gnuplot
+
     # Video/audio tools
-    # libva-utils
+    # libva-utils # vainfo
     # vdpauinfo
     # vulkan-tools
     # mesa-demos # Run `nix shell nixpkgs#mesa-demos -c glxgears` instead
     # clinfo # Run `nix run nixpkgs#clinfo` instead
-    gnuplot
   ];
 }
