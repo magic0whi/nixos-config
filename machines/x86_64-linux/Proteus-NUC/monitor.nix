@@ -11,4 +11,5 @@
     ddcutil
     ddcui
   ];
+  boot.extraModulePackages = [ config.boot.kernelPackages.ddcci-driver ];
 }
