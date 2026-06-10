@@ -13,7 +13,7 @@
     ) null (builtins.attrNames hostAddrs);
   caddyPort = 8080;
 
-  soaSerial = "2026061000";
+  soaSerial = "2026061002";
   hostAddrs = {
     # ============================================
     # Homelab's Physical Machines (TODO: Try KubeVirt)
@@ -69,6 +69,7 @@
             "aria2"
             "atuin"
             "auth"
+            "cockpit-desktop"
             "garage"
             "git"
             "hass"
