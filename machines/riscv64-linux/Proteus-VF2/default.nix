@@ -31,7 +31,7 @@ let
         mylib
         myvars
         ;
-      nixpkgs_modules =
+      nixpkgsModules =
         nixpkgs_modules
         ++ [ nixos-hardware.nixosModules.starfive-visionfive-2 ]
         ++ [
@@ -58,7 +58,7 @@ let
             ];
           }
         ];
-      machine_path = ./.;
+      machinePath = ./.;
     }
   );
   nixos_sd_image = nixpkgs.lib.nixosSystem (
@@ -68,8 +68,8 @@ let
         mylib
         myvars
         ;
-      machine_path = ./.;
-      nixpkgs_modules = nixpkgs_modules ++ [
+      machinePath = ./.;
+      nixpkgsModules = nixpkgs_modules ++ [
         {
           # Cross-compile, either
           # nixpkgs.buildPlatform = "x86_64-linux";

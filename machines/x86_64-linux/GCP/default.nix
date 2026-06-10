@@ -6,7 +6,6 @@
   ...
 }:
 let
-  nixpkgs_modules = myvars.base.nixpkgs_modules ++ [ ./_common ];
   names = map (p: baseNameOf p) (mylib.scanPath ./.);
   nixos_configurations =
     let
@@ -19,24 +18,17 @@ let
               mylib
               myvars
               machineConfigs
-              nixpkgs_modules
               # hm_modules
               ;
-            machine_path = ./${name};
+            machinePath = ./${name};
+            nixpkgsModules = myvars.base.nixpkgsModules ++ [ ./_common ];
           }
         );
     in
     builtins.foldl' (acc: name: acc // { ${name} = gen_nixos_system name; }) { } names;
 in
 {
-  _DEBUG = {
-    inherit
-      names
-      nixpkgs_modules
-      myvars
-      mylib
-      ;
-  };
+  _DEBUG = { inherit names; };
   inherit nixos_configurations;
   packages = builtins.mapAttrs (_: nixos_system: nixos_system.config.system.build.diskoImages) nixos_configurations;
   deploy-rs_nodes = builtins.mapAttrs (

@@ -8,13 +8,13 @@ in
   relativeToRoot = lib.path.append ../.;
 
   scanPath =
-    p:
-    map (fn: p + "/${fn}") (
+    path:
+    map (fn: path + "/${fn}") (
       builtins.attrNames (
         lib.filterAttrs
           # Exclude if `_` prefix, include directories and *.nix, exclude default.nix
           (e: t: !(lib.hasPrefix "_" e) && ((t == "directory") || ((lib.hasSuffix ".nix" e) && (e != "default.nix"))))
-          (builtins.readDir p)
+          (builtins.readDir path)
       )
     );
   getUriPort =
@@ -59,17 +59,17 @@ in
     else
       null;
 
-  genDeployNode = ifaces: nixos_system: {
+  genDeployNode = ifaces: nixosSystem: {
     hostname =
       let
         ts_iface = builtins.elemAt ifaces 0;
         et_iface = lib.optionalAttrs (builtins.length ifaces >= 2) (builtins.elemAt ifaces 1);
       in
-      et_iface.ipv4 or ts_iface.ipv4 or nixos_system.config.networking.hostName;
+      et_iface.ipv4 or ts_iface.ipv4 or nixosSystem.config.networking.hostName;
     sshUser = "root";
     interactiveSudo = false; # Since we use 'root' user to ssh
     profiles.system = {
-      path = inputs.deploy-rs.lib.${nixos_system.pkgs.stdenv.hostPlatform.system}.activate.nixos nixos_system;
+      path = inputs.deploy-rs.lib.${nixosSystem.pkgs.stdenv.hostPlatform.system}.activate.nixos nixosSystem;
       user = "root";
     };
   };
@@ -112,9 +112,9 @@ in
         machineConfigs ? (throw "Are you forget to import `machineConfigs` in the machine's apex config?"),
         mylib,
         myvars,
-        nixpkgs_modules,
-        hm_modules ? [ ],
-        machine_path,
+        nixpkgsModules,
+        hmModules ? [ ],
+        machinePath,
         system ? pkgs.stdenv.hostPlatform.system,
       }:
       let
@@ -138,7 +138,7 @@ in
         # Filter out the files with `impermanence.nix` suffix. If it's not a path or string (i.e. an attribute set),
         # return true immediately to keep it
         modules =
-          nixpkgs_modules
+          nixpkgsModules
           ++ (
             if pkgs.stdenv.isDarwin then
               [
@@ -159,11 +159,11 @@ in
           )
           ++ [
             {
-              imports = mylib.scanPath machine_path;
+              imports = mylib.scanPath machinePath;
               networking.hostName = name;
             }
           ]
-          ++ (lib.optionals ((lib.length hm_modules) > 0) [
+          ++ (lib.optionals ((lib.length hmModules) > 0) [
             home-manager.${if pkgs.stdenv.isDarwin then "darwinModules" else "nixosModules"}.home-manager
             {
               home-manager.backupFileExtension = "home-manager.backup";
@@ -175,7 +175,7 @@ in
                 sops-nix.homeManagerModules.sops
               ];
               home-manager.users."${myvars.username}".imports =
-                hm_modules ++ lib.optional (builtins.pathExists "${machine_path}/_hm") "${machine_path}/_hm";
+                hmModules ++ lib.optional (builtins.pathExists "${machinePath}/_hm") "${machinePath}/_hm";
             }
           ]);
       };

@@ -52,7 +52,7 @@
   };
 
   base = {
-    nixpkgs_modules = map mylib.relativeToRoot [
+    nixpkgsModules = map mylib.relativeToRoot [
       # "modules/common/default.nix"
       "modules/common/easytier.nix"
       # "modules/common/fonts.nix"
