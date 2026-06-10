@@ -12,6 +12,7 @@ let
     ++ (map mylib.relativeToRoot [
       "modules/nixos_headless/krnl-compat.nix"
       "modules/nixos_headless/packages.nix"
+      "modules/nixos_headless/sing-box-client.nix"
       "modules/nixos_headless/zfs.nix"
 
       "modules/nixos_gui/kmscon.nix"

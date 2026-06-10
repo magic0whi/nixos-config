@@ -9,6 +9,7 @@
     format = "binary";
     restartUnits = [ "sing-box.service" ];
   };
+  networking.firewall.trustedInterfaces = [ "sing0" ];
   services.sing-box = {
     enable = true;
     settings = {

@@ -11,20 +11,6 @@ let
 in
 {
   boot.binfmt.emulatedSystems = [ "riscv64-linux" ]; # Cross compilation
-  ## BEGIN sing-box.nix
-  sops.secrets."sb_client_linux.json" = {
-    sopsFile = "${myvars.secretsDir}/sb_client_linux.json.sops";
-    format = "binary";
-    restartUnits = [ "sing-box.service" ];
-  };
-  services.sing-box = {
-    enable = true;
-    settings = {
-      _secret = config.sops.secrets."sb_client_linux.json".path;
-      quote = false;
-    };
-  };
-  ## END sing-box.nix
   ## BEGIN systemd_tmpfiles.nix
   # systemd.tmpfiles.settings = {
   #   # Setgid so new files inherit group; give rw to group members
