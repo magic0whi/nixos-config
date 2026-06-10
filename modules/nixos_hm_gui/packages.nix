@@ -4,6 +4,7 @@
     telegram-desktop # Instant messaging
     imv # simple image viewer
     loupe # Simple image viewer application written with GTK4 and Rust
+    tor-browser
 
     # foliate # e-book viewer(.epub/.mobi/...),do not support .pdf
 
