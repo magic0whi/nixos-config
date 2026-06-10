@@ -865,8 +865,10 @@ in
           }
           {
             timeout = 630; # 10.5min
-            on-timeout = "hyprctl dispatch dpms off"; # screen off when timeout has passed
-            on-resume = "hyprctl dispatch dpms on"; # screen on when activity is detected after timeout has fired.
+            # screen off when timeout has passed
+            on-timeout = ''hyprctl dispatch "hl.dsp.dpms({ action = 'disable' })"'';
+            # screen on when activity is detected after timeout has fired.
+            on-resume = ''hyprctl dispatch "hl.dsp.dpms({ action = 'enable' })"'';
           }
         ];
       };
