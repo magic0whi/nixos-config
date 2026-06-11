@@ -88,6 +88,7 @@
         ## END Zsh Shell Coloring
       '';
       # Fallback prompt if starship doesn't work
+      # %3~ Show folder levels max to 3
       promptInit = ''
         autoload -U promptinit && promptinit; setopt PROMPT_SUBST
         PS1='[%{$BRed%}%n%{$Color_Off%}@%{$BBlue%}%m%{$Color_Off%} %{$BBlue%}%3~%{$Color_Off%} %{$BCyan%}%{$Color_Off%}]%{$BGreen%}%(#.#.$)%{$Color_Off%} '
