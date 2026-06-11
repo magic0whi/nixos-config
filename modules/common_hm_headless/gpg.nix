@@ -55,6 +55,12 @@
       # Specify how many times the passphrases mangling for symmetric encryption is repeated
       s2k-count = "65011712";
     };
+    dirmngrSettings = {
+      no-use-tor = true; # Sometimes hang if has tor
+      keyserver = "hkps://keys.openpgp.org";
+      honor-http-proxy = true;
+      http-proxy = "127.0.0.1:2080";
+    };
   };
   services.gpg-agent = {
     enable = true;
