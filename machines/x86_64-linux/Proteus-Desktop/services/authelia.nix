@@ -321,30 +321,24 @@ in
             token_endpoint_auth_method = "client_secret_post";
             claims_policy = "opensearch_policy"; # https://github.com/opensearch-project/security/issues/2040
           }
-          # {
-          #   client_id = "cockpit";
-          #   client_name = "Cockpit";
-          #   # This client has no secret
-          #   public = true;
-          #   # Implicit flow requires no client secret
-          #   grant_types = [ "implicit" ];
-          #   response_types = [
-          #     "token"
-          #     "id_token"
-          #   ];
-          #   # response_mode is fragment to pass the access token back via the URL
-          #   response_modes = [ "fragment" ];
-          #   redirect_uris = [
-          #     "https://cockpit-desktop.${myvars.domain}/callback"
-          #     "http://localhost:4000/callback" # Debug
-          #   ];
-          #   scopes = [
-          #     "openid"
-          #     "profile"
-          #     "email"
-          #     "groups"
-          #   ];
-          # }
+          {
+            client_id = "cockpit";
+            client_name = "Cockpit";
+            # This client has no secret
+            public = true;
+            # Implicit flow requires no client secret
+            grant_types = [ "implicit" ];
+            response_types = [ "token" ];
+            # Response_mode is fragment to pass the access token back via the URL
+            response_modes = [ "fragment" ];
+            redirect_uris = [ "https://cockpit-desktop.${myvars.domain}" ];
+            scopes = [
+              "openid"
+              "profile"
+              "email"
+              "groups"
+            ];
+          }
         ];
       };
     };
