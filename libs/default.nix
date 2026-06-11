@@ -146,6 +146,7 @@ in
           lanzaboote
           lix-module
           niks3
+          noctalia
           sops-nix
           ;
         specialArgs = inputs // {
@@ -191,6 +192,7 @@ in
               home-manager.useUserPackages = true;
               home-manager.sharedModules = [
                 catppuccin.homeModules.catppuccin
+                noctalia.homeModules.default
                 sops-nix.homeManagerModules.sops
               ];
               home-manager.users."${myvars.username}".imports =

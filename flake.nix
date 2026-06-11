@@ -100,6 +100,10 @@
         flake-utils.inputs.systems.follows = "deploy-rs/utils/systems";
       };
     };
+    noctalia = {
+      url = "github:noctalia-dev/noctalia/v4.7.7";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
   outputs =
     inputs:

@@ -29,6 +29,7 @@ let
   };
 in
 {
+  modules.niri.enable = true;
   wayland.windowManager.hyprland = {
     nvidia_sync = true;
     settings = {

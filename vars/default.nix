@@ -9,6 +9,7 @@
   githubUsername = "magic0whi";
   secretsDir = mylib.relativeToRoot "secrets";
 
+  city = "Suzhou, China";
   latitude = "31.3113626";
   longitude = "121.5020943";
   timeZone = "Asia/Hong_Kong"; # Main timezone

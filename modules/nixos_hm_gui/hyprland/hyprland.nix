@@ -11,28 +11,15 @@ in
   # NOTE: this executable is used by Greetd to start a wayland session when system boot up. With such a
   # vendor-no-locking script, we can switch to another wayland compositor without modifying greetd's config in NixOS
   # module
-  home.file.".wayland-session".source = "${hypr_pkg}/bin/start-hyprland";
+  # home.file.".wayland-session".source = "${hypr_pkg}/bin/start-hyprland"; # TODO niri debug
   catppuccin.hyprland.enable = false;
+
   wayland.windowManager.hyprland = {
     enable = true;
     package = hypr_pkg;
     # configType = "hyprlang";
     systemd.variables = [ "--all" ];
     settings = {
-      env = [
-        # "_JAVA_AWT_WM_NONREPARENTING,1"
-        # "QT_WAYLAND_DISABLE_WINDOWDECORATION,1" # Disables window decorations on Qt applications
-        # "QT_QPA_PLATFORM,wayland"
-        # "SDL_VIDEODRIVER,wayland"
-        # "GDK_BACKEND,wayland"
-        {
-          _args = [
-            "QT_ENABLE_HIGHDPI_SCALING"
-            "1"
-          ];
-        }
-      ];
-
       # Variables
       a_launch_prefix._var = "systemd-run --user --scope -- ";
       a_terminal._var = lib.getExe config.xdg.terminal-exec.package;
