@@ -24,7 +24,6 @@
       # kicad-small # 3D printing, eletrical engineering (without 3D models)
       geogebra6 # Dynamic mathematics software with graphics, algebra and spreadsheets
       code-cursor # An AI code editor
-      blender # 3D modeling, currently broken on darwin
       musescore # Music notation
       # reaper # Audio production
 
@@ -60,7 +59,7 @@
     ++ lib.optionals (!pkgs.stdenv.isDarwin) (
       with pkgs;
       [
-        # blender
+        blender # 3D modeling, currently broken on darwin
         inkscape # Vector graphics
         super-productivity
       ]

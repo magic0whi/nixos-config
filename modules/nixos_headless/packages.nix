@@ -9,6 +9,7 @@
       # iotop
       # nmon
       # nethogs # net top, grouping bandwidth by process
+      # powertop
 
       # System Tools
       psmisc # killall/pstree/prtstat/fuser/...
