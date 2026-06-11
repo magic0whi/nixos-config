@@ -25,6 +25,7 @@
       ln -sf $CREDENTIALS_DIRECTORY/hass_secrets.yaml ${config.services.home-assistant.configDir}/secrets.yaml
     '';
   };
+  hardware.bluetooth.enable = true;
   services.home-assistant = {
     enable = true;
     # NixOS will automatically fetch the required Python dependencies (like
@@ -40,6 +41,7 @@
       auth_oidc
       xiaomi_miot # Xiaomi Miot Auto (Community)
       # xiaomi_home # Xiaomi Home (Official)
+      midea_ac_lan # TODO: add refrigerator
     ];
     config = {
       default_config = { }; # Implicitly enable `mobile_app`
@@ -65,6 +67,7 @@
       logger.default = "info";
       # https://wiki.nixos.org/wiki/Home_Assistant#Automations,_Scenes,_and_Scripts_from_the_UI
       "automation ui" = "!include automations.yaml";
+      "script ui" = "!include scripts.yaml";
       auth_oidc = {
         client_id = "home-assistant";
         client_secret = "!secret hass_oidc_secret";
