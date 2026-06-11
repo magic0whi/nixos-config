@@ -13,9 +13,12 @@
       extraConfig = lib.mkMerge [
         (lib.mkBefore ''
           Compression yes
+          # Share multiple ssh session along one connection, this reduce the time cost on reconnection
           ControlMaster auto
           ControlPath ~/.ssh/master-%r@%n:%p
+          # Increase the valid time of a connection
           ControlPersist 30m
+          # Send keep-alive every 30s, disconnect if sent 5 times with no response
           ServerAliveInterval 30
           ServerAliveCountMax 5
         '')
