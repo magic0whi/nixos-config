@@ -93,16 +93,15 @@
   programs = {
     zsh = {
       enable = true;
-      package = pkgs.emptyDirectory;
-      autosuggestion = {
-        enable = true;
-        highlight = "fg=60";
-        strategy = [
-          "match_prev_cmd"
-          "history"
-          "completion"
-        ];
-      };
+      # autosuggestion = {
+      #   enable = true;
+      #   highlight = "fg=60";
+      #   strategy = [
+      #     "match_prev_cmd"
+      #     "history"
+      #     "completion"
+      #   ];
+      # };
       initContent =
         let
           local_bin = "${config.home.homeDirectory}/.local/bin";
@@ -293,6 +292,8 @@
     #   keyMode = "vi";
     #   customPaneNavigationAndResize = true;
     #   shortcut = "a";
+    #   terminal = "screen-256color";
+    #   extraConfig = "set-option -g set-titles on";
     # };
   };
 }

@@ -25,5 +25,5 @@
   ## END browsers.nix
   ## START game.nix
   programs.lutris.enable = true;
-  ## END game.n
+  ## END game.nix
 }
