@@ -431,6 +431,19 @@ in
               (mkLuaInline "hl.dsp.window.cycle_next({ next = false })")
             ];
           }
+          # Workspace Scrolling
+          {
+            _args = [
+              (mkLuaInline ''main_mod  .. " + mouse_down"'')
+              (mkLuaInline ''hl.dsp.focus({ workspace = "e+1" })'')
+            ];
+          }
+          {
+            _args = [
+              (mkLuaInline ''main_mod  .. " + mouse_up"'')
+              (mkLuaInline ''hl.dsp.focus({ workspace = "e-1" })'')
+            ];
+          }
 
           # Move Windows
           {
@@ -455,20 +468,6 @@ in
             _args = [
               (mkLuaInline ''main_mod  .. " + SHIFT + L"'')
               (mkLuaInline ''hl.dsp.window.move({ direction = "r" })'')
-            ];
-          }
-
-          # Workspace Scrolling
-          {
-            _args = [
-              (mkLuaInline ''main_mod  .. " + mouse_down"'')
-              (mkLuaInline ''hl.dsp.focus({ workspace = "e+1" })'')
-            ];
-          }
-          {
-            _args = [
-              (mkLuaInline ''main_mod  .. " + mouse_up"'')
-              (mkLuaInline ''hl.dsp.focus({ workspace = "e-1" })'')
             ];
           }
 
@@ -642,36 +641,8 @@ in
           }
           {
             _args = [
-              (mkLuaInline ''main_mod  .. " + CTRL + SHIFT + Q"'')
+              (mkLuaInline ''"CTRL + Alt + Delete"'')
               (mkLuaInline ''hl.dsp.exec_cmd("loginctl terminate-user $USER")'')
-              { locked = true; }
-            ];
-          }
-          {
-            _args = [
-              (mkLuaInline ''main_mod  .. " + CTRL + SHIFT + W"'')
-              (mkLuaInline ''hl.dsp.exec_cmd("systemctl suspend")'')
-              { locked = true; }
-            ];
-          }
-          {
-            _args = [
-              (mkLuaInline ''main_mod  .. " + CTRL + SHIFT + E"'')
-              (mkLuaInline ''hl.dsp.exec_cmd("systemctl hibernate")'')
-              { locked = true; }
-            ];
-          }
-          {
-            _args = [
-              (mkLuaInline ''main_mod  .. " + CTRL + SHIFT + R"'')
-              (mkLuaInline ''hl.dsp.exec_cmd("systemctl reboot")'')
-              { locked = true; }
-            ];
-          }
-          {
-            _args = [
-              (mkLuaInline ''main_mod  .. " + CTRL + SHIFT + T"'')
-              (mkLuaInline ''hl.dsp.exec_cmd("systemctl poweroff")'')
               { locked = true; }
             ];
           }
