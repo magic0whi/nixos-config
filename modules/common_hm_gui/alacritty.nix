@@ -24,7 +24,7 @@
     settings = {
       window = {
         opacity = 0.93;
-        startup_mode = "Maximized"; # Maximized window
+        # startup_mode = "Maximized"; # Maximized window
         dynamic_title = true;
         option_as_alt = "Both"; # Option key acts as Alt on macOS
       };
