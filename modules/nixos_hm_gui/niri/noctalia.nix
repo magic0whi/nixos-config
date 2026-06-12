@@ -164,7 +164,6 @@
       };
       nightLight = {
         enabled = true;
-        forced = true;
         # manualSunrise = "06:30";
         # manualSunset = "18:30";
       };
