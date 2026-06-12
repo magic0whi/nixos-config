@@ -108,6 +108,7 @@
           go_bin = "${config.home.homeDirectory}/go/bin";
           rust_bin = "${config.home.homeDirectory}/.cargo/bin";
         in
+        # TODO use pkgs.writeShellScript instead
         lib.mkAfter ''
           # Export GPG primary key and subkeys to a specified (or default) directory
           export-gpg-keys() {

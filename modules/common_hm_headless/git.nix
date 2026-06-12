@@ -33,6 +33,7 @@
       push.autoSetupRemote = true;
       pull.rebase = true;
       core.hooksPath = ".git_hooks";
+      # TODO let delta use difftool
       difftool.difftastic.cmd = "${lib.getExe config.programs.difftastic.package} $LOCAL $REMOTE";
       url = {
         # New machines that lacks of a SSH Agent / key may not able to clone repo anonymously
