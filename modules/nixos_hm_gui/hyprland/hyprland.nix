@@ -641,7 +641,7 @@ in
           }
           {
             _args = [
-              (mkLuaInline ''"CTRL + Alt + Delete"'')
+              (mkLuaInline ''"CTRL + ALT + Delete"'')
               (mkLuaInline ''hl.dsp.exec_cmd("loginctl terminate-user $USER")'')
               { locked = true; }
             ];
