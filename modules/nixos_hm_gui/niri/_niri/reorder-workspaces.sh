@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Reorder named workspaces so indices match their numeric prefixes:
-# 1 → "1terminal", 2 → "2browser", ..., 6 → "6file", 10 → "0other".
+# 1 -> "1terminal", 2 -> "2browser", ..., 6 -> "6file", 10 -> "0other".
 # Requires a running niri session and the `niri msg` command in PATH.
 
 niri msg action move-workspace-to-index 1 --reference "1terminal"

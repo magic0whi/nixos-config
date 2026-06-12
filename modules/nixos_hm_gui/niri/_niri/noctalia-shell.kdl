@@ -1,12 +1,4 @@
-// https://docs.noctalia.dev/getting-started/compositor-settings/niri/
-
-window-rule {
-  // Rounded corners for a modern look.
-  geometry-corner-radius 20
-
-  // Clips window contents to the rounded corner boundaries.
-  clip-to-geometry true
-}
+// https://docs.noctalia.dev/v4/getting-started/compositor-settings/niri/
 
 debug {
   // Allows notification actions and window activation from Noctalia.
