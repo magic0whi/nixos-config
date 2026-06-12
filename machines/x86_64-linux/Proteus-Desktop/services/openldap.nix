@@ -156,7 +156,7 @@ in
         givenName: Proteus
         title: Qiansan
         mail: ${myvars.email}
-        labeledURI: http://misc.s3-pub.proteus.eu.org/siameseemoji_agadmqeaaspumeu.png
+        labeledURI: https://misc.s3-pub.proteus.eu.org/siameseemoji_agadmqeaaspumeu.png
         loginShell: /bin/zsh
         uidNumber: ${toString config.users.users.${myvars.username}.uid}
         gidNumber: ${toString config.users.groups.users.gid}
