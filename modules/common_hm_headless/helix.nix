@@ -113,6 +113,13 @@
           name = "json";
           auto-format = false;
         }
+        {
+          name = "kdl";
+          indent = {
+            tab-width = 2;
+            unit = "  ";
+          };
+        }
       ];
       language-server = {
         yaml-language-server.config.yaml.format.singleQuote = true;
