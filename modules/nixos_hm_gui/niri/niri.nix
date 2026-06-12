@@ -14,7 +14,15 @@
     niri
   ];
 
-  xdg.configFile."niri".source = ./_niri;
+  xdg.configFile = {
+    "niri/config.kdl".source = ./_niri/config.kdl;
+    "niri/keybindings.kdl".source = ./_niri/keybindings.kdl;
+    "niri/niri-hardware.kdl".source = ./_niri/niri-hardware.kdl;
+    "niri/noctalia-shell.kdl".source = ./_niri/noctalia-shell.kdl;
+    "niri/reorder-workspaces".source = ./_niri/reorder-workspaces.sh;
+    "niri/spawn-at-startup".source = ./_niri/spawn-at-startup.kdl;
+    "niri/window-rules".source = ./_niri/window-rules.kdl;
+  };
 
   systemd.user.targets.niri-session.Unit = {
     Description = "niri compositor session";
