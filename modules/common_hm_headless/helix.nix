@@ -20,6 +20,7 @@
         nixfmt-rs
         nixd
         taplo # TOML LSP
+        kdlfmt
       ]
       # NOTE: Requires bootstrap GHC
       ++ lib.optionals (!stdenv.hostPlatform.isRiscV64) [ marksman ];
