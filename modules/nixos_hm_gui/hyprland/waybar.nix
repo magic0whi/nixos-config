@@ -4,38 +4,38 @@
   ...
 }:
 {
-  programs.ashell = {
-    enable = true;
-    systemd.enable = true;
-    settings = {
-      CustomModule = [
-        {
-          name = "appLauncher";
-          icon = ""; # nf-linux-nixos
-          command = "walker";
-        }
-      ];
-      modules = {
-        left = [
-          [
-            "appLauncher"
-            "Workspaces"
-          ]
-        ];
-        center = [ "WindowTitle" ];
-        right = [
-          "SystemInfo"
-          "MediaPlayer"
-          [
-            "Tray"
-            "Tempo"
-            "Privacy"
-            "Settings"
-          ]
-        ];
-      };
-    };
-  };
+  # programs.ashell = {
+  #   enable = true;
+  #   systemd.enable = true;
+  #   settings = {
+  #     CustomModule = [
+  #       {
+  #         name = "appLauncher";
+  #         icon = ""; # nf-linux-nixos
+  #         command = "walker";
+  #       }
+  #     ];
+  #     modules = {
+  #       left = [
+  #         [
+  #           "appLauncher"
+  #           "Workspaces"
+  #         ]
+  #       ];
+  #       center = [ "WindowTitle" ];
+  #       right = [
+  #         "SystemInfo"
+  #         "MediaPlayer"
+  #         [
+  #           "Tray"
+  #           "Tempo"
+  #           "Privacy"
+  #           "Settings"
+  #         ]
+  #       ];
+  #     };
+  #   };
+  # };
   # Waybar sometimes starts too fast before hyprland is ready
   systemd.user.services = lib.mkIf config.programs.waybar.enable { waybar.Service.RestartSec = "3.02s"; };
   programs.waybar = {
