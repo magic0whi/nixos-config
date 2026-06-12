@@ -5,8 +5,6 @@ include "./niri-hardware.kdl"
 include "./noctalia-shell.kdl"
 include "./spawn-at-startup.kdl"
 
-spawn-sh-at-startup "bash ~/.config/niri/reorder-workspaces.sh"
-
 // https://niri-wm.github.io/niri/Configuration%3A-Input.html
 input {
     // Next sections include libinput settings.
