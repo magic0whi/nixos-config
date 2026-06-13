@@ -92,6 +92,13 @@ in
       encode
     '';
   };
+
+  # Don't put ip related rules along with other things as it will filter the whole rule
+  mkSbRules =
+    forDns: out: rules:
+    (map (rule: (if forDns then { server = out; } else { outbound = out; }) // rule) (
+      if forDns then lib.filter (rule: !rule ? ip_cidr) rules else rules
+    ));
   ## END pkgs agnostic functions
   ## BEGIN pkgs dependent functions
   mkForPkgs = pkgs: {
