@@ -3,17 +3,21 @@
   _find_host =
     hostAddrs: cn:
     lib.findFirst (
-      name:
+      hostname:
       lib.any (
-        iface:
-        builtins.elem cn (iface.domains.CNAME or [ ])
-        || builtins.elem cn (iface.domains.A or [ ])
-        || builtins.elem cn (iface.domains.AAAA or [ ])
-      ) hostAddrs.${name}
+        net:
+        builtins.elem cn (net.domains.CNAME or [ ])
+        || builtins.elem cn (net.domains.A or [ ])
+        || builtins.elem cn (net.domains.AAAA or [ ])
+      ) hostAddrs.${hostname}
     ) null (builtins.attrNames hostAddrs);
   caddyPort = 8080;
 
   soaSerial = "2026061002";
+  # TODO: use <hostName>.<nicName> = {
+  # ipv4 = [];
+  # ipv6 = [];
+  # }
   hostAddrs = {
     # ============================================
     # Homelab's Physical Machines (TODO: Try KubeVirt)

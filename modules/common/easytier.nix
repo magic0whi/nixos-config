@@ -7,23 +7,25 @@
 }:
 {
   sops =
-    let
-      restartUnits = map (name: "easytier-${name}.service") (builtins.attrNames config.services.easytier.instances);
-      sopsFile = "${myvars.secretsDir}/common.sops.yaml";
-    in
-    lib.mapAttrsRecursiveCond (as: !(as ? sopsFile || as ? content))
+    lib.mapAttrsRecursiveCond (attrs: !(attrs ? sopsFile || attrs ? content))
       (
-        _: as:
+        _: secret:
         lib.mkMerge [
-          as
-          (lib.optionalAttrs (!pkgs.stdenv.isDarwin) { inherit restartUnits; })
+          secret
+          (lib.optionalAttrs (!pkgs.stdenv.isDarwin) {
+            restartUnits = map (name: "easytier-${name}.service") (builtins.attrNames config.services.easytier.instances);
+          })
         ]
       )
       {
-        secrets = {
-          "easytier_network_secret" = { inherit sopsFile; };
-          "easytier_peer_0" = { inherit sopsFile; };
-        };
+        secrets =
+          let
+            sopsFile = "${myvars.secretsDir}/common.sops.yaml";
+          in
+          {
+            "easytier_network_secret" = { inherit sopsFile; };
+            "easytier_peer_0" = { inherit sopsFile; };
+          };
         templates."easytier.env" = {
           content = ''
             ET_NETWORK_SECRET=${config.sops.placeholder.easytier_network_secret}

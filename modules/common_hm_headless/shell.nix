@@ -82,13 +82,13 @@
       targzls = "tar -I 'nix run nixpkgs#pigz --' -tvf";
     }
 
-    (lib.optionalAttrs (!pkgs.stdenv.isDarwin) {
-      ip = "ip --color=auto";
+    (lib.mkIf (!pkgs.stdenv.isDarwin) {
       Ci = "wl-copy";
       Co = "wl-paste";
       Coimg = "Co --type image";
     })
   ];
+
   catppuccin.fzf.enable = false; # catppuccin fzf is prone to fail on macOS
   programs = {
     zsh = {

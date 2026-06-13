@@ -45,11 +45,9 @@ in
     let
       clean_units = map (s: lib.removeSuffix ".service" s) restartUnits;
     in
-    lib.mkMerge [
-      (lib.genAttrs clean_units (_: {
-        serviceConfig.SupplementaryGroups = [ config.services.redis.servers.authelia.group ];
-      }))
-    ];
+    (lib.genAttrs clean_units (_: {
+      serviceConfig.SupplementaryGroups = [ config.services.redis.servers.authelia.group ];
+    }));
 
   services.redis.servers.authelia.enable = true;
 

@@ -95,6 +95,7 @@
       '';
     }
 
+    # We cannot use `lib.mkIf` if the options does not exist
     (lib.optionalAttrs (!pkgs.stdenv.isDarwin) {
       autosuggestions = {
         enable = true;

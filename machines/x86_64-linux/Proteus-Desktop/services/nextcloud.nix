@@ -25,13 +25,13 @@ in
       nextcloud_admin_password = { inherit sopsFile restartUnits; };
       nextcloud_oidc_client_secret = { inherit sopsFile restartUnits; };
     };
-  systemd.services =
-    let
-      clean_units = map (s: lib.removeSuffix ".service" s) restartUnits;
-    in
-    lib.mkMerge [
-      # Add RequiresMountsFor to wait for storage mounted
-      (lib.genAttrs clean_units (_: {
+  systemd.services = lib.mkMerge [
+    # Add RequiresMountsFor to wait for storage mounted
+    (
+      let
+        clean_units = map (s: lib.removeSuffix ".service" s) restartUnits;
+      in
+      lib.genAttrs clean_units (_: {
         unitConfig.RequiresMountsFor = [ myvars.storagePath ];
         wants = [ "network-online.target" ];
         after = [ "network-online.target" ];
@@ -44,53 +44,55 @@ in
           done
           echo "LDAP is online, proceeding with Forgejo startup."
         '';
-      }))
-      # https://wiki.nixos.org/wiki/Nextcloud#Dynamic_configuration
-      {
-        nextcloud-custom-config = {
-          after = [ "nextcloud-setup.service" ];
-          wantedBy = [ "multi-user.target" ];
-          path = [
-            config.services.nextcloud.occ
-            pkgs.jq
-          ];
-          script = ''
-            nextcloud-occ app:disable app_api # I don't plan to run external AI apps
-            # Logreader only supports "file" log_type and complains it, I'd rather prefer journald
-            nextcloud-occ app:disable logreader
-            nextcloud-occ app:disable twofactor_totp # Since we use Authelia OIDC
-            nextcloud-occ app:disable federation # I don't share files with users on other Nextcloud instances
-            nextcloud-occ app:disable circles # Teams
-            nextcloud-occ app:disable user_status # Allows users to set a status message (e.g., "In a meeting", "Away")
-            nextcloud-occ app:disable dashboard
-            nextcloud-occ app:disable photos # I use immich instead
+      })
+    )
 
-            nextcloud-occ app:enable files_external # Enable External Storage to mount Syncthing shared folders
-            # Define the list of Syncthing folders to mount
-            declare -A external_mounts=(
-              [KeePassXC]="${myvars.storagePath}/share/KeePassXC"
-            )
-            for mount_point in "''${!external_mounts[@]}"; do
-              # Ensure the external mount doesn't duplicate mountpoints
-              if ! nextcloud-occ files_external:list --output=json | jq -e --arg mp "/$mount_point" '.[] | select(.mount_point == $mp)' > /dev/null; then
-                echo "Creating Syncthing external mount for $mount_point..."
-                MOUNT_ID=$(nextcloud-occ files_external:create \
-                  "$mount_point" \
-                  'local' \
-                  'null::null' \
-                  -c datadir="''${external_mounts[$mount_point]}" \
-                  --output=json)
-                # Check filesystem changes: Always
-                # nextcloud-occ files_external:option -n "$MOUNT_ID" filesystem_check_changes 2
-                nextcloud-occ files_external:option -n "$MOUNT_ID" readonly 1
-                # Grant access to all users, or use --add-user=username for specific users or --add-group=groupname
-                nextcloud-occ files_external:applicable --add-user=proteus "$MOUNT_ID"
-              fi
-            done
-          '';
-        };
-      }
-    ];
+    # https://wiki.nixos.org/wiki/Nextcloud#Dynamic_configuration
+    {
+      nextcloud-custom-config = {
+        after = [ "nextcloud-setup.service" ];
+        wantedBy = [ "multi-user.target" ];
+        path = [
+          config.services.nextcloud.occ
+          pkgs.jq
+        ];
+        script = ''
+          nextcloud-occ app:disable app_api # I don't plan to run external AI apps
+          # Logreader only supports "file" log_type and complains it, I'd rather prefer journald
+          nextcloud-occ app:disable logreader
+          nextcloud-occ app:disable twofactor_totp # Since we use Authelia OIDC
+          nextcloud-occ app:disable federation # I don't share files with users on other Nextcloud instances
+          nextcloud-occ app:disable circles # Teams
+          nextcloud-occ app:disable user_status # Allows users to set a status message (e.g., "In a meeting", "Away")
+          nextcloud-occ app:disable dashboard
+          nextcloud-occ app:disable photos # I use immich instead
+
+          nextcloud-occ app:enable files_external # Enable External Storage to mount Syncthing shared folders
+          # Define the list of Syncthing folders to mount
+          declare -A external_mounts=(
+            [KeePassXC]="${myvars.storagePath}/share/KeePassXC"
+          )
+          for mount_point in "''${!external_mounts[@]}"; do
+            # Ensure the external mount doesn't duplicate mountpoints
+            if ! nextcloud-occ files_external:list --output=json | jq -e --arg mp "/$mount_point" '.[] | select(.mount_point == $mp)' > /dev/null; then
+              echo "Creating Syncthing external mount for $mount_point..."
+              MOUNT_ID=$(nextcloud-occ files_external:create \
+                "$mount_point" \
+                'local' \
+                'null::null' \
+                -c datadir="''${external_mounts[$mount_point]}" \
+                --output=json)
+              # Check filesystem changes: Always
+              # nextcloud-occ files_external:option -n "$MOUNT_ID" filesystem_check_changes 2
+              nextcloud-occ files_external:option -n "$MOUNT_ID" readonly 1
+              # Grant access to all users, or use --add-user=username for specific users or --add-group=groupname
+              nextcloud-occ files_external:applicable --add-user=proteus "$MOUNT_ID"
+            fi
+          done
+        '';
+      };
+    }
+  ];
 
   services.nextcloud = {
     enable = true;
