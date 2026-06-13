@@ -1,20 +1,16 @@
 // "/-" comments out the following node.
 include "./keybindings.kdl"
-include "./windowrules.kdl"
+include "./window-rules.kdl"
 include "./niri-hardware.kdl"
 include "./noctalia-shell.kdl"
 include "./spawn-at-startup.kdl"
 
-// https://niri-wm.github.io/niri/Configuration%3A-Input.html
 input {
-    // Next sections include libinput settings.
-    // Omitting settings disables them, or leaves them at their default values.
-    // All commented-out settings here are examples, not defaults.
-    touchpad {
-        tap // tap-to-click
-        dwt // disable-when-typing.
-        natural-scroll // inverts the scrolling direction.
-    }
+  touchpad {
+    tap // tap-to-click
+    dwt // disable-when-typing.
+    natural-scroll // inverts the scrolling direction.
+  }
 }
 
 // Clients will be informed that they are tiled, removing some client-side rounded corners and window frame.
@@ -29,17 +25,16 @@ input {
 // `draw-border-with-background`.
 prefer-no-csd
 
-// Ref: https://yalter.github.io/niri/Configuration:-Layout
 layout {
-    gaps 8 // In logical pixels.
-    focus-ring {
-        // off
-        width 4
-        active-gradient from="#e5989b" to="#ffb4a2" angle=45 in="oklch longer hue"
-        // The focus ring only draws around the active window, so the only place where you can see its inactive-color is
-        // on other monitors.
-        inactive-color "#595959aa"
-    }
+  gaps 8 // In logical pixels.
+  focus-ring {
+    // off
+    width 4
+    active-gradient from="#e5989b" to="#ffb4a2" angle=45 in="oklch longer hue"
+    // The focus ring only draws around the active window, so the only place where you can see its inactive-color is
+    // on other monitors.
+    inactive-color "#595959aa"
+  }
 }
 window-rule {
   geometry-corner-radius 20 // Rounded logical corners
@@ -47,8 +42,8 @@ window-rule {
 }
 
 hotkey-overlay {
-    skip-at-startup //disable the "Important Hotkeys" pop-up at startup.
-    hide-not-bound
+  skip-at-startup //disable the "Important Hotkeys" pop-up at startup.
+  hide-not-bound
 }
 screenshot-path null // Disable saving screenshots to disk.
 
