@@ -18,9 +18,12 @@ let
     # DNS utils
     { process_name = [ "doggo" ]; }
 
-    # Docker { 172.16.0.0-172.18.255.255, 172.19.0.4-172.31.255.255 }
     {
       ip_cidr = [
+        # Libvirt
+        "192.168.122.0/24"
+
+        # Docker { 172.16.0.0-172.18.255.255, 172.19.0.4-172.31.255.255 }
         "172.16.0.0/15"
         "172.19.0.4/30"
         "172.19.0.8/29"
@@ -49,6 +52,7 @@ let
         "syncthing.exe"
       ];
     }
+    { process_path_regex = [ ".*localsend.*" ]; }
   ];
   rules = [ { domain_suffix = [ "syncthing.net" ]; } ];
 in

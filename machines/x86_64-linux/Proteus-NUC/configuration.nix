@@ -4,6 +4,7 @@
   ...
 }:
 {
+  services.sing-box.generateConfig.enable = true;
   hardware.graphics.extraPackages = with pkgs; [
     intel-media-driver
     intel-compute-runtime-legacy1

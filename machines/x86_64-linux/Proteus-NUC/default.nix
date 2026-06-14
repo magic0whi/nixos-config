@@ -34,6 +34,8 @@ let
         "modules/common/packages.nix"
         "modules/common/secrets.nix"
         "modules/common/shell.nix"
+        "modules/common/sing-box-client.nix"
+        "modules/common/sing-box-client-mobile.nix"
         "modules/common/ssh.nix"
         "modules/common/tailscale.nix"
 
