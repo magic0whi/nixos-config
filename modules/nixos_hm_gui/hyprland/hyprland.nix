@@ -45,7 +45,6 @@ in
       # menu._var = "rofi -show combi";
       # menu._var = config.programs.anyrun.menu_script;
       menu._var = "walker";
-      wlogout._var = config.programs.wlogout.wrapper_script;
 
       # This will get rid of the pixelated look, but will not scale applications properly. To do this, each toolkit has
       # its own mechanism.
@@ -330,12 +329,6 @@ in
               (mkLuaInline "hl.dsp.exec_cmd(a_launch_prefix .. color_picker)")
             ];
           }
-          {
-            _args = [
-              (mkLuaInline ''main_mod  .. " + X"'')
-              (mkLuaInline "hl.dsp.exec_cmd(a_launch_prefix .. wlogout)")
-            ];
-          }
 
           # Window management
           {
@@ -468,26 +461,6 @@ in
             _args = [
               (mkLuaInline ''main_mod  .. " + SHIFT + L"'')
               (mkLuaInline ''hl.dsp.window.move({ direction = "r" })'')
-            ];
-          }
-
-          # Screenshots
-          {
-            _args = [
-              (mkLuaInline ''"Print"'')
-              (mkLuaInline ''hl.dsp.exec_cmd(a_launch_prefix .. "hyprshot -m output -o ~/Pictures/Screenshots -- imv")'')
-            ];
-          }
-          {
-            _args = [
-              (mkLuaInline ''"ALT + Print"'')
-              (mkLuaInline ''hl.dsp.exec_cmd(a_launch_prefix .. "hyprshot -m window -o ~/Pictures/Screenshots -- imv")'')
-            ];
-          }
-          {
-            _args = [
-              (mkLuaInline ''"CTRL + Print"'')
-              (mkLuaInline ''hl.dsp.exec_cmd(a_launch_prefix .. "hyprshot -m region -o ~/Pictures/Screenshots -- imv")'')
             ];
           }
 

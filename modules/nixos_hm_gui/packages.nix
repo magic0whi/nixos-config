@@ -5,7 +5,6 @@
     sound-theme-freedesktop
     wl-clipboard # copying and pasting
     hyprpicker # color picker
-    hyprshot # screenshot
     wf-recorder # screen recording
 
     yad # a fork of zenity, for creating dialogs
