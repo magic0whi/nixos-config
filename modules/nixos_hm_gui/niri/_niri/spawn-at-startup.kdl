@@ -1,9 +1,0 @@
-spawn-sh-at-startup "bash ~/.config/niri/reorder-workspaces.sh"
-
-spawn-at-startup "systemctl" "start" "niri-session.target"
-
-// Noctalia: use niri spawn-at-startup (systemd user service is deprecated upstream).
-// https://docs.noctalia.dev/getting-started/compositor-settings/niri/
-spawn-at-startup "noctalia-shell"
-
-spawn-at-startup "sleep" "5s"

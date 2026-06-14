@@ -26,13 +26,6 @@
             Type=Application
             EOF
 
-            # cat <<EOF > $out/niri-session.desktop
-            # [Desktop Entry]
-            # Name=Niri Session
-            # Exec=${lib.getExe pkgs.niri}
-            # Type=Application
-            # EOF
-
             cat <<EOF > $out/steam.desktop
             [Desktop Entry]
             Name=Steam (Gamescope)
