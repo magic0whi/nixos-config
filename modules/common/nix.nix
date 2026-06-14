@@ -19,6 +19,9 @@
     # Manual optimise storage: nix-store --optimise
     # https://nixos.org/manual/nix/stable/command-ref/conf-file.html#conf-auto-optimise-store
     optimise.automatic = true; # Add a timer to do optimise periodically
+    extraOptions = ''
+      warn-dirty = false
+    '';
     settings = lib.mkMerge [
       (lib.optionalAttrs (!pkgs.stdenv.isDarwin) { auto-optimise-store = true; }) # Optimise the store after each build
       {
