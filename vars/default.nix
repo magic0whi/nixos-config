@@ -55,6 +55,7 @@
   base = {
     nixpkgsModules = map mylib.relativeToRoot [
       # "modules/common/default.nix"
+      "modules/common/debug.nix"
       "modules/common/easytier.nix"
       # "modules/common/fonts.nix"
       "modules/common/misc.nix"
