@@ -1,6 +1,27 @@
 { pkgs, ... }:
 {
   home.packages = with pkgs; [
+    brightnessctl
+    sound-theme-freedesktop
+    wl-clipboard # copying and pasting
+    hyprpicker # color picker
+    hyprshot # screenshot
+    wf-recorder # screen recording
+
+    yad # a fork of zenity, for creating dialogs
+
+    # audio
+    alsa-utils # provides amixer/alsamixer/...
+    mpc # command-line mpd client
+    ncmpcpp # a mpd client with a UI
+
+    ffmpeg-full
+
+    # images
+    # viu # Terminal image viewer with native support for iTerm and Kitty
+    imagemagick # Provides 'convert'
+    graphviz
+
     telegram-desktop # Instant messaging
     imv # simple image viewer
     loupe # Simple image viewer application written with GTK4 and Rust
