@@ -6,6 +6,8 @@ in
 {
   ## BEGIN pkgs agnostic functions
   # Don't put ip related rules along with other things as it will filter the whole rule
+  # NOTE in 1.14, there is a new feature evaluate, which allows query DNS result and use the result  to do IP matches
+  # later
   mkSbRules =
     forDns: out: rules:
     (map (rule: (if forDns then { server = out; } else { outbound = out; }) // rule) (
