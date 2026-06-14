@@ -3,21 +3,21 @@ binds {
     Mod+Shift+Slash { show-hotkey-overlay; } // Usually the same as Mod-?, shows a list of important hotkeys.
 
     // Applications
-    Mod+Q hotkey-overlay-title="Open terminal" { spawn "xdg-terminal-exec"; }
-    Mod+E hotkey-overlay-title="Open file manager" { spawn "xdg-terminal-exec" "yazi"; }
+    Mod+Q hotkey-overlay-title="Open Terminal" { spawn "xdg-terminal-exec"; }
+    Mod+E hotkey-overlay-title="Open File Manager" { spawn "xdg-terminal-exec" "yazi"; }
     // TODO Missing color picker
-    Mod+X hotkey-overlay-title="Open power menu" { spawn "noctalia-shell" "ipc" "--any-display" "call" "sessionMenu" "toggle"; }
-    Mod+S hotkey-overlay-title="Open control center" { spawn "noctalia-shell" "ipc" "--any-display" "call" "controlCenter" "toggle"; }
-    Mod+V hotkey-overlay-title="Open clipboard manager" { spawn "noctalia-shell" "ipc" "--any-display" "call" "launcher" "clipboard"; }
-    Mod+Space hotkey-overlay-title="Open menu" { spawn "noctalia-shell" "ipc" "--any-display" "call" "launcher" "toggle"; }
-    XF86Search hotkey-overlay-title="Open menu" { spawn "noctalia-shell" "ipc" "--any-display" "call" "launcher" "toggle"; }
+    Mod+X hotkey-overlay-title="Open Power Menu" { spawn "noctalia-shell" "ipc" "--any-display" "call" "sessionMenu" "toggle"; }
+    Mod+S hotkey-overlay-title="Open Control Center" { spawn "noctalia-shell" "ipc" "--any-display" "call" "controlCenter" "toggle"; }
+    Mod+V hotkey-overlay-title="Open Clipboard Manager" { spawn "noctalia-shell" "ipc" "--any-display" "call" "launcher" "clipboard"; }
+    Mod+Space hotkey-overlay-title="Open Menu" { spawn "noctalia-shell" "ipc" "--any-display" "call" "launcher" "toggle"; }
+    XF86Search hotkey-overlay-title="Open Menu" { spawn "noctalia-shell" "ipc" "--any-display" "call" "launcher" "toggle"; }
 
     // Window management
     F12 repeat=false { toggle-overview; }
     Mod+W repeat=false { close-window; }
     Mod+F { maximize-column; }
     Mod+Shift+F hotkey-overlay-title="Fullscreen Column" { fullscreen-window; }
-    Mod+Alt+F { toggle-window-floating; }
+    Mod+Alt+F hotkey-overlay-title="Toggle Floating" { toggle-window-floating; }
     // NOTE: niri lacks sticky/pinned feature
     // https://niri-wm.github.io/niri/FAQ.html#can-i-make-a-window-sticky-pinned-always-on-top-appear-on-all-workspaces
 
@@ -40,11 +40,13 @@ binds {
 
     // Mod+Tab { focus-workspace-previous; } // Switches focus between the current and the previous workspace.
 
-    Mod+C { center-visible-columns; } // Center all fully visible columns on screen.
+    Mod+C hotkey-overlay-title="Fullscreen Column" { center-visible-columns; } // Center all fully visible columns on screen.
 
     // Toggle tabbed column display mode, "open the drawer".
     // Windows in this column will appear as vertical tabs, rather than stacked on top of each other.
-    Mod+D { toggle-column-tabbed-display; }
+    Mod+D hotkey-overlay-title="Toggle Drawer View" { toggle-column-tabbed-display; }
+
+    Mod+T { focus-floating; }
 
     Mod+Ctrl+H { focus-monitor-left; }
     Mod+Ctrl+J { focus-monitor-down; }
@@ -78,8 +80,8 @@ binds {
     Mod+Shift+N { move-column-to-workspace-down; }
     Mod+Shift+P { move-column-to-workspace-up; }
 
-    Mod+Alt+Shift+N{ move-workspace-down; }
-    Mod+Alt+Shift+P{ move-workspace-up; }
+    Mod+Alt+Shift+N hotkey-overlay-title="Move Workspace Down" { move-workspace-down; }
+    Mod+Alt+Shift+P hotkey-overlay-title="Move Workspace Up" { move-workspace-up; }
 
     // Move window in and out of a column.
     // If the window is alone, they will consume it into the nearby column to the side.
@@ -87,8 +89,8 @@ binds {
     Mod+BracketLeft  { consume-or-expel-window-left; }
     Mod+BracketRight { consume-or-expel-window-right; }
 
-    Mod+Comma  { consume-window-into-column; } // Consume one window from the right to the bottom of the focused column.
-    Mod+Period { expel-window-from-column; } // Expel the bottom window from the focused column to the right.
+    Mod+Comma  hotkey-overlay-title="Consume Right Window into Column" { consume-window-into-column; }
+    Mod+Period hotkey-overlay-title="Expel Right Window out of Column" { expel-window-from-column; }
 
     // TODO lacks workspace mouse scrolling
 
@@ -107,8 +109,8 @@ binds {
     Mod+Ctrl+F hotkey-overlay-title="Expand Columnt to width" { expand-column-to-available-width; } // Makes the column "fill the rest of the space".
 
     // Finer width adjustments.
-    Mod+Minus { set-column-width "-10%"; }
-    Mod+Equal { set-column-width "+10%"; }
+    Mod+Minus hotkey-overlay-title="Fine-tune add width" { set-column-width "-10%"; }
+    Mod+Equal hotkey-overlay-title="Fine-tune minus width" { set-column-width "+10%"; }
     // Finer height adjustments when in column with other windows.
     Mod+Shift+Minus { set-window-height "-10%"; }
     Mod+Shift+Equal { set-window-height "+10%"; }
@@ -145,8 +147,8 @@ binds {
     XF86AudioNext allow-when-locked=true { spawn "noctalia-shell" "ipc" "--any-display" "call" "media" "next"; }
 
     // System Controls
-    Mod+Z { spawn "noctalia-shell" "ipc" "--any-display" "call" "lockScreen" "lock"; } // Locker
-    Mod+Ctrl+P { power-off-monitors; } // Powers off the monitors.
+    Mod+Z hotkey-overlay-title="Lock" { spawn "noctalia-shell" "ipc" "--any-display" "call" "lockScreen" "lock"; } // Locker
+    Mod+Ctrl+P allow-when-locked=true hotkey-overlay-title="Power-off Monitors" { power-off-monitors; }
     Ctrl+Alt+Delete { quit; } // The quit action will show a confirmation dialog to avoid accidental exits.
 
     Mod+1 { focus-workspace "1terminal"; }
