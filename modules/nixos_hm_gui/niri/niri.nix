@@ -48,29 +48,23 @@
       type = lib.types.lines;
       description = "Contents that will be written to config.kdl";
     };
-    settings = lib.mkOption {
-      type = lib.types.submodule (_: {
-        options = {
-          workspaces = lib.mkOption {
-            type =
-              with lib.types;
-              addCheck (listOf str) (ws: builtins.length ws == 10) // { description = "list of strings with 10 elements"; };
-            description = "Workspace names";
-            default = [
-              "1"
-              "2"
-              "3"
-              "4"
-              "5"
-              "6"
-              "7"
-              "8"
-              "9"
-              "10"
-            ];
-          };
-        };
-      });
+    settings.workspaces = lib.mkOption {
+      type =
+        with lib.types;
+        addCheck (listOf str) (ws: builtins.length ws == 10) // { description = "list of strings with 10 elements"; };
+      description = "Workspace names";
+      default = [
+        "1"
+        "2"
+        "3"
+        "4"
+        "5"
+        "6"
+        "7"
+        "8"
+        "9"
+        "10"
+      ];
     };
   };
   config =
