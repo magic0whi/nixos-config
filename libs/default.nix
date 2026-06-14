@@ -1,9 +1,20 @@
 { inputs }:
 let
   inherit (inputs.nixpkgs) lib;
+  dns_rule_filter = rule: !(rule ? ip_cidr || rule ? network || rule ? port);
 in
 {
   ## BEGIN pkgs agnostic functions
+  # Don't put ip related rules along with other things as it will filter the whole rule
+  mkSbRules =
+    forDns: out: rules:
+    (map (rule: (if forDns then { server = out; } else { outbound = out; }) // rule) (
+      if forDns then lib.filter dns_rule_filter rules else rules
+    ));
+  mkSbRules' =
+    forDns: defCfg: rules:
+    (map (rule: defCfg // rule) (if forDns then lib.filter dns_rule_filter rules else rules));
+
   # Use path relative to the root of the project
   relativeToRoot = lib.path.append ../.;
 
@@ -92,13 +103,6 @@ in
       encode
     '';
   };
-
-  # Don't put ip related rules along with other things as it will filter the whole rule
-  mkSbRules =
-    forDns: out: rules:
-    (map (rule: (if forDns then { server = out; } else { outbound = out; }) // rule) (
-      if forDns then lib.filter (rule: !rule ? ip_cidr) rules else rules
-    ));
   ## END pkgs agnostic functions
   ## BEGIN pkgs dependent functions
   mkForPkgs = pkgs: {

@@ -1,18 +1,20 @@
 {
+  config,
   lib,
   mylib,
   myvars,
-  sharedRuleSetCfg,
+  ruleSetCfg,
   ...
 }:
 let
-  bypass = {
+  out = "Tailscale";
+  non_dns_rules = {
     out = "Direct";
     rules = lib.singleton { process_path_regex = [ ".*tailscaled.*" ]; };
   };
   super_rules = [
     {
-      out = "Tailscale";
+      inherit out;
       rules = [
         {
           ip_cidr = [
@@ -42,14 +44,14 @@ in
   dns = {
     servers = [
       {
-        tag = "Tailscale";
+        tag = out;
         type = "tailscale";
-        endpoint = "Tailscale";
+        endpoint = out;
       }
       {
         tag = "myNs";
         type = "tls";
-        detour = "Tailscale";
+        detour = out;
         server = (builtins.head myvars.networking.hostAddrs.${myvars.networking.findHost "ns1"}).ipv4;
         tls.server_name = "ns1.${myvars.domain}";
       }
@@ -62,12 +64,21 @@ in
         lib.flatten (map (rules: mkSbRules rules.out rules.rules) super_rules) ++ mkSbRules "myNs" my_domains.rules
       );
   };
+  endpoints = [
+    {
+      tag = out;
+      type = "tailscale";
+      auth_key._secret = config.sops.secrets.sb_ts_auth_key.path;
+      accept_routes = true;
+      system_interface = true;
+    }
+  ];
   route = {
     rule_set = lib.singleton (
-      sharedRuleSetCfg.defaultCfg
+      ruleSetCfg.defaultCfg
       // {
         tag = "geosite-tailscale";
-        url = "${sharedRuleSetCfg.urlPrefix}/geo/geosite/tailscale.srs";
+        url = "${ruleSetCfg.urlPrefix}/geo/geosite/tailscale.srs";
       }
     );
     rules = lib.mkMerge (
@@ -75,10 +86,10 @@ in
         mkSbRules = mylib.mkSbRules false;
       in
       [
-        (lib.mkBefore (mkSbRules bypass.out bypass.rules))
-        # After sniff, dns hijack, clash modes, before default
+        (lib.mkBefore (mkSbRules non_dns_rules.out non_dns_rules.rules))
+        # 875: After sniff, DNS hijack, Clash modes, before default
         (lib.mkOrder 875 (
-          lib.flatten (map (rules: mkSbRules rules.out rules.rules) super_rules) ++ mkSbRules "Tailscale" my_domains.rules
+          lib.flatten (map (rules: mkSbRules rules.out rules.rules) super_rules) ++ mkSbRules out my_domains.rules
         ))
       ]
     );

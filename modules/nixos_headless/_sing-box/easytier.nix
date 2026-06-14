@@ -1,7 +1,7 @@
 { lib, mylib, ... }:
 let
   out = "Direct";
-  bypass = [
+  non_dns_rules = [
     {
       process_name = [
         "easytier-core"
@@ -27,7 +27,7 @@ in
       mkSbRules = mylib.mkSbRules false;
     in
     [
-      (lib.mkBefore (mkSbRules out bypass))
+      (lib.mkBefore (mkSbRules out non_dns_rules))
       (lib.mkOrder 875 (mkSbRules out rules))
     ]
   );

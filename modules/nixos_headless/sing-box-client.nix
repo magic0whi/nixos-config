@@ -31,47 +31,46 @@
     enable = true;
     settings =
       let
-        # Custom rule sets
-        reject = {
-          process_name = [
-            "xmrig"
-            "xmrig.exe"
-          ];
-          domain_suffix = [
-            "2miners.com"
-            "donate.v2.xmrig"
-            "supportxmr.com"
-          ];
-        };
-        # default.domain_suffix = [ "wenziwanka.com" ];
-        sharedSelectorCfg = {
-          type = "selector";
-          outbounds = [
-            "Direct"
-            "Default"
-            "Auto"
-            # "Germany"
-            "HongKong"
-            "UnitedKingdom"
-            "UnitedStates"
-            "Others"
-          ];
-        };
-        sharedRuleSetCfg = {
-          urlPrefix = "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing";
-          defaultCfg = {
-            format = "binary";
-            download_detour = "Auto";
-            type = "remote";
+        shared_cfg = {
+          selectorCfg = {
+            type = "selector";
+            outbounds = [
+              "Direct"
+              "Default"
+              "Auto"
+            ]
+            # Regions
+            ++ (map (outbound: outbound.tag)
+              (import ./_sing-box/10-regions.nix {
+                dnsServerCfg = null;
+                lib = null;
+              }).outbounds
+            );
           };
-        };
-        sharedDnsServerCfg = {
-          server = "8.8.8.8";
-          type = "tls";
+          ruleSetCfg = {
+            urlPrefix = "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing";
+            defaultCfg = {
+              format = "binary";
+              download_detour = "Auto";
+              type = "remote";
+            };
+          };
+          dnsServerCfg = {
+            default = {
+              server = "8.8.8.8";
+              type = "tls";
+            };
+            direct = {
+              server = "dns.alidns.com";
+              type = "tls";
+              domain_resolver = "Bootstrap";
+            };
+          };
         };
       in
       lib.mkMerge (
         [
+          # Full config.json encryption
           # {
           #   _secret = config.sops.secrets."sb_client_linux.json".path;
           #   quote = false;
@@ -83,9 +82,9 @@
             };
             dns = {
               final = "Default";
-              servers = [
+              servers = lib.mkOrder 250 [
                 {
-                  tag = "fakeip";
+                  tag = "FakeIP";
                   type = "fakeip";
                   inet4_range = "198.18.0.0/15";
                   inet6_range = "fc00::/18";
@@ -101,11 +100,6 @@
                   server = "dns.alidns.com";
                   domain_resolver = "Bootstrap";
                 }
-                {
-                  tag = "Default";
-                  type = "tls";
-                  server = "8.8.8.8";
-                }
               ];
               # The default rule uses the following matching logic:
               # (domain || domain_suffix || domain_keyword || domain_regex || geosite) &&
@@ -115,41 +109,27 @@
               # other fields
               # Ref: https://sing-box.sagernet.org/configuration/dns/rule/#default-fields
               rules = lib.mkMerge [
-                # Reject
-                (lib.mapAttrsToList (name: val: {
-                  action = "reject";
-                  ${name} = val;
-                }) reject)
-
                 # FaleIP; Clash mode
                 (lib.mkOrder 750 [
+                  # Let global & direct mode get RealIP
                   {
-                    server = "fakeip";
-                    query_type = [
-                      "A"
-                      "AAAA"
-                    ];
+                    server = "Default";
+                    clash_mode = "global";
                   }
                   {
                     server = "Direct";
                     clash_mode = "direct";
                   }
                   {
-                    server = "Default";
-                    clash_mode = "global";
+                    server = "FakeIP";
+                    query_type = [
+                      "A"
+                      "AAAA"
+                    ];
                   }
                 ])
               ];
             };
-            endpoints = [
-              {
-                accept_routes = true;
-                auth_key._secret = config.sops.secrets.sb_ts_auth_key.path;
-                system_interface = true;
-                tag = "Tailscale";
-                type = "tailscale";
-              }
-            ];
             experimental = {
               cache_file = {
                 enabled = true;
@@ -169,113 +149,33 @@
               {
                 listen = "127.0.0.1";
                 listen_port = 2080;
-                tag = "mixed-in";
+                tag = "Mixed";
                 type = "mixed";
               }
+              {
+                tag = "Tun";
+                type = "tun";
+                address = [
+                  "172.19.0.1/30"
+                  "fdfe:dcba:9876::1/126"
+                ];
+                stack = "gvisor";
+                auto_route = true;
+                strict_route = false;
+                interface_name = "sing0";
+                auto_redirect = true;
+                route_exclude_address = [
+                  "10.0.0.0/24"
+                  "fdfe:dcba:9877::/64"
+                ];
+              }
             ];
-            outbounds =
-              let
-                nodes =
-                  map
-                    (
-                      node:
-                      {
-                        server_port = 443;
-                        password._secret = config.sops.secrets.sb_nodes_password.path;
-                        tls = {
-                          enabled = true;
-                          reality = {
-                            enabled = true;
-                            public_key._secret = config.sops.secrets.sb_nodes_public_key.path;
-                            short_id._secret = config.sops.secrets.sb_nodes_short_id.path;
-                          };
-                          server_name._secret = config.sops.secrets.sb_nodes_server_name.path;
-                          utls = {
-                            enabled = true;
-                            fingerprint = "chrome";
-                          };
-                        };
-                        type = "anytls";
-                      }
-                      // node
-                    )
-                    [
-                      {
-                        tag = "Proteus-NixOS-0";
-                        server._secret = config.sops.secrets.sb_nodes_Proteus-NixOS-0.path;
-                      }
-                      {
-                        tag = "Proteus-NixOS-4";
-                        server._secret = config.sops.secrets.sb_nodes_Proteus-NixOS-4.path;
-                      }
-                      {
-                        tag = "Proteus-NixOS-5";
-                        server._secret = config.sops.secrets.sb_nodes_Proteus-NixOS-5.path;
-                      }
-                    ]
-
-                  ++ lib.singleton {
-                    tag = "Socks5";
-                    type = "socks";
-                    detour = "Auto";
-                    server = "127.0.0.1";
-                    server_port = 1080;
-                    username = "1111111111";
-                    password = "2222222222";
-                    udp_over_tcp = false;
-                    version = "5";
-                  };
-              in
-              nodes
-              ++ [
-                {
-                  tag = "Direct";
-                  type = "direct";
-                }
-                (lib.mkMerge [
-                  (sharedSelectorCfg // { outbounds = lib.remove "Default" sharedSelectorCfg.outbounds; })
-                  {
-                    tag = "Default";
-                    default = "Auto";
-                  }
-                ])
-                {
-                  tag = "Auto";
-                  type = "urltest";
-                  interval = "10m";
-                  tolerance = 50;
-                  url = "http://www.gstatic.com/generate_204";
-                  outbounds = map (node: node.tag) nodes;
-                }
-              ]
-
-              ++ [
-                {
-                  tag = "HongKong";
-                  type = "selector";
-                  outbounds = [ "Proteus-NixOS-5" ];
-                }
-                {
-                  tag = "UnitedStates";
-                  type = "selector";
-                  outbounds = [ "Proteus-NixOS-0" ];
-                }
-                {
-                  tag = "UnitedKingdom";
-                  type = "selector";
-                  outbounds = [ "Proteus-NixOS-4" ];
-                }
-                # {
-                #   outbounds = [ ];
-                #   type = "selector";
-                #   tag = "Germany";
-                # }
-                {
-                  tag = "Others";
-                  type = "selector";
-                  outbounds = [ "Socks5" ];
-                }
-              ];
+            outbounds = lib.mkOrder 250 [
+              {
+                tag = "Direct";
+                type = "direct";
+              }
+            ];
             route = {
               auto_detect_interface = true;
               default_domain_resolver = "Direct";
@@ -287,51 +187,52 @@
               # (source_port || source_port_range) &&
               # other fields
               # Ref: https://sing-box.sagernet.org/configuration/route/rule/#default-fields
-              rules = lib.mkMerge [
-                (lib.mkOrder 750 [
-                  # https://sing-box.sagernet.org/configuration/route/sniff/
-                  {
-                    action = "sniff";
-                    inbound = [
-                      "tun-in"
-                      "mixed-in"
-                    ];
-                  }
-                  {
-                    action = "hijack-dns";
-                    mode = "or";
-                    rules = [
-                      { port = 53; }
-                      { protocol = "dns"; }
-                    ];
-                    type = "logical";
-                  }
+              rules = lib.mkOrder 750 [
+                # https://sing-box.sagernet.org/configuration/route/sniff/
+                {
+                  action = "sniff";
+                  inbound = [
+                    "Tun"
+                    "Mixed"
+                  ];
+                }
 
-                  {
-                    clash_mode = "global";
-                    outbound = "Default";
-                  }
-                  {
-                    clash_mode = "direct";
-                    outbound = "Direct";
-                  }
-                ])
+                {
+                  action = "hijack-dns";
+                  mode = "or";
+                  rules = [
+                    { port = 53; }
+                    { protocol = "dns"; }
+                  ];
+                  type = "logical";
+                }
+
+                {
+                  clash_mode = "global";
+                  outbound = "Default";
+                }
+                {
+                  clash_mode = "direct";
+                  outbound = "Direct";
+                }
               ];
             };
           }
         ]
+        # Separate complex config to modular parts
         ++ map (
           file:
-          import file {
-            inherit
-              lib
-              mylib
-              myvars
-              sharedSelectorCfg
-              sharedRuleSetCfg
-              sharedDnsServerCfg
-              ;
-          }
+          import file (
+            {
+              inherit
+                config
+                lib
+                mylib
+                myvars
+                ;
+            }
+            // shared_cfg
+          )
         ) (mylib.scanPath ./_sing-box)
       );
   };
