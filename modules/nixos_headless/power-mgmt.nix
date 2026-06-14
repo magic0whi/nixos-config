@@ -26,12 +26,16 @@
   #   before = [ "sleep.target" ];
   #   wantedBy = [ "sleep.target" ];
   #   unitConfig.StopWhenUnneeded = true; # Remove running status for oneshot
-  #   serviceConfig = {
-  #     Type = "oneshot";
-  #     RemainAfterExit = true; # Keeping running status during the sleep
-  #     # `-` allows fail
-  #     ExecStart = [ "-${pkgs.systemd}/bin/systemctl stop sing-box@config.service" ];
-  #     ExecStop = [ "-${pkgs.systemd}/bin/systemctl start sing-box@config.service" ];
-  #   };
+  #   serviceConfig =
+  #     let
+  #       systemctl = "${pkgs.systemd}/bin/systemctl";
+  #     in
+  #     {
+  #       Type = "oneshot";
+  #       RemainAfterExit = true; # Keeping running status during the sleep
+  #       # `-` allows fail
+  #       ExecStart = [ "-${systemctl} stop sing-box@config.service" ];
+  #       ExecStop = [ "-${systemctl} start sing-box@config.service" ];
+  #     };
   # };
 }
