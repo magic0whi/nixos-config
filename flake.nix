@@ -117,6 +117,7 @@
       imports = [
         ./checks.nix
         ./dev-shells.nix
+        ./export-modules.nix
         ./main.nix
         ./module-args.nix
         ./treefmt.nix
