@@ -70,7 +70,7 @@ in
       type = "tailscale";
       auth_key._secret = config.sops.secrets.sb_ts_auth_key.path;
       accept_routes = true;
-      system_interface = true;
+      # system_interface = true;
     }
   ];
   route = {

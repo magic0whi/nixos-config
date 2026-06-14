@@ -35,7 +35,7 @@ let
         "modules/common/secrets.nix"
         "modules/common/shell.nix"
         "modules/common/ssh.nix"
-        # "modules/common/tailscale.nix"
+        "modules/common/tailscale.nix"
 
         "modules/nixos_headless"
 
