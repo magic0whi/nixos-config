@@ -109,7 +109,7 @@
             "$HOME/go/bin"
             "$HOME/.cargo/bin"
           ]
-        }
+        }"
       '';
     };
     # A modern replacement for `ls`, useful in bash/zsh prompt, but not in nushell
