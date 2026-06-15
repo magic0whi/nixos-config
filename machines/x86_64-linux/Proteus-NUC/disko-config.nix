@@ -1,4 +1,3 @@
-_:
 let
   # LUKS-encrypted ZFS disk helper (460GB partition)
   zroot = "zroot";
@@ -25,7 +24,7 @@ let
 in
 {
   disko.devices = {
-    # Big NVMe (953.9G) with ESP + swap + zroot1 + Windows 11
+    # NVMe (953.9G) with ESP + swap + zroot1 + Windows 11
     disk = {
       nvme0 =
         let
@@ -116,7 +115,8 @@ in
         mountpoint = "/";
         canmount = "off";
       };
-      postCreateHook = "zpool set bootfs=${zroot}/root ${zroot};" + "zpool set cachefile=/etc/zfs/zpool.cache ${zroot}"; # Create zpool.cache
+      # Create zpool.cache
+      postCreateHook = "zpool set bootfs=${zroot}/root ${zroot};" + "zpool set cachefile=/etc/zfs/zpool.cache ${zroot}";
       datasets = {
         # ROOT dataset (ephemeral, rolled back to blank on boot)
         root = {
