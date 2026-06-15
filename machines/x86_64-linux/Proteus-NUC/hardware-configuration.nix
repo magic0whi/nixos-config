@@ -30,20 +30,6 @@
   # Ref: https://wiki.nixos.org/wiki/ZFS#ZFS_conflicting_with_systemd
   systemd.services.zfs-mount.enable = false;
 
-  # Impermanence: Rollback `/` to blank snapshot on boot
-  # `-r` destroys any snapshots and bookmarks more recent than the one
-  # specified
-  boot.initrd.systemd.services."zfs-rollback-root" = {
-    description = "Rollback zroot/root@blank in initrd";
-    wantedBy = [ "zfs-import.target" ];
-    after = [ "zfs-import-zroot.service" ]; # Make sure zroot is imported
-    before = [ "sysroot.mount" ]; # Make sure this happens before root is mounted
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = "${config.boot.zfs.package}/sbin/zfs rollback -r zroot/root@blank";
-    };
-  };
-
   # disko will take care of filesystems.*, swapDevices, boot.resumeDevice, boot.initrd.luks.devices
 
   networking.useDHCP = true;
