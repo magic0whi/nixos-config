@@ -5,29 +5,23 @@
   pkgs,
   ...
 }:
+let
+  sunshine_port = config.services.sunshine.settings.port;
+  s_https = (sunshine_port - 5); # Default: 47984 HTTPS
+in
 {
-  networking.firewall =
-    let
-      sunshine_port = config.services.sunshine.settings.port;
-      s_https = toString (sunshine_port - 5); # Default: 47984 HTTPS
-      s_http = toString sunshine_port; # Default: 47989 HTTP
-      s_video = toString (sunshine_port + 9); # Default: 47998 UDP
-      s_ctrl = toString (sunshine_port + 10); # Default: 47999 UDP
-      s_audio = toString (sunshine_port + 11); # Default: 48000 UDP
-      s_rtsp = toString (sunshine_port + 21); # Default: 48010 TCP
-    in
-    {
-      allowedTCPPorts = [
-        (lib.toInt s_https)
-        (lib.toInt s_http)
-        (lib.toInt s_rtsp)
-      ];
-      allowedUDPPorts = [
-        (lib.toInt s_video)
-        (lib.toInt s_ctrl)
-        (lib.toInt s_audio)
-      ];
-    };
+  networking.firewall = {
+    allowedTCPPorts = [
+      s_https # Default: 47984 HTTPS
+      sunshine_port # Default: 47989 HTTP
+      (sunshine_port + 21) # Default: 48010 TCP
+    ];
+    allowedUDPPorts = [
+      (sunshine_port + 9) # Default: 47998 UDP
+      (sunshine_port + 10) # Default: 47999 UDP
+      (sunshine_port + 11) # Default: 48000 UDP
+    ];
+  };
   # Ref: https://github.com/orgs/LizardByte/discussions/439#discussioncomment-15813284
   security.wrappers = lib.mkIf config.services.sunshine.enable {
     conntrack = {
@@ -37,28 +31,21 @@
       group = "root";
     };
   };
-  # Adapt for Hyprland
-  systemd.user.services =
-    lib.mkIf
-      (config.services.sunshine.enable && config.home-manager.users.${myvars.username}.wayland.windowManager.hyprland.enable)
-      {
-        sunshine-wake-monitor = {
-          description = "Monitor Sunshine TCP connections and wake monitors";
-          after = [ "hyprland-session.target" ];
-          wantedBy = [ "hyprland-session.target" ];
-          serviceConfig.Restart = "on-failure";
-          script = ''
-            ${config.security.wrapperDir}/conntrack -E -e new -p tcp --dport ${
-              toString (config.services.sunshine.settings.port - 5)
-            } | \
-            while read line; do
-              echo "New Sunshine connection detected, waking up the monitors"
-              ${lib.getExe' pkgs.hyprland "hyprctl"} --instance 0 'dispatch dpms on'
-              sleep 5
-            done
-          '';
-        };
-      };
+  # Wake up screens (on Niri)
+  systemd.user.services.sunshine-wake-monitor = {
+    description = "Monitor Sunshine TCP connections and wake monitors";
+    after = [ "niri-session.target" ];
+    wantedBy = [ "niri-session.target" ];
+    serviceConfig.Restart = "on-failure";
+    script = ''
+      ${config.security.wrapperDir}/conntrack -E -e new -p tcp --dport ${toString s_https} | \
+      while read line; do
+        echo "New Sunshine connection detected, waking up the monitors"
+        ${lib.getExe pkgs.niri} msg action power-on-monitors
+        sleep 5
+      done
+    '';
+  };
   services.sunshine = {
     enable = true;
     capSysAdmin = true;
@@ -82,7 +69,7 @@
     };
     services.sunshine-webui.loadBalancer = {
       serversTransport = "ignorecert";
-      servers = [ { url = "https://127.0.0.1:${toString (config.services.sunshine.settings.port + 1)}"; } ];
+      servers = [ { url = "https://127.0.0.1:${toString (sunshine_port + 1)}"; } ];
     };
   };
 }

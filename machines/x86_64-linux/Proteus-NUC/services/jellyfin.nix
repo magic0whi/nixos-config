@@ -1,23 +1,19 @@
-{
-  config,
-  myvars,
-  ...
-}:
+{ myvars, ... }:
 {
   services.jellyfin =
     let
-      nvidia_sync = config.home-manager.users.${myvars.username}.hardware.nvidia.sync;
+      use_nvidia = true;
     in
     {
       enable = true;
       hardwareAcceleration = {
         enable = true;
-        device = if nvidia_sync then "/dev/dri/${myvars.dgpu_sym_name}" else "/dev/dri/${myvars.igpu_sym_name}";
+        device = if use_nvidia then "/dev/dri/${myvars.dgpu_sym_name}" else "/dev/dri/${myvars.igpu_sym_name}";
         type = "vaapi";
       };
       transcoding = {
         enableHardwareEncoding = true;
-        enableIntelLowPowerEncoding = if nvidia_sync then false else true;
+        enableIntelLowPowerEncoding = if use_nvidia then false else true;
         hardwareDecodingCodecs = {
           h264 = true;
           hevc = true;
