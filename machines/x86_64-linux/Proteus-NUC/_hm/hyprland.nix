@@ -20,7 +20,7 @@ let
       scale = 1.25;
     }
     # 10-bit will cause the internal monitor flickering when using sync mode
-    // lib.optionalAttrs config.wayland.windowManager.hyprland.nvidia_sync { bitdepth = 8; };
+    // lib.optionalAttrs config.hardware.nvidia.sync { bitdepth = 8; };
 
   monitor_1 = monitor_cfg // {
     output = "DP-3";
@@ -30,7 +30,6 @@ let
 in
 {
   wayland.windowManager.hyprland = {
-    nvidia_sync = true;
     settings = {
       # May cause black screen if the bandwidth doesn't enough, disable it
       # config.render.cm_auto_hdr = 0;
@@ -95,7 +94,7 @@ in
         }
       ]
       # Sync mode for Hyprland
-      ++ lib.optional config.wayland.windowManager.hyprland.nvidia_sync {
+      ++ lib.optional config.hardware.nvidia.sync {
         _args = [
           "AQ_DRM_DEVICES"
           "/dev/dri/${myvars.dgpu_sym_name}:/dev/dri/${myvars.igpu_sym_name}"

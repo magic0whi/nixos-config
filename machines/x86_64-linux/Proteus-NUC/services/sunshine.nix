@@ -64,7 +64,7 @@
     capSysAdmin = true;
     settings = {
       adapter_name =
-        if config.home-manager.users.${myvars.username}.wayland.windowManager.hyprland.nvidia_sync then
+        if config.home-manager.users.${myvars.username}.hardware.nvidia.sync then
           "/dev/dri/${myvars.dgpu_sym_name}"
         else
           "/dev/dri/${myvars.igpu_sym_name}";

@@ -6,7 +6,7 @@
 {
   services.jellyfin =
     let
-      nvidia_sync = config.home-manager.users.${myvars.username}.wayland.windowManager.hyprland.nvidia_sync;
+      nvidia_sync = config.home-manager.users.${myvars.username}.hardware.nvidia.sync;
     in
     {
       enable = true;
