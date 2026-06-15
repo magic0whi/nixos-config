@@ -53,6 +53,19 @@
     postgresql = "02:20:00";
   };
 
+  workspaces = [
+    "0other"
+    "1terminal"
+    "2browser"
+    "3chat"
+    "4gaming"
+    "5music"
+    "6file"
+    "7"
+    "8"
+    "9"
+  ];
+
   base = {
     nixpkgsModules = map mylib.relativeToRoot [
       # "modules/common/default.nix"

@@ -62,7 +62,7 @@
             { id = "ActiveWindow"; }
             {
               "id" = "MediaMini";
-              "showAlbumArt" = false;
+              showAlbumArt = false;
             }
           ];
           center = [

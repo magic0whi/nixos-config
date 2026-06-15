@@ -1,6 +1,6 @@
 {
-  config,
   lib,
+  myvars,
   pkgs,
   ...
 }:
@@ -37,7 +37,8 @@ in
       '';
     })
   ];
-  xdg.configFile."niri/keybindings.kdl".text = ''
+  wayland.windowManager.niri.extraConfig = ''
+    // =========================== keybindings.kdl =================================
     binds {
       // Most actions that you can bind here can also be invoked programmatically with `niri msg action do-something`.
       Mod+Shift+Slash { show-hotkey-overlay; } // Usually the same as Mod-?, shows a list of important hotkeys.
@@ -102,7 +103,7 @@ in
           i:
           let
             idx = toString i;
-            ws_name = builtins.elemAt config.wayland.windowManager.niri.settings.workspaces i;
+            ws_name = builtins.elemAt myvars.workspaces i;
           in
           ''
             Mod+${idx} { focus-workspace "${ws_name}"; }
@@ -189,5 +190,6 @@ in
       // which ensures niri always processes them, even when an inhibitor is active.
       Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
     }
+    // ==================================================================================
   '';
 }

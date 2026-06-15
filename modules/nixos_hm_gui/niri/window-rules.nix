@@ -1,0 +1,119 @@
+{
+  wayland.windowManager.niri.extraConfig = ''
+    // =========================== window-rules.kdl =================================
+    // https://niri-wm.github.io/niri/Configuration%3A-Window-Rules.html
+    // Terminal applications - open in workspace 1, with blur
+    window-rule {
+      match app-id="Alacritty"
+      open-on-workspace "1terminal"
+      open-maximized true
+      background-effect { blur true; }
+    }
+    window-rule {
+      match app-id="com.mitchellh.ghostty"
+      open-on-workspace "1terminal"
+      open-maximized true
+      // Ghostty native blur via ext-background-effect coming in v1.4;
+      // use compositor-side blur until then
+      background-effect { blur true; }
+    }
+
+    // Web browsers - open in workspace 2
+    window-rule {
+      match app-id="firefox"
+      open-on-workspace "2browser"
+      open-maximized true
+    }
+    window-rule {
+      match app-id="google-chrome"
+      open-on-workspace "2browser"
+      open-maximized true
+    }
+
+    // Chat applications - open in workspace 3
+    window-rule {
+      // match app-id="org.telegram.desktop"
+      match title="^Telegram"
+      open-on-workspace "3chat"
+    }
+    window-rule {
+      match app-id="wechat"
+      open-on-workspace "3chat"
+    }
+    window-rule {
+      match app-id="QQ"
+      open-on-workspace "3chat"
+    }
+
+    // Gaming applications - open in workspace 4
+    window-rule {
+      match app-id="steam"
+      open-on-workspace "4gaming"
+    }
+    window-rule {
+      match app-id="steam_app_default"
+      open-on-workspace "4gaming"
+    }
+    window-rule {
+      match app-id="heroic"
+      open-on-workspace "4gaming"
+    }
+    window-rule {
+      match app-id="net.lutris.Lutris"
+      open-on-workspace "4gaming"
+    }
+    window-rule {
+      match app-id="com.vysp3r.ProtonPlus"
+      open-on-workspace "4gaming"
+    }
+    window-rule {
+      // Run anime games on Linux
+      match app-id="^moe.launcher"
+      open-on-workspace "4gaming"
+    }
+    window-rule {
+      // All *.exe (Windows applications)
+      match app-id=".exe$"
+      open-on-workspace "4gaming"
+    }
+
+    // File management applications - open in workspace 6
+    window-rule {
+      match app-id="com.github.johnfactotum.Foliate"
+      open-on-workspace "6file"
+    }
+    window-rule {
+      match app-id="thunar"
+      open-on-workspace "6file"
+    }
+
+    // Other applications - open in workspace 0
+    window-rule {
+      match app-id="Clash-verge"
+      open-on-workspace "0other"
+    }
+    window-rule {
+      match app-id="Zoom Workplace"
+      // Zoom Home Page
+      match title="^(Zoom Workplace)( - Free account)?$"
+      open-on-workspace "0other"
+    }
+    window-rule {
+      match app-id="Zoom Workplace"
+      // Zoom - other windows
+      exclude title="^(Zoom Workplace)( - Free account)?$"
+      open-on-workspace "0other"
+      open-floating true
+    }
+
+    // Notifications shows bottom right
+    window-rule {
+      // match exactly empty string, avoid to be the default behavior
+       match app-id="^$"
+       open-floating true
+       open-focused false
+       default-floating-position x=0 y=0 relative-to="bottom-right"
+    }
+    // ==================================================================================
+  '';
+}
