@@ -62,11 +62,7 @@
   ## BEGIN security.nix
   # Security with gnome-kering
   services.gnome.gnome-keyring.enable = lib.mkDefault true;
-  security.pam.services = lib.mkMerge [
-    { greetd.enableGnomeKeyring = true; }
-    # Fixes swaylock
-    (lib.mkIf config.home-manager.users.${myvars.username}.programs.swaylock.enable { swaylock = { }; })
-  ];
+  security.pam.services.greetd.enableGnomeKeyring = true;
   # Secret portal is handled by gnome-keyring
   xdg.portal.config.common."org.freedesktop.impl.portal.Secret" = [ "gnome-keyring" ];
   ## END security.nix
