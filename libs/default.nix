@@ -1,4 +1,5 @@
 { inputs }:
+# lib:
 let
   inherit (inputs.nixpkgs) lib;
   dns_rule_filter = rule: !(rule ? ip_cidr || rule ? network || rule ? port);
@@ -72,7 +73,9 @@ in
     else
       null;
 
+  # TODO
   genDeployNode = ifaces: nixosSystem: {
+    # genDeployNode = deployLib: ifaces: nixosSystem: {
     hostname =
       let
         ts_iface = builtins.elemAt ifaces 0;
@@ -83,6 +86,7 @@ in
     interactiveSudo = false; # Since we use 'root' user to ssh
     profiles.system = {
       path = inputs.deploy-rs.lib.${nixosSystem.pkgs.stdenv.hostPlatform.system}.activate.nixos nixosSystem;
+      # path = deployLib.${nixosSystem.pkgs.stdenv.hostPlatform.system}.activate.nixos nixosSystem;
       user = "root";
     };
   };
@@ -148,6 +152,8 @@ in
         hmModules ? [ ],
         machinePath,
         system ? pkgs.stdenv.hostPlatform.system,
+        # TODO
+        # inputModules,
       }:
       let
         inherit (inputs)
