@@ -25,14 +25,6 @@ let
         }).outbounds
       );
     };
-    ruleSetCfg = {
-      urlPrefix = "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing";
-      defaultCfg = {
-        format = "binary";
-        download_detour = "Auto";
-        type = "remote";
-      };
-    };
     dnsServerCfg = {
       default = {
         server = "8.8.8.8";
@@ -224,6 +216,7 @@ lib.mkMerge (
           isMobile
           ;
       }
+      // myvars.sb
       // shared_cfg
     )
   ) (mylib.scanPath ./.)

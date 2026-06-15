@@ -18,9 +18,9 @@
       #   format = "binary";
       #   restartUnits = [ "sing-box.service" ];
       # };
-      sb_nodes_password = { inherit sopsFile restartUnits; };
-      sb_nodes_public_key = { inherit sopsFile restartUnits; };
-      sb_nodes_short_id = { inherit sopsFile restartUnits; };
+      sb_nodes_anytls_password = { inherit sopsFile restartUnits; };
+      sb_nodes_reality_short_id = { inherit sopsFile restartUnits; };
+      sb_nodes_reality_pub_key = { inherit sopsFile restartUnits; };
       sb_nodes_server_name = { inherit sopsFile restartUnits; };
       sb_nodes_Proteus-NixOS-0 = { inherit sopsFile restartUnits; };
       sb_nodes_Proteus-NixOS-4 = { inherit sopsFile restartUnits; };

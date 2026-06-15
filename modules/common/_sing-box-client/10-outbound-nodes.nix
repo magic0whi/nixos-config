@@ -6,13 +6,13 @@ let
         node:
         {
           server_port = 443;
-          password._secret = config.sops.secrets.sb_nodes_password.path;
+          password._secret = config.sops.secrets.sb_nodes_anytls_password.path;
           tls = {
             enabled = true;
             reality = {
               enabled = true;
-              public_key._secret = config.sops.secrets.sb_nodes_public_key.path;
-              short_id._secret = config.sops.secrets.sb_nodes_short_id.path;
+              public_key._secret = config.sops.secrets.sb_nodes_reality_pub_key.path;
+              short_id._secret = config.sops.secrets.sb_nodes_reality_short_id.path;
             };
             server_name._secret = config.sops.secrets.sb_nodes_server_name.path;
             utls = {
