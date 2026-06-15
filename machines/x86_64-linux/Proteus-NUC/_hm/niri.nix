@@ -1,4 +1,18 @@
-{ myvars, ... }:
+{ lib, myvars, ... }:
+let
+  ws_outputs = [
+    "eDP-1"
+    "DP-3"
+    "DP-3"
+    "DP-3"
+    "DP-3"
+    "DP-3"
+    "DP-3"
+    "DP-3"
+    "DP-3"
+    "DP-3"
+  ];
+in
 {
   wayland.windowManager.niri.extraConfig = ''
     // =============================== hardware.kdl =======================================
@@ -9,24 +23,19 @@
       mode "3440x1440@164.999"
       // Outputs are sized in logical pixels. for 2560x1440 with scale 1.25, the effective width is 2560/1.25=2048
       position x=2048 y=0
+      variable-refresh-rate
     }
     output "eDP-1" {
       scale 1.25
       mode "2560x1440@165.003"
       position x=0 y=0
+      variable-refresh-rate
     }
-
-    workspace "1terminal" { open-on-output "DP-3"; }
-    workspace "2browser" { open-on-output "DP-3"; }
-    workspace "3chat" { open-on-output "DP-3"; }
-    workspace "4gaming" { open-on-output "DP-3"; }
-    workspace "5music" { open-on-output "DP-3"; }
-    workspace "6file" { open-on-output "DP-3"; }
-    workspace "7" { open-on-output "DP-3"; }
-    workspace "8" { open-on-output "DP-3"; }
-    workspace "9" { open-on-output "DP-3"; }
-
-    workspace "0other" { open-on-output "eDP-1"; }
+  ''
+  + lib.concatLines (
+    lib.imap0 (i: ws: ''workspace "${ws}" { open-on-output "${builtins.elemAt ws_outputs i}"; }'') myvars.workspaces
+  )
+  + ''
     // ==================================================================================
   '';
   # Workaround: KDL don't allow duplicate node

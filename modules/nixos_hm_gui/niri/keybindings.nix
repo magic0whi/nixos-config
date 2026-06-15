@@ -97,22 +97,21 @@ in
       Mod+Shift+L { move-column-right-or-to-monitor-right; }
       Mod+Shift+Home { move-column-to-first; }
       Mod+Shift+End  { move-column-to-last; }
-
-      ${lib.concatLines (
-        builtins.genList (
-          i:
-          let
-            idx = toString i;
-            ws_name = builtins.elemAt myvars.workspaces i;
-          in
-          ''
-            Mod+${idx} { focus-workspace "${ws_name}"; }
-            Mod+Shift+${idx} { move-window-to-workspace "${ws_name}"; }
-            Mod+Ctrl+${idx} { move-column-to-workspace "${ws_name}"; }
-          ''
-        ) 10
-      )}
-
+  ''
+  + lib.concatLines (
+    lib.imap0 (
+      i: ws:
+      let
+        idx = toString i;
+      in
+      ''
+        Mod+${idx} { focus-workspace "${ws}"; }
+        Mod+Shift+${idx} { move-window-to-workspace "${ws}"; }
+        Mod+Ctrl+${idx} { move-column-to-workspace "${ws}"; }
+      ''
+    ) myvars.workspaces
+  )
+  + ''
       Mod+Shift+N { move-column-to-workspace-down; }
       Mod+Shift+P { move-column-to-workspace-up; }
 
