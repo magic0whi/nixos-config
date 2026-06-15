@@ -1,10 +1,12 @@
 {
   config,
+  lib,
   myvars,
   pkgs,
   ...
 }:
 {
+  # This makes sbctl requires `--disable-landlock` to work
   sops.secrets = {
     "secureboot_PK.key" = {
       sopsFile = "${myvars.secretsDir}/secureboot_PK.key.sops";
@@ -23,6 +25,7 @@
     };
   };
   systemd.tmpfiles.settings = {
+    "01-secureboot-GUID"."${config.boot.lanzaboote.pkiBundle}/GUID"."L+".argument = "${myvars.secretsDir}/secureboot_GUID";
     "01-secureboot-PK-key"."${config.boot.lanzaboote.pkiBundle}/keys/PK/PK.pem"."L+".argument =
       "${myvars.secretsDir}/secureboot_PK.pem";
     "01-secureboot-KEK-key"."${config.boot.lanzaboote.pkiBundle}/keys/KEK/KEK.pem"."L+".argument =
@@ -37,8 +40,8 @@
   boot.loader.systemd-boot.enable = false;
   boot.lanzaboote = {
     enable = true;
-    pkiBundle = "/var/lib/sbctl"; # sudo sbctl create-keys
-    # allowUnsigned = true; # Useful for first boot
-    autoEnrollKeys.enable = true;
+    pkiBundle = "/var/lib/sbctl"; # If don't have keys yet, run `sudo sbctl create-keys`
+    # allowUnsigned = true; # If run NixOS in installation media, set this to supress unsigned error
+    autoEnrollKeys.enable = lib.mkDefault true;
   };
 }
