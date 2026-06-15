@@ -1,4 +1,5 @@
 _: {
+  # TODO: use plain kdl
   programs.zellij = {
     enable = true;
     settings = {
