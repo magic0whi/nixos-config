@@ -11,7 +11,8 @@ let
     system:
     let
       mylib = import ./libs { inherit inputs; };
-      myvars = import ./vars { inherit lib mylib; };
+      # TODO: rename to myConst
+      myvars = import ./const { inherit lib mylib; };
       pkgs = inputs.nixpkgs.legacyPackages.${system};
     in
     {

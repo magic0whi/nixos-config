@@ -148,7 +148,7 @@ The repository is organized to separate machine-specific hardware configurations
 │   └── overlays/              # Custom packages (e.g., Wechat, QQ)
 ├── services/                  # Shared services modules
 ├── secrets/                   # sops-nix encrypted secrets and keys
-└── vars/                      # Global variables and networking definitions
+└── const/                     # Global constants and networking definitions
 ```
 
 ## Notes

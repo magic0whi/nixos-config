@@ -1,6 +1,6 @@
 { lib, mylib }:
 {
-  ## BEGIN pkgs agnostic variables
+  ## BEGIN pkgs agnostic constants
   username = "proteus";
   userFullName = "Proteus Qian";
   email = "sudaku233@outlook.com";
@@ -85,13 +85,21 @@
       # "modules/nixos_headless/zfs.nix"
     ];
   };
-  ## END pkgs agnostic functions
-  ## BEGIN pkgs dependent variables
+  sb.ruleSetCfg = {
+    urlPrefix = "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing";
+    defaultCfg = {
+      type = "remote";
+      format = "binary";
+      download_detour = "Auto";
+    };
+  };
+  ## END pkgs agnostic constants
+  ## BEGIN pkgs dependent constants
   mkForPkgs = pkgs: {
     monospace = {
       name = "Iosevka Nerd Font Mono";
       package = pkgs.nerd-fonts.iosevka;
     };
   };
-  ## END pkgs dependent variables
+  ## END pkgs dependent constants
 }
