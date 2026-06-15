@@ -4,7 +4,6 @@
     brightnessctl
     sound-theme-freedesktop
     wl-clipboard # copying and pasting
-    hyprpicker # color picker
     wf-recorder # screen recording
 
     yad # a fork of zenity, for creating dialogs
@@ -18,7 +17,6 @@
 
     # images
     # viu # Terminal image viewer with native support for iTerm and Kitty
-    imagemagick # Provides 'convert'
     graphviz
 
     telegram-desktop # Instant messaging

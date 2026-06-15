@@ -36,6 +36,26 @@ in
           --disable-notifications
       '';
     })
+    # Simple script to pick color quickly
+    (pkgs.writeShellApplication {
+      name = "colorpicker";
+      runtimeInputs = with pkgs; [
+        hyprpicker # color picker
+        imagemagick # Provides 'convert'
+        libnotify # notify-send
+      ];
+      text = ''
+        color=$(hyprpicker)
+        image=/tmp/$color.png
+
+        if [ -n "$color" ]; then
+          echo "$color" | tr -d "\n" | wl-copy # Copy color code to clipboard
+          convert -size 48x48 xc:"$color" "$image" # Generate preview
+          # Notify about it
+          notify-send -h string:x-canonical-private-synchronous:sys-notify -u low -i "$image" "$color, copied to clipboard."
+        fi
+      '';
+    })
   ];
   wayland.windowManager.niri.extraConfig = ''
     // =========================== keybindings.kdl =================================
@@ -46,7 +66,8 @@ in
       // Applications
       Mod+Q hotkey-overlay-title="Open Terminal" { spawn "xdg-terminal-exec"; }
       Mod+E hotkey-overlay-title="Open File Manager" { spawn "xdg-terminal-exec" "yazi"; }
-      // TODO Missing color picker
+      Mod+Shift+C hotkey-overlay-title="Open Color Picker" { spawn "colorpicker"; }
+
       Mod+X hotkey-overlay-title="Open Power Menu" { spawn ${noctalia_prefix} "sessionMenu" "toggle"; }
       Mod+S hotkey-overlay-title="Open Control Center" { spawn ${noctalia_prefix} "controlCenter" "toggle"; }
       Mod+V hotkey-overlay-title="Open Clipboard Manager" { spawn ${noctalia_prefix} "launcher" "clipboard"; }
