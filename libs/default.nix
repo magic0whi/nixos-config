@@ -168,6 +168,7 @@ in
           noctalia
           sops-nix
           niri-nix
+          noctalia-greeter
           ;
         specialArgs = inputs // {
           inherit machineConfigs mylib myvars;
@@ -195,10 +196,12 @@ in
                 niks3.nixosModules.niks3
                 niks3.nixosModules.niks3-auto-upload
                 sops-nix.nixosModules.sops
+                noctalia-greeter.nixosModules.default
               ]
           )
           ++ [
             {
+              nixpkgs.overlays = [ noctalia-greeter.overlays.default ];
               imports = mylib.scanPath machinePath;
               networking.hostName = name;
             }

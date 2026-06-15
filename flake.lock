@@ -423,15 +423,14 @@
         "xwayland-satellite-unstable": "xwayland-satellite-unstable"
       },
       "locked": {
-        "lastModified": 1781530271,
-        "narHash": "sha256-uHTxrqal01RsRjPmpn4wngrdjlcNP5zc3vPDGhX82ls=",
-        "rev": "7168ca52b9a17d2e8297b716a30f559f2753fa72",
-        "type": "tarball",
-        "url": "https://codeberg.org/api/v1/repos/magic0whi/niri-nix/archive/7168ca52b9a17d2e8297b716a30f559f2753fa72.tar.gz?rev=7168ca52b9a17d2e8297b716a30f559f2753fa72"
+        "lastModified": 1781544937,
+        "narHash": "sha256-PZ4ju0fvrN6CCRoyrnBC6cr1zsdTXvma+L+0W4n+eLs=",
+        "path": "/home/proteus/Works-References/niri-nix",
+        "type": "path"
       },
       "original": {
-        "type": "tarball",
-        "url": "https://codeberg.org/magic0whi/niri-nix/archive/7168ca52b9a17d2e8297b716a30f559f2753fa72.tar.gz"
+        "path": "/home/proteus/Works-References/niri-nix",
+        "type": "path"
       }
     },
     "niri-unstable": {
@@ -626,44 +625,41 @@
       "inputs": {
         "nixpkgs": [
           "nixpkgs"
-        ],
-        "noctalia-qs": "noctalia-qs"
+        ]
       },
       "locked": {
-        "lastModified": 1778694557,
-        "narHash": "sha256-QszLpoDPD7JEv8B/w1U2u1ksBw/CYBDmwUTLhJrekF0=",
+        "lastModified": 1781545057,
+        "narHash": "sha256-E1si4cqqPy7D16cx4Dyq+6x4Jts6dyuqxiVV89wFr7Y=",
         "owner": "noctalia-dev",
         "repo": "noctalia",
-        "rev": "3abfa1fc09b62dc4cdeeb7b787886f075696f0b7",
+        "rev": "0938085630e785f61ed690bac0e599b57cc440a8",
         "type": "github"
       },
       "original": {
         "owner": "noctalia-dev",
-        "ref": "v4.7.7",
         "repo": "noctalia",
+        "rev": "0938085630e785f61ed690bac0e599b57cc440a8",
         "type": "github"
       }
     },
-    "noctalia-qs": {
+    "noctalia-greeter": {
       "inputs": {
         "nixpkgs": [
-          "noctalia",
           "nixpkgs"
-        ],
-        "systems": "systems_2",
-        "treefmt-nix": "treefmt-nix"
+        ]
       },
       "locked": {
-        "lastModified": 1778377995,
-        "narHash": "sha256-uUzHDHqQF1rdVNiTa05L0mML3/d7fpbAShjCRWxbrBQ=",
+        "lastModified": 1781469970,
+        "narHash": "sha256-b1BFKXdcfsylt8aOF9mBEib791kPPY/OiF7wgpcqcs0=",
         "owner": "noctalia-dev",
-        "repo": "noctalia-qs",
-        "rev": "d8327a723eed6dd9aebe8e0b162126f390e827df",
+        "repo": "noctalia-greeter",
+        "rev": "f19b5fe2e20f1a80de178c8dedfbd838ce8eb2ca",
         "type": "github"
       },
       "original": {
         "owner": "noctalia-dev",
-        "repo": "noctalia-qs",
+        "repo": "noctalia-greeter",
+        "rev": "f19b5fe2e20f1a80de178c8dedfbd838ce8eb2ca",
         "type": "github"
       }
     },
@@ -725,8 +721,9 @@
         "nixpak": "nixpak",
         "nixpkgs": "nixpkgs_2",
         "noctalia": "noctalia",
+        "noctalia-greeter": "noctalia-greeter",
         "sops-nix": "sops-nix",
-        "treefmt-nix": "treefmt-nix_2"
+        "treefmt-nix": "treefmt-nix"
       }
     },
     "rust-overlay": {
@@ -786,44 +783,7 @@
         "type": "github"
       }
     },
-    "systems_2": {
-      "locked": {
-        "lastModified": 1689347949,
-        "narHash": "sha256-12tWmuL2zgBgZkdoB6qXZsgJEH9LR3oUgpaQq2RbI80=",
-        "owner": "nix-systems",
-        "repo": "default-linux",
-        "rev": "31732fcf5e8fea42e59c2488ad31a0e651500f68",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nix-systems",
-        "repo": "default-linux",
-        "type": "github"
-      }
-    },
     "treefmt-nix": {
-      "inputs": {
-        "nixpkgs": [
-          "noctalia",
-          "noctalia-qs",
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1775636079,
-        "narHash": "sha256-pc20NRoMdiar8oPQceQT47UUZMBTiMdUuWrYu2obUP0=",
-        "owner": "numtide",
-        "repo": "treefmt-nix",
-        "rev": "790751ff7fd3801feeaf96d7dc416a8d581265ba",
-        "type": "github"
-      },
-      "original": {
-        "owner": "numtide",
-        "repo": "treefmt-nix",
-        "type": "github"
-      }
-    },
-    "treefmt-nix_2": {
       "inputs": {
         "nixpkgs": [
           "nixpkgs"

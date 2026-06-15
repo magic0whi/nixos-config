@@ -101,12 +101,16 @@
       };
     };
     noctalia = {
-      url = "github:noctalia-dev/noctalia/v4.7.7";
+      url = "github:noctalia-dev/noctalia/0938085630e785f61ed690bac0e599b57cc440a8";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     niri-nix = {
-      url = "https://codeberg.org/magic0whi/niri-nix/archive/7168ca52b9a17d2e8297b716a30f559f2753fa72.tar.gz";
-      # url = "path:/home/proteus/Works-References/niri-nix";
+      # url = "https://codeberg.org/magic0whi/niri-nix/archive/7168ca52b9a17d2e8297b716a30f559f2753fa72.tar.gz";
+      url = "path:/home/proteus/Works-References/niri-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    noctalia-greeter = {
+      url = "github:noctalia-dev/noctalia-greeter/f19b5fe2e20f1a80de178c8dedfbd838ce8eb2ca";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

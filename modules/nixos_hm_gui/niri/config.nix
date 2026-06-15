@@ -23,10 +23,6 @@
           )
         )
       }"
-
-      // Noctalia: use niri spawn-at-startup (systemd user service is deprecated upstream).
-      // https://docs.noctalia.dev/getting-started/compositor-settings/niri/
-      spawn-at-startup "noctalia-shell"
     ''
     + ''
       // TIP: `/-` comments out the whole node.
@@ -46,8 +42,7 @@
       //
       // Niri will draw focus ring and border *around* windows that agree to omit their client-side decorations.
       //
-      // Alternatively, you can override it with a window rule called
-      // `draw-border-with-background`.
+      // Alternatively, you can override it with a window rule called `draw-border-with-background`.
       prefer-no-csd
 
       layout {
@@ -56,10 +51,11 @@
           // off
           width 4
           active-gradient from="#e5989b" to="#ffb4a2" angle=45 in="oklch longer hue"
-          // The focus ring only draws around the active window, so the only place where you can see its inactive-color is
-          // on other monitors.
+          // The focus ring only draws around the active window, so the only place where you can see its inactive-color
+          //is on other monitors.
           inactive-color "#595959aa"
         }
+        shadow { on; } // shadows increase visibility on floating window
       }
 
       window-rule {
