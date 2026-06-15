@@ -6,14 +6,7 @@
   ...
 }:
 {
-  sops.secrets = {
-    # niks3-auto-upload_api_token = {
-    #   key = "niks3_api_token";
-    #   sopsFile = "${myvars.secretsDir}/common.sops.yaml";
-    #   # niks3-auto-upload.service is triggered by socket so not need restart
-    # };
-    niks3_client_secret_yajuusexnpai.sopsFile = "${myvars.secretsDir}/common.sops.yaml";
-  };
+  sops.secrets.niks3_client_secret_yajuusexnpai.sopsFile = "${myvars.secretsDir}/common.sops.yaml";
   services.niks3-auto-upload = {
     enable = true;
     serverUrl = "https://niks3.${myvars.domain}";

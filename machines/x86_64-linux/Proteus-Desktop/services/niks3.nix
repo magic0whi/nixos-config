@@ -29,7 +29,7 @@ in
           owner = cfg.user;
         };
         niks3_api_token = {
-          sopsFile = "${myvars.secretsDir}/common.sops.yaml";
+          sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
           owner = cfg.user;
           inherit restartUnits;
         };
