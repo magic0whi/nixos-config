@@ -21,7 +21,7 @@ let
         "wallet.elephant-blue.org"
 
         "t-mobile.com"
-        "connectbyt-mobile.com" # TODO: maybe typo
+        "connectbyt-mobile.com"
       ];
     }
 
