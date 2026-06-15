@@ -1,9 +1,5 @@
 # Derive LiveCD from a machine's config is a bad idea, so I use a standalone machine config instead
-{
-  config,
-  myvars,
-  ...
-}:
+{ myvars, ... }:
 {
   # Useful when generating image from an existing NixOS configuration
   # image.modules = {
@@ -52,14 +48,4 @@
       };
     };
   services.gnome.gnome-keyring.enable = false;
-  ## BEGIN iwd.nix
-  networking.wireless.iwd.enable = true;
-  networking.wireless.iwd.settings.General.Country = "US";
-  systemd.services.iwd.serviceConfig.ExecStart = [
-    # Leave an empty string to remove previous ExecStarts
-    ""
-    "${config.networking.wireless.iwd.package}/libexec/iwd --nointerfaces 'wlan[0-9]'"
-  ];
-  systemd.network.links."80-iwd".enable = false;
-  ## END iwd.nix
 }

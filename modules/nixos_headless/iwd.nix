@@ -1,0 +1,12 @@
+{ config, ... }:
+{
+  networking.wireless.iwd.enable = true;
+  networking.wireless.iwd.settings.General.Country = "US";
+  systemd.services.iwd.serviceConfig.ExecStart = [
+    # Leave an empty string to remove previous ExecStarts
+    ""
+    "${config.networking.wireless.iwd.package}/libexec/iwd --nointerfaces 'wlan[0-9]'"
+  ];
+  systemd.network.links."80-iwd".enable = false; # Or
+  # environment.etc."systemd/network/80-iwd.link".source = lib.mkForce (mylib.mkOutOfStoreSymlink "/dev/null");
+}

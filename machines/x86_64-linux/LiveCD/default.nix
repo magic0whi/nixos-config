@@ -22,6 +22,7 @@ let
         "modules/common/ssh.nix"
 
         "modules/nixos_headless/fhs.nix"
+        "modules/nixos_headless/iwd.nix"
         "modules/nixos_headless/krnl-compat.nix"
         "modules/nixos_headless/misc.nix"
         "modules/nixos_headless/packages.nix"
