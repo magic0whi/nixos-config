@@ -1,5 +1,19 @@
-_: {
+{ lib, myvars, ... }:
+{
   time.timeZone = "America/Los_Angeles";
+  # TODO only for fist-run
+
+  # To test, run `nix run .#nixosConfigurations.<name>.config.system.build.vmWithDisk`
+  # Configurations only apply to vmWithDisko
+  virtualisation.vmVariantWithDisko = {
+    # https://github.com/nix-community/disko/issues/1157#issuecomment-3559146597
+    users.users.${myvars.username}.initialHashedPassword = myvars.initial_hashed_password;
+    virtualisation.fileSystems."/persistent".neededForBoot = lib.mkForce true;
+  };
+
+  # BEGIN disko-config.nix
+  disko.devices.disk.main.device = "/dev/disk/by-id/scsi-0Google_PersistentDisk_proteus-nixos-0";
+  # END disko-config.nix
   # services.cloud-init = {
   #   enable = true;
   #   network.enable = true; # Let cloud-init manage networking/DNS

@@ -1,8 +1,7 @@
-_: {
+{
   disko.devices.disk.main = {
     imageSize = "4G"; # Used for NixOS disk image generation, which can be used with `dd` on low RAM devices
     type = "disk";
-    device = "/dev/disk/by-id/scsi-0Google_PersistentDisk_proteus-nixos-1";
     content = {
       type = "gpt";
       partitions = {
@@ -38,32 +37,22 @@ _: {
             extraArgs = [ "-f" ]; # Override existing partition
             # Subvolumes must set a mountpoint in order to be mounted, unless their parent is mounted
             subvolumes = {
-              "/rootfs" = {
+              rootfs = {
                 mountpoint = "/";
                 mountOptions = [
                   "compress=zstd"
                   "noatime"
                 ];
               };
-              "/nix" = {
+              nix = {
                 mountpoint = "/nix";
                 mountOptions = [
-                  "nodatacow"
                   "discard=async"
                   "compress=zstd"
                   "noatime"
                 ];
               };
-              "/home" = {
-                mountpoint = "/home";
-                mountOptions = [
-                  "discard=async"
-                  "compress=zstd"
-                  "noatime"
-                ];
-              };
-              "@persistent" = {
-                # TODO rename
+              persistent = {
                 mountpoint = "/persistent";
                 mountOptions = [
                   "discard=async"
@@ -71,18 +60,20 @@ _: {
                   "noatime"
                 ];
               };
-              # Subvolume for the swapfile
-              "@swap" = {
-                # TODO rename
+              swap = {
                 mountpoint = "/.swapvol";
+                # NOTE: You can't set per-subvolume nodatacow, nodatasum, or compress using mount options
+                # https://btrfs.readthedocs.io/en/latest/Administration.html
                 mountOptions = [
                   "discard=async"
                   "noatime"
                 ];
                 swap = {
                   swapfile.size = "2G";
-                  # swapfile2.size = "20M";
-                  # swapfile2.path = "rel-path";
+                  # swapfile2 = {
+                  #   size = "20M";
+                  #   path = "rel-path";
+                  # };
                 };
               };
             };
