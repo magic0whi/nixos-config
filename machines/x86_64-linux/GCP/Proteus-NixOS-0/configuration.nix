@@ -1,8 +1,6 @@
 { lib, myvars, ... }:
 {
   time.timeZone = "America/Los_Angeles";
-  # TODO only for fist-run
-
   # To test, run `nix run .#nixosConfigurations.<name>.config.system.build.vmWithDisk`
   # Configurations only apply to vmWithDisko
   virtualisation.vmVariantWithDisko = {
