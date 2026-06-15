@@ -104,6 +104,10 @@
       url = "github:noctalia-dev/noctalia/v4.7.7";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    niri-nix = {
+      url = "https://codeberg.org/magic0whi/niri-nix/archive/05e3bb4af50fb89626ed458146aa44db876d791a.tar.gz";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
   outputs =
     inputs:

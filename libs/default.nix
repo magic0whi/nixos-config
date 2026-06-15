@@ -161,6 +161,7 @@ in
           niks3
           noctalia
           sops-nix
+          niri-nix
           ;
         specialArgs = inputs // {
           inherit machineConfigs mylib myvars;
@@ -207,6 +208,7 @@ in
                 catppuccin.homeModules.catppuccin
                 noctalia.homeModules.default
                 sops-nix.homeManagerModules.sops
+                niri-nix.homeModules.default
               ];
               home-manager.users."${myvars.username}".imports =
                 hmModules ++ lib.optional (builtins.pathExists "${machinePath}/_hm") "${machinePath}/_hm";

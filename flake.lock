@@ -414,6 +414,42 @@
         "type": "github"
       }
     },
+    "niri-nix": {
+      "inputs": {
+        "niri-unstable": "niri-unstable",
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "xwayland-satellite-unstable": "xwayland-satellite-unstable"
+      },
+      "locked": {
+        "lastModified": 1781527119,
+        "narHash": "sha256-1NUm5xipDC8Vb4/bX/519BfgFRzivqh5FDnDnnHO5m4=",
+        "rev": "05e3bb4af50fb89626ed458146aa44db876d791a",
+        "type": "tarball",
+        "url": "https://codeberg.org/api/v1/repos/magic0whi/niri-nix/archive/05e3bb4af50fb89626ed458146aa44db876d791a.tar.gz?rev=05e3bb4af50fb89626ed458146aa44db876d791a"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://codeberg.org/magic0whi/niri-nix/archive/05e3bb4af50fb89626ed458146aa44db876d791a.tar.gz"
+      }
+    },
+    "niri-unstable": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1780938415,
+        "narHash": "sha256-QHyIMGSbCQW8d5qbOrMsm6gem10bO3Au2YLa3alJfHo=",
+        "owner": "YaLTeR",
+        "repo": "niri",
+        "rev": "6f1a2c5f0e8274223d4204b1f8d6f7f91538967e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "YaLTeR",
+        "repo": "niri",
+        "type": "github"
+      }
+    },
     "nix-darwin": {
       "inputs": {
         "nixpkgs": [
@@ -572,11 +608,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1780399943,
-        "narHash": "sha256-YCQvd6a6qOlFPfROqAZ9CZY8B6zVzbBnn3QWU7o5JWk=",
+        "lastModified": 1781256251,
+        "narHash": "sha256-yI9Ti/+mIdYzfo7GetnJGeU/v7Na9rrtOzEkrUdiYhY=",
         "owner": "magic0whi",
         "repo": "nixpkgs",
-        "rev": "5a7e9e5e3cf4d031c0190caf31fc176844637d8a",
+        "rev": "a5677ed72ceaf051d178bb3022a43774e06b8023",
         "type": "github"
       },
       "original": {
@@ -683,6 +719,7 @@
         "lix": "lix",
         "lix-module": "lix-module",
         "niks3": "niks3",
+        "niri-nix": "niri-nix",
         "nix-darwin": "nix-darwin",
         "nixos-hardware": "nixos-hardware",
         "nixpak": "nixpak",
@@ -822,6 +859,22 @@
       "original": {
         "owner": "numtide",
         "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "xwayland-satellite-unstable": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1779745227,
+        "narHash": "sha256-yqY7RtEJGJiENzR0GwL6q69tSAy6xAAmAcLuIhLjPf8=",
+        "owner": "Supreeeme",
+        "repo": "xwayland-satellite",
+        "rev": "5d1efbc9dc3ab1c10160b656e0247f3325daf0f2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Supreeeme",
+        "repo": "xwayland-satellite",
         "type": "github"
       }
     }
