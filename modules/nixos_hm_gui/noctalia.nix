@@ -159,15 +159,15 @@
       };
       dock.enabled = false;
       general.avatarImage = "https://misc.s3-pub.proteus.eu.org/siameseemoji_agadmqeaaspumeu.png";
-      hooks = {
-        enabled = true;
-        screenLock = "${pkgs.writeShellScript "lock-seat" ''
-          SESSION_ID=$(loginctl -j list-sessions | jq -r --arg user "$USER" '.[] | select(.class == "user" and .seat != null and .user == $user) | .session')
-          dbus-send --system --print-reply --dest=org.freedesktop.login1 \
-            /org/freedesktop/login1/session/$SESSION_ID \
-            org.freedesktop.login1.Session.SetLockedHint boolean:true
-        ''}";
-      };
+      # hooks = {
+      #   enabled = true;
+      #   screenLock = "${pkgs.writeShellScript "lock-seat" ''
+      #     SESSION_ID=$(loginctl -j list-sessions | jq -r --arg user "$USER" '.[] | select(.class == "user" and .seat != null and .user == $user) | .session')
+      #     dbus-send --system --print-reply --dest=org.freedesktop.login1 \
+      #       /org/freedesktop/login1/session/$SESSION_ID \
+      #       org.freedesktop.login1.Session.SetLockedHint boolean:true
+      #   ''}";
+      # };
       location = {
         autoLocate = false;
         name = myvars.city;

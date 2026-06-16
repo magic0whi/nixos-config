@@ -1,6 +1,17 @@
-{ pkgs, ... }:
 {
-  services.sing-box.generateConfig.enable = true;
+  config,
+  myvars,
+  pkgs,
+  ...
+}:
+{
+  services.sing-box = {
+    generateMobileConfig.enable = true;
+    settings.route = {
+      auto_detect_interface = false;
+      default_interface = (builtins.elemAt myvars.networking.hostAddrs.${config.networking.hostName} 2).name;
+    };
+  };
   hardware.graphics.extraPackages = with pkgs; [
     intel-media-driver
     intel-compute-runtime-legacy1

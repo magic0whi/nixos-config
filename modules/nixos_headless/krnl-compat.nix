@@ -8,7 +8,7 @@
   options.boot.requiredKernelModules = lib.mkOption {
     type = with lib.types; listOf str;
     default = [ ];
-    description = "List of out-of-tree kernel package attributes that must not be broken.";
+    description = "List of required out-of-tree kernel packages.";
   };
 
   config.boot.kernelPackages =

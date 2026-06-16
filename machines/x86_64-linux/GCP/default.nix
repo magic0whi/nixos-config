@@ -2,6 +2,7 @@
   machineConfigs,
   mylib,
   myvars,
+  features,
   nixpkgs,
   ...
 }:
@@ -18,10 +19,13 @@ let
               mylib
               myvars
               machineConfigs
-              # hm_modules
               ;
             machinePath = ./${name};
-            nixpkgsModules = myvars.base.nixpkgsModules ++ [ ./_common ];
+            modules =
+              features.common.base
+              ++ features.nixos.base
+              ++ map mylib.relativeToRoot [ "modules/nixos_headless/traffic-quota.nix" ]
+              ++ [ ./_common ];
           }
         );
     in
@@ -30,8 +34,8 @@ in
 {
   _DEBUG = { inherit names; };
   inherit nixos_configurations;
-  packages = builtins.mapAttrs (_: nixos_system: nixos_system.config.system.build.diskoImages) nixos_configurations;
-  deploy-rs_nodes = builtins.mapAttrs (
-    name: nixos_system: mylib.genDeployNode myvars.networking.hostAddrs.${name} nixos_system
+  packages = builtins.mapAttrs (_: nixos_cfg: nixos_cfg.config.system.build.diskoImages) nixos_configurations;
+  deploy_nodes = builtins.mapAttrs (
+    name: nixos_cfg: mylib.genDeployNode myvars.networking.hostAddrs.${name} nixos_cfg
   ) nixos_configurations;
 }

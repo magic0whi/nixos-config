@@ -10,7 +10,7 @@ let
   settingsFormat = pkgs.formats.json { };
 in
 {
-  options.services.sing-box.generateConfig = {
+  options.services.sing-box.generateMobileConfig = {
     enable = lib.mkEnableOption "Generate configs for mobile devices";
     mobile = lib.mkOption {
       type = lib.types.submodule { freeformType = settingsFormat.type; };
@@ -47,7 +47,7 @@ in
   };
   config =
     let
-      cfg = config.services.sing-box.generateConfig;
+      cfg = config.services.sing-box.generateMobileConfig;
     in
     lib.mkIf cfg.enable {
       systemd.services.sing-box.serviceConfig.ExecStartPre = [

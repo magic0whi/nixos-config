@@ -8,6 +8,8 @@
 }:
 let
   name = baseNameOf ./.;
+  # TODO: import common modules here is bad practice, blacklist from
+  # `myvars.features` instead
   nixpkgs_modules = map mylib.relativeToRoot [
     # "modules/common/easytier.nix"
     # "modules/common/misc.nix"
@@ -24,7 +26,7 @@ let
     # "modules/nixos_headless/systemd-resolved.nix"
     # "modules/nixos_headless/traffic-quota.nix"
   ];
-  nixos_system = nixpkgs.lib.nixosSystem (
+  nixos_cfg = nixpkgs.lib.nixosSystem (
     mylib.genOsConfiguration {
       inherit
         name
@@ -93,11 +95,11 @@ in
       nixpkgs_modules
       myvars
       mylib
-      nixos_system
+      nixos_cfg
       ;
   };
-  nixos_configurations.${name} = nixos_system;
+  nixos_configurations.${name} = nixos_cfg;
   # packages.${name} = nixos_sd_image.config.system.build.images.sd-card; # Generate iso image
   packages.${name} = nixos_sd_image.config.system.build.sdImage;
-  deploy-rs_nodes.${name} = mylib.genDeployNode myvars.networking.hostAddrs.${name} nixos_system;
+  deploy-rs_nodes.${name} = mylib.genDeployNode myvars.networking.hostAddrs.${name} nixos_cfg;
 }

@@ -1,10 +1,7 @@
-{
-  inputs,
-  pkgs,
-}:
+pkgs:
 let
   inherit (pkgs) lib;
-  mylib = import ./default.nix { inherit inputs; };
+  mylib = import ./default.nix lib;
   mylib_pkgs = mylib.mkForPkgs pkgs;
 in
 lib.runTests {

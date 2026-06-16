@@ -54,6 +54,9 @@
           }
         ];
       })
+      # sing-box
+      (lib.mkIf config.services.sing-box.enable { trustedInterfaces = [ "sing0" ]; })
+
     ];
   # Let Tailscale auto detect the firewall type (nftables)
   systemd.services = lib.mkIf config.services.tailscale.enable {

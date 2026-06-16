@@ -2,12 +2,16 @@
   machineConfigs,
   mylib,
   myvars,
+  features,
+
+  deploy-rs,
   nixpkgs,
+  i915-sriov-dkms,
   ...
 }:
 let
   name = baseNameOf ./.;
-  nixos_system = nixpkgs.lib.nixosSystem (
+  nixos_cfg = nixpkgs.lib.nixosSystem (
     mylib.genOsConfiguration {
       inherit
         name
@@ -23,45 +27,23 @@ let
         # `lspci -Dnnd 10de::03xx | cut -f1 -d' '`
         dgpu_pci_ids = "0000:01:00.0";
       };
-      nixpkgsModules = map mylib.relativeToRoot [
-        "modules/overlays"
+      overlays = features.nixos.seat.guiOverlays;
+      specialArgs = { inherit deploy-rs; };
+      modules =
+        (with features.common; base ++ seat ++ extra)
+        ++ (with features.nixos; base ++ seat.tui ++ seat.gui ++ extra)
+        ++ [ i915-sriov-dkms.nixosModules.default ]
+        ++ map mylib.relativeToRoot [
+          "modules/services/traefik.nix"
+          "modules/services/docker.nix"
+        ];
 
-        # "modules/common/default.nix"
-        "modules/common/debug.nix"
-        "modules/common/easytier.nix"
-        "modules/common/fonts.nix"
-        "modules/common/misc.nix"
-        "modules/common/nix.nix"
-        "modules/common/packages.nix"
-        "modules/common/secrets.nix"
-        "modules/common/shell.nix"
-        "modules/common/sing-box-client.nix"
-        "modules/common/sing-box-client-mobile.nix"
-        "modules/common/ssh.nix"
-        "modules/common/tailscale.nix"
-
-        "modules/nixos_headless"
-
-        "modules/nixos_gui"
-
-        "modules/services/traefik.nix"
-        "modules/services/docker.nix"
-      ];
-      hmModules = map mylib.relativeToRoot [
-        "modules/common_hm_headless"
-
-        "modules/common_hm_gui"
-
-        "modules/nixos_hm_headless"
-
-        "modules/nixos_hm_gui"
-      ];
+      hmModules = (with features.hm.common; base ++ seat) ++ features.hm.nixos;
     }
   );
 in
 {
-  _DEBUG = { inherit name; };
-  nixos_configurations.${name} = nixos_system;
-  # packages.${name} = nixos_iso; # generate iso image
-  deploy-rs_nodes.${name} = mylib.genDeployNode myvars.networking.hostAddrs.${name} nixos_system;
+  _DEBUG = { inherit name features; };
+  nixos_configurations.${name} = nixos_cfg;
+  deploy_nodes.${name} = mylib.genDeployNode myvars.networking.hostAddrs.${name} nixos_cfg;
 }

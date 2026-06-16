@@ -1,22 +1,8 @@
-{ lib }:
-{
-  _find_host =
-    hostAddrs: cn:
-    lib.findFirst (
-      hostname:
-      lib.any (
-        net:
-        builtins.elem cn (net.domains.CNAME or [ ])
-        || builtins.elem cn (net.domains.A or [ ])
-        || builtins.elem cn (net.domains.AAAA or [ ])
-      ) hostAddrs.${hostname}
-    ) null (builtins.attrNames hostAddrs);
-  caddyPort = 8080;
-
-  soaSerial = "2026061002";
+lib:
+let
   # TODO: use <hostName>.<nicName> = {
-  # ipv4 = [];
-  # ipv6 = [];
+  #   ipv4 = [];
+  #   ipv6 = [];
   # }
   hostAddrs = {
     # ============================================
@@ -52,6 +38,7 @@
         ipv4 = "10.0.0.2";
         ipv6 = "fdfe:dcba:9877::2";
       }
+      { name = "enp46s0"; }
     ];
     Proteus-Desktop = [
       {
@@ -224,6 +211,23 @@
       }
     ];
   };
+in
+{
+  inherit hostAddrs;
+  findHost =
+    cn:
+    lib.findFirst (
+      hostname:
+      lib.any (
+        net:
+        builtins.elem cn (net.domains.CNAME or [ ])
+        || builtins.elem cn (net.domains.A or [ ])
+        || builtins.elem cn (net.domains.AAAA or [ ])
+      ) hostAddrs.${hostname}
+    ) null (builtins.attrNames hostAddrs);
+  caddyPort = 8080;
+
+  soaSerial = "2026061002";
   knownHosts =
     let
       github_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl";

@@ -423,14 +423,14 @@
         "xwayland-satellite-unstable": "xwayland-satellite-unstable"
       },
       "locked": {
-        "lastModified": 1781544937,
-        "narHash": "sha256-PZ4ju0fvrN6CCRoyrnBC6cr1zsdTXvma+L+0W4n+eLs=",
-        "path": "/home/proteus/Works-References/niri-nix",
-        "type": "path"
+        "lastModified": 1781530271,
+        "narHash": "sha256-uHTxrqal01RsRjPmpn4wngrdjlcNP5zc3vPDGhX82ls=",
+        "type": "tarball",
+        "url": "https://codeberg.org/magic0whi/niri-nix/archive/7168ca52b9a17d2e8297b716a30f559f2753fa72.tar.gz"
       },
       "original": {
-        "path": "/home/proteus/Works-References/niri-nix",
-        "type": "path"
+        "type": "tarball",
+        "url": "https://codeberg.org/magic0whi/niri-nix/archive/7168ca52b9a17d2e8297b716a30f559f2753fa72.tar.gz"
       }
     },
     "niri-unstable": {

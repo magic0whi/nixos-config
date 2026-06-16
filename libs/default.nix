@@ -1,7 +1,5 @@
-{ inputs }:
-# lib:
+lib:
 let
-  inherit (inputs.nixpkgs) lib;
   dns_rule_filter = rule: !(rule ? ip_cidr || rule ? network || rule ? port);
 in
 {
@@ -73,20 +71,17 @@ in
     else
       null;
 
-  # TODO
-  genDeployNode = ifaces: nixosSystem: {
-    # genDeployNode = deployLib: ifaces: nixosSystem: {
+  genDeployNode_unwrapped = deployLib: ifaces: nixosCfg: {
     hostname =
       let
         ts_iface = builtins.elemAt ifaces 0;
         et_iface = lib.optionalAttrs (builtins.length ifaces >= 2) (builtins.elemAt ifaces 1);
       in
-      et_iface.ipv4 or ts_iface.ipv4 or nixosSystem.config.networking.hostName;
+      et_iface.ipv4 or ts_iface.ipv4 or nixosCfg.config.networking.hostName;
     sshUser = "root";
-    interactiveSudo = false; # Since we use 'root' user to ssh
+    interactiveSudo = false; # I use the root user to ssh deploy
     profiles.system = {
-      path = inputs.deploy-rs.lib.${nixosSystem.pkgs.stdenv.hostPlatform.system}.activate.nixos nixosSystem;
-      # path = deployLib.${nixosSystem.pkgs.stdenv.hostPlatform.system}.activate.nixos nixosSystem;
+      path = deployLib.${nixosCfg.pkgs.stdenv.hostPlatform.system}.activate.nixos nixosCfg;
       user = "root";
     };
   };
@@ -142,66 +137,36 @@ in
       pkgs.runCommandLocal name { } "ln -s ${lib.escapeShellArg path_str} $out";
 
     # Args to generate nixosSystem/darwinSystem
-    genOsConfiguration =
+    genOsConfiguration_unwrapped =
+      home-manager:
       {
         name,
         machineConfigs ? (throw "Are you forget to import `machineConfigs` in the machine's apex config?"),
         mylib,
         myvars,
-        nixpkgsModules,
-        hmModules ? [ ],
         machinePath,
         system ? pkgs.stdenv.hostPlatform.system,
-        # TODO
-        # inputModules,
+        modules,
+        hmModules ? [ ],
+        overlays ? [ ],
+        specialArgs ? { },
       }:
       let
-        inherit (inputs)
-          catppuccin
-          disko
-          home-manager
-          i915-sriov-dkms
-          impermanence
-          lanzaboote
-          lix-module
-          niks3
-          noctalia
-          sops-nix
-          niri-nix
-          noctalia-greeter
-          ;
-        specialArgs = inputs // {
+        special_args = {
           inherit machineConfigs mylib myvars;
-        };
+        }
+        // specialArgs;
       in
       {
-        inherit system specialArgs;
+        inherit system;
+        specialArgs = special_args;
         # Filter out the files with `impermanence.nix` suffix. If it's not a path or string (i.e. an attribute set),
         # return true immediately to keep it
         modules =
-          nixpkgsModules
-          ++ (
-            if pkgs.stdenv.isDarwin then
-              [
-                lix-module.darwinModules.default
-                sops-nix.darwinModules.sops
-              ]
-            else
-              [
-                disko.nixosModules.disko
-                i915-sriov-dkms.nixosModules.default
-                impermanence.nixosModules.impermanence
-                lanzaboote.nixosModules.lanzaboote
-                lix-module.nixosModules.default
-                niks3.nixosModules.niks3
-                niks3.nixosModules.niks3-auto-upload
-                sops-nix.nixosModules.sops
-                noctalia-greeter.nixosModules.default
-              ]
-          )
+          modules
           ++ [
             {
-              nixpkgs.overlays = [ noctalia-greeter.overlays.default ];
+              nixpkgs = { inherit overlays; };
               imports = mylib.scanPath machinePath;
               networking.hostName = name;
             }
@@ -210,15 +175,9 @@ in
             home-manager.${if pkgs.stdenv.isDarwin then "darwinModules" else "nixosModules"}.home-manager
             {
               home-manager.backupFileExtension = "home-manager.backup";
-              home-manager.extraSpecialArgs = specialArgs;
+              home-manager.extraSpecialArgs = special_args;
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
-              home-manager.sharedModules = [
-                catppuccin.homeModules.catppuccin
-                noctalia.homeModules.default
-                sops-nix.homeManagerModules.sops
-                niri-nix.homeModules.default
-              ];
               home-manager.users."${myvars.username}".imports =
                 hmModules ++ lib.optional (builtins.pathExists "${machinePath}/_hm") "${machinePath}/_hm";
             }

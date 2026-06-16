@@ -1,4 +1,3 @@
-{ inputs, ... }:
 {
   perSystem =
     { pkgs, lib, ... }:
@@ -7,7 +6,7 @@
         {
           mylib =
             let
-              result = pkgs.callPackage ./libs/tests.nix { inherit inputs; };
+              result = import ./libs/tests.nix pkgs;
             in
             if result == [ ] then
               pkgs.runCommand "lib-tests-passed" { } ''
@@ -20,6 +19,7 @@
                 ${builtins.toJSON result}
               '';
         }
+        # VM tests
         (lib.mkIf (!pkgs.stdenv.isDarwin) (import ./tests { inherit pkgs; }))
       ];
     };

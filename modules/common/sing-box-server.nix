@@ -16,7 +16,6 @@
       sb_nodes_reality_short_id = { inherit sopsFile restartUnits; };
       sb_nodes_server_name = { inherit sopsFile restartUnits; };
     };
-  networking.firewall.trustedInterfaces = [ "sing0" ];
   services.sing-box = {
     enable = true;
     settings = {

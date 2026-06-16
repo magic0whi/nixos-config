@@ -2,7 +2,11 @@
   machineConfigs,
   mylib,
   myvars,
+  features,
+
+  niks3,
   nixpkgs,
+  sops-nix,
   ...
 }:
 let
@@ -16,31 +20,27 @@ let
         myvars
         ;
       machinePath = ./.;
-      nixpkgsModules =
-        myvars.base.nixpkgsModules
+      modules =
+        (with features.common; base ++ seat)
+        ++ (with features.nixos; base ++ seat.tui)
+        ++ [ niks3.nixosModules.niks3 ]
         ++ (map mylib.relativeToRoot [
-          "modules/common/sing-box-client.nix"
-
           "modules/nixos_headless/krnl-compat.nix"
           "modules/nixos_headless/packages.nix"
           "modules/nixos_headless/zfs.nix"
 
-          "modules/nixos_gui/kmscon.nix"
-
           "modules/services/docker.nix"
           "modules/services/traefik.nix"
         ]);
-      hmModules = map mylib.relativeToRoot [
-        "modules/common_hm_headless/helix.nix"
-        "modules/common_hm_headless/misc.nix"
-        "modules/common_hm_headless/nix.nix"
-        "modules/common_hm_headless/shell.nix"
-      ];
+      hmModules =
+        features.hm.common.base
+        ++ [ sops-nix.homeManagerModules.sops ]
+        ++ map mylib.relativeToRoot [ "modules/common_hm_headless/nix.nix" ];
     }
   );
 in
 {
   _DEBUG = { inherit name; };
   nixos_configurations.${name} = nixos_system;
-  deploy-rs_nodes.${name} = mylib.genDeployNode myvars.networking.hostAddrs.${name} nixos_system;
+  deploy_nodes.${name} = mylib.genDeployNode myvars.networking.hostAddrs.${name} nixos_system;
 }

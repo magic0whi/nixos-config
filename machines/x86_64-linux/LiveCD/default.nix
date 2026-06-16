@@ -1,7 +1,11 @@
 {
   mylib,
   myvars,
+  features,
+
+  deploy-rs,
   nixpkgs,
+  noctalia-greeter,
   ...
 }:
 let
@@ -14,48 +18,65 @@ let
         myvars
         ;
       machinePath = ./.;
-      nixpkgsModules = map mylib.relativeToRoot [
-        "modules/common/fonts.nix"
-        "modules/common/misc.nix"
-        "modules/common/packages.nix"
-        "modules/common/shell.nix"
-        "modules/common/ssh.nix"
+      specialArgs = { inherit deploy-rs; };
+      overlays = features.nixos.seat.guiOverlays;
+      modules =
+        let
+          common = "modules/common";
+          headless = "modules/nixos_headless";
+          gui = "modules/nixos_gui";
+        in
+        map mylib.relativeToRoot [
+          "${common}/fonts.nix"
+          "${common}/misc.nix"
+          "${common}/packages.nix"
+          "${common}/shell.nix"
+          "${common}/ssh.nix"
+        ]
+        ++ [ noctalia-greeter.nixosModules.default ]
+        ++ map mylib.relativeToRoot [
+          "${headless}/fhs.nix"
+          "${headless}/iwd.nix"
+          "${headless}/krnl-compat.nix"
+          "${headless}/misc.nix"
+          "${headless}/packages.nix"
+          "${headless}/power-mgmt.nix"
+          "${headless}/scx-loader.nix"
+          "${headless}/zfs.nix"
 
-        "modules/nixos_headless/fhs.nix"
-        "modules/nixos_headless/iwd.nix"
-        "modules/nixos_headless/krnl-compat.nix"
-        "modules/nixos_headless/misc.nix"
-        "modules/nixos_headless/packages.nix"
-        "modules/nixos_headless/power-mgmt.nix"
-        "modules/nixos_headless/scx-loader.nix"
-        "modules/nixos_headless/zfs.nix"
+          "${gui}/kmscon.nix"
+          "${gui}/peripherals.nix"
+          "${gui}/wayland.nix"
+        ];
+      hmModules =
+        let
+          commonHmHeadless = "modules/common_hm_headless";
+          commonHmGui = "modules/common_hm_gui";
+          nixosHmGui = "modules/nixos_hm_gui";
+        in
+        features.hm.common.base
+        ++ map mylib.relativeToRoot [
+          "${commonHmHeadless}/helix.nix"
+          "${commonHmHeadless}/misc.nix"
+          "${commonHmHeadless}/packages.nix"
+          "${commonHmHeadless}/shell.nix"
+          "${commonHmHeadless}/zellij.nix"
 
-        "modules/nixos_gui/kmscon.nix"
-        "modules/nixos_gui/peripherals.nix"
-        "modules/nixos_gui/wayland.nix"
-      ];
-      hmModules = map mylib.relativeToRoot [
-        "modules/common_hm_headless/helix.nix"
-        "modules/common_hm_headless/misc.nix"
-        "modules/common_hm_headless/packages.nix"
-        "modules/common_hm_headless/shell.nix"
-        "modules/common_hm_headless/zellij.nix"
+          "${commonHmGui}/alacritty.nix"
+          "${commonHmGui}/ghostty.nix"
+          "${commonHmGui}/misc.nix"
+          "${commonHmGui}/mpv.nix"
+          "${commonHmGui}/packages.nix"
+          "${commonHmGui}/pdf_reader.nix"
 
-        "modules/common_hm_gui/alacritty.nix"
-        "modules/common_hm_gui/ghostty.nix"
-        "modules/common_hm_gui/misc.nix"
-        "modules/common_hm_gui/mpv.nix"
-        "modules/common_hm_gui/packages.nix"
-        "modules/common_hm_gui/pdf_reader.nix"
+          "modules/nixos_hm_headless/peripherals.nix"
 
-        "modules/nixos_hm_headless/peripherals.nix"
-
-        "modules/nixos_hm_gui/fcitx5.nix"
-        "modules/nixos_hm_gui/gammastep.nix"
-        "modules/nixos_hm_gui/gtk_and_qt.nix"
-        "modules/nixos_hm_gui/hyprland"
-        "modules/nixos_hm_gui/xdg.nix"
-      ];
+          "${nixosHmGui}/fcitx5.nix"
+          "${nixosHmGui}/gammastep.nix"
+          "${nixosHmGui}/gtk_and_qt.nix"
+          "${nixosHmGui}/hyprland"
+          "${nixosHmGui}/xdg.nix"
+        ];
     }
   );
 in

@@ -1,8 +1,9 @@
 {
-  # deploy-rs,
   mylib,
   myvars,
+  features,
   nix-darwin,
+  deploy-rs,
   # system,
   ...
 }:
@@ -16,15 +17,9 @@ let
         myvars
         ;
       machinePath = ./.;
-      nixpkgsModules = map mylib.relativeToRoot [
-        "modules/common"
-        "modules/darwin"
-      ];
-      hmModules = map mylib.relativeToRoot [
-        "modules/common_hm_headless"
-        "modules/common_hm_gui"
-        "modules/darwin_hm"
-      ];
+      specialArgs = { inherit deploy-rs; };
+      modules = (with features.common; base ++ seat ++ extra) ++ features.darwin;
+      hmModules = (with features.hm.common; base ++ seat) ++ features.hm.darwin;
     }
   );
 in
@@ -33,7 +28,7 @@ in
   darwin_configurations.${name} = darwin_system;
   # It’s only possible to cross compile between aarch64-darwin and x86_64-darwin
   # Ref: https://nix.dev/tutorials/cross-compilation.html#determining-the-host-platform-config
-  # deploy-rs_nodes.${name} = {
+  # deploy_nodes.${name} = {
   #   ...
   #   profiles.system = {
   #     path = deploy-rs.lib.${system}.activate.darwin darwin_system;

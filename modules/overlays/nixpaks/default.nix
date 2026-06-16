@@ -1,32 +1,25 @@
-{
-  nixpak,
-  pkgs,
-  ...
-}:
+# Add nixpaked apps into nixpkgs
+final: prev:
 let
-  callArgs = {
-    mkNixPak = nixpak.lib.nixpak {
-      inherit (pkgs) lib;
-      inherit pkgs;
-    };
-    safeBind = sloth: realdir: mapdir: [
-      (sloth.mkdir (sloth.concat' sloth.appDataDir realdir))
-      (sloth.concat' sloth.homeDir mapdir)
-    ];
-  };
-  wrapper = _pkgs: path: (_pkgs.callPackage path callArgs).config.script;
+  call_package =
+    pkgs: path:
+    (pkgs.callPackage path {
+      mkNixPak = pkgs.nixpak.lib.nixpak {
+        inherit (pkgs) lib;
+        inherit pkgs;
+      };
+      safeBind = sloth: realdir: mapdir: [
+        (sloth.mkdir (sloth.concat' sloth.appDataDir realdir))
+        (sloth.concat' sloth.homeDir mapdir)
+      ];
+    }).config.script;
 in
 {
-  # Add nixpaked Apps into nixpkgs, and reference them in home-manager or other nixos modules
-  nixpkgs.overlays = [
-    (_: super: {
-      nixpaks = {
-        qq = wrapper super ./qq.nix;
-        qq-desktop-item = super.callPackage ./qq-desktop-item.nix { };
+  nixpaks = {
+    qq = call_package final ./qq.nix;
+    qq-desktop-item = final.callPackage ./qq-desktop-item.nix { };
 
-        wechat-uos = wrapper super ./wechat-uos.nix;
-        wechat-uos-desktop-item = super.callPackage ./wechat-uos-desktop-item.nix { };
-      };
-    })
-  ];
+    wechat-uos = call_package prev ./wechat-uos.nix;
+    wechat-uos-desktop-item = final.callPackage ./wechat-uos-desktop-item.nix { };
+  };
 }

@@ -159,7 +159,7 @@ lib.mkMerge (
         }
       ];
       route = {
-        auto_detect_interface = true;
+        auto_detect_interface = lib.mkDefault true;
         default_domain_resolver = "Direct";
         final = "Default";
         # The default rule uses the following matching logic:
