@@ -104,7 +104,7 @@
     defaultCfg = {
       type = "remote";
       format = "binary";
-      download_detour = "Auto";
+      download_detour = "Default"; # Auto works poor
     };
   };
   ## END pkgs agnostic constants
