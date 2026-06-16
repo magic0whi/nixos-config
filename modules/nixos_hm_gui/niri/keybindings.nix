@@ -7,14 +7,11 @@
 let
   spawn = args: builtins.concatStringsSep " " (map (s: ''"${s}"'') args);
 
-  nocmsg = spawn [
-    "noctalia"
-    "msg"
-  ];
-  panel_toggle = spawn [
-    "noctalia"
-    "msg"
-    "panel-toggle"
+  noctalia_prefix = spawn [
+    "noctalia-shell"
+    "ipc"
+    "--any-display"
+    "call"
   ];
 in
 {
@@ -91,11 +88,11 @@ in
       Mod+E hotkey-overlay-title="Open File Manager" { spawn "xdg-terminal-exec" "yazi"; }
       Mod+Shift+C hotkey-overlay-title="Open Color Picker" { spawn "colorpicker"; }
 
-      Mod+X hotkey-overlay-title="Open Power Menu" { spawn ${panel_toggle} "session"; }
-      Mod+S hotkey-overlay-title="Open Control Center" { spawn ${panel_toggle} "control-center"; }
-      Mod+V hotkey-overlay-title="Open Clipboard Manager" { spawn ${panel_toggle} "clipboard"; }
-      Mod+Space hotkey-overlay-title="Open Menu" { spawn ${panel_toggle} "launcher"; }
-      XF86Search hotkey-overlay-title="Open Menu" { spawn ${panel_toggle} "launcher"; }
+      Mod+X hotkey-overlay-title="Open Power Menu" { spawn ${noctalia_prefix} "sessionMenu" "toggle"; }
+      Mod+S hotkey-overlay-title="Open Control Center" { spawn ${noctalia_prefix} "controlCenter" "toggle"; }
+      Mod+V hotkey-overlay-title="Open Clipboard Manager" { spawn ${noctalia_prefix} "launcher" "clipboard"; }
+      Mod+Space hotkey-overlay-title="Open Menu" { spawn ${noctalia_prefix} "launcher" "toggle"; }
+      XF86Search hotkey-overlay-title="Open Menu" { spawn ${noctalia_prefix} "launcher" "toggle"; }
 
       // Window management
       F12 repeat=false { toggle-overview; }
@@ -200,24 +197,24 @@ in
 
       // Media Keys (Locked & Repeating)
       // Example volume keys mappings for PipeWire & WirePlumber.
-      XF86AudioRaiseVolume allow-when-locked=true { spawn ${nocmsg} "volume-up"; }
-      XF86AudioLowerVolume allow-when-locked=true { spawn ${nocmsg} "volume-down"; }
-      XF86AudioMute allow-when-locked=true        { spawn ${nocmsg} "volume-mute"; }
-      XF86AudioMicMute allow-when-locked=true     { spawn ${nocmsg} "mic-mute"; }
+      XF86AudioRaiseVolume allow-when-locked=true { spawn ${noctalia_prefix} "volume" "increase"; }
+      XF86AudioLowerVolume allow-when-locked=true { spawn ${noctalia_prefix} "volume" "decrease"; }
+      XF86AudioMute allow-when-locked=true        { spawn ${noctalia_prefix} "volume" "muteOutput"; }
+      XF86AudioMicMute allow-when-locked=true     { spawn ${noctalia_prefix} "volume" "muteInput"; }
 
       // Example brightness key mappings for brightnessctl.
-      XF86MonBrightnessUp allow-when-locked=true   { spawn ${nocmsg} "brightness-up"; }
-      XF86MonBrightnessDown allow-when-locked=true { spawn ${nocmsg} "brightness-down"; }
+      XF86MonBrightnessUp allow-when-locked=true   { spawn ${noctalia_prefix} "brightness" "increase"; }
+      XF86MonBrightnessDown allow-when-locked=true { spawn ${noctalia_prefix} "brightness" "decrease"; }
 
       // Keyboard Backlight
       XF86KbdBrightnessUp allow-when-locked=true   { spawn "brightnessctl" "--device=kbd_backlight" "set" "10%+"; }
       XF86KbdBrightnessDown allow-when-locked=true { spawn "brightnessctl" "--device=kbd_backlight" "set" "10%-"; }
 
       // Audio Play
-      XF86AudioPlay allow-when-locked=true { spawn ${nocmsg} "media" "toggle"; }
-      XF86AudioStop allow-when-locked=true { spawn ${nocmsg} "media" "stop"; }
-      XF86AudioPrev allow-when-locked=true { spawn ${nocmsg} "media" "previous"; }
-      XF86AudioNext allow-when-locked=true { spawn ${nocmsg} "media" "next"; }
+      XF86AudioPlay allow-when-locked=true { spawn ${noctalia_prefix} "media" "playPause"; }
+      XF86AudioStop allow-when-locked=true { spawn ${noctalia_prefix} "media" "pause"; }
+      XF86AudioPrev allow-when-locked=true { spawn ${noctalia_prefix} "media" "previous"; }
+      XF86AudioNext allow-when-locked=true { spawn ${noctalia_prefix} "media" "next"; }
 
       // System Controls
       Mod+Z hotkey-overlay-title="Lock" { spawn "loginctl" "lock-session"; } // Locker

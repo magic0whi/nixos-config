@@ -100,9 +100,17 @@
         flake-utils.inputs.systems.follows = "deploy-rs/utils/systems";
       };
     };
-    noctalia = {
-      url = "github:noctalia-dev/noctalia/0938085630e785f61ed690bac0e599b57cc440a8";
+    # https://github.com/noctalia-dev/noctalia-qs/commits/master/
+    noctalia-qs = {
+      url = "github:noctalia-dev/noctalia-qs/d52844d40a697e47fea7bc0f1ec68aae9108ddf2";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+    noctalia = {
+      url = "github:noctalia-dev/noctalia/v4.7.7";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        noctalia-qs.follows = "noctalia-qs";
+      };
     };
     niri-nix = {
       # url = "https://codeberg.org/magic0whi/niri-nix/archive/7168ca52b9a17d2e8297b716a30f559f2753fa72.tar.gz";

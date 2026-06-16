@@ -1,4 +1,5 @@
 {
+  lib,
   myvars,
   pkgs,
   ...
@@ -18,7 +19,7 @@
     # QT_QPA_PLATFORMTHEME = "qt6ct";
   };
 
-  programs.noctalia = {
+  programs.noctalia-shell = {
     enable = true;
     settings = {
       appLauncher = {
@@ -237,6 +238,11 @@
         randomIntervalSec = 600;
         viewMode = "recursive";
       };
+    };
+    plugins.sources = lib.singleton {
+      enabled = true;
+      name = "Official Noctalia Plugins";
+      url = "https://github.com/noctalia-dev/noctalia-plugins";
     };
   };
 
