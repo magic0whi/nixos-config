@@ -13,11 +13,14 @@
 
     # Optional configuration
     greeter-args = "";
-    settings.cursor = {
-      theme = "Adwaita";
-      size = 24;
-      package = pkgs.adwaita-icon-theme;
-    };
+    settings.cursor =
+      let
+        cfg = config.home-manager.users.${myvars.username}.home.pointerCursor;
+      in
+      {
+        theme = cfg.name;
+        inherit (cfg) size package;
+      };
   };
   services = {
     displayManager.sessionPackages =
