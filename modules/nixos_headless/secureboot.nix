@@ -41,7 +41,8 @@
   boot.lanzaboote = {
     enable = true;
     pkiBundle = "/var/lib/sbctl"; # If don't have keys yet, run `sudo sbctl create-keys`
-    # allowUnsigned = true; # If run NixOS in installation media, set this to supress unsigned error
+    # Supress unsigned error, useful if run NixOS in installation media, or sops-nix don't decrypted sb keys yet
+    # allowUnsigned = true;
     autoEnrollKeys.enable = lib.mkDefault true;
   };
 }
