@@ -40,7 +40,7 @@
           sops-nix.nixosModules.sops
         ])
         ++ map mylib.relativeToRoot [
-          "${headless}/firewall.nix"
+          "${headless}/firewall-common.nix"
           "${headless}/impermanence.nix"
           "${headless}/misc.nix"
           "${headless}/niks3-auto-upload.nix"
@@ -50,6 +50,7 @@
 
       seat = {
         tui = map mylib.relativeToRoot [
+          "${headless}/firewall-client.nix"
           "${headless}/fhs.nix"
           "${headless}/fonts.nix"
           "${headless}/jupyter.nix"
