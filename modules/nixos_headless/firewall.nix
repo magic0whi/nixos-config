@@ -1,3 +1,4 @@
+# TODO split to firewall-client.nix firewall-common.nix firewall-server.nix
 {
   config,
   lib,
@@ -26,6 +27,7 @@
         allowedTCPPorts = lib.mkIf (builtins.elem pkgs.iperf3 config.environment.systemPackages) [ 5201 ];
         allowedUDPPorts = lib.mkIf (builtins.elem pkgs.iperf3 config.environment.systemPackages) [ 5201 ];
       }
+      # Localsend
       {
         allowedTCPPorts = lib.mkIf (builtins.elem pkgs.localsend (hm_cfg.home.packages or [ ])) [ 53317 ];
         allowedUDPPorts = lib.mkIf (builtins.elem pkgs.localsend (hm_cfg.home.packages or [ ])) [ 53317 ];
@@ -55,11 +57,12 @@
         ];
       })
       # sing-box
-      (lib.mkIf config.services.sing-box.enable { trustedInterfaces = [ "sing0" ]; })
-
+      (lib.mkIf config.services.sing-box.enable {
+        trustedInterfaces = [
+          ((lib.findFirst (inbound: inbound.type == "tun") { } config.services.sing-box.settings.inbounds).interface_name
+            or "tun0"
+          )
+        ];
+      })
     ];
-  # Let Tailscale auto detect the firewall type (nftables)
-  systemd.services = lib.mkIf config.services.tailscale.enable {
-    tailscaled.environment.TS_DEBUG_FIREWALL_MODE = "auto";
-  };
 }

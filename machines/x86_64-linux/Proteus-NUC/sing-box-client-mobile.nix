@@ -15,7 +15,7 @@ in
     mobile = lib.mkOption {
       type = lib.types.submodule { freeformType = settingsFormat.type; };
       readOnly = true;
-      default = import ./_sing-box-client {
+      default = import (mylib.relativeToRoot "modules/common/_sing-box-client") {
         inherit
           config
           lib
@@ -31,7 +31,7 @@ in
     root = lib.mkOption {
       type = lib.types.submodule { freeformType = settingsFormat.type; };
       readOnly = true;
-      default = import ./_sing-box-client {
+      default = import (mylib.relativeToRoot "modules/common/_sing-box-client") {
         inherit
           config
           lib

@@ -110,6 +110,8 @@ nix run nixpkgs#nixos-anywhere -- -f .#Proteus-NixOS-0 --phases reboot root@<IP>
 
 _(Note: `<IP>` shall corresponds to `Proteus-NixOS-0` registered in [var/networking](./var/networking.nix))_
 
+_If meet error when formatting, try `sgdisk --zap-all /dev/<disk>`_
+
 ## Usage
 
 ### Updating the system

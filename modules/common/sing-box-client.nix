@@ -36,6 +36,7 @@
       };
   services.sing-box = {
     enable = true;
+    package = pkgs.sing-box-beta;
     settings = import ./_sing-box-client {
       inherit
         config
@@ -44,8 +45,6 @@
         myvars
         pkgs
         ;
-      isDarwin = true;
-      isLinux = false;
     };
   };
 }

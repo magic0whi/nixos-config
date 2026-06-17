@@ -16,6 +16,8 @@ keys:
 # updatekeys secrets/syncthing_proteus-nuc.priv.pem.age
 # TIP:Use recovery key if lost access to secret keys
 # SOPS_AGE_KEY=$(nix run nixpkgs#ssh-to-age -- -private-key -i ~/path/to/recovery.priv.key)
+# To encrypt file:
+# cat <file> | sops encrypt --filename-override secrets/<file>.sops --output secrets/<file>.sops
 creation_rules:
   ## BEGIN Common
   - path_regex: secrets/common\.sops\.yaml$
@@ -31,8 +33,6 @@ creation_rules:
           - *Proteus-NixOS-3
           - *Proteus-NixOS-4
           - *Proteus-NixOS-5
-  - path_regex: secrets/sb_client_linux\.json\.sops$
-    key_groups: [{ pgp: [*openpgp], age: [*Proteus-NUC, *Proteus-Desktop] }]
   - path_regex: secrets/proteus_server\.priv\.pem\.sops$
     key_groups:
       [
@@ -43,18 +43,6 @@ creation_rules:
       ]
   ## END Common
   ## BEGIN GCP Compute Engines
-  - path_regex: secrets/sb_Proteus-NixOS-1\.json\.sops$
-    key_groups:
-      - pgp: [*openpgp]
-        age:
-          [
-            *Proteus-NixOS-0,
-            *Proteus-NixOS-1,
-            *Proteus-NixOS-2,
-            *Proteus-NixOS-3,
-            *Proteus-NixOS-4,
-            *Proteus-NixOS-5,
-          ]
   ## END GCP Compute Engines
   ## BEGIN Proteus-NUC
   - path_regex: secrets/Proteus-NUC\.sops\.yaml$

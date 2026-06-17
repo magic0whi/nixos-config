@@ -20,6 +20,7 @@ let
         myvars
         ;
       machinePath = ./.;
+      overlays = with features; common.baseOverlays;
       modules =
         (with features.common; base ++ seat)
         ++ (with features.nixos; base ++ seat.tui)

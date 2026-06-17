@@ -121,6 +121,10 @@
       url = "github:noctalia-dev/noctalia-greeter/f19b5fe2e20f1a80de178c8dedfbd838ce8eb2ca";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    prince213-nix-packages = {
+      url = "github:Prince213/nix-packages/ccce5e6c4015bfa307469e470d777e1d1f471679";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
   outputs =
     inputs:

@@ -15,12 +15,14 @@
         "${common}/shell.nix"
         "${common}/tailscale.nix"
       ];
+      baseOverlays = [ inputs.prince213-nix-packages.overlays.default ];
       seat = map mylib.relativeToRoot [
         "${common}/sing-box-client.nix"
         "${common}/fonts.nix"
         "${common}/packages.nix"
       ];
       extra = map mylib.relativeToRoot [ "${common}/ssh.nix" ];
+      services = map mylib.relativeToRoot [ "modules/services/sing-box.nix" ];
     };
 
   nixos =

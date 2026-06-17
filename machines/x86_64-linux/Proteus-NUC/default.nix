@@ -27,7 +27,7 @@ let
         # `lspci -Dnnd 10de::03xx | cut -f1 -d' '`
         dgpu_pci_ids = "0000:01:00.0";
       };
-      overlays = features.nixos.seat.guiOverlays;
+      overlays = with features; common.baseOverlays ++ nixos.seat.guiOverlays;
       specialArgs = { inherit deploy-rs; };
       modules =
         (with features.common; base ++ seat ++ extra)

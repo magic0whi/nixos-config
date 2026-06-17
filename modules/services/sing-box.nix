@@ -2,9 +2,11 @@
   config,
   lib,
   myvars,
+  pkgs,
   ...
 }:
 {
+  networking.firewall.allowedTCPPorts = [ 443 ];
   sops.secrets =
     let
       sopsFile = "${myvars.secretsDir}/common.sops.yaml";
@@ -18,6 +20,7 @@
     };
   services.sing-box = {
     enable = true;
+    package = pkgs.sing-box-beta;
     settings = {
       log = {
         level = "warn";
@@ -48,7 +51,7 @@
                 server._secret = config.sops.secrets.sb_nodes_server_name.path;
                 server_port = 443;
               };
-              private_key = config.sops.secrets.sb_nodes_reality_priv_key.path;
+              private_key._secret = config.sops.secrets.sb_nodes_reality_priv_key.path;
               short_id._secret = config.sops.secrets.sb_nodes_reality_short_id.path;
             };
           };
@@ -82,7 +85,10 @@
         ];
         rule_set =
           let
-            inherit (myvars.ruleSetCfg) urlPrefix defaultCfg;
+            inherit (myvars.sb.ruleSetCfg) urlPrefix;
+            defaultCfg = myvars.sb.ruleSetCfg.defaultCfg // {
+              download_detour = "Direct";
+            };
           in
           map (rule_set: defaultCfg // rule_set) [
             {
