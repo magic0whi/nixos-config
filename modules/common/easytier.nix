@@ -25,12 +25,14 @@
           {
             "easytier_network_secret" = { inherit sopsFile; };
             "easytier_peer_0" = { inherit sopsFile; };
+            "easytier_peer_4" = { inherit sopsFile; };
+            "easytier_peer_5" = { inherit sopsFile; };
           };
         templates."easytier.env" = {
           content = ''
             ET_NETWORK_SECRET=${config.sops.placeholder.easytier_network_secret}
             # ET_PEERS uses comma delimiter
-            ET_PEERS=udp://${config.sops.placeholder.easytier_peer_0}
+            ET_PEERS=udp://${config.sops.placeholder.easytier_peer_0},udp://${config.sops.placeholder.easytier_peer_4},udp://${config.sops.placeholder.easytier_peer_5}
           '';
         };
       };
