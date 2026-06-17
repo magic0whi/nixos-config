@@ -146,7 +146,6 @@
         "${headless}/udiskie.nix"
 
         "${gui}/fcitx5.nix"
-        "${gui}/gammastep.nix"
         "${gui}/gtk_and_qt.nix"
         "${gui}/hypridle.nix"
         "${gui}/misc.nix"

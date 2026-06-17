@@ -63,16 +63,12 @@ let
           "${commonHmHeadless}/zellij.nix"
 
           "${commonHmGui}/alacritty.nix"
-          "${commonHmGui}/ghostty.nix"
           "${commonHmGui}/misc.nix"
-          "${commonHmGui}/mpv.nix"
           "${commonHmGui}/packages.nix"
-          "${commonHmGui}/pdf_reader.nix"
 
-          "modules/nixos_hm_headless/peripherals.nix"
+          "modules/nixos_hm_headless/udiskie.nix"
 
           "${nixosHmGui}/fcitx5.nix"
-          "${nixosHmGui}/gammastep.nix"
           "${nixosHmGui}/gtk_and_qt.nix"
           "${nixosHmGui}/hyprland"
           "${nixosHmGui}/xdg.nix"
