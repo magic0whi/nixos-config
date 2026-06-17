@@ -107,7 +107,7 @@ lib.mkMerge (
         cache_file = {
           enabled = true;
           store_fakeip = true;
-          store_rdrc = true;
+          store_dns = true;
         };
         clash_api = {
           default_mode = "rule";
@@ -137,13 +137,34 @@ lib.mkMerge (
               # EasyTier
               "10.0.0.0/24"
               "fdfe:dcba:9877::/64"
+              "192.168.122.0/24" # Libvirt
+              "172.16.0.0/12" # Docker { 172.16.0.0-172.31.255.252 }
+              # Docker: 172.16.0.0/12 minus 172.31.255.252/30
+              "172.16.0.0/13"
+              "172.24.0.0/14"
+              "172.28.0.0/15"
+              "172.30.0.0/16"
+              "172.31.0.0/17"
+              "172.31.128.0/18"
+              "172.31.192.0/19"
+              "172.31.224.0/20"
+              "172.31.240.0/21"
+              "172.31.248.0/22"
+              "172.31.252.0/23"
+              "172.31.254.0/24"
+              "172.31.255.0/25"
+              "172.31.255.128/26"
+              "172.31.255.192/27"
+              "172.31.255.224/28"
+              "172.31.255.240/29"
+              "172.31.255.248/30"
             ];
           })
           {
             tag = "Tun";
             type = "tun";
             address = [
-              "172.19.0.1/30"
+              "172.31.255.253/30"
               "fdfe:dcba:9876::1/126"
             ];
             stack = "gvisor";
@@ -160,7 +181,7 @@ lib.mkMerge (
       ];
       route = {
         auto_detect_interface = lib.mkDefault true;
-        default_domain_resolver = "Direct";
+        default_domain_resolver = "Bootstrap";
         final = "Default";
         # The default rule uses the following matching logic:
         # (domain || domain_suffix || domain_keyword || domain_regex || geosite || geoip || ip_cidr || ip_is_private) &&

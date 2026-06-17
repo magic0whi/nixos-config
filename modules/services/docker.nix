@@ -5,6 +5,9 @@
   pkgs,
   ...
 }:
+let
+  docker_cidr = "172.16.0.0-172.31.255.252";
+in
 {
   users.users.${myvars.username}.extraGroups = [ "docker" ];
   # =============================================================================
@@ -37,8 +40,7 @@
           ip daddr 198.18.0.0/15 return
 
           # Bypass everything else from Docker
-          # Skip 172.19.0.0/30
-          ip saddr { 172.16.0.0-172.18.255.255, 172.19.0.4-172.31.255.255 } ct mark set 0x00002024
+          ip saddr { ${docker_cidr} } ct mark set 0x00002024
         }
       '';
     };
@@ -52,7 +54,7 @@
   #   regardless of bridge name or port changes across restarts.
   # =============================================================================
   networking.firewall.extraInputRules = lib.mkIf config.services.sing-box.enable ''
-    ip saddr { 172.16.0.0-172.18.255.255, 172.19.0.4-172.31.255.255 } accept comment "Allow Docker to reach auto_redirect ports"
+    ip saddr { ${docker_cidr} } accept comment "Allow Docker to reach auto_redirect ports"
   '';
   systemd.services.docker.path = lib.mkIf (config.virtualisation.docker.daemon.settings.firewall-backend == "nftables") [
     pkgs.nftables

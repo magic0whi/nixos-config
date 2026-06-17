@@ -5,6 +5,9 @@
   pkgs,
   ...
 }:
+let
+  libvirt_cidr = "192.168.122.0/24";
+in
 {
   # virtualisation.waydroid.enable = true; # Usage: https://wiki.nixos.org/wiki/Waydroid
   ## BEGIN binfmt.nix
@@ -50,13 +53,13 @@
             ip daddr 198.18.0.0/15 return
 
             # Bypass everything else from Libvirt
-            ip saddr 192.168.122.0/24 ct mark set 0x00002024
+            ip saddr ${libvirt_cidr} ct mark set 0x00002024
           }
         '';
       };
     };
     firewall.extraInputRules = lib.mkIf config.services.sing-box.enable ''
-      ip saddr 192.168.122.0/24 accept comment "Allow Libvirt to reach auto_redirect ports"
+      ip saddr ${libvirt_cidr} accept comment "Allow Libvirt to reach auto_redirect ports"
     '';
   };
   systemd.network = lib.mkIf (!config.services.sing-box.enable) {

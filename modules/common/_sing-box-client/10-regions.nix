@@ -21,11 +21,11 @@ let
       type = "selector";
       outbounds = [ "Proteus-NixOS-0" ];
     }
-    {
-      tag = "Others";
-      type = "selector";
-      outbounds = [ "Socks5" ];
-    }
+    # {
+    #   tag = "Others";
+    #   type = "selector";
+    #   outbounds = [ "Socks5" ];
+    # }
   ];
 in
 {

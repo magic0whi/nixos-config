@@ -38,17 +38,18 @@ let
           server._secret = config.sops.secrets.sb_nodes_Proteus-NixOS-5.path;
         }
       ]
-    ++ lib.singleton {
-      tag = "Socks5";
-      type = "socks";
-      # detour = "";
-      server = "127.0.0.1";
-      server_port = 1080;
-      username = "1111111111";
-      password = "2222222222";
-      udp_over_tcp = false;
-      version = "5";
-    };
+  # ++ lib.singleton {
+  #   tag = "Socks5";
+  #   type = "socks";
+  #   # detour = "";
+  #   server = "127.0.0.1";
+  #   server_port = 1080;
+  #   username = "1111111111";
+  #   password = "2222222222";
+  #   udp_over_tcp = false;
+  #   version = "5";
+  # }
+  ;
 in
 {
   outbounds = lib.mkMerge [
