@@ -111,8 +111,8 @@ let
     # ============================================
     Proteus-NixOS-0 = [
       {
-        ipv4 = "100.74.72.29";
-        ipv6 = "fd7a:115c:a1e0::563a:481d";
+        ipv4 = "100.95.173.84";
+        ipv6 = "fd7a:115c:a1e0::683a:ad55";
       }
       {
         ipv4 = "10.0.0.1";
@@ -249,7 +249,7 @@ in
         public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJla2bgFUIxlMyfqiS/BIxkFXFiIh4dhjjOvWzHnr6IL root@Proteus-Desktop";
         syncthing_id = "DFKVKXA-MHOUCDP-2DXEZGE-VUGGQXP-MRQCOZL-BOOBXAV-4IDSU26-B3GOUAF";
       };
-      Proteus-NixOS-0.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGqgfVyb6hCdQmzbls0NNjMJ6Zxp3zq+XClR1OZIPnCD root@Proteus-NixOS-1";
+      Proteus-NixOS-0.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINxHfzAUnoOqFJTap3KAeX49mveZA/gKLTB35lmuG96p root@Proteus-NixOS-0";
       Proteus-NixOS-1.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII8MZfS8gzTEb6sSBaLBALNabJ5sy1nBeNbiRzOo1Kyq root@Proteus-NixOS-1";
       Proteus-NixOS-2.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIkal1+TGfarUm7uL4q4XdTTqKRtIlFo2pfsu04LoBFF root@Proteus-NixOS-2";
       Proteus-NixOS-3.public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILL3jAjZkkKHTUNqVf2ItJk2oObNDBiq8bylSF6f2Osi root@Proteus-NixOS-3";

@@ -1,15 +1,16 @@
-{ config, ... }:
+{ config, myvars, ... }:
 {
+  # DEBUG
+  boot.initrd.systemd.emergencyAccess = myvars.initial_hashed_password;
+
   # boot.initrd.systemd.extraBin.btrfs = "${pkgs.btrfs-progs}/bin/btrfs"; # Ensure btrfs tool is available in initrd
+  # https://github.com/LFour86/nixos-lf/blob/f3f6e5d09f4a04b696e906313f338ee8736cccac/system/programs/systemd.nix
   boot.initrd.systemd.services.rollback = {
     description = "Rollback BTRFS root subvolume to a pristine state";
     wantedBy = [ "initrd.target" ];
-    # after = [ "systemd-cryptsetup@enc.service" ];
+    after = [ "initrd-root-device.target" ];
     before = [ "sysroot.mount" ];
-    unitConfig = {
-      DefaultDependencies = "no";
-      # RequiresMountsFor = [ myvars.storagePath ];
-    };
+    unitConfig.DefaultDependencies = "no";
     serviceConfig.Type = "oneshot";
     script = ''
       export PATH=/bin:/sbin:/usr/bin:/usr/sbin:$PATH

@@ -44,6 +44,14 @@
                   "noatime"
                 ];
               };
+              # Home Manager requires the /home mountpoint to be exist
+              home = {
+                mountpoint = "/home";
+                mountOptions = [
+                  "compress=zstd"
+                  "noatime"
+                ];
+              };
               nix = {
                 mountpoint = "/nix";
                 mountOptions = [

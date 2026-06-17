@@ -21,11 +21,12 @@ let
               machineConfigs
               ;
             machinePath = ./${name};
+            overlays = with features; common.baseOverlays;
             modules =
-              features.common.base
-              ++ features.nixos.base
+              (with features; common.base ++ common.services ++ nixos.base)
               ++ map mylib.relativeToRoot [ "modules/nixos_headless/traffic-quota.nix" ]
               ++ [ ./_common ];
+            hmModules = features.hm.common.base;
           }
         );
     in
