@@ -32,6 +32,10 @@ let
         "syncthing.exe"
       ];
     }
+    { process_path_regex = [ ".*localsend.*" ]; }
+  ];
+  rules = [
+    { domain_suffix = [ "syncthing.net" ]; }
     {
       domain_suffix = [
         # HK Finance
@@ -47,6 +51,8 @@ let
         "szgjgs.com"
         "gov.hk"
       ];
+    }
+    {
       rule_set = [
         "geosite-schwab"
         "geosite-boc"
@@ -57,9 +63,7 @@ let
         "geosite-tencent"
       ];
     }
-    { process_path_regex = [ ".*localsend.*" ]; }
   ];
-  rules = [ { domain_suffix = [ "syncthing.net" ]; } ];
 in
 {
   dns.rules = lib.mkBefore (mylib.mkSbRules true out rules);
