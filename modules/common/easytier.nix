@@ -61,7 +61,8 @@
         flags = lib.mkMerge [
           {
             accept_dns = true; # Enable Magic DNS
-            # relay_all_peer_rpc = true; # Help others hole punching
+            tld_dns_zone = myvars.domain;
+            # relay_all_peer_rpc = true; # Help others hole punching, TODO, evaluate the traffic amount before enable
           }
           (lib.mkIf (!pkgs.stdenv.isDarwin) { dev_name = "et-main"; })
         ];

@@ -5,9 +5,14 @@
   myvars,
   ...
 }:
+let
+  nic_name = config.services.easytier.instances.main.extraSettings.flags.dev_name;
+in
 {
   networking.firewall = {
-    trustedInterfaces = [ config.services.easytier.instances.main.extraSettings.flags.dev_name ];
+    extraInputRules = ''
+      iifname "${nic_name}" ip daddr 100.100.100.101 accept
+    '';
     allowedTCPPortRanges = [
       {
         from = 11010;
@@ -26,7 +31,7 @@
       ns_hostname = myvars.networking.findHost "ns1";
     in
     {
-      name = config.services.easytier.instances.main.extraSettings.flags.dev_name;
+      name = nic_name;
       networkConfig.KeepConfiguration = "yes";
       domains = [
         "${myvars.domain}" # Search Domain
