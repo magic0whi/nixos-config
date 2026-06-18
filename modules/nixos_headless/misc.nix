@@ -54,7 +54,6 @@
       "ntp.tencent.com" # Tencent NTP Server
     ];
   };
-  services.resolved.enable = true;
 
   services.vnstat.enable = true;
   ## END network.nix

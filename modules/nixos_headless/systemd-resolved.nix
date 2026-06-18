@@ -1,43 +1,16 @@
 {
   config,
-  lib,
-  machineConfigs,
   myvars,
   ...
 }:
-let
-  ns_hostname = myvars.networking.findHost "ns1";
-in
 {
-  services.resolved.settings.Resolve = {
-    # This triggers recursive queries to the apex domain, which slows down domestic sites. It can also completely break
-    # your internet access if the proxy server goes down while systemd-resolved is fetching DS records for proxied apex
-    # domains like "com"
-    DNSSEC = if config.services.sing-box.enable then false else "allow-downgrade";
-    Domains = [
-      # Search Domain
-      "${myvars.domain}"
-    ]
-    # Routing Domain for reverse zones
-    ++ lib.remove "~${myvars.domain}" (
-      lib.mapAttrsToList (
-        _: zone:
-        if (lib.isDerivation zone.file) then
-          "~${lib.removeSuffix ".zone" zone.file.name}" # The '~' prefix makes this a routing domain
-        else
-          "~${lib.removeSuffix ".zone" zone.file}"
-      ) machineConfigs.${ns_hostname}.config.services.bind.zones
-    );
-
-    DNS = (
-      lib.concatMap (
-        iface:
-        lib.optional (iface ? ipv4) "${iface.ipv4}#${myvars.domain}"
-        ++ lib.optional (iface ? ipv6) "${iface.ipv6}#${myvars.domain}"
-      ) myvars.networking.hostAddrs.${ns_hostname}
-    );
+  services.resolved = {
+    enable = true;
+    # This triggers recursive queries to the apex domain, which slows down domestic sites. It can also completely
+    # break your internet access if the proxy server goes down while systemd-resolved is fetching DS records for
+    # proxied apex domains like "com"
+    settings.Resolve.DNSSEC = if config.services.sing-box.enable then false else "allow-downgrade";
   };
-
   # Trust Island
   environment.etc."dnssec-trust-anchors.d/${myvars.domain}.positive".text = ''
     ${myvars.domain}. IN DS 40751 15 2 EFFF70FD3922613584774DE050E31D5A3FFF988E45EB5C75296BF448B5B01FCF

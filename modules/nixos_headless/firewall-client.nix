@@ -26,23 +26,6 @@
           22000
         ];
       }
-
-      # EasyTier
-      (lib.mkIf config.services.easytier.enable {
-        allowedTCPPortRanges = [
-          {
-            from = 11010;
-            to = 11013;
-          }
-        ];
-        allowedUDPPortRanges = [
-          {
-            from = 11010;
-            to = 11012;
-          }
-        ];
-      })
-
       # sing-box
       (lib.mkIf config.services.sing-box.enable {
         trustedInterfaces = [
