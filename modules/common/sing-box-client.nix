@@ -1,7 +1,7 @@
 {
   config,
   lib,
-  # mylib,
+  mylib,
   myvars,
   pkgs,
   ...
@@ -37,20 +37,20 @@
   services.sing-box = {
     enable = true;
     package = pkgs.sing-box-beta;
-    # Full config.json encryption, to ease the debug
-    settings = {
-      _secret = config.sops.secrets."sb_test.json".path;
-      quote = false;
-    };
-
-    # settings = import ./_sing-box-client {
-    #   inherit
-    #     config
-    #     lib
-    #     mylib
-    #     myvars
-    #     pkgs
-    #     ;
+    # Full config.json encryption, to ease the debugging
+    # settings = {
+    #   _secret = config.sops.secrets."sb_test.json".path;
+    #   quote = false;
     # };
+
+    settings = import ./_sing-box-client {
+      inherit
+        config
+        lib
+        mylib
+        myvars
+        pkgs
+        ;
+    };
   };
 }
