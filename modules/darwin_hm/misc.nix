@@ -1,5 +1,5 @@
 {
-  config,
+  # config,
   lib,
   pkgs,
   ...
@@ -15,10 +15,12 @@
   };
   ## END shell.nix
   ## BEGIN gpg.nix
+  # TODO may be fixed by sshAuthSock.initialization as it unset and re-add home-managers SSH_AUTH_SOCK
   # NOTE: Don't bootout the 'system/com.openssh.ssh-agent', as it seizes the '$SSH_AUTH_SOCK'
-  home.sessionVariablesExtra = ''
-    export SSH_AUTH_SOCK="$(${config.programs.gpg.package}/bin/gpgconf --list-dirs agent-ssh-socket)"
-  '';
+  # home.sessionVariablesExtra = ''
+  #   export SSH_AUTH_SOCK="$(${config.programs.gpg.package}/bin/gpgconf --list-dirs agent-ssh-socket)"
+  # '';
+  # For debug
   # launchd.agents.gpg-agent.config = { # Enable logs for debugging
   #   StandardErrorPath = "${config.home.homeDirectory}/Library/Logs/gnupg-agent.stderr.log";
   #   StandardOutPath = "${config.home.homeDirectory}/Library/Logs/gnupg-agent.stdout.log";
