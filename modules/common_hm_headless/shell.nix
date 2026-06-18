@@ -1,7 +1,7 @@
 {
   config,
   lib,
-  myvars,
+  # myvars,
   pkgs,
   ...
 }:
@@ -154,7 +154,7 @@
     # via an Atuin server.
     atuin = {
       enable = true;
-      settings.sync_address = "https://atuin.${myvars.domain}";
+      # settings.sync_address = "https://atuin.${myvars.domain}"; # TODO debug sing-box
     };
     starship = {
       enable = true;
