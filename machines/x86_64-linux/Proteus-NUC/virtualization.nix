@@ -41,27 +41,9 @@ in
   ## END sriov.nix
   ## BEGIN libvirtd.nix
   users.users.${myvars.username}.extraGroups = [ "libvirtd" ];
-  networking = {
-    nftables.tables = lib.mkIf config.services.sing-box.enable {
-      sb_libvirt_fix = {
-        family = "inet";
-        content = ''
-          chain libvirt-prerouting {
-            type filter hook prerouting priority dstnat - 5; policy accept;
-
-            # Do NOT bypass FakeIP traffic. Let sing-box handle it.
-            ip daddr 198.18.0.0/15 return
-
-            # Bypass everything else from Libvirt
-            ip saddr ${libvirt_cidr} ct mark set 0x00002024
-          }
-        '';
-      };
-    };
-    firewall.extraInputRules = lib.mkIf config.services.sing-box.enable ''
-      ip saddr ${libvirt_cidr} accept comment "Allow Libvirt to reach auto_redirect ports"
-    '';
-  };
+  networking.firewall.extraInputRules = lib.mkIf config.services.sing-box.enable ''
+    ip saddr ${libvirt_cidr} accept comment "Allow Libvirt to reach auto_redirect ports"
+  '';
   systemd.network = lib.mkIf (!config.services.sing-box.enable) {
     netdevs."20-macvtap0" = {
       netdevConfig = {
