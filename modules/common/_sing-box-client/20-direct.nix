@@ -1,5 +1,10 @@
 # Shoud put before FakeIP; Clash Mode
-{ lib, mylib, ... }:
+{
+  lib,
+  mylib,
+  ruleSetCfg,
+  ...
+}:
 let
   out = "Direct";
   direct_process.rules = [
@@ -27,19 +32,83 @@ let
         "syncthing.exe"
       ];
     }
+    {
+      domain_suffix = [
+        # HK Finance
+        "octopuscards.com"
+        "octopus-cards.com"
+        "octopus.com.hk"
+        "airstarbank.com"
+        "antbank.hk"
+        "asia.ccb.com"
+        "welab.bank"
+        "za.group"
+
+        "szgjgs.com"
+        "gov.hk"
+      ];
+      rule_set = [
+        "geosite-schwab"
+        "geosite-boc"
+        "geosite-ccb"
+        "geosite-icbc"
+        "geosite-ifast"
+        "geosite-alibaba@!cn"
+        "geosite-tencent"
+      ];
+    }
     { process_path_regex = [ ".*localsend.*" ]; }
   ];
   rules = [ { domain_suffix = [ "syncthing.net" ]; } ];
 in
 {
   dns.rules = lib.mkBefore (mylib.mkSbRules true out rules);
-  route.rules = lib.mkMerge (
-    let
-      mkSbRules = mylib.mkSbRules false;
-    in
-    [
-      (lib.mkBefore (mkSbRules out direct_process.rules))
-      (lib.mkOrder 875 (mkSbRules out rules))
-    ]
-  );
+  route = {
+    rules =
+      let
+        mkSbRules = mylib.mkSbRules false;
+      in
+      lib.mkMerge [
+        (lib.mkBefore (mkSbRules out direct_process.rules))
+        (lib.mkOrder 875 (mkSbRules out rules))
+        (lib.mkOrder 2000 (mkSbRules out [ { protocol = "ssh"; } ]))
+      ];
+    rule_set =
+      let
+        inherit (ruleSetCfg) urlPrefix defaultCfg;
+      in
+      map (rule_set: defaultCfg // rule_set) [
+        {
+          tag = "geosite-schwab";
+          url = "${urlPrefix}/geo/geosite/schwab.srs";
+        }
+        # Banks (CN)
+        {
+          tag = "geosite-boc";
+          url = "${urlPrefix}/geo/geosite/boc.srs";
+        }
+        {
+          tag = "geosite-ccb";
+          url = "${urlPrefix}/geo/geosite/ccb.srs";
+        }
+        {
+          tag = "geosite-icbc";
+          url = "${urlPrefix}/geo/geosite/icbc.srs";
+        }
+
+        {
+          tag = "geosite-ifast";
+          url = "${urlPrefix}/geo/geosite/ifast.srs";
+        }
+
+        {
+          tag = "geosite-alibaba@!cn";
+          url = "${urlPrefix}/geo/geosite/alibaba@!cn.srs";
+        }
+        {
+          tag = "geosite-tencent";
+          url = "${urlPrefix}/geo/geosite/tencent.srs";
+        }
+      ];
+  };
 }
