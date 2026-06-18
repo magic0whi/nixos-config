@@ -133,11 +133,14 @@ lib.mkMerge (
           (lib.mkIf isLinux { auto_redirect = true; })
           (lib.mkIf (!isMobile) {
             # sing-box will automatically bypass local NIC addresses to nftables with @inet4_local_address_set and
-            # @inet6_local_address_set address set
+            # @inet6_local_address_set address set. NOTE: automatically added rules don't bypass DNS hijack
             route_exclude_address = [
               # Tailscale has CIDR set to /32 /128, so I need to bypass correct CIDR maually
               "100.64.0.0/10"
               "fd7a:115c:a1e0::/48"
+              # I have custom NS setup, so I still need to specify here to prevent sing-box hijack my NS queries
+              "10.0.0.0/24"
+              "fdfe:dcba:9877::2/64"
             ];
           })
           {
