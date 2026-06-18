@@ -177,6 +177,19 @@ in
         description: Account for self-hosted services
         userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$Qy12Udyu8BwhldnhxmpVsw$xk5lHJKFZtLYFUICPiDu2DhPL5vgZFRe9SIrt8dSw8Q
 
+        dn: uid=mother,ou=People,${base_dn}
+        objectClass: top
+        objectClass: person
+        objectClass: organizationalPerson
+        objectClass: inetOrgPerson
+        uid: mother
+        cn: Mother Family
+        sn: Family
+        givenName: Mother
+        mail: mother@${myvars.domain}
+        description: Account for self-hosted services
+        userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$MMxZvGZmYifIMYiqnhnrGA$PWpb8eA3O1bdScJ5wRAj0c7iBUnoYn/6eZin5yx9Vvc
+
         dn: uid=atuin,ou=ServiceAccounts,${base_dn}
         objectClass: top
         objectClass: person
