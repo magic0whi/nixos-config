@@ -57,9 +57,9 @@ in
       lib.singleton {
         tag = "Auto";
         type = "urltest";
-        interval = "10m";
-        tolerance = 50;
-        url = "http://www.gstatic.com/generate_204";
+        # interval = "10m"; # default 3m
+        # tolerance = 50; # default 50 ms
+        # url = "http://www.gstatic.com/generate_204"; # default https://www.gstatic.com/generate_204
         outbounds = map (node: node.tag) nodes;
       }
     ))
