@@ -124,7 +124,7 @@ in
 
       // Mod+Tab { focus-workspace-previous; } // Switches focus between the current and the previous workspace.
 
-      Mod+C hotkey-overlay-title="Fullscreen Column" { center-visible-columns; } // Center all fully visible columns on screen.
+      Mod+C hotkey-overlay-title="Center Column" { center-visible-columns; }
 
       // Toggle tabbed column display mode, "open the drawer".
       // Windows in this column will appear as vertical tabs, rather than stacked on top of each other.
