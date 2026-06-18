@@ -31,7 +31,7 @@ let
 in
 {
   dns = {
-    # TODO: The 8.8.8.8 cannot access if use Direct outbound
+    # NOTE: The 8.8.8.8 cannot access if use Direct outbound
     servers = lib.singleton (
       dnsServerCfg.default
       // {

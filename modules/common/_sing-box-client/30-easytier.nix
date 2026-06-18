@@ -42,7 +42,13 @@ in
       in
       [
         (lib.mkBefore (mkSbRules out non_dns_rules))
-        (lib.mkOrder 875 (mkSbRules out rules))
+        (lib.mkOrder 875 (
+          lib.singleton {
+            outbound = "Direct";
+            protocol = "stun";
+          }
+          ++ mkSbRules out rules
+        ))
       ]
     );
   };
