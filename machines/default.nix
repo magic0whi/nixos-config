@@ -32,12 +32,7 @@ let
     acc: machine_dir: acc // { ${baseNameOf machine_dir} = import machine_dir machine_args; }
   ) { } (mylib.scanPath ./${system});
 
-  flatten_attrs =
-    attr:
-    lib.foldlAttrs (
-      acc: _: nixos_cfg:
-      acc // (nixos_cfg.${attr} or { })
-    ) { };
+  flatten_attrs = attr: lib.concatMapAttrs (_: nixos_cfg: nixos_cfg.${attr} or { });
 in
 {
   _DEBUG = { inherit machines; };

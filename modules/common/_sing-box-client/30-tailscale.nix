@@ -73,7 +73,7 @@ lib.mkMerge [
           mkSbRules = mylib.mkSbRules true;
         in
         lib.mkBefore (
-          lib.flatten (map (rules: mkSbRules rules.out rules.rules) super_rules) ++ mkSbRules "myNs" my_domains.rules
+          builtins.concatMap (rules: mkSbRules rules.out rules.rules) super_rules ++ mkSbRules "myNs" my_domains.rules
         );
     };
     route = {
@@ -90,7 +90,7 @@ lib.mkMerge [
         in
         [
           (lib.mkBefore (mkSbRules non_dns_rules.out non_dns_rules.rules))
-          (lib.flatten (map (rules: mkSbRules rules.out rules.rules) super_rules) ++ mkSbRules out my_domains.rules)
+          (builtins.concatMap (rules: mkSbRules rules.out rules.rules) super_rules ++ mkSbRules out my_domains.rules)
         ]
       );
     };

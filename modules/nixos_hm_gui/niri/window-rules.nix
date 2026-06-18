@@ -99,17 +99,15 @@ in
     // https://niri-wm.github.io/niri/Configuration%3A-Window-Rules.html
   ''
   + lib.concatLines (
-    lib.flatten (
-      map (
-        rules:
-        map (match: ''
-          window-rule {
-            ${match}
-            ${rules.action}
-          }
-        '') rules.matches
-      ) super_rules
-    )
+    builtins.concatMap (
+      rules:
+      map (match: ''
+        window-rule {
+          ${match}
+          ${rules.action}
+        }
+      '') rules.matches
+    ) super_rules
   )
   + ''
     // ==================================================================================

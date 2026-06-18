@@ -28,11 +28,7 @@ in
         detour = out;
       }
     );
-    rules =
-      let
-        mkSbRules = map (rules: mylib.mkSbRules true rules.out rules.rules);
-      in
-      lib.flatten (mkSbRules super_rules);
+    rules = builtins.concatMap (rules: mylib.mkSbRules true rules.out rules.rules) super_rules;
   };
   outbounds = lib.singleton (
     selectorCfg
@@ -56,10 +52,6 @@ in
           url = "${urlPrefix}/geo/geosite/category-game-platforms-download.srs";
         }
       ];
-    rules =
-      let
-        mkSbRules = map (rules: mylib.mkSbRules false rules.out rules.rules);
-      in
-      lib.flatten (mkSbRules super_rules);
+    rules = builtins.concatMap (rules: mylib.mkSbRules false rules.out rules.rules) super_rules;
   };
 }
