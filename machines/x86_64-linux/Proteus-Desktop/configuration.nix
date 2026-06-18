@@ -1,5 +1,25 @@
-{ pkgs, ... }:
 {
+  config,
+  lib,
+  mylib,
+  myvars,
+  pkgs,
+  ...
+}:
+{
+  # lib.mkForce to prevent merge
+  services.sing-box.settings = lib.mkForce (
+    import (mylib.relativeToRoot "modules/common/_sing-box-client") {
+      inherit
+        config
+        lib
+        mylib
+        myvars
+        pkgs
+        ;
+      isServer = true;
+    }
+  );
   boot.binfmt.emulatedSystems = [ "riscv64-linux" ]; # Cross compilation
   ## BEGIN systemd_tmpfiles.nix
   # systemd.tmpfiles.settings = {

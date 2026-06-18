@@ -7,6 +7,7 @@
   isDarwin ? pkgs.stdenv.isDarwin,
   isLinux ? pkgs.stdenv.isLinux,
   isMobile ? false,
+  isServer ? false,
 }:
 let
   shared_cfg = {
@@ -142,6 +143,17 @@ lib.mkMerge (
               "10.0.0.0/24"
               "fdfe:dcba:9877::2/64"
             ];
+          })
+          # FakeIP-only mode
+          (lib.mkIf isServer {
+            route_address =
+              let
+                fakeip_server = lib.findFirst (server: server.type == "fakeip") { } config.services.sing-box.settings.dns.servers;
+              in
+              [
+                fakeip_server.inet4_range
+                fakeip_server.inet6_range
+              ];
           })
           {
             tag = "Tun";
