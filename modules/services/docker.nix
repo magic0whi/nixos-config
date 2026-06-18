@@ -10,49 +10,10 @@ let
 in
 {
   users.users.${myvars.username}.extraGroups = [ "docker" ];
-  # =============================================================================
-  # Docker + sing-box auto_redirect & FakeIP Conflict Resolution
-  # =============================================================================
-  # Background:
-  #   sing-box runs a TUN interface with `auto_redirect` (TProxy-like) and FakeIP (198.18.0.0/15) alongside Docker
-  #   (172.18.0.0/16). A prior fix (repo:proxy_template/96146a7d) had disabled auto_redirect entirely to resolve a
-  #   TProxy vs. Docker NAT conflict. The following config re-enables it correctly.
-  #
-  # Root Cause of the Original Conflict:
-  #   sing-box's TProxy hooks prerouting at `dstnat - 1`, intercepting container traffic BEFORE Docker's POSTROUTING
-  #   MASQUERADE NAT, breaking outbound container connectivity. Bypassing container IPs at routing level broke FakeIP,
-  #   since fake IPs sent to the host kernel were dropped as unroutable.
-  #
-  # Fix 1: bypass chain:
-  #   Inserted at `prerouting priority dstnat - 5` (ahead of sing-box's hook). Tags all container-sourced traffic with
-  #   the sing-box bypass mark (ct mark 0x00002024), letting Docker's native NAT handle it normally.
-  #
-  #   Critical exception: traffic destined for FakeIP (198.18.0.0/15) hits a `return` BEFORE the bypass mark, so TProxy
-  #   can still catch and resolve those connections.
-  networking.nftables.tables = lib.mkIf config.services.sing-box.enable {
-    sb_docker_fix = {
-      family = "inet";
-      content = ''
-        chain docker-prerouting {
-          type filter hook prerouting priority dstnat - 5; policy accept;
-
-          # Do NOT bypass FakeIP traffic. Let sing-box handle it.
-          ip daddr 198.18.0.0/15 return
-
-          # Bypass everything else from Docker
-          ip saddr { ${docker_cidr} } ct mark set 0x00002024
-        }
-      '';
-    };
-  };
-  # Fix 2: extraInputRules:
-  #   With auto_redirect enabled, sing-box allocates a dynamic local TCP port
-  #   and installs several nft rules. Because `redirect` rewrites the packet
-  #   destination to the host, traffic finally enters the INPUT chain. But
-  #   nixos-fw's default-drop INPUT policy silently dropped these packets.
-  #   Accepting 172.18.0.0/16 on INPUT covers all Docker bridge subnets
-  #   regardless of bridge name or port changes across restarts.
-  # =============================================================================
+  #  With auto_redirect enabled, sing-box allocates a dynamic local TCP port and installs several nft rules. Because
+  # `redirect` rewrites the packet destination to the host, traffic finally enters the INPUT chain. But nixos-fw's
+  # default-drop INPUT policy silently dropped these packets. Accepting 172.18.0.0/16 on INPUT covers all Docker bridge
+  # subnets regardless of bridge name or port changes across restarts.
   networking.firewall.extraInputRules = lib.mkIf config.services.sing-box.enable ''
     ip saddr { ${docker_cidr} } accept comment "Allow Docker to reach auto_redirect ports"
   '';
