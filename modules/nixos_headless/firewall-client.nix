@@ -46,8 +46,8 @@
       # sing-box
       (lib.mkIf config.services.sing-box.enable {
         trustedInterfaces = [
-          ((lib.findFirst (inbound: inbound.type == "tun") { } config.services.sing-box.settings.inbounds).interface_name
-            or "tun0"
+          ((lib.findFirst (inbound: inbound.type == "tun") { } (config.services.sing-box.settings.inbounds or [ ])).interface_name
+            or "sing0"
           )
         ];
       })
