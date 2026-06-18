@@ -35,7 +35,7 @@ let
         ++ [ i915-sriov-dkms.nixosModules.default ]
         ++ map mylib.relativeToRoot [
           "modules/services/traefik.nix"
-          "modules/services/docker.nix"
+          # "modules/services/docker.nix"
         ];
 
       hmModules = (with features.hm.common; base ++ seat) ++ features.hm.nixos;
