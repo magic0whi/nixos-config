@@ -7,9 +7,9 @@
     libreoffice
     qpdf
     act # Run your GitHub Actions locally
-    gemini-cli
     witr
     intel-undervolt
   ];
+  programs.antigravity-cli.enable = true;
   programs.obsidian.enable = true;
 }
