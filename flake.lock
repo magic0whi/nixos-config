@@ -263,17 +263,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1781751568,
-        "narHash": "sha256-hZAbXoNA4nCSaIJJLGl/EdErFtlnAS06jEp4oO7Qp6s=",
+        "lastModified": 1781802085,
+        "narHash": "sha256-2Msxl9DcRaoGQzcs10RHscfS/iM0ZaoSLo2ZwT04RZA=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "5bcff43156c0eebe68759338b7879c8e1b2e2bd0",
+        "rev": "8af17160d162bda6f0861c5c7249347c5df16635",
         "type": "github"
       },
       "original": {
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "5bcff43156c0eebe68759338b7879c8e1b2e2bd0",
+        "rev": "8af17160d162bda6f0861c5c7249347c5df16635",
         "type": "github"
       }
     },
@@ -443,8 +443,9 @@
       "locked": {
         "lastModified": 1781530271,
         "narHash": "sha256-uHTxrqal01RsRjPmpn4wngrdjlcNP5zc3vPDGhX82ls=",
+        "rev": "7168ca52b9a17d2e8297b716a30f559f2753fa72",
         "type": "tarball",
-        "url": "https://codeberg.org/magic0whi/niri-nix/archive/7168ca52b9a17d2e8297b716a30f559f2753fa72.tar.gz"
+        "url": "https://codeberg.org/api/v1/repos/magic0whi/niri-nix/archive/7168ca52b9a17d2e8297b716a30f559f2753fa72.tar.gz?rev=7168ca52b9a17d2e8297b716a30f559f2753fa72"
       },
       "original": {
         "type": "tarball",

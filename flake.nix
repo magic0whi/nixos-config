@@ -6,9 +6,9 @@
     # nixpkgs.url = "path:/home/proteus/Works/Reference/nixpkgs";
     # Pinned as of 2026-04-14 17:55, branch: nixos-unstable
     # nixpkgs-postgresql.url = "github:NixOS/nixpkgs/4c1018dae018162ec878d42fec712642d214fdfa";
-    # Pinned as of 2026-06-18 12:17, branch: master
+    # Pinned as of 2026-06-19 01:35, branch: master
     home-manager = {
-      url = "github:nix-community/home-manager/5bcff43156c0eebe68759338b7879c8e1b2e2bd0";
+      url = "github:nix-community/home-manager/8af17160d162bda6f0861c5c7249347c5df16635";
       # The `follows` keyword in inputs is used for inheritance.
       # Here, `inputs.nixpkgs` of home-manager is kept consistent with the
       # `inputs.nixpkgs` of the current flake, to avoid problems caused by
