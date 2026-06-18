@@ -46,7 +46,7 @@
       cpr = "rsync --archive -hh --partial --info=stats1,progress2 --modify-window=1";
       mvr = "rsync --archive -hh --partial --info=stats1,progress2 --modify-window=1 --remove-source-files";
       diff = "diff --text --expand-tabs --unified --new-file --recursive --color=auto";
-      gitdi = "env GIT_EXTERNAL_DIFF=difft git diff";
+      gitdf = "env GIT_EXTERNAL_DIFF=difft git diff";
       gitdc = "env GIT_EXTERNAL_DIFF=difft git diff --cached";
       # For `git filter-branch --help | bat -l man`, use
       # `MANWIDTH=999 git filter-branch --help | bat -lman` instead to prevent
