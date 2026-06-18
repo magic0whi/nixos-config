@@ -126,7 +126,7 @@ in
           options."com.sun:auto-snapshot" = "false";
           postCreateHook = "zfs list -t snapshot -H -o name | grep -E '^${zroot}/root@blank$' || zfs snapshot ${zroot}/root@blank";
         };
-        # TODO Remove when I ready to move to impermanence on /home
+        # TODO add rollback when I ready to move to impermanence on /home
         home = {
           type = "zfs_fs";
           mountpoint = "/home";
