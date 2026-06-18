@@ -62,7 +62,7 @@
           {
             accept_dns = true; # Enable Magic DNS
             tld_dns_zone = myvars.domain;
-            # relay_all_peer_rpc = true; # Help others hole punching, TODO, evaluate the traffic amount before enable
+            relay_all_peer_rpc = true; # Help others hole punching
           }
           (lib.mkIf (!pkgs.stdenv.isDarwin) { dev_name = "et-main"; })
         ];
