@@ -68,6 +68,13 @@ lib.mkMerge (
             server = "dns.alidns.com";
             domain_resolver = "Bootstrap";
           }
+          (
+            shared_cfg.dnsServerCfg.default
+            // {
+              tag = "Default";
+              detour = "Default";
+            }
+          )
         ];
         # The default rule uses the following matching logic:
         # (domain || domain_suffix || domain_keyword || domain_regex || geosite) &&
@@ -173,6 +180,13 @@ lib.mkMerge (
           tag = "Direct";
           type = "direct";
         }
+        (
+          (shared_cfg.selectorCfg // { outbounds = lib.remove "Default" shared_cfg.selectorCfg.outbounds; })
+          // {
+            tag = "Default";
+            default = "Auto";
+          }
+        )
       ];
       route = {
         auto_detect_interface = lib.mkDefault true;
