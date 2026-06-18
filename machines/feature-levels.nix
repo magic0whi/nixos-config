@@ -53,7 +53,6 @@
           "${headless}/firewall-client.nix"
           "${headless}/fhs.nix"
           "${headless}/fonts.nix"
-          "${headless}/jupyter.nix"
           "${headless}/scx-loader.nix"
           "${gui}/kmscon.nix"
         ];
@@ -75,6 +74,7 @@
         inputs.lanzaboote.nixosModules.default
       ]
       ++ map mylib.relativeToRoot [
+        "${headless}/jupyter.nix"
         "${headless}/packages.nix"
         "${headless}/power-mgmt.nix"
         "${headless}/remote-build.nix"
