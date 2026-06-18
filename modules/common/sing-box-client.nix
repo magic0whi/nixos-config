@@ -1,7 +1,7 @@
 {
   config,
   lib,
-  mylib,
+  # mylib,
   myvars,
   pkgs,
   ...
@@ -20,11 +20,11 @@
         ]
       )
       {
-        # "sb_client_linux.json" = {
-        #   sopsFile = "${myvars.secretsDir}/sb_client_linux.json.sops";
-        #   format = "binary";
-        #   restartUnits = [ "sing-box.service" ];
-        # };
+        "sb_test.json" = {
+          sopsFile = "${myvars.secretsDir}/sb_test.json.sops";
+          format = "binary";
+          restartUnits = [ "sing-box.service" ];
+        };
         sb_nodes_anytls_password = { inherit sopsFile; };
         sb_nodes_reality_short_id = { inherit sopsFile; };
         sb_nodes_reality_pub_key = { inherit sopsFile; };
@@ -37,14 +37,20 @@
   services.sing-box = {
     enable = true;
     package = pkgs.sing-box-beta;
-    settings = import ./_sing-box-client {
-      inherit
-        config
-        lib
-        mylib
-        myvars
-        pkgs
-        ;
+    # Full config.json encryption, to ease the debug
+    settings = {
+      _secret = config.sops.secrets."sb_test.json".path;
+      quote = false;
     };
+
+    # settings = import ./_sing-box-client {
+    #   inherit
+    #     config
+    #     lib
+    #     mylib
+    #     myvars
+    #     pkgs
+    #     ;
+    # };
   };
 }

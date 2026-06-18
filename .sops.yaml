@@ -41,6 +41,8 @@ creation_rules:
           age: [*Proteus-NUC, *Proteus-MBP14M4P, *Proteus-Desktop],
         },
       ]
+  - path_regex: secrets/sb_test\.json\.sops$
+    key_groups: [{ pgp: [*openpgp], age: [*Proteus-NUC] }]
   ## END Common
   ## BEGIN GCP Compute Engines
   ## END GCP Compute Engines
@@ -55,8 +57,6 @@ creation_rules:
     key_groups: [{ pgp: [*openpgp], age: [*Proteus-NUC] }]
   ## END Proteus-NixOS
   ## BEGIN Proteus-MBP14M4P
-  - path_regex: secrets/sb_client_darwin\.json\.sops$
-    key_groups: [{ pgp: [*openpgp], age: [*Proteus-MBP14M4P] }]
   ## END Proteus-MBP14M4P
   ## BEGIN Proteus-Desktop
   - path_regex: secrets/authelia_oidc_rsa\.pem.sops$

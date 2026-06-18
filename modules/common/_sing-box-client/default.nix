@@ -40,11 +40,6 @@ let
 in
 lib.mkMerge (
   [
-    # Full config.json encryption
-    # {
-    #   _secret = config.sops.secrets."sb_client_linux.json".path;
-    #   quote = false;
-    # }
     (lib.mkIf (isMobile && isLinux) {
       certificate.certificate = [ (builtins.readFile "${myvars.secretsDir}/proteus_ca.pub.pem") ];
     })
