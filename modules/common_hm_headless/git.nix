@@ -67,8 +67,8 @@
           ls = "log --graph ${log_fmt}";
           ll = "log --graph --numstat ${log_fmt}";
           la = "log --graph --all ${log_fmt}";
-          cm = "commit -sm"; # Commit via `git cm <message>`
-          ca = "commit -asm"; # Commit all changes via `git ca <message>`
+          cm = "commit -m"; # Commit via `git cm <message>`
+          ca = "commit -am"; # Commit all changes via `git ca <message>`
           dc = "diff --cached";
           amend = "commit --amend"; # Amend commit message via `git amend <message>`
           unstage = "reset HEAD --"; # Unstage file via `git unstage <file>`
