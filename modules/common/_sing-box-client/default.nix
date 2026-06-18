@@ -132,34 +132,12 @@ lib.mkMerge (
           (lib.mkIf (!isDarwin) { interface_name = "sing0"; })
           (lib.mkIf isLinux { auto_redirect = true; })
           (lib.mkIf (!isMobile) {
+            # sing-box will automatically bypass local NIC addresses to nftables with @inet4_local_address_set and
+            # @inet6_local_address_set address set
             route_exclude_address = [
-              # Tailscale
+              # Tailscale has CIDR set to /32 /128, so I need to bypass correct CIDR maually
               "100.64.0.0/10"
               "fd7a:115c:a1e0::/48"
-              # EasyTier
-              "10.0.0.0/24"
-              "fdfe:dcba:9877::/64"
-              "192.168.122.0/24" # Libvirt
-              "172.16.0.0/12" # Docker { 172.16.0.0-172.31.255.252 }
-              # Docker: 172.16.0.0/12 minus 172.31.255.252/30
-              "172.16.0.0/13"
-              "172.24.0.0/14"
-              "172.28.0.0/15"
-              "172.30.0.0/16"
-              "172.31.0.0/17"
-              "172.31.128.0/18"
-              "172.31.192.0/19"
-              "172.31.224.0/20"
-              "172.31.240.0/21"
-              "172.31.248.0/22"
-              "172.31.252.0/23"
-              "172.31.254.0/24"
-              "172.31.255.0/25"
-              "172.31.255.128/26"
-              "172.31.255.192/27"
-              "172.31.255.224/28"
-              "172.31.255.240/29"
-              "172.31.255.248/30"
             ];
           })
           {
