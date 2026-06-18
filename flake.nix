@@ -6,7 +6,7 @@
     # nixpkgs.url = "path:/home/proteus/Works/Reference/nixpkgs";
     # Pinned as of 2026-04-14 17:55, branch: nixos-unstable
     # nixpkgs-postgresql.url = "github:NixOS/nixpkgs/4c1018dae018162ec878d42fec712642d214fdfa";
-    # Pinned as of 2026-06-05 18:10, branch: master
+    # Pinned as of 2026-06-18 12:17, branch: master
     home-manager = {
       url = "github:nix-community/home-manager/5bcff43156c0eebe68759338b7879c8e1b2e2bd0";
       # The `follows` keyword in inputs is used for inheritance.
@@ -52,9 +52,9 @@
       # url = "path:/Users/proteus/Works/Reference/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Pinned as of 2026-06-05 18:14,
+    # Pinned as of 2026-06-19 00:05,
     catppuccin = {
-      url = "github:catppuccin/nix/fd265813d18cc39bc0d27750c47a09766a535162";
+      url = "github:catppuccin/nix/036c78ea4cd8a42c8546c6316a944fd7d59d4341";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # Pinned as of 2026-06-05 18:15
