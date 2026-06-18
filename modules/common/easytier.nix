@@ -45,7 +45,7 @@
         network_name = myvars.domain;
         ipv4 = "${builtins.elemAt (map (i: i.ipv4) myvars.networking.hostAddrs.${config.networking.hostName}) 1}/24";
         hostname = config.networking.hostName;
-        peers = [ "txt://txt.easytier.cn" ];
+        # peers = [ "txt://txt.easytier.cn" ];
         listeners = [
           "tcp://0.0.0.0:11010"
           "udp://0.0.0.0:11010"
