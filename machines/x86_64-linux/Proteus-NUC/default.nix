@@ -34,6 +34,7 @@ let
         ++ (with features.nixos; base ++ seat.tui ++ seat.gui ++ extra)
         ++ [ i915-sriov-dkms.nixosModules.default ]
         ++ map mylib.relativeToRoot [
+          "modules/nixos_headless/iwd.nix"
           "modules/services/traefik.nix"
           # "modules/services/docker.nix"
         ];
