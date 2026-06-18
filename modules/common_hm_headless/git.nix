@@ -33,8 +33,9 @@
       push.autoSetupRemote = true;
       pull.rebase = true;
       core.hooksPath = ".git_hooks";
-      # TODO let delta use difftool
-      difftool.difftastic.cmd = "${lib.getExe config.programs.difftastic.package} $LOCAL $REMOTE";
+      # very ugly if without enableGitIntegration
+      # difftool.delta.cmd = ''env -u GIT_EXTERNAL_DIFF delta --paging never --diff-args='--no-ext-diff' "$LOCAL" "$REMOTE"'';
+      # difftool.prompt = false;
       url = {
         # New machines that lacks of a SSH Agent / key may not able to clone repo anonymously
         # Replace https with ssh
@@ -111,10 +112,6 @@
   };
   programs.difftastic = {
     enable = true;
-    git = {
-      enable = !config.programs.delta.enableGitIntegration;
-      # Persists as of 2026-05-23, https://github.com/nix-community/home-manager/issues/8592
-      # diffToolMode = true;
-    };
+    # git.enable = true; # Breaks delta
   };
 }
