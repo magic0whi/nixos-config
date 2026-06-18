@@ -24,6 +24,7 @@
     };
   services.atuin = {
     enable = true;
+    port = 8889; # default 8888
     environmentFile = config.sops.templates."atuin.env".path;
     openRegistration = true;
   };
