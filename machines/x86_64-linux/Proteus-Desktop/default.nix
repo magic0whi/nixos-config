@@ -7,6 +7,7 @@
   niks3,
   nixpkgs,
   sops-nix,
+  dns,
   ...
 }:
 let
@@ -20,6 +21,7 @@ let
         const
         ;
       machinePath = ./.;
+      specialArgs = { inherit dns; };
       overlays = with features; common.baseOverlays;
       modules =
         (with features.common; base ++ seat)
