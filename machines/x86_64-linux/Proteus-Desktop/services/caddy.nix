@@ -7,7 +7,6 @@
   ...
 }:
 let
-  # web_root = "/srv/www";
   web_root = "${const.storagePath}/www";
 in
 {
