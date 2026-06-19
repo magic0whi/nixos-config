@@ -1,7 +1,7 @@
 {
   config,
   lib,
-  myvars,
+  const,
   pkgs,
   ...
 }:
@@ -51,10 +51,10 @@ in
     capSysAdmin = true;
     settings = {
       adapter_name =
-        if config.home-manager.users.${myvars.username}.hardware.nvidia.sync then
-          "/dev/dri/${myvars.dgpu_sym_name}"
+        if config.home-manager.users.${const.username}.hardware.nvidia.sync then
+          "/dev/dri/${const.dgpu_sym_name}"
         else
-          "/dev/dri/${myvars.igpu_sym_name}";
+          "/dev/dri/${const.igpu_sym_name}";
       origin_web_ui_allowed = "pc";
     };
   };
@@ -62,7 +62,7 @@ in
     # For sunshine-webui
     serversTransports.ignorecert.insecureSkipVerify = true;
     routers.sunshine-webui = {
-      rule = "Host(`sunshine.${myvars.domain}`)";
+      rule = "Host(`sunshine.${const.domain}`)";
       entryPoints = [ "websecure" ];
       service = "sunshine-webui";
       tls = { };

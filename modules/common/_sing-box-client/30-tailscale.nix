@@ -2,7 +2,7 @@
   config,
   lib,
   mylib,
-  myvars,
+  const,
   ruleSetCfg,
   isDarwin,
   isMobile,
@@ -38,7 +38,7 @@ let
       out = "Direct";
       rules = lib.singleton { rule_set = "geosite-tailscale"; }; # NOTE: geosite-tailscale has "ts.net"
     };
-  my_domains.rules = lib.optional (isDarwin || isMobile) { domain_suffix = myvars.domain; };
+  my_domains.rules = lib.optional (isDarwin || isMobile) { domain_suffix = const.domain; };
 in
 lib.mkMerge [
   # I use tailscaled on darwin and linux, so tailscale endpoint only required on mobile devices
@@ -65,8 +65,8 @@ lib.mkMerge [
           tag = "myNs";
           type = "tls";
           detour = if isDarwin then "Default" else out; # Query through tailscaled on Darwin
-          server = (builtins.head myvars.networking.hostAddrs.${myvars.networking.findHost "ns1"}).ipv4;
-          tls.server_name = "ns1.${myvars.domain}";
+          server = (builtins.head const.networking.hostAddrs.${const.networking.findHost "ns1"}).ipv4;
+          tls.server_name = "ns1.${const.domain}";
         };
       rules =
         let

@@ -1,7 +1,7 @@
 {
   config,
   lib,
-  myvars,
+  const,
   pkgs,
   ...
 }:
@@ -156,7 +156,7 @@
     # via an Atuin server.
     atuin = {
       enable = true;
-      settings.sync_address = "https://atuin.${myvars.domain}";
+      settings.sync_address = "https://atuin.${const.domain}";
     };
     starship = {
       enable = true;

@@ -1,11 +1,11 @@
 {
-  myvars,
+  const,
   pkgs,
   ...
 }:
 {
   fonts.packages = with pkgs; [
-    myvars.monospace.package
+    const.monospace.package
     noto-fonts-cjk-sans
     noto-fonts-cjk-serif
     inter-nerdfont # NerdFont patch of the Inter font

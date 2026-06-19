@@ -1,14 +1,14 @@
 {
   config,
   lib,
-  myvars,
+  const,
   pkgs,
   ...
 }:
 {
   sops =
     let
-      sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
+      sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
       restartUnits = [
         "paperless-scheduler.service"
         "paperless-task-queue.service"
@@ -35,7 +35,7 @@
                 name = "Authelia";
                 provider_id = "authelia";
                 secret = "${config.sops.placeholder.paperless_authelia_secret}";
-                settings.server_url = "https://auth.${myvars.domain}/.well-known/openid-configuration";
+                settings.server_url = "https://auth.${const.domain}/.well-known/openid-configuration";
               }
             ];
           in
@@ -48,12 +48,12 @@
     };
   # As of 2026-05-01, paperless.nix still hardcoded group to be same with uesr
   services.paperless = {
-    domain = "paperless.${myvars.domain}";
+    domain = "paperless.${const.domain}";
     enable = true;
     settings = {
       PAPERLESS_DBENGINE = "postgresql";
       # PAPERLESS_DBHOST = "/run/postgresql"; # Unix socket
-      PAPERLESS_DBHOST = "postgresql.${myvars.domain}";
+      PAPERLESS_DBHOST = "postgresql.${const.domain}";
       PAPERLESS_DBSSLMODE = "require";
       PAPERLESS_DBNAME = config.services.paperless.user;
       PAPERLESS_DBUSER = config.services.paperless.user;
@@ -65,7 +65,7 @@
       PAPERLESS_DATE_PARSER_LANGUAGES = "en+zh+zh-Hant";
       PAPERLESS_FILENAME_DATE_ORDER = "YMD"; # Check the document filename for date information
 
-      PAPERLESS_ADMIN_USER = myvars.username;
+      PAPERLESS_ADMIN_USER = const.username;
       PAPERLESS_USE_X_FORWARD_HOST = true;
       PAPERLESS_USE_X_FORWARD_PORT = true;
 
@@ -86,7 +86,7 @@
 
     exporter = {
       enable = true;
-      onCalendar = myvars.backupTimes.paperless;
+      onCalendar = const.backupTimes.paperless;
       directory = "/srv/Backups/paperless-export";
       settings.no-archive = true;
       settings.no-thumbnail = true;
@@ -120,7 +120,7 @@
 
   services.traefik.dynamicConfigOptions.http = {
     routers.paperless = {
-      rule = "Host(`paperless.${myvars.domain}`)";
+      rule = "Host(`paperless.${const.domain}`)";
       entryPoints = [ "websecure" ];
       service = "paperless";
       tls = { };

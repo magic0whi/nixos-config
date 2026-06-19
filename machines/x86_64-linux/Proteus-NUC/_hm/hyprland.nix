@@ -1,7 +1,7 @@
 {
   config,
   lib,
-  myvars,
+  const,
   ...
 }:
 let
@@ -97,7 +97,7 @@ in
       ++ lib.optional config.hardware.nvidia.sync {
         _args = [
           "AQ_DRM_DEVICES"
-          "/dev/dri/${myvars.dgpu_sym_name}:/dev/dri/${myvars.igpu_sym_name}"
+          "/dev/dri/${const.dgpu_sym_name}:/dev/dri/${const.igpu_sym_name}"
         ];
       };
 

@@ -2,7 +2,7 @@
   config,
   lib,
   mylib,
-  myvars,
+  const,
   pkgs,
   ...
 }:
@@ -20,7 +20,7 @@ in
           config
           lib
           mylib
-          myvars
+          const
           pkgs
           ;
         isDarwin = false;
@@ -36,7 +36,7 @@ in
           config
           lib
           mylib
-          myvars
+          const
           pkgs
           ;
         isDarwin = false;

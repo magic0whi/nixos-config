@@ -1,6 +1,6 @@
 {
   mylib,
-  myvars,
+  const,
   features,
   nix-darwin,
   deploy-rs,
@@ -14,7 +14,7 @@ let
       inherit
         name
         mylib
-        myvars
+        const
         ;
       machinePath = ./.;
       specialArgs = { inherit deploy-rs; };

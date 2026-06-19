@@ -1,7 +1,7 @@
 {
   config,
   lib,
-  myvars,
+  const,
   pkgs,
   ...
 }:
@@ -14,7 +14,7 @@ in
 {
   sops =
     let
-      sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
+      sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
     in
     {
       # Generate the runner token for the global runner
@@ -45,7 +45,7 @@ in
 
           echo "Waiting for Forgejo to be online..."
           # Retry until Forgejo reports status=pass
-          while [ "$(${lib.getExe pkgs.curl} -sSf https://git.${myvars.domain}/api/healthz | ${lib.getExe pkgs.jq} -r '.status')" != "pass" ]; do
+          while [ "$(${lib.getExe pkgs.curl} -sSf https://git.${const.domain}/api/healthz | ${lib.getExe pkgs.jq} -r '.status')" != "pass" ]; do
             sleep 1
           done
 
@@ -62,7 +62,7 @@ in
       default_instance = {
         enable = true;
         name = "${config.networking.hostName}-runner";
-        url = "https://git.${myvars.domain}";
+        url = "https://git.${const.domain}";
         tokenFile = config.sops.templates."forgejo_runner_token.env".path;
         labels = [
           # "debian-latest:docker://node:20-bookworm"

@@ -1,13 +1,13 @@
 {
   config,
   lib,
-  myvars,
+  const,
   ...
 }:
 {
   sops =
     let
-      sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
+      sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
       restartUnits = [
         "immich-machine-learning.service"
         "immich-server.service"
@@ -33,15 +33,15 @@
     enable = true;
     group = "storage";
     host = "127.0.0.1";
-    database.host = "postgresql.${myvars.domain}"; # Default: "/run/postgresql", Unix socket
+    database.host = "postgresql.${const.domain}"; # Default: "/run/postgresql", Unix socket
     secretsFile = config.sops.templates."immich.env".path;
     mediaLocation = "/srv/immich";
     # Ref: https://immich.proteus.eu.org/admin/system-settings?isOpen=authentication -> Export as JSON
     settings = {
-      server.externalDomain = "https://immich.${myvars.domain}";
+      server.externalDomain = "https://immich.${const.domain}";
       oauth = {
         enabled = true;
-        issuerUrl = "https://auth.${myvars.domain}";
+        issuerUrl = "https://auth.${const.domain}";
         clientId = "immich";
         # NixOS will dynamically inject the contents of this file at runtime through `utils.genJqSecretsReplacement`
         clientSecret._secret = config.sops.secrets.immich_oauth_secret.path;
@@ -51,7 +51,7 @@
   };
   services.traefik.dynamicConfigOptions.http = {
     routers.immich = {
-      rule = "Host(`immich.${myvars.domain}`)";
+      rule = "Host(`immich.${const.domain}`)";
       entryPoints = [ "websecure" ];
       service = "immich";
       tls = { };

@@ -1,6 +1,6 @@
 {
   config,
-  myvars,
+  const,
   lib,
   pkgs,
   ...
@@ -20,7 +20,7 @@
       {
         secrets =
           let
-            sopsFile = "${myvars.secretsDir}/common.sops.yaml";
+            sopsFile = "${const.secretsDir}/common.sops.yaml";
           in
           {
             "easytier_network_secret" = { inherit sopsFile; };
@@ -42,8 +42,8 @@
     instances.main = {
       environmentFiles = [ config.sops.templates."easytier.env".path ];
       settings = {
-        network_name = myvars.domain;
-        ipv4 = "${builtins.elemAt (map (i: i.ipv4) myvars.networking.hostAddrs.${config.networking.hostName}) 1}/24";
+        network_name = const.domain;
+        ipv4 = "${builtins.elemAt (map (i: i.ipv4) const.networking.hostAddrs.${config.networking.hostName}) 1}/24";
         hostname = config.networking.hostName;
         # peers = [ "txt://txt.easytier.cn" ];
         listeners = [
@@ -57,11 +57,11 @@
         ];
       };
       extraSettings = {
-        ipv6 = "${builtins.elemAt (map (i: i.ipv6) myvars.networking.hostAddrs.${config.networking.hostName}) 1}/64";
+        ipv6 = "${builtins.elemAt (map (i: i.ipv6) const.networking.hostAddrs.${config.networking.hostName}) 1}/64";
         flags = lib.mkMerge [
           {
             accept_dns = true; # Enable Magic DNS
-            tld_dns_zone = myvars.domain;
+            tld_dns_zone = const.domain;
             relay_all_peer_rpc = true; # Help others hole punching
           }
           (lib.mkIf (!pkgs.stdenv.isDarwin) { dev_name = "et-main"; })

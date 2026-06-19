@@ -1,7 +1,7 @@
 {
   config,
   lib,
-  myvars,
+  const,
   pkgs,
   ...
 }:
@@ -12,20 +12,20 @@
   };
   services.cockpit = {
     enable = true;
-    allowed-origins = [ "https://cockpit-desktop.${myvars.domain}" ];
+    allowed-origins = [ "https://cockpit-desktop.${const.domain}" ];
     settings = {
       WebService = {
         ProtocolHeader = "X-Forwarded-Proto";
         ForwardedForHeader = "X-Forwarded-For";
       };
       OAuth.URL =
-        "https://auth.${myvars.domain}/api/oidc/authorization"
+        "https://auth.${const.domain}/api/oidc/authorization"
         + "?client_id=cockpit"
         + "&response_type=token"
         + "&response_mode=fragment"
         + "&scope=openid%20profile%20email%20groups"
         + "&state=1234abcedfdhf"
-        + "&redirect_uri=https://cockpit-desktop.${myvars.domain}";
+        + "&redirect_uri=https://cockpit-desktop.${const.domain}";
       # Refs:
       # https://github.com/cockpit-project/cockpit/blob/a7ae147258a8102069cb7caa94fce1332ea49af1/containers/ws/cockpit-auth-ssh-key
       # https://github.com/gbraad-redhat/podman-cockpit-desktop/issues/3#issuecomment-968581254
@@ -42,7 +42,7 @@
           import requests
 
 
-          IAM_USERINFO_URL = "https://auth.${myvars.domain}/api/oidc/userinfo"
+          IAM_USERINFO_URL = "https://auth.${const.domain}/api/oidc/userinfo"
 
 
           def send_frame(content):
@@ -156,7 +156,7 @@
   };
   services.traefik.dynamicConfigOptions.http = {
     routers.immich = {
-      rule = "Host(`cockpit-desktop.${myvars.domain}`)";
+      rule = "Host(`cockpit-desktop.${const.domain}`)";
       entryPoints = [ "websecure" ];
       service = "cockpit";
       tls = { };

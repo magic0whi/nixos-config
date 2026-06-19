@@ -2,16 +2,16 @@
   config,
   lib,
   mylib,
-  myvars,
+  const,
   pkgs,
   ...
 }:
 let
   # web_root = "/srv/www";
-  web_root = "${myvars.storagePath}/www";
+  web_root = "${const.storagePath}/www";
 in
 {
-  systemd.services.caddy.unitConfig.RequiresMountsFor = [ myvars.storagePath ];
+  systemd.services.caddy.unitConfig.RequiresMountsFor = [ const.storagePath ];
   # systemd.tmpfiles.settings."10-caddy-create-web-root".${web_root}.d = {
   #   user = config.services.caddy.user;
   #   group = config.services.caddy.user;
@@ -24,9 +24,9 @@ in
     # not to attempt ACME/HTTPS bindings.
     globalConfig = "auto_https off";
     virtualHosts = {
-      "http://notebook.${myvars.domain}:${toString myvars.networking.caddyPort}" = mylib.mkCaddyVHost "${web_root}/notebook";
-      "http://noogle.${myvars.domain}:${toString myvars.networking.caddyPort}" = mylib.mkCaddyVHost "${web_root}/noogle";
-      "http://algo-archive.${myvars.domain}:${toString myvars.networking.caddyPort}" = {
+      "http://notebook.${const.domain}:${toString const.networking.caddyPort}" = mylib.mkCaddyVHost "${web_root}/notebook";
+      "http://noogle.${const.domain}:${toString const.networking.caddyPort}" = mylib.mkCaddyVHost "${web_root}/noogle";
+      "http://algo-archive.${const.domain}:${toString const.networking.caddyPort}" = {
         listenAddresses = [
           "127.0.0.1"
           "[::1]"
@@ -54,7 +54,7 @@ in
   services.traefik.dynamicConfigOptions.http = {
     routers.caddy = {
       rule = lib.concatStringsSep " || " (
-        map (i: "Host(`${lib.removeSuffix ":${toString myvars.networking.caddyPort}" (lib.removePrefix "http://" i)}`)") (
+        map (i: "Host(`${lib.removeSuffix ":${toString const.networking.caddyPort}" (lib.removePrefix "http://" i)}`)") (
           builtins.attrNames config.services.caddy.virtualHosts
         )
       );
@@ -63,6 +63,6 @@ in
       tls = { };
       priority = 10;
     };
-    services.caddy.loadBalancer.servers = [ { url = "http://127.0.0.1:${toString myvars.networking.caddyPort}"; } ];
+    services.caddy.loadBalancer.servers = [ { url = "http://127.0.0.1:${toString const.networking.caddyPort}"; } ];
   };
 }

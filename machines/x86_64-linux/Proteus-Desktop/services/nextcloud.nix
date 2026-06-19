@@ -1,6 +1,6 @@
 {
   config,
-  myvars,
+  const,
   pkgs,
   lib,
   ...
@@ -18,7 +18,7 @@ in
 {
   sops.secrets =
     let
-      sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
+      sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
     in
     {
       nextcloud_db_password = { inherit sopsFile restartUnits; };
@@ -32,13 +32,13 @@ in
         clean_units = map (s: lib.removeSuffix ".service" s) restartUnits;
       in
       lib.genAttrs clean_units (_: {
-        unitConfig.RequiresMountsFor = [ myvars.storagePath ];
+        unitConfig.RequiresMountsFor = [ const.storagePath ];
         wants = [ "network-online.target" ];
         after = [ "network-online.target" ];
         preStart = lib.mkBefore ''
           # set -eufo pipefail
 
-          echo "Waiting for LDAP (ldap.${myvars.domain}) to be ready..."
+          echo "Waiting for LDAP (ldap.${const.domain}) to be ready..."
           while ! ${lib.getExe pkgs.netcat} -z ldap.proteus.eu.org 636; do
             sleep 2
           done
@@ -70,7 +70,7 @@ in
           nextcloud-occ app:enable files_external # Enable External Storage to mount Syncthing shared folders
           # Define the list of Syncthing folders to mount
           declare -A external_mounts=(
-            [KeePassXC]="${myvars.storagePath}/share/KeePassXC"
+            [KeePassXC]="${const.storagePath}/share/KeePassXC"
           )
           for mount_point in "''${!external_mounts[@]}"; do
             # Ensure the external mount doesn't duplicate mountpoints
@@ -97,15 +97,15 @@ in
   services.nextcloud = {
     enable = true;
     # package = pkgs.nextcloud33;
-    hostName = "nextcloud.${myvars.domain}";
+    hostName = "nextcloud.${const.domain}";
     # https = true;
 
     # home = "/srv/nextcloud";
-    datadir = "${myvars.storagePath}/nextcloud";
+    datadir = "${const.storagePath}/nextcloud";
 
     config = {
       dbtype = "pgsql";
-      dbhost = "postgresql.${myvars.domain}";
+      dbhost = "postgresql.${const.domain}";
       dbpassFile = config.sops.secrets.nextcloud_db_password.path;
       adminpassFile = config.sops.secrets.nextcloud_admin_password.path;
     };
@@ -127,10 +127,10 @@ in
       allow_user_to_change_display_name = false;
       lost_password_link = "disabled";
 
-      oidc_login_provider_url = "https://auth.${myvars.domain}"; # all other URLs are auto-discovered from .well-known
+      oidc_login_provider_url = "https://auth.${const.domain}"; # all other URLs are auto-discovered from .well-known
       oidc_login_client_id = "nextcloud";
       oidc_login_auto_redirect = true;
-      oidc_login_logout_url = "https://auth.${myvars.domain}/logout"; # Redirect to this page after logging out the user
+      oidc_login_logout_url = "https://auth.${const.domain}/logout"; # Redirect to this page after logging out the user
       oidc_login_end_session_redirect = false; # User will be redirected to the `oidc_login_logout_url` after logout
       oidc_login_button_text = "Log in with Authelia";
       oidc_login_hide_password_form = true;
@@ -188,7 +188,7 @@ in
       forceSTSHeader = true; # Adds STS header for HTTP connections
     };
     routers.nextcloud = {
-      rule = "Host(`nextcloud.${myvars.domain}`)";
+      rule = "Host(`nextcloud.${const.domain}`)";
       entryPoints = [ "websecure" ];
       middlewares = [ "nextcloud-hsts" ];
       service = "nextcloud";

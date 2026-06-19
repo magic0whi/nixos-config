@@ -1,32 +1,32 @@
 {
   config,
   # lib,
-  myvars,
+  const,
   ...
 }:
 {
-  systemd.services.navidrome.unitConfig.RequiresMountsFor = [ myvars.storagePath ];
+  systemd.services.navidrome.unitConfig.RequiresMountsFor = [ const.storagePath ];
   services.navidrome = {
     enable = true;
     settings = {
-      BaseUrl = "https://navidrome.${myvars.domain}";
-      # MusicFolder = config.home-manager.users.${myvars.username}.xdg.userDirs.music;
-      MusicFolder = "${myvars.storagePath}/share/Music";
+      BaseUrl = "https://navidrome.${const.domain}";
+      # MusicFolder = config.home-manager.users.${const.username}.xdg.userDirs.music;
+      MusicFolder = "${const.storagePath}/share/Music";
       # ExtAuth = {
       #   TrustedSources = "127.0.0.1/32,::1/128";
-      #   LogoutURL = "https://auth.${myvars.domain}/logout?rd=https://navidrome.${myvars.domain}";
+      #   LogoutURL = "https://auth.${const.domain}/logout?rd=https://navidrome.${const.domain}";
       # };
     };
   };
   # If use ~/Music
   # systemd.services.navidrome.serviceConfig = {
   #   ProtectHome = lib.mkForce "tmpfs";
-  #   BindReadOnlyPaths = [ config.home-manager.users.${myvars.username}.xdg.userDirs.music ];
+  #   BindReadOnlyPaths = [ config.home-manager.users.${const.username}.xdg.userDirs.music ];
   # };
   services.traefik.dynamicConfigOptions.http = {
     routers = {
       navidrome = {
-        rule = "Host(`navidrome.${myvars.domain}`)";
+        rule = "Host(`navidrome.${const.domain}`)";
         entryPoints = [ "websecure" ];
         # middlewares = [ "authelia-auth" ]; # OIDC doesn't play well for clients
         service = "navidrome";
@@ -34,7 +34,7 @@
       };
       # Authentication bypass for share and subsonic endpoints
       navidrome-public = {
-        rule = "Host(`navidrome.${myvars.domain}`) && (PathPrefix(`/share/`) || PathPrefix(`/rest/`))";
+        rule = "Host(`navidrome.${const.domain}`) && (PathPrefix(`/share/`) || PathPrefix(`/rest/`))";
         entryPoints = [ "websecure" ];
         service = "navidrome";
         tls = { };

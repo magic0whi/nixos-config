@@ -1,7 +1,7 @@
 {
   config,
   lib,
-  myvars,
+  const,
   pkgs,
   ...
 }:
@@ -42,7 +42,7 @@
                 }
                 Port 22
             ''
-          ) "" myvars.networking.hostAddrs
+          ) "" const.networking.hostAddrs
         ))
       ];
       # Define the host key for remote builders so that Nix can verify all the remote builders.
@@ -50,7 +50,7 @@
       knownHosts = lib.mapAttrs (
         name: val:
         let
-          ifaces = myvars.networking.hostAddrs.${name} or [ ];
+          ifaces = const.networking.hostAddrs.${name} or [ ];
           ts_iface = lib.optionalAttrs (ifaces != [ ]) (builtins.elemAt ifaces 0);
           et_iface = lib.optionalAttrs (builtins.length ifaces >= 2) (builtins.elemAt ifaces 1);
         in
@@ -62,12 +62,12 @@
           ++ ((lib.optional (et_iface ? ipv4) et_iface.ipv4) ++ (lib.optional (et_iface ? ipv6) et_iface.ipv6));
           publicKey = val.public_key;
         }
-      ) myvars.networking.knownHosts;
+      ) const.networking.knownHosts;
     }
     ## END Common
     ## BEGIN NixOS
     (lib.optionalAttrs (!pkgs.stdenv.isDarwin) {
-      startAgent = !config.home-manager.users.${myvars.username}.services.gpg-agent.enableSshSupport;
+      startAgent = !config.home-manager.users.${const.username}.services.gpg-agent.enableSshSupport;
     })
     ## END NixOS
   ];

@@ -1,6 +1,6 @@
 {
   lib,
-  myvars,
+  const,
   pkgs,
   ...
 }:
@@ -151,7 +151,7 @@ in
         Mod+Shift+${idx} { move-window-to-workspace "${ws}"; }
         Mod+Ctrl+${idx} { move-column-to-workspace "${ws}"; }
       ''
-    ) myvars.workspaces
+    ) const.workspaces
   )
   + ''
       Mod+Shift+N { move-column-to-workspace-down; }

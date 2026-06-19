@@ -2,14 +2,14 @@
   config,
   lib,
   mylib,
-  myvars,
+  const,
   pkgs,
   ...
 }:
 {
   sops.secrets =
     let
-      sopsFile = "${myvars.secretsDir}/common.sops.yaml";
+      sopsFile = "${const.secretsDir}/common.sops.yaml";
     in
     builtins.mapAttrs
       (
@@ -21,7 +21,7 @@
       )
       {
         "sb_test.json" = {
-          sopsFile = "${myvars.secretsDir}/sb_test.json.sops";
+          sopsFile = "${const.secretsDir}/sb_test.json.sops";
           format = "binary";
           restartUnits = [ "sing-box.service" ];
         };
@@ -48,7 +48,7 @@
         config
         lib
         mylib
-        myvars
+        const
         pkgs
         ;
     };

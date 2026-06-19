@@ -1,11 +1,11 @@
 {
   config,
   lib,
-  myvars,
+  const,
   ...
 }:
 let
-  ifaces = myvars.networking.hostAddrs.${config.networking.hostName};
+  ifaces = const.networking.hostAddrs.${config.networking.hostName};
   iface_wire = builtins.elemAt ifaces 2;
   iface_wlan = builtins.elemAt ifaces 3;
 in
@@ -15,7 +15,7 @@ in
   boot.requiredKernelModules = [ "rtl8812au" ];
 
   sops.secrets.proteus_ap_password = {
-    sopsFile = "${myvars.secretsDir}/Proteus-Desktop.sops.yaml";
+    sopsFile = "${const.secretsDir}/Proteus-Desktop.sops.yaml";
     restartUnits = [ "hostapd.service" ];
   };
   services.hostapd = {

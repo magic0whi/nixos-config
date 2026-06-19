@@ -19,17 +19,17 @@
   config,
   lib,
   machineConfigs,
-  myvars,
+  const,
   # nixpkgs-postgresql,
   pkgs,
   ...
 }:
 let
-  backup_location = "${myvars.storagePath}/psql";
+  backup_location = "${const.storagePath}/psql";
   machine_config = {
-    authelia = machineConfigs.${myvars.networking.findHost "auth"}.config;
-    paperless = machineConfigs.${myvars.networking.findHost "paperless"}.config;
-    immich = machineConfigs.${myvars.networking.findHost "immich"}.config;
+    authelia = machineConfigs.${const.networking.findHost "auth"}.config;
+    paperless = machineConfigs.${const.networking.findHost "paperless"}.config;
+    immich = machineConfigs.${const.networking.findHost "immich"}.config;
   };
 in
 {
@@ -44,25 +44,25 @@ in
     {
       "postgresql_server.priv.pem" = {
         inherit restartUnits;
-        sopsFile = "${myvars.secretsDir}/proteus_server.priv.pem.sops";
+        sopsFile = "${const.secretsDir}/proteus_server.priv.pem.sops";
         format = "binary";
         owner = config.systemd.services.postgresql.serviceConfig.User;
       };
       postgres_ldap_bind_pw = {
         inherit restartUnits;
-        sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
+        sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
       };
     };
   # Ref: https://github.com/NixOS/nixpkgs/blob/549bd84d6279f9852cae6225e372cc67fb91a4c1/nixos/modules/services/databases/postgresql.nix#L684
   sops.templates."pg_hba_auth.conf" =
     let
-      base_dn = "dc=" + builtins.replaceStrings [ "." ] [ ",dc=" ] myvars.domain;
+      base_dn = "dc=" + builtins.replaceStrings [ "." ] [ ",dc=" ] const.domain;
     in
     {
       content =
         let
           ldap_opts = builtins.concatStringsSep " " [
-            ''ldapurl="ldaps://ldap.${myvars.domain}/${base_dn}?uid?sub"''
+            ''ldapurl="ldaps://ldap.${const.domain}/${base_dn}?uid?sub"''
             ''ldapbinddn="uid=${config.systemd.services.postgresql.serviceConfig.User},ou=ServiceAccounts,${base_dn}"''
             ''ldapbindpasswd="${config.sops.placeholder.postgres_ldap_bind_pw}"''
           ];
@@ -98,7 +98,7 @@ in
     settings = {
       ssl = true;
       ssl_min_protocol_version = "TLSv1.3";
-      ssl_cert_file = "${myvars.secretsDir}/proteus_server.pub.pem";
+      ssl_cert_file = "${const.secretsDir}/proteus_server.pub.pem";
       ssl_key_file = config.sops.secrets."postgresql_server.priv.pem".path;
       hba_file = lib.mkForce config.sops.templates."pg_hba_auth.conf".path;
     };
@@ -141,7 +141,7 @@ in
   };
   services.postgresqlBackup = {
     enable = true;
-    startAt = myvars.backupTimes.postgresql;
+    startAt = const.backupTimes.postgresql;
     # databases = ["docspell"];
     # location = "/srv/Backups/psql";
     location = backup_location;

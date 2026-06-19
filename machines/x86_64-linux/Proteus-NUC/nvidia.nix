@@ -1,6 +1,6 @@
 {
   lib,
-  myvars,
+  const,
   ...
 }:
 {
@@ -35,8 +35,8 @@
         # NOTE: It's unnecessary to use sync.enable for hybrid laptop since it only affect Xorg server related configs
         # Ref (search for keyword `syncCfg.enable`):
         # https://github.com/NixOS/nixpkgs/blob/6c9a78c09ff4d6c21d0319114873508a6ec01655/nixos/modules/hardware/video/nvidia.nix#L508
-        intelBusId = to_nixos_bus_id myvars.igpu_pci_ids;
-        nvidiaBusId = to_nixos_bus_id myvars.dgpu_pci_ids;
+        intelBusId = to_nixos_bus_id const.igpu_pci_ids;
+        nvidiaBusId = to_nixos_bus_id const.dgpu_pci_ids;
         offload = {
           enable = true;
           enableOffloadCmd = true;
@@ -45,7 +45,7 @@
   };
   services.udev.extraRules = ''
     # Consistent device paths for specific cards
-    KERNEL=="card*", KERNELS=="${myvars.igpu_pci_ids}", SUBSYSTEM=="drm", SUBSYSTEMS=="pci", SYMLINK+="dri/${myvars.igpu_sym_name}"
-    KERNEL=="card*", KERNELS=="${myvars.dgpu_pci_ids}", SUBSYSTEM=="drm", SUBSYSTEMS=="pci", SYMLINK+="dri/${myvars.dgpu_sym_name}"
+    KERNEL=="card*", KERNELS=="${const.igpu_pci_ids}", SUBSYSTEM=="drm", SUBSYSTEMS=="pci", SYMLINK+="dri/${const.igpu_sym_name}"
+    KERNEL=="card*", KERNELS=="${const.dgpu_pci_ids}", SUBSYSTEM=="drm", SUBSYSTEMS=="pci", SYMLINK+="dri/${const.dgpu_sym_name}"
   '';
 }

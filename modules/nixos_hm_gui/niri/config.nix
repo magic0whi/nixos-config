@@ -1,7 +1,7 @@
 {
   lib,
   pkgs,
-  myvars,
+  const,
   ...
 }:
 {
@@ -16,7 +16,7 @@
               i:
               let
                 idx = toString (i + 1);
-                ws_name = builtins.elemAt myvars.workspaces i;
+                ws_name = builtins.elemAt const.workspaces i;
               in
               ''niri msg action move-workspace-to-index ${idx} --reference "${ws_name}"''
             ) 10

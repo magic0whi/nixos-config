@@ -1,33 +1,33 @@
 {
-  myvars,
+  const,
   ...
 }:
 {
   services.traefik = {
     dynamicConfigOptions.http = {
       routers = {
-        traefik-dashboard.rule = "Host(`traefik-desktop.${myvars.domain}`)";
+        traefik-dashboard.rule = "Host(`traefik-desktop.${const.domain}`)";
         qinglong = {
-          rule = "Host(`ql.${myvars.domain}`)";
+          rule = "Host(`ql.${const.domain}`)";
           entryPoints = [ "websecure" ];
           service = "qinglong";
           tls = { };
         };
         sb = {
-          rule = "Host(`sb-desktop.${myvars.domain}`)";
+          rule = "Host(`sb-desktop.${const.domain}`)";
           entryPoints = [ "websecure" ];
           middlewares = [ "authelia-auth" ];
           service = "sb-dashboard";
           tls = { };
         };
         papra = {
-          rule = "Host(`papra.${myvars.domain}`)";
+          rule = "Host(`papra.${const.domain}`)";
           entryPoints = [ "websecure" ];
           service = "papra";
           tls = { };
         };
         plane = {
-          rule = "Host(`plane.${myvars.domain}`)";
+          rule = "Host(`plane.${const.domain}`)";
           entryPoints = [ "websecure" ];
           service = "plane";
           tls = { };

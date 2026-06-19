@@ -1,7 +1,7 @@
 {
   config,
   lib,
-  myvars,
+  const,
   pkgs,
   ...
 }:
@@ -25,8 +25,8 @@
     lfs.enable = true; # Used by huggingface models
     settings = {
       user = {
-        name = myvars.userFullName;
-        inherit (myvars) email;
+        name = const.userFullName;
+        inherit (const) email;
       };
       init.defaultBranch = "main";
       trim.bases = "develop,master,main"; # For git-trim
@@ -39,8 +39,8 @@
       url = {
         # New machines that lacks of a SSH Agent / key may not able to clone repo anonymously
         # Replace https with ssh
-        # "ssh://git@ssh.github.com:443/${myvars.githubUsername}" = {
-        #   insteadOf = "https://github.com/${myvars.githubUsername}";
+        # "ssh://git@ssh.github.com:443/${const.githubUsername}" = {
+        #   insteadOf = "https://github.com/${const.githubUsername}";
         # };
         # "ssh://git@gitlab.com/" = {
         #   insteadOf = "https://gitlab.com/";
@@ -95,7 +95,7 @@
     # ];
     signing = {
       format = "openpgp";
-      key = myvars.gitSigningKey;
+      key = const.gitSigningKey;
       signByDefault = true;
     };
   };

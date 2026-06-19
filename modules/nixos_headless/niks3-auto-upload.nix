@@ -1,15 +1,15 @@
 {
   config,
   lib,
-  myvars,
+  const,
   pkgs,
   ...
 }:
 {
-  sops.secrets.niks3_client_secret_yajuusexnpai.sopsFile = "${myvars.secretsDir}/common.sops.yaml";
+  sops.secrets.niks3_client_secret_yajuusexnpai.sopsFile = "${const.secretsDir}/common.sops.yaml";
   services.niks3-auto-upload = {
     enable = true;
-    serverUrl = "https://niks3.${myvars.domain}";
+    serverUrl = "https://niks3.${const.domain}";
     # authTokenFile = config.sops.secrets.niks3-auto-upload_api_token.path;
     authTokenFile = "\${RUNTIME_DIRECTORY}/niks3-oidc-token";
   };
@@ -22,7 +22,7 @@
 
         echo "Fetching fresh token from Authelia via client_credentials..." >&2
 
-        RESPONSE=$(${lib.getExe pkgs.curl} -s -X POST "https://auth.${myvars.domain}/api/oidc/token" \
+        RESPONSE=$(${lib.getExe pkgs.curl} -s -X POST "https://auth.${const.domain}/api/oidc/token" \
           -H "Content-Type: application/x-www-form-urlencoded" \
           -u "niks3_yajuusexnpai:$(cat ${config.sops.secrets.niks3_client_secret_yajuusexnpai.path})" \
           -d "grant_type=client_credentials" \

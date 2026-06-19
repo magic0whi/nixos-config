@@ -20,7 +20,7 @@
 {
   config,
   lib,
-  myvars,
+  const,
   pkgs,
   ...
 }:
@@ -43,9 +43,9 @@
     files = [ "/etc/machine-id" ];
 
     users = lib.mkIf (config ? home-manager) {
-      ${myvars.username} =
+      ${const.username} =
         let
-          hm_cfg = config.home-manager.users.${myvars.username};
+          hm_cfg = config.home-manager.users.${const.username};
         in
         {
           # The following directories will be passed to /persistent/home/$USER

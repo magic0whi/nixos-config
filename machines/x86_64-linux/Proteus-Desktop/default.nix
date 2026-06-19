@@ -1,7 +1,7 @@
 {
   machineConfigs,
   mylib,
-  myvars,
+  const,
   features,
 
   niks3,
@@ -17,7 +17,7 @@ let
         name
         machineConfigs
         mylib
-        myvars
+        const
         ;
       machinePath = ./.;
       overlays = with features; common.baseOverlays;
@@ -43,5 +43,5 @@ in
 {
   _DEBUG = { inherit name; };
   nixos_configurations.${name} = nixos_system;
-  deploy_nodes.${name} = mylib.genDeployNode myvars.networking.hostAddrs.${name} nixos_system;
+  deploy_nodes.${name} = mylib.genDeployNode const.networking.hostAddrs.${name} nixos_system;
 }

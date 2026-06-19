@@ -1,6 +1,6 @@
 {
   lib,
-  myvars,
+  const,
   pkgs,
   ...
 }:
@@ -29,7 +29,7 @@
           "nix-command"
           "flakes"
         ]; # Enable flakes globally
-        trusted-users = [ myvars.username ];
+        trusted-users = [ const.username ];
         # Specify additional substituters via:
         # 1. `nixConfig.substituers` in `flake.nix`
         # 2. command line args `--options substituers http://xxx`
@@ -53,12 +53,12 @@
             true;
         # The substituter will be appended to the default substituters when fetching packages.
         extra-substituters = [
-          "https://nix-cache.s3-pub.${myvars.domain}"
+          "https://nix-cache.s3-pub.${const.domain}"
           "https://hyprland.cachix.org"
           "https://noctalia.cachix.org"
         ];
         extra-trusted-public-keys = [
-          "s3.${myvars.domain}-1:IxrRwk4uC5ittHeG9menkuajABnrX9cboEWwZz/m4+E="
+          "s3.${const.domain}-1:IxrRwk4uC5ittHeG9menkuajABnrX9cboEWwZz/m4+E="
           "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
           "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
         ];

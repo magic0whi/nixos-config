@@ -1,7 +1,7 @@
 {
   machineConfigs,
   mylib,
-  myvars,
+  const,
   features,
 
   deploy-rs,
@@ -19,7 +19,7 @@ let
         mylib
         ;
       machinePath = ./.;
-      myvars = myvars // {
+      const = const // {
         igpu_sym_name = "intel";
         # `lspci -Dnnd 8086::03xx | cut -f1 -d' '`
         igpu_pci_ids = "0000:00:02.0";
@@ -46,5 +46,5 @@ in
 {
   _DEBUG = { inherit name features; };
   nixos_configurations.${name} = nixos_cfg;
-  deploy_nodes.${name} = mylib.genDeployNode myvars.networking.hostAddrs.${name} nixos_cfg;
+  deploy_nodes.${name} = mylib.genDeployNode const.networking.hostAddrs.${name} nixos_cfg;
 }

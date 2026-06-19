@@ -1,4 +1,4 @@
-{ config, myvars, ... }:
+{ config, const, ... }:
 {
   # Rollback `/` to blank snapshot on boot
   boot.initrd.systemd.services."zfs-rollback-root" = {
@@ -14,7 +14,7 @@
   };
 
   environment.persistence."/persistent".directories = [ "/srv" ];
-  environment.persistence."/persistent".users.${myvars.username}.directories = [
+  environment.persistence."/persistent".users.${const.username}.directories = [
     "Games"
     "Secrets"
     "Works"

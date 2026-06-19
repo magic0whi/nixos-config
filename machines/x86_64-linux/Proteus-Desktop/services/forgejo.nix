@@ -1,14 +1,14 @@
 {
   config,
   lib,
-  myvars,
+  const,
   pkgs,
   ...
 }:
 {
   sops =
     let
-      sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
+      sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
     in
     {
       secrets = {
@@ -30,14 +30,14 @@
       type = "postgres";
       # socket = "/run/postgresql"; # The module will prefer UNIX Domain Socket if this is not null
       createDatabase = false; # Must be disabled if using remote DB
-      host = "postgresql.${myvars.domain}";
+      host = "postgresql.${const.domain}";
       passwordFile = config.sops.secrets.forgejo_db_password.path;
     };
     lfs.enable = true;
     settings = {
       server = {
-        DOMAIN = "git.${myvars.domain}";
-        ROOT_URL = "https://git.${myvars.domain}/";
+        DOMAIN = "git.${const.domain}";
+        ROOT_URL = "https://git.${const.domain}/";
         HTTP_ADDR = "127.0.0.1";
         # PROTOCOL = "http+unix"; # HTTP through UNIX Domain Socket
       };
@@ -57,7 +57,7 @@
     };
     dump = {
       enable = true;
-      interval = myvars.backupTimes.forgejo;
+      interval = const.backupTimes.forgejo;
       type = "tar.zst";
     };
   };
@@ -70,7 +70,7 @@
         preStart = lib.mkBefore ''
           set -eufo pipefail
 
-          echo "Waiting for LDAP (ldap.${myvars.domain}) to be ready..."
+          echo "Waiting for LDAP (ldap.${const.domain}) to be ready..."
           while ! ${lib.getExe pkgs.netcat} -z ldap.proteus.eu.org 636; do
             sleep 2
           done
@@ -91,7 +91,7 @@
           set -eufo pipefail
 
           # Wait for Forgejo to be fully ready to accept CLI commands
-          while [ "$(${lib.getExe pkgs.curl} -sSf https://git.${myvars.domain}/api/healthz | ${lib.getExe pkgs.jq} -r '.status')" != "pass" ]; do
+          while [ "$(${lib.getExe pkgs.curl} -sSf https://git.${const.domain}/api/healthz | ${lib.getExe pkgs.jq} -r '.status')" != "pass" ]; do
             sleep 1
           done
 
@@ -110,7 +110,7 @@
               --provider openidConnect \
               --key "forgejo" \
               --secret "$OIDC_SECRET" \
-              --auto-discover-url "https://auth.${myvars.domain}/.well-known/openid-configuration" \
+              --auto-discover-url "https://auth.${const.domain}/.well-known/openid-configuration" \
               --icon-url "/assets/img/auth/authelia.png"
           else
             echo "Updating existing Authelia OIDC provider..."
@@ -121,7 +121,7 @@
               --provider openidConnect \
               --key "forgejo" \
               --secret "$OIDC_SECRET" \
-              --auto-discover-url "https://auth.${myvars.domain}/.well-known/openid-configuration" \
+              --auto-discover-url "https://auth.${const.domain}/.well-known/openid-configuration" \
               --icon-url "/assets/img/auth/authelia.png"
           fi
         '';
@@ -131,7 +131,7 @@
 
   services.traefik.dynamicConfigOptions.http = {
     routers.forgejo = {
-      rule = "Host(`git.${myvars.domain}`)";
+      rule = "Host(`git.${const.domain}`)";
       entryPoints = [ "websecure" ];
       service = "forgejo";
       tls = { };

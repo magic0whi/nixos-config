@@ -2,7 +2,7 @@
   config,
   lib,
   machineConfigs,
-  myvars,
+  const,
   ...
 }:
 let
@@ -28,16 +28,16 @@ in
   };
   systemd.network.networks."50-easytier-dns" =
     let
-      ns_hostname = myvars.networking.findHost "ns1";
+      ns_hostname = const.networking.findHost "ns1";
     in
     {
       name = nic_name;
       networkConfig.KeepConfiguration = "yes";
       domains = [
-        "${myvars.domain}" # Search Domain
+        "${const.domain}" # Search Domain
       ]
       # Routing Domain for reverse zones
-      ++ lib.remove "~${myvars.domain}" (
+      ++ lib.remove "~${const.domain}" (
         lib.mapAttrsToList (
           _: zone:
           if (lib.isDerivation zone.file) then
@@ -48,9 +48,9 @@ in
       );
       dns =
         let
-          iface = builtins.elemAt myvars.networking.hostAddrs.${ns_hostname} 1;
+          iface = builtins.elemAt const.networking.hostAddrs.${ns_hostname} 1;
         in
-        lib.optional (iface ? ipv4) "${iface.ipv4}#${myvars.domain}"
-        ++ lib.optional (iface ? ipv6) "${iface.ipv6}#${myvars.domain}";
+        lib.optional (iface ? ipv4) "${iface.ipv4}#${const.domain}"
+        ++ lib.optional (iface ? ipv6) "${iface.ipv6}#${const.domain}";
     };
 }

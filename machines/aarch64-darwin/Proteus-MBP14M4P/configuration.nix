@@ -1,11 +1,11 @@
 {
   config,
-  myvars,
+  const,
   ...
 }:
 {
   sops.secrets."sb_client_darwin.json" = {
-    sopsFile = "${myvars.secretsDir}/sb_client_darwin.json.sops";
+    sopsFile = "${const.secretsDir}/sb_client_darwin.json.sops";
     format = "binary";
     # NOTE: As of 2026-05-05, sops-nix don't support restartUnits on macOS
     # restartUnits = ["sing-box.service"];

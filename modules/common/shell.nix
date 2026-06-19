@@ -1,7 +1,7 @@
 {
   config,
   lib,
-  myvars,
+  const,
   pkgs,
   ...
 }:
@@ -111,7 +111,7 @@
 
     (lib.optionalAttrs pkgs.stdenv.isDarwin { enableSyntaxHighlighting = true; })
   ];
-  environment.variables = lib.mkIf (config.home-manager.users.${myvars.username}.programs.helix.defaultEditor or false) {
+  environment.variables = lib.mkIf (config.home-manager.users.${const.username}.programs.helix.defaultEditor or false) {
     EDITOR = "hx";
   };
 }

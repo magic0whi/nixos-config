@@ -1,7 +1,7 @@
 {
   config,
   lib,
-  myvars,
+  const,
   pkgs,
   ...
 }:
@@ -34,7 +34,7 @@
     ## BEGIN ACTIVATION SCRIPT trust_custom_ca.sh
     echo "Checking self-signed CA in macOS System Keychain..."
 
-    CA_CERT="${myvars.secretsDir}/proteus_ca.pub.pem"
+    CA_CERT="${const.secretsDir}/proteus_ca.pub.pem"
     CA_NAME="Homo home"
 
     # 1. Get the SHA-1 fingerprint of current self-signed certificate file on disk
@@ -58,9 +58,9 @@
   '';
   ## END security.nix
   ## BEGIN shell.nix
-  environment.shells = [ config.users.users.${myvars.username}.shell ]; # Allowed login shells
+  environment.shells = [ config.users.users.${const.username}.shell ]; # Allowed login shells
   ## END shell.nix
   ## BEGIN users.nix
-  system.primaryUser = myvars.username;
+  system.primaryUser = const.username;
   ## END users.nix
 }

@@ -1,12 +1,12 @@
 {
   config,
   lib,
-  myvars,
+  const,
   ...
 }:
 {
   sops.secrets."${config.networking.hostName}_syncthing.priv.pem" = {
-    sopsFile = "${myvars.secretsDir}/${config.networking.hostName}_syncthing.priv.pem.sops";
+    sopsFile = "${const.secretsDir}/${config.networking.hostName}_syncthing.priv.pem.sops";
     format = "binary";
     restartUnits = [ "syncthing.service" ];
   };
@@ -14,13 +14,13 @@
   # If without `users.groups.storage` and rely on LDAP group
   # systemd.services.syncthing.serviceConfig.SupplementaryGroups = ["storage"];
 
-  systemd.services.syncthing.unitConfig.RequiresMountsFor = [ myvars.storagePath ];
+  systemd.services.syncthing.unitConfig.RequiresMountsFor = [ const.storagePath ];
   services.syncthing = {
     enable = true;
     openDefaultPorts = true;
     group = "storage"; # Don't work for a LDAP group
     key = config.sops.secrets."${config.networking.hostName}_syncthing.priv.pem".path;
-    cert = "${myvars.secretsDir}/${config.networking.hostName}_syncthing.pub.pem";
+    cert = "${const.secretsDir}/${config.networking.hostName}_syncthing.pub.pem";
     settings =
       let
         mobile_devices = {
@@ -34,33 +34,33 @@
         devices =
           mobile_devices
           // (builtins.mapAttrs (_: v: { id = v.syncthing_id; }) (
-            lib.filterAttrs (n: v: v ? syncthing_id && n != config.networking.hostName) myvars.networking.knownHosts
+            lib.filterAttrs (n: v: v ? syncthing_id && n != config.networking.hostName) const.networking.knownHosts
           ));
         folders = {
           "Documents" = {
-            path = "${myvars.storagePath}/share/Documents";
+            path = "${const.storagePath}/share/Documents";
             devices = builtins.attrNames config.services.syncthing.settings.devices; # All devices
           };
           "Games" = {
-            path = "${myvars.storagePath}/share/Games";
+            path = "${const.storagePath}/share/Games";
             devices = lib.subtractLists (builtins.attrNames mobile_devices) (
               builtins.attrNames config.services.syncthing.settings.devices
             );
           };
           "KeePassXC" = {
-            path = "${myvars.storagePath}/share/KeePassXC";
+            path = "${const.storagePath}/share/KeePassXC";
             devices = builtins.attrNames config.services.syncthing.settings.devices;
           };
           "Music" = {
-            path = "${myvars.storagePath}/share/Music";
+            path = "${const.storagePath}/share/Music";
             devices = builtins.attrNames config.services.syncthing.settings.devices;
           };
           "Pictures" = {
-            path = "${myvars.storagePath}/share/Pictures";
+            path = "${const.storagePath}/share/Pictures";
             devices = builtins.attrNames config.services.syncthing.settings.devices;
           };
           "Works" = {
-            path = "${myvars.storagePath}/share/Works";
+            path = "${const.storagePath}/share/Works";
             devices = lib.subtractLists (builtins.attrNames mobile_devices) (
               builtins.attrNames config.services.syncthing.settings.devices
             );
@@ -70,7 +70,7 @@
   };
   services.traefik.dynamicConfigOptions.http = {
     routers.syncthing = {
-      rule = "Host(`syncthing-desktop.${myvars.domain}`)";
+      rule = "Host(`syncthing-desktop.${const.domain}`)";
       entryPoints = [ "websecure" ];
       middlewares = [ "authelia-auth" ];
       service = "syncthing-dashboard";
@@ -78,7 +78,7 @@
     };
     services.syncthing-dashboard.loadBalancer = {
       passHostHeader = false;
-      servers = [ { url = "http://${config.home-manager.users.${myvars.username}.services.syncthing.guiAddress}"; } ];
+      servers = [ { url = "http://${config.home-manager.users.${const.username}.services.syncthing.guiAddress}"; } ];
       healthCheck.path = "/rest/noauth/health";
     };
   };

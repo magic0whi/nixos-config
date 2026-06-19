@@ -1,5 +1,5 @@
 {
-  myvars,
+  const,
   pkgs,
   ...
 }:
@@ -29,7 +29,7 @@
           "Noto Sans CJK JP"
         ];
         monospace = [
-          myvars.monospace.name
+          const.monospace.name
           "Noto Sans Mono"
           "Noto Sans Mono CJK SC"
           "Noto Sans Mono CJK TC"

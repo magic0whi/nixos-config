@@ -1,6 +1,6 @@
 {
   config,
-  myvars,
+  const,
   ...
 }:
 let
@@ -13,12 +13,12 @@ in
     in
     {
       secrets."opensearch_dashboards_password" = {
-        sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
+        sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
         inherit restartUnits;
       };
       templates."opensearch_dashboards.yml" = {
         inherit restartUnits;
-        owner = myvars.username; # sops-nix don't support specify uid while the image hardcoded 1000
+        owner = const.username; # sops-nix don't support specify uid while the image hardcoded 1000
         # https://github.com/opensearch-project/OpenSearch-Dashboards/blob/3.6.0/config/opensearch_dashboards.yml
         content = ''
           server:
@@ -32,7 +32,7 @@ in
           # opensearch.ssl.verificationMode: none
           opensearch:
             # ssl.certificateAuthorities: [ "/etc/ssl/certs/ca-certificates.crt" ]
-            hosts: [ "https://nixos-search.${myvars.domain}/backend" ]
+            hosts: [ "https://nixos-search.${const.domain}/backend" ]
             username: kibanaserver
             # opensearch-dashboards don't suppport urlencode
             password: '${config.sops.placeholder.opensearch_dashboards_password}'
@@ -45,7 +45,7 @@ in
             readonly_mode.roles: ["kibana_read_only"]
             auth.type: openid
             openid:
-              connect_url: https://auth.${myvars.domain}/.well-known/openid-configuration
+              connect_url: https://auth.${const.domain}/.well-known/openid-configuration
               base_redirect_url: "https://opensearch-dashboards.proteus.eu.org"
               client_id: opensearch-dashboards
               client_secret: ${config.sops.placeholder.opensearch-dashboards_client_secret}
@@ -70,7 +70,7 @@ in
   };
   services.traefik.dynamicConfigOptions.http = {
     routers.opensearch-dashboards = {
-      rule = "Host(`opensearch-dashboards.${myvars.domain}`)";
+      rule = "Host(`opensearch-dashboards.${const.domain}`)";
       entryPoints = [ "websecure" ];
       service = "opensearch-dashboards";
       tls = { };

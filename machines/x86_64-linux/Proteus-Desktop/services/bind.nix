@@ -1,7 +1,7 @@
 {
   config,
   lib,
-  myvars,
+  const,
   pkgs,
   ...
 }:
@@ -30,11 +30,11 @@
     listenOn = [
       "127.0.0.1"
     ]
-    ++ (builtins.catAttrs "ipv4" myvars.networking.hostAddrs.${config.networking.hostName});
+    ++ (builtins.catAttrs "ipv4" const.networking.hostAddrs.${config.networking.hostName});
     listenOnIpv6 = [
       "::1"
     ]
-    ++ (builtins.catAttrs "ipv6" myvars.networking.hostAddrs.${config.networking.hostName});
+    ++ (builtins.catAttrs "ipv6" const.networking.hostAddrs.${config.networking.hostName});
     # Inject the variables into the raw extraOptions string for DoT and DoH
     extraOptions = ''
       # Strictly Authoritative-Only Mode, implies 'empty-zones-enable no'
@@ -76,7 +76,7 @@
       };
     '';
     domains = {
-      ${myvars.domain} = {
+      ${const.domain} = {
         bindZoneOptions = {
           master = true;
           # Apply the DNSSEC policy to sign the zone locally
@@ -84,8 +84,8 @@
         };
         mutable = true;
         soa = {
-          rName = myvars.email;
-          serial = myvars.networking.soaSerial;
+          rName = const.email;
+          serial = const.networking.soaSerial;
         };
         networks = [
           {
@@ -119,7 +119,7 @@
                 ]
               ) iface
             ) ifaces
-          ) (lib.filterAttrs (name: _: builtins.elem name allowed_hosts) myvars.networking.hostAddrs);
+          ) (lib.filterAttrs (name: _: builtins.elem name allowed_hosts) const.networking.hostAddrs);
       };
     };
   };
@@ -132,9 +132,9 @@
           # Intercept standard DoH queries at the apex domain
           rule = lib.concatStrings [
             "("
-            "Host(`${myvars.domain}`)"
-            " || Host(`ns1.${myvars.domain}`)"
-            " || Host(`${config.networking.hostName}.${myvars.tailnet}`)"
+            "Host(`${const.domain}`)"
+            " || Host(`ns1.${const.domain}`)"
+            " || Host(`${config.networking.hostName}.${const.tailnet}`)"
             ")"
             " && Path(`/dns-query`)"
           ];
@@ -151,9 +151,9 @@
       tcp = {
         routers.dot = {
           rule = builtins.concatStringsSep " " [
-            "HostSNI(`${myvars.domain}`)"
-            "|| HostSNI(`ns1.${myvars.domain}`)"
-            "|| HostSNI(`proteus-nuc.${myvars.tailnet}`)"
+            "HostSNI(`${const.domain}`)"
+            "|| HostSNI(`ns1.${const.domain}`)"
+            "|| HostSNI(`proteus-nuc.${const.tailnet}`)"
           ];
           entryPoints = [ "dot" ];
           service = "dot";
@@ -178,7 +178,7 @@
   # nix run nixpkgs#dig -- @100.64.161.20 161.64.100.in-addr.arpa DNSKEY +noall +answer | nix shell nixpkgs#ldns.examples --command ldns-key2ds -n /dev/stdin
   sops =
     let
-      sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
+      sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
       restartUnits = [ "bind.service" ];
       owner = config.systemd.services.bind.serviceConfig.User;
       mode = "0600";

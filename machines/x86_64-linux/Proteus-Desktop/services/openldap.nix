@@ -2,18 +2,18 @@
   config,
   lib,
   machineConfigs,
-  myvars,
+  const,
   pkgs,
   ...
 }:
 let
   machine_config = {
-    authelia = machineConfigs.${myvars.networking.findHost "auth"}.config;
-    forgejo = machineConfigs.${myvars.networking.findHost "git"}.config;
-    immich = machineConfigs.${myvars.networking.findHost "immich"}.config;
-    paperless = machineConfigs.${myvars.networking.findHost "paperless"}.config;
-    postgresql = machineConfigs.${myvars.networking.findHost "postgresql"}.config;
-    niks3 = machineConfigs.${myvars.networking.findHost "niks3"}.config;
+    authelia = machineConfigs.${const.networking.findHost "auth"}.config;
+    forgejo = machineConfigs.${const.networking.findHost "git"}.config;
+    immich = machineConfigs.${const.networking.findHost "immich"}.config;
+    paperless = machineConfigs.${const.networking.findHost "paperless"}.config;
+    postgresql = machineConfigs.${const.networking.findHost "postgresql"}.config;
+    niks3 = machineConfigs.${const.networking.findHost "niks3"}.config;
   };
 
   openldap_port = 636; # OpenLDAP (Secure)
@@ -23,7 +23,7 @@ in
   networking.firewall.allowedTCPPorts = [ openldap_port ]; # UDP generally not used
   services.openldap =
     let
-      base_dn = "dc=" + builtins.replaceStrings [ "." ] [ ",dc=" ] myvars.domain;
+      base_dn = "dc=" + builtins.replaceStrings [ "." ] [ ",dc=" ] const.domain;
       manager_dn = "cn=Manager,${base_dn}";
     in
     {
@@ -53,7 +53,7 @@ in
           "cn=schema".includes = with pkgs; [
             "${openldap}/etc/schema/core.ldif"
             "${openldap}/etc/schema/cosine.ldif"
-            "${myvars.secretsDir}/rfc2307bis.ldif"
+            "${const.secretsDir}/rfc2307bis.ldif"
             "${openldap}/etc/schema/inetorgperson.ldif"
           ];
           "olcDatabase={0}config".attrs = {
@@ -143,24 +143,24 @@ in
         objectClass: organizationalUnit
         ou: ServiceAccounts
 
-        dn: uid=${myvars.username},ou=People,${base_dn}
+        dn: uid=${const.username},ou=People,${base_dn}
         objectClass: top
         objectClass: person
         objectClass: organizationalPerson
         objectClass: inetOrgPerson
         objectClass: posixAccount
         objectClass: shadowAccount
-        uid: ${myvars.username}
-        cn: ${myvars.userFullName}
+        uid: ${const.username}
+        cn: ${const.userFullName}
         sn: Qian
         givenName: Proteus
         title: Qiansan
-        mail: ${myvars.email}
+        mail: ${const.email}
         labeledURI: https://misc.s3-pub.proteus.eu.org/siameseemoji_agadmqeaaspumeu.png
         loginShell: /bin/zsh
-        uidNumber: ${toString config.users.users.${myvars.username}.uid}
+        uidNumber: ${toString config.users.users.${const.username}.uid}
         gidNumber: ${toString config.users.groups.users.gid}
-        homeDirectory: ${config.users.users.${myvars.username}.home}
+        homeDirectory: ${config.users.users.${const.username}.home}
         description: Primary personal account
         userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$arVKdAqitf39aAVGaLS5Qw$AtzBSJDhT9vsiLg6ZhZDuHxH5euYqlVmGSE+EWjlxqs
 
@@ -173,7 +173,7 @@ in
         cn: Father Family
         sn: Family
         givenName: Father
-        mail: father@${myvars.domain}
+        mail: father@${const.domain}
         description: Account for self-hosted services
         userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$Qy12Udyu8BwhldnhxmpVsw$xk5lHJKFZtLYFUICPiDu2DhPL5vgZFRe9SIrt8dSw8Q
 
@@ -186,7 +186,7 @@ in
         cn: Mother Family
         sn: Family
         givenName: Mother
-        mail: mother@${myvars.domain}
+        mail: mother@${const.domain}
         description: Account for self-hosted services
         userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$MMxZvGZmYifIMYiqnhnrGA$PWpb8eA3O1bdScJ5wRAj0c7iBUnoYn/6eZin5yx9Vvc
 
@@ -308,14 +308,14 @@ in
         cn: storage
         gidNumber: ${toString config.users.groups.storage.gid}
         description: Group to share directory across multiple users
-        member: uid=${myvars.username},ou=People,${base_dn}
+        member: uid=${const.username},ou=People,${base_dn}
 
         dn: cn=jellyfin-admins,ou=Group,${base_dn}
         objectClass: top
         objectClass: groupOfMembers
         cn: jellyfin-admins
         description: Group to set Jellyfin Admins
-        member: uid=${myvars.username},ou=People,${base_dn}
+        member: uid=${const.username},ou=People,${base_dn}
 
       '';
     };

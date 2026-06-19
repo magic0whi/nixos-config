@@ -1,4 +1,4 @@
-{ myvars, ... }:
+{ const, ... }:
 {
   services.jellyfin =
     let
@@ -8,7 +8,7 @@
       enable = true;
       hardwareAcceleration = {
         enable = true;
-        device = if use_nvidia then "/dev/dri/${myvars.dgpu_sym_name}" else "/dev/dri/${myvars.igpu_sym_name}";
+        device = if use_nvidia then "/dev/dri/${const.dgpu_sym_name}" else "/dev/dri/${const.igpu_sym_name}";
         type = "vaapi";
       };
       transcoding = {
@@ -50,7 +50,7 @@
       contentTypeNosniff = true;
     };
     routers.jellyfin = {
-      rule = "Host(`jellyfin.${myvars.domain}`)";
+      rule = "Host(`jellyfin.${const.domain}`)";
       entryPoints = [ "websecure" ];
       middlewares = [ "jellyfin-headers" ];
       service = "jellyfin";

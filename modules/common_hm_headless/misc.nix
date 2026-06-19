@@ -1,5 +1,5 @@
 {
-  myvars,
+  const,
   pkgs,
   lib,
   ...
@@ -10,7 +10,7 @@
   #
   # You can update Home Manager without changing this value. See the Home Manager release notes for a list of state
   # version changes in each release.
-  home.stateVersion = myvars.nixosStateVersion;
+  home.stateVersion = const.nixosStateVersion;
   programs.home-manager.enable = true; # Let Home Manager install and manage itself.
   ## BEGIN btop.nix
   # Alternative to htop/nmon
@@ -76,7 +76,7 @@
   catppuccin = {
     autoEnable = true; # Whether to enable all Catppuccin integrations by default
     enable = lib.mkDefault true;
-    inherit (myvars.catppuccin) accent flavor;
+    inherit (const.catppuccin) accent flavor;
   };
   ## END catppuccin.nix
 }

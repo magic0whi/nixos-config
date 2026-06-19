@@ -1,13 +1,13 @@
 {
   config,
   lib,
-  myvars,
+  const,
   osConfig,
   ...
 }:
 {
   sops.secrets."${osConfig.networking.hostName}_syncthing.priv.pem" = {
-    sopsFile = "${myvars.secretsDir}/${osConfig.networking.hostName}_syncthing.priv.pem.sops";
+    sopsFile = "${const.secretsDir}/${osConfig.networking.hostName}_syncthing.priv.pem.sops";
     format = "binary"; # Required when loading raw files instead of yaml/json structures
     # sops-nix dnn't have restartUnits for home manager
     # https://github.com/ryantm/agenix/issues/84
@@ -16,7 +16,7 @@
   services.syncthing = {
     # nix run nixpkgs#syncthing -- generate --config myconfig/"
     key = config.sops.secrets."${osConfig.networking.hostName}_syncthing.priv.pem".path;
-    cert = "${myvars.secretsDir}/${osConfig.networking.hostName}_syncthing.pub.pem";
+    cert = "${const.secretsDir}/${osConfig.networking.hostName}_syncthing.pub.pem";
     settings =
       let
         mobile_devices = {
@@ -30,7 +30,7 @@
         devices =
           mobile_devices
           // (builtins.mapAttrs (_: v: { id = v.syncthing_id; }) (
-            lib.filterAttrs (n: v: v ? syncthing_id && n != osConfig.networking.hostName) myvars.networking.knownHosts
+            lib.filterAttrs (n: v: v ? syncthing_id && n != osConfig.networking.hostName) const.networking.knownHosts
           ));
         folders = {
           "Documents" = {

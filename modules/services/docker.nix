@@ -1,7 +1,7 @@
 {
   config,
   lib,
-  myvars,
+  const,
   pkgs,
   ...
 }:
@@ -9,7 +9,7 @@ let
   docker_cidr = "172.16.0.0-172.31.255.252";
 in
 {
-  users.users.${myvars.username}.extraGroups = [ "docker" ];
+  users.users.${const.username}.extraGroups = [ "docker" ];
   #  With auto_redirect enabled, sing-box allocates a dynamic local TCP port and installs several nft rules. Because
   # `redirect` rewrites the packet destination to the host, traffic finally enters the INPUT chain. But nixos-fw's
   # default-drop INPUT policy silently dropped these packets. Accepting 172.18.0.0/16 on INPUT covers all Docker bridge

@@ -1,23 +1,23 @@
 {
   config,
   machineConfigs,
-  myvars,
+  const,
   ...
 }:
 let
   cfg = config.services.niks3;
-  machine_config_s3 = machineConfigs.${myvars.networking.findHost "s3"}.config;
+  machine_config_s3 = machineConfigs.${const.networking.findHost "s3"}.config;
 in
 {
   sops =
     let
       restartUnits = [ "niks3.service" ];
-      sopsFile = "${myvars.secretsDir}/common_hm.sops.yaml";
+      sopsFile = "${const.secretsDir}/common_hm.sops.yaml";
     in
     {
       secrets = {
         niks3_db_password = {
-          sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
+          sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
           inherit restartUnits;
         };
         aws_access_key = {
@@ -29,12 +29,12 @@ in
           owner = cfg.user;
         };
         niks3_api_token = {
-          sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
+          sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
           owner = cfg.user;
           inherit restartUnits;
         };
         "nix_secret.key" = {
-          sopsFile = "${myvars.secretsDir}/nix_secret.key.sops";
+          sopsFile = "${const.secretsDir}/nix_secret.key.sops";
           format = "binary";
           owner = cfg.user;
           inherit restartUnits;
@@ -42,7 +42,7 @@ in
       };
       templates."niks3.env" = {
         content = ''
-          CONN_URL=postgres://${cfg.user}:${config.sops.placeholder.niks3_db_password}@postgresql.${myvars.domain}/${cfg.user}?sslmode=require
+          CONN_URL=postgres://${cfg.user}:${config.sops.placeholder.niks3_db_password}@postgresql.${const.domain}/${cfg.user}?sslmode=require
         '';
         inherit restartUnits;
       };
@@ -56,7 +56,7 @@ in
 
     database.connectionString = "$CONN_URL";
     s3 = {
-      endpoint = "s3.${myvars.domain}";
+      endpoint = "s3.${const.domain}";
       bucket = "nix-cache";
       region = machine_config_s3.services.garage.settings.s3_api.s3_region;
       useSSL = true;
@@ -70,10 +70,10 @@ in
     signKeyFiles = [ config.sops.secrets."nix_secret.key".path ];
 
     # Used to generate landing page with usage instructions and public keys, which is uploaded to the S3 bucket.
-    cacheUrl = "https://nix-cache.s3-pub.${myvars.domain}";
+    cacheUrl = "https://nix-cache.s3-pub.${const.domain}";
 
     oidc.providers.authelia = {
-      issuer = "https://auth.${myvars.domain}";
+      issuer = "https://auth.${const.domain}";
       audience = "niks3";
       boundClaims.client_id = [ "niks3_yajuusexnpai" ];
       # We cannot modify to GitHub OIDC Subject Format:
@@ -83,7 +83,7 @@ in
 
   services.traefik.dynamicConfigOptions.http = {
     routers.niks3 = {
-      rule = "Host(`niks3.${myvars.domain}`)";
+      rule = "Host(`niks3.${const.domain}`)";
       entryPoints = [ "websecure" ];
       service = "niks3";
       tls = { };

@@ -1,6 +1,6 @@
 {
   lib,
-  myvars,
+  const,
   pkgs,
   ...
 }:
@@ -9,7 +9,7 @@
     # https://www.gnupg.org/gph/en/manual/x334.html
     publicKeys = [
       {
-        source = "${myvars.secretsDir}/${myvars.email}.pub.asc";
+        source = "${const.secretsDir}/${const.email}.pub.asc";
         trust = 5; # Ultimate trust
       }
     ];
@@ -67,6 +67,6 @@
     pinentry.package = lib.mkDefault pkgs.pinentry-curses;
     enableSshSupport = true;
     defaultCacheTtl = 4 * 60 * 60; # 4 hours
-    sshKeys = myvars.gpgKeygrip; # Run 'gpg --export-ssh-key gpg-key!' to export public key
+    sshKeys = const.gpgKeygrip; # Run 'gpg --export-ssh-key gpg-key!' to export public key
   };
 }

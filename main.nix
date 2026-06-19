@@ -17,8 +17,7 @@ let
     // {
       inherit lib system;
 
-      # TODO: rename to constants
-      myvars = import ./const { inherit lib pkgs mylib; };
+      const = import ./const { inherit lib pkgs mylib; };
       mylib =
         let
           mylib_pkg_funcs = mylib.mkForPkgs pkgs;

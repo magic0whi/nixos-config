@@ -1,6 +1,6 @@
 {
   config,
-  myvars,
+  const,
   pkgs,
   ...
 }:
@@ -12,7 +12,7 @@
     {
       secrets.hass_oidc_secret = {
         inherit restartUnits;
-        sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
+        sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
       };
       templates."hass_secrets.yaml" = {
         inherit restartUnits;
@@ -56,12 +56,12 @@
           "127.0.0.1"
           "::1"
         ];
-        cors_allowed_origins = [ "https://hass.${myvars.domain}" ];
+        cors_allowed_origins = [ "https://hass.${const.domain}" ];
       };
       homeassistant = {
         name = "Proteus' Homo";
         unit_system = "metric"; # or "us_customary"
-        inherit (myvars) latitude longitude;
+        inherit (const) latitude longitude;
         time_zone = config.time.timeZone;
       };
       logger.default = "info";
@@ -71,7 +71,7 @@
       auth_oidc = {
         client_id = "home-assistant";
         client_secret = "!secret hass_oidc_secret";
-        discovery_url = "https://auth.${myvars.domain}/.well-known/openid-configuration";
+        discovery_url = "https://auth.${const.domain}/.well-known/openid-configuration";
         display_name = "Authelia";
         features = {
           automatic_user_linking = false; # NOTE: It's recommended to only enable this temporarily
@@ -82,7 +82,7 @@
   };
   services.traefik.dynamicConfigOptions.http = {
     routers.home-assistant = {
-      rule = "Host(`hass.${myvars.domain}`)";
+      rule = "Host(`hass.${const.domain}`)";
       entryPoints = [ "websecure" ];
       service = "home-assistant";
       tls = { };

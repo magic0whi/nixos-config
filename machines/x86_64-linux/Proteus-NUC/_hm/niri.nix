@@ -1,4 +1,4 @@
-{ lib, myvars, ... }:
+{ lib, const, ... }:
 let
   ws_outputs = [
     "eDP-1"
@@ -33,11 +33,11 @@ in
     }
   ''
   + lib.concatLines (
-    lib.imap0 (i: ws: ''workspace "${ws}" { open-on-output "${builtins.elemAt ws_outputs i}"; }'') myvars.workspaces
+    lib.imap0 (i: ws: ''workspace "${ws}" { open-on-output "${builtins.elemAt ws_outputs i}"; }'') const.workspaces
   )
   + ''
     // ==================================================================================
   '';
   # Workaround: KDL don't allow duplicate node
-  xdg.configFile."niri/hardware.kdl".text = ''debug { render-drm-device "/dev/dri/${myvars.dgpu_sym_name}"; }'';
+  xdg.configFile."niri/hardware.kdl".text = ''debug { render-drm-device "/dev/dri/${const.dgpu_sym_name}"; }'';
 }

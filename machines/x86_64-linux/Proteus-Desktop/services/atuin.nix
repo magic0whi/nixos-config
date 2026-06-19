@@ -1,6 +1,6 @@
 {
   config,
-  myvars,
+  const,
   ...
 }:
 {
@@ -11,14 +11,14 @@
     {
       secrets.atuin_db_password = {
         inherit restartUnits;
-        sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
+        sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
       };
       templates."atuin.env" = {
         inherit restartUnits;
         # Atuin doesn't allow empty host, add a bogus host "114514"
         # content = "ATUIN_DB_URI='postgres://atuin:${config.sops.placeholder.atuin_db_password}@114514/?host=/run/postgresql'";
         content = ''
-          ATUIN_DB_URI=postgres://atuin:${config.sops.placeholder.atuin_db_password}@postgresql.${myvars.domain}/atuin?sslmode=require
+          ATUIN_DB_URI=postgres://atuin:${config.sops.placeholder.atuin_db_password}@postgresql.${const.domain}/atuin?sslmode=require
         '';
       };
     };
@@ -30,7 +30,7 @@
   };
   services.traefik.dynamicConfigOptions.http = {
     routers.atuin = {
-      rule = "Host(`atuin.${myvars.domain}`)";
+      rule = "Host(`atuin.${const.domain}`)";
       entryPoints = [ "websecure" ];
       service = "atuin";
       tls = { };

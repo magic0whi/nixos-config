@@ -6,16 +6,16 @@
 {
   config,
   machineConfigs,
-  myvars,
+  const,
   ...
 }:
 let
-  machine_config_s3 = machineConfigs.${myvars.networking.findHost "s3"}.config;
+  machine_config_s3 = machineConfigs.${const.networking.findHost "s3"}.config;
 in
 {
   sops =
     let
-      sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
+      sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
       restartUnits = [ "restic-backups-${config.networking.hostName}.service" ];
       owner = config.services.restic.backups.${config.networking.hostName}.user;
     in
@@ -39,7 +39,7 @@ in
   services.restic.backups =
     let
       shared = {
-        user = myvars.username; # Default root, set to primary user to ease the use of `restic-<Hostname>` command
+        user = const.username; # Default root, set to primary user to ease the use of `restic-<Hostname>` command
         initialize = true; # Create the repository if it doesn’t exist
         passwordFile = config.sops.secrets.restic_password.path; # Password for restic backup itself
         # An environment file for your storage provider credentials (e.g., AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
@@ -79,7 +79,7 @@ in
     {
       ${config.networking.hostName} = shared // {
         # Repository location on Proteus-Desktop
-        repository = "s3:s3.${myvars.domain}/backups/${config.networking.hostName}";
+        repository = "s3:s3.${const.domain}/backups/${config.networking.hostName}";
         # Paths to backup
         paths = [
           config.services.paperless.exporter.directory # Paperless
@@ -89,7 +89,7 @@ in
         ];
       };
       "${config.networking.hostName}_immich" = shared // {
-        repository = "s3:s3.${myvars.domain}/backups/${config.networking.hostName}_immich";
+        repository = "s3:s3.${const.domain}/backups/${config.networking.hostName}_immich";
         paths = [ config.services.immich.mediaLocation ];
         pruneOpts = [ "--keep-last 1" ];
         exclude = shared.exclude ++ [

@@ -2,7 +2,7 @@
   config,
   lib,
   mylib,
-  myvars,
+  const,
   pkgs,
   isDarwin ? pkgs.stdenv.isDarwin,
   isLinux ? pkgs.stdenv.isLinux,
@@ -42,7 +42,7 @@ in
 lib.mkMerge (
   [
     (lib.mkIf (isMobile && isLinux) {
-      certificate.certificate = [ (builtins.readFile "${myvars.secretsDir}/proteus_ca.pub.pem") ];
+      certificate.certificate = [ (builtins.readFile "${const.secretsDir}/proteus_ca.pub.pem") ];
     })
     {
       log = {
@@ -233,13 +233,13 @@ lib.mkMerge (
           config
           lib
           mylib
-          myvars
+          const
           isDarwin
           isLinux
           isMobile
           ;
       }
-      // myvars.sb
+      // const.sb
       // shared_cfg
     )
   ) (mylib.scanPath ./.)

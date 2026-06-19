@@ -1,7 +1,7 @@
 {
   config,
   lib,
-  myvars,
+  const,
   ...
 }:
 {
@@ -13,7 +13,7 @@
     allowedUDPPorts = [ 443 ]; # QUIC
   };
   sops.secrets."traefik_server.priv.pem" = {
-    sopsFile = "${myvars.secretsDir}/proteus_server.priv.pem.sops";
+    sopsFile = "${const.secretsDir}/proteus_server.priv.pem.sops";
     format = "binary";
     owner = config.systemd.services.traefik.serviceConfig.User;
     restartUnits = [ "traefik.service" ];
@@ -51,7 +51,7 @@
     # Dynamic configuration defines routing rules, backend services, and certificate management.
     dynamicConfigOptions =
       let
-        server_pub_crt = "${myvars.secretsDir}/proteus_server.pub.pem";
+        server_pub_crt = "${const.secretsDir}/proteus_server.pub.pem";
       in
       {
         # Establish the default fallback certificate.
@@ -66,7 +66,7 @@
         http = {
           middlewares.authelia-auth.forwardAuth = {
             # Tell Traefik where to ask whether a user is authenticated
-            address = lib.mkDefault "https://auth.${myvars.domain}/api/authz/forward-auth?authelia_url=https://auth.${myvars.domain}/";
+            address = lib.mkDefault "https://auth.${const.domain}/api/authz/forward-auth?authelia_url=https://auth.${const.domain}/";
             trustForwardHeader = true;
             authResponseHeaders = [
               "Remote-User"
@@ -77,7 +77,7 @@
           };
           routers = {
             traefik-dashboard = {
-              # rule = "Host(`example.${myvars.domain}`)";
+              # rule = "Host(`example.${const.domain}`)";
               entryPoints = [ "websecure" ];
               middlewares = [ "authelia-auth" ]; # `authelia-auth` Protect the dashboard
               service = "api@internal";

@@ -1,7 +1,7 @@
 {
   lib,
   mylib,
-  myvars,
+  const,
   nixos-hardware,
   nixpkgs,
   ...
@@ -9,7 +9,7 @@
 let
   name = baseNameOf ./.;
   # TODO: import common modules here is bad practice, blacklist from
-  # `myvars.features` instead
+  # `const.features` instead
   nixpkgs_modules = map mylib.relativeToRoot [
     # "modules/common/easytier.nix"
     # "modules/common/misc.nix"
@@ -31,7 +31,7 @@ let
       inherit
         name
         mylib
-        myvars
+        const
         ;
       nixpkgsModules =
         nixpkgs_modules
@@ -68,7 +68,7 @@ let
       inherit
         name
         mylib
-        myvars
+        const
         ;
       machinePath = ./.;
       nixpkgsModules = nixpkgs_modules ++ [
@@ -93,7 +93,7 @@ in
     inherit
       name
       nixpkgs_modules
-      myvars
+      const
       mylib
       nixos_cfg
       ;
@@ -101,5 +101,5 @@ in
   nixos_configurations.${name} = nixos_cfg;
   # packages.${name} = nixos_sd_image.config.system.build.images.sd-card; # Generate iso image
   packages.${name} = nixos_sd_image.config.system.build.sdImage;
-  deploy-rs_nodes.${name} = mylib.genDeployNode myvars.networking.hostAddrs.${name} nixos_cfg;
+  deploy-rs_nodes.${name} = mylib.genDeployNode const.networking.hostAddrs.${name} nixos_cfg;
 }

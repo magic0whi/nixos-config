@@ -143,7 +143,7 @@ in
         name,
         machineConfigs ? (throw "Are you forget to import `machineConfigs` in the machine's apex config?"),
         mylib,
-        myvars,
+        const,
         machinePath,
         system ? pkgs.stdenv.hostPlatform.system,
         modules,
@@ -153,7 +153,7 @@ in
       }:
       let
         special_args = {
-          inherit machineConfigs mylib myvars;
+          inherit machineConfigs mylib const;
         }
         // specialArgs;
       in
@@ -178,7 +178,7 @@ in
               home-manager.extraSpecialArgs = special_args;
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
-              home-manager.users."${myvars.username}".imports =
+              home-manager.users."${const.username}".imports =
                 hmModules ++ lib.optional (builtins.pathExists "${machinePath}/_hm") "${machinePath}/_hm";
             }
           ]);

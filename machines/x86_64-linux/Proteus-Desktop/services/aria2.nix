@@ -1,18 +1,18 @@
 {
   config,
-  myvars,
+  const,
   ...
 }:
 let
-  path_prefix = myvars.storagePath;
+  path_prefix = const.storagePath;
 in
 {
-  systemd.services.aria2.unitConfig.RequiresMountsFor = [ myvars.storagePath ];
+  systemd.services.aria2.unitConfig.RequiresMountsFor = [ const.storagePath ];
   sops.secrets.aria2_rpc_secret = {
-    sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
+    sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
     restartUnits = [ "aria2.service" ];
   };
-  users.users.${myvars.username}.extraGroups = [ "aria2" ];
+  users.users.${const.username}.extraGroups = [ "aria2" ];
   services.aria2 = {
     enable = true;
     rpcSecretFile = config.sops.secrets.aria2_rpc_secret.path;
@@ -122,7 +122,7 @@ in
 
   services.traefik.dynamicConfigOptions.http = {
     routers.aria2-rpc = {
-      rule = "Host(`aria2.${myvars.domain}`)";
+      rule = "Host(`aria2.${const.domain}`)";
       entryPoints = [ "websecure" ];
       service = "aria2-rpc";
       tls = { };

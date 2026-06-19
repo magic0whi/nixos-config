@@ -1,6 +1,6 @@
 {
   lib,
-  myvars,
+  const,
   pkgs,
   ...
 }:
@@ -17,7 +17,7 @@
           "alt+left=unbind"
           "alt+right=unbind"
         ];
-        font-family = myvars.monospace.name;
+        font-family = const.monospace.name;
         font-size = 14;
         scrollback-limit = 20000;
       }

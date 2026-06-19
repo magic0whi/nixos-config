@@ -1,6 +1,6 @@
 {
   lib,
-  myvars,
+  const,
   pkgs,
   ...
 }:
@@ -170,7 +170,7 @@
       # };
       location = {
         autoLocate = false;
-        name = myvars.city;
+        name = const.city;
       };
       nightLight = {
         enabled = true;

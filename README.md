@@ -150,7 +150,7 @@ The repository is organized to separate machine-specific hardware configurations
 │   └── overlays/              # Custom packages (e.g., Wechat, QQ)
 ├── services/                  # Shared services modules
 ├── secrets/                   # sops-nix encrypted secrets and keys
-└── const/                     # Global constants and networking definitions
+└── const/                     # Global const and networking definitions
 ```
 
 ## Notes
@@ -177,7 +177,7 @@ boot.initrd.systemd.services."zfs-rollback-root" = {
 Use the first machine as-is:
 
 ```bash
-nix-repl> (builtins.head _DEBUG.nixos_systems.x86_64-linux._DEBUG.machines)._DEBUG.myvars.networking.hostAddrs.Proteus-NUC
+nix-repl> (builtins.head _DEBUG.nixos_systems.x86_64-linux._DEBUG.machines)._DEBUG.const.networking.hostAddrs.Proteus-NUC
 ```
 
 Or find the specific machine:

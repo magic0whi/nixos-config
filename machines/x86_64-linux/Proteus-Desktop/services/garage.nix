@@ -12,7 +12,7 @@
   config,
   lib,
   mylib,
-  myvars,
+  const,
   pkgs,
   ...
 }:
@@ -20,7 +20,7 @@
   sops =
     let
       restartUnits = [ "garage.service" ];
-      sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
+      sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
     in
     {
       secrets = {
@@ -52,14 +52,14 @@
   #   };
   # };
   systemd.services.garage = {
-    unitConfig.RequiresMountsFor = [ myvars.storagePath ];
+    unitConfig.RequiresMountsFor = [ const.storagePath ];
     serviceConfig = {
       EnvironmentFile = config.sops.templates."garage.env".path;
       SupplementaryGroups = [ "storage" ];
       # `DynamicUser=true` implies `ProtectSystem=strict`
       # `metadata_dir` is added defaultly, ref:
       # https://github.com/NixOS/nixpkgs/blob/15f4ee454b1dce334612fa6843b3e05cf546efab/nixos/modules/services/web-servers/garage.nix#L127-L149
-      ReadWritePaths = [ "${myvars.storagePath}/garage/snapshots" ];
+      ReadWritePaths = [ "${const.storagePath}/garage/snapshots" ];
     };
   };
   services.garage = {
@@ -67,23 +67,23 @@
     package = pkgs.garage_2;
     # https://garagehq.deuxfleurs.fr/documentation/reference-manual/configuration/
     settings = {
-      # metadata_dir = "${myvars.storagePath}/garage/meta"; # Garage recommends placing metadata on SSD
-      metadata_snapshots_dir = "${myvars.storagePath}/garage/snapshots";
+      # metadata_dir = "${const.storagePath}/garage/meta"; # Garage recommends placing metadata on SSD
+      metadata_snapshots_dir = "${const.storagePath}/garage/snapshots";
       metadata_auto_snapshot_interval = "6h";
       disable_scrub = true; # ZFS will take this job
-      data_dir = "${myvars.storagePath}/garage/data";
+      data_dir = "${const.storagePath}/garage/data";
       rpc_bind_addr = "127.0.0.1:3901";
       rpc_public_addr = "127.0.0.1:3901";
       # s3_api (3900) is for common access
       s3_api = {
         api_bind_addr = "127.0.0.1:3900";
-        root_domain = ".s3.${myvars.domain}";
+        root_domain = ".s3.${const.domain}";
         s3_region = "cn-east1-a";
       };
       # s3_web (3902) is for bucket-as-website
       s3_web = {
         bind_addr = "127.0.0.1:3902";
-        root_domain = ".s3-pub.${myvars.domain}";
+        root_domain = ".s3-pub.${const.domain}";
       };
       # admin (3903) is for webui access
       admin = {
@@ -117,19 +117,19 @@
   services.traefik.dynamicConfigOptions.http = {
     routers = {
       s3 = {
-        rule = ''Host(`s3.${myvars.domain}`) || HostRegexp(`^[^.]+\.s3\.${lib.escapeRegex myvars.domain}$`)'';
+        rule = ''Host(`s3.${const.domain}`) || HostRegexp(`^[^.]+\.s3\.${lib.escapeRegex const.domain}$`)'';
         entryPoints = [ "websecure" ];
         service = "s3";
         tls = { };
       };
       s3-pub = {
-        rule = ''Host(`s3-pub.${myvars.domain}`) || HostRegexp(`^[^.]+\.s3-pub\.${lib.escapeRegex myvars.domain}$`)'';
+        rule = ''Host(`s3-pub.${const.domain}`) || HostRegexp(`^[^.]+\.s3-pub\.${lib.escapeRegex const.domain}$`)'';
         entryPoints = [ "websecure" ];
         service = "s3-pub";
         tls = { };
       };
       garage-webui = {
-        rule = "Host(`garage.${myvars.domain}`)";
+        rule = "Host(`garage.${const.domain}`)";
         entryPoints = [ "websecure" ];
         middlewares = [ "authelia-auth" ];
         service = "garage-webui";

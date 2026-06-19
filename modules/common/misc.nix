@@ -1,15 +1,15 @@
 {
   config,
   lib,
-  myvars,
+  const,
   pkgs,
   ...
 }:
 {
-  system.stateVersion = if pkgs.stdenv.isDarwin then myvars.darwinStateVersion else myvars.nixosStateVersion;
+  system.stateVersion = if pkgs.stdenv.isDarwin then const.darwinStateVersion else const.nixosStateVersion;
 
   # Add my self-signed CA certificate to the system-wide trust store.
-  security.pki.certificateFiles = [ "${myvars.secretsDir}/proteus_ca.pub.pem" ];
+  security.pki.certificateFiles = [ "${const.secretsDir}/proteus_ca.pub.pem" ];
 
   nixpkgs.config.allowUnfree = true; # Allow chrome, vscode to install
 
@@ -22,7 +22,7 @@
 
   ## BEGIN i18n.nix
   # NOTE: On macOS, Please set [Set time zone automatically using your current location] to false in [System Settings]
-  time.timeZone = lib.mkDefault myvars.timeZone;
+  time.timeZone = lib.mkDefault const.timeZone;
   ## END i18n.nix
   ## BEGIN users.nix
   users = lib.mkMerge [
@@ -31,14 +31,14 @@
       # root user are heavily used for remote NixOS deployment
       users = {
         root = {
-          # initialHashedPassword = config.users.users."${myvars.username}".initialHashedPassword;
-          openssh.authorizedKeys.keys = config.users.users."${myvars.username}".openssh.authorizedKeys.keys;
+          # initialHashedPassword = config.users.users."${const.username}".initialHashedPassword;
+          openssh.authorizedKeys.keys = config.users.users."${const.username}".openssh.authorizedKeys.keys;
         };
-        ${myvars.username} = {
-          description = myvars.userFullName;
+        ${const.username} = {
+          description = const.userFullName;
           uid = if pkgs.stdenv.isDarwin then 501 else 1000;
           # home-manager needs it
-          home = if pkgs.stdenv.isDarwin then "/Users/${myvars.username}" else "/home/${myvars.username}";
+          home = if pkgs.stdenv.isDarwin then "/Users/${const.username}" else "/home/${const.username}";
           # Public Keys that can be used to login to all my PCs, MacBooks, and servers.
           #
           # Since the authority range is pretty large, we must strengthen its security:
@@ -51,15 +51,15 @@
           #     ```
           #   2. Never leave the device and never sent over the network.
           # - Or just use hardware security keys like Yubikey/CanoKey.
-          openssh.authorizedKeys.keys = myvars.sshAuthorizedKeys;
+          openssh.authorizedKeys.keys = const.sshAuthorizedKeys;
         };
       };
     }
     (lib.optionalAttrs (!pkgs.stdenv.isDarwin) {
       defaultUserShell = if config.programs.zsh.enable then pkgs.zsh else "/bin/sh";
       mutableUsers = false; # Don't allow mutate users outside the config
-      users.${myvars.username} = {
-        # initialHashedPassword = myvars.initial_hashed_password;
+      users.${const.username} = {
+        # initialHashedPassword = const.initial_hashed_password;
         isNormalUser = true;
         extraGroups = [
           "input"
@@ -70,7 +70,7 @@
       };
     })
     (lib.mkIf pkgs.stdenv.isDarwin {
-      users.${myvars.username} = {
+      users.${const.username} = {
         # nix-darwin doesn't have `users.defaultUserShell`. If this don't work, try
         # `chsh -s /run/current-system/sw/bin/zsh`
         shell = pkgs.zsh;

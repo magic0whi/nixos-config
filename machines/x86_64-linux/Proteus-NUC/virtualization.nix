@@ -1,7 +1,7 @@
 {
   config,
   lib,
-  myvars,
+  const,
   pkgs,
   ...
 }:
@@ -40,7 +40,7 @@ in
   ];
   ## END sriov.nix
   ## BEGIN libvirtd.nix
-  users.users.${myvars.username}.extraGroups = [ "libvirtd" ];
+  users.users.${const.username}.extraGroups = [ "libvirtd" ];
   networking.firewall.extraInputRules = lib.mkIf config.services.sing-box.enable ''
     ip saddr ${libvirt_cidr} accept comment "Allow Libvirt to reach auto_redirect ports"
   '';
@@ -93,7 +93,7 @@ in
     # Bind all i915 VFs (00:02.1 to 00:02.7) to vfio-pci
     ${builtins.concatStringsSep ", " [
       ''ACTION=="add", SUBSYSTEM=="pci"''
-      ''KERNEL=="${builtins.head (lib.splitString "." myvars.igpu_pci_ids)}.[1-7]"''
+      ''KERNEL=="${builtins.head (lib.splitString "." const.igpu_pci_ids)}.[1-7]"''
       ''ATTR{vendor}=="0x8086", ATTR{device}=="0x9a60"''
       ''DRIVER!="vfio-pci"''
       ''RUN+="${pkgs.writeShellScript "i915-bind-to-vfio-pci" ''
@@ -201,7 +201,7 @@ in
 
           [ "$VM" = "${domain_name}" ] || exit 0 # Apply to this specific VM
 
-          SRIOV_PATH="/sys/bus/pci/devices/${myvars.igpu_pci_ids}/sriov_numvfs"
+          SRIOV_PATH="/sys/bus/pci/devices/${const.igpu_pci_ids}/sriov_numvfs"
 
           # Check if the sysfs path exists before trying to read/write
           if [ ! -f "$SRIOV_PATH" ]; then

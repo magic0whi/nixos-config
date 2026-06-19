@@ -1,10 +1,10 @@
-{ config, myvars, ... }:
+{ config, const, ... }:
 {
   system.nssDatabases.sudoers = [ "sss" ]; # Use LDAP to distribute configuration of sudo as well
   sops =
     let
       restartUnits = [ "sssd.service" ];
-      sopsFile = "${myvars.secretsDir}/common.sops.yaml";
+      sopsFile = "${const.secretsDir}/common.sops.yaml";
     in
     {
       secrets."sssd_ldap_default_authtok" = { inherit sopsFile restartUnits; };
@@ -26,7 +26,7 @@
       # "pam".pam_verbosity = 3;
       "domain/LDAP" =
         let
-          base_dn = "dc=" + builtins.replaceStrings [ "." ] [ ",dc=" ] myvars.domain;
+          base_dn = "dc=" + builtins.replaceStrings [ "." ] [ ",dc=" ] const.domain;
         in
         {
           override_shell = "/run/current-system/sw/bin/${config.users.defaultUserShell.meta.mainProgram}";
@@ -38,7 +38,7 @@
           auth_provider = "ldap";
           chpass_provider = "ldap";
 
-          ldap_uri = "ldaps://ldap.${myvars.domain}:636";
+          ldap_uri = "ldaps://ldap.${const.domain}:636";
           ldap_default_bind_dn = "uid=sssd,ou=ServiceAccounts,${base_dn}";
           ldap_default_authtok = "$SSSD_LDAP_DEFAULT_AUTHTOK";
           ldap_search_base = base_dn;

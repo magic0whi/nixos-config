@@ -1,7 +1,7 @@
 {
   config,
   lib,
-  myvars,
+  const,
   pkgs,
   ...
 }:
@@ -9,7 +9,7 @@
   networking.firewall.allowedTCPPorts = [ 443 ];
   sops.secrets =
     let
-      sopsFile = "${myvars.secretsDir}/common.sops.yaml";
+      sopsFile = "${const.secretsDir}/common.sops.yaml";
       restartUnits = [ "sing-box.service" ];
     in
     {
@@ -85,8 +85,8 @@
         ];
         rule_set =
           let
-            inherit (myvars.sb.ruleSetCfg) urlPrefix;
-            defaultCfg = myvars.sb.ruleSetCfg.defaultCfg // {
+            inherit (const.sb.ruleSetCfg) urlPrefix;
+            defaultCfg = const.sb.ruleSetCfg.defaultCfg // {
               download_detour = "Direct";
             };
           in

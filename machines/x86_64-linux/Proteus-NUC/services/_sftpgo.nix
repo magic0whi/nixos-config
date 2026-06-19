@@ -1,16 +1,16 @@
 {
   config,
-  myvars,
+  const,
   ...
 }:
 {
   services.sftpgo = {
     enable = true;
-    user = myvars.username;
-    group = myvars.username;
+    user = const.username;
+    group = const.username;
     extraReadWriteDirs = [
       /srv/aria2
-      config.home-manager.users.${myvars.username}.xdg.userDirs.documents
+      config.home-manager.users.${const.username}.xdg.userDirs.documents
     ];
     settings = {
       httpd = {
@@ -47,13 +47,13 @@
   services.traefik.dynamicConfigOptions.http = {
     routers = {
       sftpgo-webui = {
-        rule = "Host(`sftpgo.${myvars.domain}`)";
+        rule = "Host(`sftpgo.${const.domain}`)";
         entryPoints = [ "websecure" ];
         service = "sftpgo-webui";
         tls = { };
       };
       sftpgo-webdav = {
-        rule = "Host(`webdav.${myvars.domain}`)";
+        rule = "Host(`webdav.${const.domain}`)";
         entryPoints = [ "websecure" ];
         service = "sftpgo-webdav";
         tls = { };

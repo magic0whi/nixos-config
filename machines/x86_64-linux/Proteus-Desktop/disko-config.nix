@@ -1,4 +1,4 @@
-{ myvars, ... }:
+{ const, ... }:
 let
   # LUKS-encrypted ZFS disk helper (460GB partition)
   mk_luks_zfs_disk = disk_id: {
@@ -159,7 +159,7 @@ in
           mode = "raidz2";
           datasets.data = {
             type = "zfs_fs";
-            mountpoint = myvars.storagePath;
+            mountpoint = const.storagePath;
             mountOptions = [ "nofail" ];
             options.canmount = "on";
           };

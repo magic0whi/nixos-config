@@ -1,7 +1,7 @@
 {
   config,
   lib,
-  myvars,
+  const,
   pkgs,
   ...
 }:
@@ -51,15 +51,15 @@ let
                     config = {
                       subject_key = "preferred_username";
                       roles_key = "groups";
-                      openid_connect_url = "https://auth.${myvars.domain}/.well-known/openid-configuration";
-                      frontend_url = "https://opensearch-dashboards.${myvars.domain}";
+                      openid_connect_url = "https://auth.${const.domain}/.well-known/openid-configuration";
+                      frontend_url = "https://opensearch-dashboards.${const.domain}";
                       client_id = "opensearch-dashboards";
                       client_secret = "@OIDC_CLIENT_SECRET@"; # Placeholder for `sd`
                       openid_connect_idp = {
                         enable_ssl = true;
                         # trust_all = true;
                         verify_hostnames = false;
-                        pemtrustedcas_filepath = "${myvars.secretsDir}/proteus_ca.pub.pem";
+                        pemtrustedcas_filepath = "${const.secretsDir}/proteus_ca.pub.pem";
                       };
                     };
                   };
@@ -189,7 +189,7 @@ let
             and_backend_roles = [ ]; # A user must possess ALL of the backend roles listed here to be granted this role.
           })
           {
-            all_access = [ myvars.username ];
+            all_access = [ const.username ];
             metrics = [ "aWVSALXpZv" ];
             readall = [ "aWVSALXpZv" ];
             flake-info = [ "flake-info" ];
@@ -208,7 +208,7 @@ in
 {
 
   sops.secrets.opensearch-dashboards_client_secret = {
-    sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
+    sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
     restartUnits = [ "opensearch.service" ];
   };
 
@@ -243,7 +243,7 @@ in
     settings = {
       "network.host" = "127.0.0.1";
       "http.cors.enabled" = "true";
-      "http.cors.allow-origin" = "https://nixos-search.${myvars.domain}";
+      "http.cors.allow-origin" = "https://nixos-search.${const.domain}";
       "http.cors.allow-credentials" = "true";
       "http.cors.allow-headers" = "X-Requested-With,X-Auth-Token,Content-Type,Content-Length,Authorization";
 
@@ -266,9 +266,9 @@ in
       # "transport.ssl.enforce_hostname_verification" = false;
     };
   };
-  services.caddy.virtualHosts."http://nixos-search.${myvars.domain}:${toString myvars.networking.caddyPort}" =
+  services.caddy.virtualHosts."http://nixos-search.${const.domain}:${toString const.networking.caddyPort}" =
     let
-      web_root = "${myvars.storagePath}/www";
+      web_root = "${const.storagePath}/www";
     in
     {
       listenAddresses = [
@@ -287,7 +287,7 @@ in
   services.traefik.dynamicConfigOptions.http = {
     middlewares.strip-backend-prefix.stripPrefix.prefixes = [ "/backend" ];
     routers.nixos-search_backend = {
-      rule = "Host(`nixos-search.${myvars.domain}`) && PathPrefix(`/backend`)";
+      rule = "Host(`nixos-search.${const.domain}`) && PathPrefix(`/backend`)";
       entryPoints = [ "websecure" ];
       middlewares = [ "strip-backend-prefix" ];
       service = "nixos-search_backend";
@@ -323,7 +323,7 @@ in
               lib.reverseList (lib.splitString "," (builtins.head cfg.settings."plugins.security.authcz.admin_dn"))
             )
           }' \
-            -addext "subjectAltName=IP:127.0.0.1,DNS:localhost,DNS:nixos-search.${myvars.domain}"
+            -addext "subjectAltName=IP:127.0.0.1,DNS:localhost,DNS:nixos-search.${const.domain}"
 
           chown -R opensearch:opensearch "${certs_dir}"
           chmod 600 "${certs_dir}"/*

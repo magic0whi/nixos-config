@@ -1,5 +1,5 @@
 {
-  # myvars,
+  # const,
   ...
 }:
 {
@@ -17,7 +17,7 @@
   nix.distributedBuilds = true;
   nix.buildMachines =
     # let
-    #   sshUser = myvars.username;
+    #   sshUser = const.username;
     #   # ssh key's path on local machine
     #   # sshKey = "/srv/sync_work/3keys/pgp2ssh.priv.key";
     #   systems = [

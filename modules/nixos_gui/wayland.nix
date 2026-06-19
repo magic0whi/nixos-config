@@ -1,7 +1,7 @@
 {
   config,
   lib,
-  myvars,
+  const,
   pkgs,
   ...
 }:
@@ -15,7 +15,7 @@
     greeter-args = "";
     settings.cursor =
       let
-        cfg = config.home-manager.users.${myvars.username}.home.pointerCursor;
+        cfg = config.home-manager.users.${const.username}.home.pointerCursor;
       in
       {
         theme = cfg.name;
@@ -80,7 +80,7 @@
           (lib.mkIf (!config.programs.noctalia-greeter.enable) {
             command = lib.mkDefault "${pkgs.tuigreet}/bin/tuigreet --time --remember --remember-session";
           })
-          { user = myvars.username; } # Wayland Desktop Manager is installed only for user
+          { user = const.username; } # Wayland Desktop Manager is installed only for user
         ];
       };
     };
@@ -95,7 +95,7 @@
     ]
     # Screensharing, put this on home manager will not take effect
     ++
-      lib.optional config.home-manager.users.${myvars.username}.wayland.windowManager.hyprland.enable
+      lib.optional config.home-manager.users.${const.username}.wayland.windowManager.hyprland.enable
         pkgs.xdg-desktop-portal-hyprland;
 
     config.common.default = [ "gtk" ]; # Use xdg-desktop-portal-gtk for every portal interface

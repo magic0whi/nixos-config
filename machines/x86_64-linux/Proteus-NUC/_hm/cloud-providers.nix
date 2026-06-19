@@ -1,18 +1,18 @@
 {
   config,
-  myvars,
+  const,
   pkgs,
   ...
 }:
 {
   sops.secrets = {
     "project-0.secret.json" = {
-      sopsFile = "${myvars.secretsDir}/gcloud_project-0.secret.json.sops";
+      sopsFile = "${const.secretsDir}/gcloud_project-0.secret.json.sops";
       format = "binary";
       path = "${config.xdg.configHome}/gcloud/project-0.secret.json";
     };
     "project-1.secret.json" = {
-      sopsFile = "${myvars.secretsDir}/gcloud_project-1.secret.json.sops";
+      sopsFile = "${const.secretsDir}/gcloud_project-1.secret.json.sops";
       format = "binary";
       path = "${config.xdg.configHome}/gcloud/project-1.secret.json";
     };

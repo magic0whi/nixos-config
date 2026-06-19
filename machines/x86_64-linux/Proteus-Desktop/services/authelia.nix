@@ -2,14 +2,14 @@
   config,
   lib,
   mylib,
-  myvars,
+  const,
   ...
 }:
 let
   restartUnits = map (name: "authelia-${name}.service") (builtins.attrNames config.services.authelia.instances);
   # host services that requires OIDC
   allowed_hosts = lib.unique (
-    builtins.foldl' (acc: cn: acc ++ lib.singleton (myvars.networking.findHost cn))
+    builtins.foldl' (acc: cn: acc ++ lib.singleton (const.networking.findHost cn))
       [ ]
       [
         "git"
@@ -26,7 +26,7 @@ in
 {
   sops.secrets =
     let
-      sopsFile = "${myvars.secretsDir}/${config.networking.hostName}.sops.yaml";
+      sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
       owner = config.services.authelia.instances.main.user;
     in
     {
@@ -37,7 +37,7 @@ in
       authelia_oidc_hmac = { inherit sopsFile owner restartUnits; };
       "authelia_oidc_rsa.pem" = {
         inherit owner restartUnits;
-        sopsFile = "${myvars.secretsDir}/authelia_oidc_rsa.pem.sops";
+        sopsFile = "${const.secretsDir}/authelia_oidc_rsa.pem.sops";
         format = "binary";
       };
     };
@@ -84,8 +84,8 @@ in
       session.cookies = [
         {
           # This allows the login cookie to work across all your subdomains
-          inherit (myvars) domain;
-          authelia_url = "https://auth.${myvars.domain}";
+          inherit (const) domain;
+          authelia_url = "https://auth.${const.domain}";
           same_site = "lax";
           inactivity = "5 minutes";
           expiration = "1 hour";
@@ -96,7 +96,7 @@ in
       storage.postgres = {
         # Unix socket
         # address = "unix:///run/postgresql/.s.PGSQL.${toString config.services.postgresql.settings.port}";
-        address = "tcp://postgresql.${myvars.domain}:${toString config.services.postgresql.settings.port}";
+        address = "tcp://postgresql.${const.domain}:${toString config.services.postgresql.settings.port}";
         # tls.minimum_version = "TLS1.3";
         database = config.services.authelia.instances.main.user;
         schema = "public";
@@ -107,11 +107,11 @@ in
       authentication_backend = {
         ldap =
           let
-            base_dn = "dc=" + builtins.replaceStrings [ "." ] [ ",dc=" ] myvars.domain;
+            base_dn = "dc=" + builtins.replaceStrings [ "." ] [ ",dc=" ] const.domain;
           in
           {
             implementation = "custom";
-            address = "ldaps://ldap.${myvars.domain}:636";
+            address = "ldaps://ldap.${const.domain}:636";
             # password = "password"; # Password is injected via environment variable
             timeout = "5s";
             base_dn = base_dn;
@@ -139,12 +139,12 @@ in
         rules = [
           # Orders does matter
           {
-            domain = "syncthing.${myvars.domain}";
+            domain = "syncthing.${const.domain}";
             policy = "bypass";
             resources = [ "^/rest/noauth/.*$" ];
           }
           {
-            domain = "*.${myvars.domain}";
+            domain = "*.${const.domain}";
             policy = "one_factor";
           }
         ];
@@ -196,7 +196,7 @@ in
             # To verify the PBKDF2 digest, run
             # `nix run nixpkgs#authelia -- crypto hash validate --password "$(systemd-ask-password)" '$pbkdf2-sha512$310000$...'`
             client_secret = "$pbkdf2-sha512$310000$3KSvvBJnoLyJDoKDBIBcZQ$dMQmccJ6Y4hrj.tv.dD3KFzLcsPCsMNRZFTpHUiInVcSX0eBR5T6jemXfcUaob9PsbgHBwRNCjtXiBNl6lOc7g";
-            redirect_uris = [ "https://papra.${myvars.domain}/api/auth/oauth2/callback/authelia" ];
+            redirect_uris = [ "https://papra.${const.domain}/api/auth/oauth2/callback/authelia" ];
             # authorization_policy = "one_factor";
             token_endpoint_auth_method = "client_secret_post";
           }
@@ -204,7 +204,7 @@ in
             client_id = "forgejo";
             client_name = "Forgejo";
             client_secret = "$pbkdf2-sha512$310000$hHi.uSu97kUzfh.X9ijhXA$.IL0RMznXtdwXGTYq9eKV.83nIXI0glK7v.IaFYu5xVpweng.zo5L5PpuC6aQgY6R9ROgSFQrHbve3LK50j/yg";
-            redirect_uris = [ "https://git.${myvars.domain}/user/oauth2/Authelia/callback" ];
+            redirect_uris = [ "https://git.${const.domain}/user/oauth2/Authelia/callback" ];
             require_pkce = true;
             pkce_challenge_method = "S256"; # effectively enables the require_pkce
           }
@@ -213,8 +213,8 @@ in
             client_name = "Plane";
             client_secret = "$pbkdf2-sha512$310000$js.q7nxEc0JzjQN3NRyyrA$0F2fFhnC3HJspJUhFSp56F4Rl0PhzaYV.J9TytIfxZfiE7GDAuHIYKxSa262k/rf7d/vgOVHVa5a9C9P1YIYRg";
             redirect_uris = [
-              "https://plane.${myvars.domain}/auth/gitea/callback"
-              "https://plane.${myvars.domain}/auth/gitea/callback/"
+              "https://plane.${const.domain}/auth/gitea/callback"
+              "https://plane.${const.domain}/auth/gitea/callback/"
             ];
             scopes = [
               "openid"
@@ -227,7 +227,7 @@ in
             client_id = "paperless";
             client_name = "Paperless-ngx";
             client_secret = "$pbkdf2-sha512$310000$utOYjxWkjgXCc1TIfgg5ZQ$KA7m4g/DPTj17MWYa2nOaunrF6ZXSBlDoddd5xuCXY5cVRhgHuZ7hObedPFwRhnc772ngzbTNqy1WhANklh1CQ";
-            redirect_uris = [ "https://paperless.${myvars.domain}/accounts/oidc/authelia/login/callback/" ];
+            redirect_uris = [ "https://paperless.${const.domain}/accounts/oidc/authelia/login/callback/" ];
             scopes = [
               "openid"
               "profile"
@@ -240,8 +240,8 @@ in
             client_name = "Immich";
             client_secret = "$pbkdf2-sha512$310000$JUEH012JXQCrSrfFFfk0WQ$aDVGFs8q.rusT89Kkd.d0i/HggzaGRjEXCl5XbOBSBRpQNqty5rVK/UoJJmILPJUCmd5uYZPHhiHu6HWtAE8BQ";
             redirect_uris = [
-              "https://immich.${myvars.domain}/auth/login"
-              "https://immich.${myvars.domain}/user-settings"
+              "https://immich.${const.domain}/auth/login"
+              "https://immich.${const.domain}/user-settings"
               "app.immich:///oauth-callback" # Crucial for the Immich Mobile App
             ];
             scopes = [
@@ -259,7 +259,7 @@ in
             require_pkce = true;
             pkce_challenge_method = "S256";
             claims_policy = "nextcloud_userinfo_policy";
-            redirect_uris = [ "https://nextcloud.${myvars.domain}/apps/oidc_login/oidc" ];
+            redirect_uris = [ "https://nextcloud.${const.domain}/apps/oidc_login/oidc" ];
             scopes = [
               "openid"
               "email"
@@ -274,7 +274,7 @@ in
             client_secret = "$pbkdf2-sha512$310000$L/jbJ7m.3.Xpo0oveApPUw$BFNopAMji6HRC6u7qDJDDz2bp7DWFt76IKPxURPAoqFNcbFU3/IRks2wibnh4IOjSpuVmHBtT2qAU1bu1ugldw";
             require_pkce = true;
             pkce_challenge_method = "S256";
-            redirect_uris = [ "https://hass.${myvars.domain}/auth/oidc/callback" ];
+            redirect_uris = [ "https://hass.${const.domain}/auth/oidc/callback" ];
             scopes = [
               "openid"
               "profile"
@@ -288,7 +288,7 @@ in
             client_secret = "$pbkdf2-sha512$310000$OCHTcrIFbKQm01kTARfhRw$Lo2MFk28quOgOO.Kl29eXtS62ELRjU9XqNnN0eKK9qXvFylPHv9xdKsbLqMrHgqHAS8fHjVSE9lREuDkle1lZg";
             require_pkce = true;
             pkce_challenge_method = "S256";
-            redirect_uris = [ "https://jellyfin.${myvars.domain}/sso/OID/redirect/authelia" ];
+            redirect_uris = [ "https://jellyfin.${const.domain}/sso/OID/redirect/authelia" ];
             scopes = [
               "openid"
               "profile"
@@ -309,7 +309,7 @@ in
             client_id = "opensearch-dashboards";
             client_name = "OpenSearch Dashboards";
             client_secret = "$pbkdf2-sha512$310000$ABGWSADqYSUeeF5ZDQlhNg$c4aee7uOMUwHOHv5myhhu.VNxwEBhBnNUAI1DjutkmICQ33W1QnJA0k8cQkpEOubCa5jGrFC.e6Un4QuKnu0YQ";
-            redirect_uris = [ "https://opensearch-dashboards.${myvars.domain}/auth/openid/login" ];
+            redirect_uris = [ "https://opensearch-dashboards.${const.domain}/auth/openid/login" ];
             scopes = [
               "openid"
               "profile"
@@ -329,7 +329,7 @@ in
             response_types = [ "token" ];
             # Response_mode is fragment to pass the access token back via the URL
             response_modes = [ "fragment" ];
-            redirect_uris = [ "https://cockpit-desktop.${myvars.domain}" ];
+            redirect_uris = [ "https://cockpit-desktop.${const.domain}" ];
             scopes = [
               "openid"
               "profile"
@@ -347,18 +347,18 @@ in
     # Proteus-Desktop) are preserved and not dropped for security reasons.
     staticConfigOptions.entryPoints.websecure.forwardedHeaders.trustedIPs = lib.concatMap (
       name:
-      (builtins.catAttrs "ipv4" myvars.networking.hostAddrs.${name})
-      ++ (builtins.catAttrs "ipv6" myvars.networking.hostAddrs.${name})
+      (builtins.catAttrs "ipv4" const.networking.hostAddrs.${name})
+      ++ (builtins.catAttrs "ipv6" const.networking.hostAddrs.${name})
     ) allowed_hosts;
     dynamicConfigOptions.http =
       let
         authelia_port = toString (mylib.getUriPort config.services.authelia.instances.main.settings.server.address);
       in
       {
-        middlewares.authelia-auth.forwardAuth.address = "http://127.0.0.1:${authelia_port}/api/authz/forward-auth?authelia_url=https://auth.${myvars.domain}/";
+        middlewares.authelia-auth.forwardAuth.address = "http://127.0.0.1:${authelia_port}/api/authz/forward-auth?authelia_url=https://auth.${const.domain}/";
         # Router for the login portal
         routers.authelia = {
-          rule = "Host(`auth.${myvars.domain}`)";
+          rule = "Host(`auth.${const.domain}`)";
           entryPoints = [ "websecure" ];
           service = "authelia";
           tls = { };

@@ -1,6 +1,6 @@
 {
   config,
-  myvars,
+  const,
   pkgs,
   ...
 }:
@@ -25,7 +25,7 @@
       # NOTE: Requires bootstrap GHC
       ++ lib.optionals (!stdenv.hostPlatform.isRiscV64) [ marksman ];
     settings = {
-      theme = if config.catppuccin.enable then "catppuccin-${myvars.catppuccin.flavor}" else "gruvbox"; # Disable if use catpuccin
+      theme = if config.catppuccin.enable then "catppuccin-${const.catppuccin.flavor}" else "gruvbox"; # Disable if use catpuccin
       editor = {
         bufferline = "multiple";
         color-modes = true;
@@ -130,7 +130,7 @@
             hiddenFalsePositives.en-US = [
               ''{"rule": "UPPERCASE_SENTENCE_START", "sentence": "^[a-z][a-z0-9-_]+$"}''
             ];
-            dictionary = fromTOML (builtins.readFile "${myvars.secretsDir}/ltex_dict.toml");
+            dictionary = fromTOML (builtins.readFile "${const.secretsDir}/ltex_dict.toml");
           };
         };
         texlab.config.texlab = {

@@ -1,6 +1,6 @@
 {
   config,
-  myvars,
+  const,
   ...
 }:
 {
@@ -12,8 +12,8 @@
     settings.Resolve.DNSSEC = if config.services.sing-box.enable then false else "allow-downgrade";
   };
   # Trust Island
-  environment.etc."dnssec-trust-anchors.d/${myvars.domain}.positive".text = ''
-    ${myvars.domain}. IN DS 40751 15 2 EFFF70FD3922613584774DE050E31D5A3FFF988E45EB5C75296BF448B5B01FCF
+  environment.etc."dnssec-trust-anchors.d/${const.domain}.positive".text = ''
+    ${const.domain}. IN DS 40751 15 2 EFFF70FD3922613584774DE050E31D5A3FFF988E45EB5C75296BF448B5B01FCF
   '';
   environment.etc."dnssec-trust-anchors.d/ts_v4_rev_zone.positive".text = ''
     100.in-addr.arpa. IN DS 16452 15 2 673360156B641DBA72909952F230FA34A6FA8D8D249A8A8A55C05A94EC6794FF

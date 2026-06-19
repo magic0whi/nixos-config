@@ -13,7 +13,7 @@
 #
 # NOTE: Alacritty do not have support for Tabs, and any graphic protocol.
 {
-  myvars,
+  const,
   pkgs,
   ...
 }:
@@ -30,10 +30,10 @@
       };
       scrolling.history = 10000;
       font = {
-        bold.family = myvars.monospace.name;
-        bold_italic.family = myvars.monospace.name;
-        italic.family = myvars.monospace.name;
-        normal.family = myvars.monospace.name;
+        bold.family = const.monospace.name;
+        bold_italic.family = const.monospace.name;
+        italic.family = const.monospace.name;
+        normal.family = const.monospace.name;
         size = if pkgs.stdenv.isDarwin then 14 else 10;
       };
       terminal = {

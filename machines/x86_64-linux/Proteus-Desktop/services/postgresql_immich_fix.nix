@@ -2,12 +2,12 @@
   config,
   lib,
   machineConfigs,
-  myvars,
+  const,
   pkgs,
   ...
 }:
 let
-  machine_config.immich = machineConfigs.${myvars.networking.findHost "immich"}.config;
+  machine_config.immich = machineConfigs.${const.networking.findHost "immich"}.config;
 in
 {
   services.postgresql = {

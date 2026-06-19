@@ -1,19 +1,19 @@
 {
   config,
-  myvars,
+  const,
   ...
 }:
 {
-  xdg.configFile."nix/public.key".source = "${myvars.secretsDir}/nix_public.key";
+  xdg.configFile."nix/public.key".source = "${const.secretsDir}/nix_public.key";
   sops = {
     secrets = {
       "nix_secret.key" = {
-        sopsFile = "${myvars.secretsDir}/nix_secret.key.sops";
+        sopsFile = "${const.secretsDir}/nix_secret.key.sops";
         format = "binary";
         path = "${config.xdg.configHome}/nix/secret.key";
       };
-      aws_access_key.sopsFile = "${myvars.secretsDir}/common_hm.sops.yaml";
-      aws_secret_key.sopsFile = "${myvars.secretsDir}/common_hm.sops.yaml";
+      aws_access_key.sopsFile = "${const.secretsDir}/common_hm.sops.yaml";
+      aws_secret_key.sopsFile = "${const.secretsDir}/common_hm.sops.yaml";
     };
     templates."aws_credentials" = {
       content = ''

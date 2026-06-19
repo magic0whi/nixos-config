@@ -1,5 +1,5 @@
 # Derive LiveCD from a machine's config is a bad idea, so I use a standalone machine config instead
-{ myvars, ... }:
+{ const, ... }:
 {
   # Useful when generating image from an existing NixOS configuration
   # image.modules = {
@@ -35,11 +35,11 @@
       # initial_session defines the auto-login behavior on boot
       initial_session = {
         inherit command;
-        user = myvars.username;
+        user = const.username;
       };
       default_session = {
         inherit command;
-        user = myvars.username;
+        user = const.username;
       };
     };
   services.gnome.gnome-keyring.enable = false;

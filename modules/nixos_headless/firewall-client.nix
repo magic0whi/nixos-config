@@ -1,14 +1,14 @@
 {
   config,
   lib,
-  myvars,
+  const,
   pkgs,
   ...
 }:
 {
   networking.firewall =
     let
-      hm_cfg = config.home-manager.users.${myvars.username} or { };
+      hm_cfg = config.home-manager.users.${const.username} or { };
     in
     lib.mkMerge [
       # Localsend

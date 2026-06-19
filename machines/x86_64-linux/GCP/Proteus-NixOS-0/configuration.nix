@@ -1,11 +1,11 @@
-{ lib, myvars, ... }:
+{ lib, const, ... }:
 {
   time.timeZone = "America/Los_Angeles";
   # To test, run `nix run .#nixosConfigurations.<name>.config.system.build.vmWithDisk`
   # Configurations only apply to vmWithDisko
   virtualisation.vmVariantWithDisko = {
     # https://github.com/nix-community/disko/issues/1157#issuecomment-3559146597
-    users.users.${myvars.username}.initialHashedPassword = myvars.initial_hashed_password;
+    users.users.${const.username}.initialHashedPassword = const.initial_hashed_password;
     virtualisation.fileSystems."/persistent".neededForBoot = lib.mkForce true;
   };
 
