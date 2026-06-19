@@ -42,7 +42,7 @@ creation_rules:
         },
       ]
   - path_regex: secrets/sb_test\.json\.sops$
-    key_groups: [{ pgp: [*openpgp], age: [*Proteus-NUC] }]
+    key_groups: [{ pgp: [*openpgp], age: [*Proteus-NUC, *Proteus-MBP14M4P] }]
   ## END Common
   ## BEGIN GCP Compute Engines
   ## END GCP Compute Engines

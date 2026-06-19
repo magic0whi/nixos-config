@@ -20,10 +20,10 @@
         ]
       )
       {
-        "sb_test.json" = {
-          sopsFile = "${const.secretsDir}/sb_test.json.sops";
-          format = "binary";
-        };
+        # "sb_test.json" = {
+        #   sopsFile = "${const.secretsDir}/sb_test.json.sops";
+        #   format = "binary";
+        # };
         sb_nodes_anytls_password = { inherit sopsFile; };
         sb_nodes_reality_short_id = { inherit sopsFile; };
         sb_nodes_reality_pub_key = { inherit sopsFile; };
