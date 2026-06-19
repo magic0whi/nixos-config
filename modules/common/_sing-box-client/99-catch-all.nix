@@ -1,12 +1,31 @@
 {
+  config,
   lib,
   mylib,
   ruleSetCfg,
+  isDarwin,
   ...
 }:
 let
   out = "Direct";
-  non_dns_rules = [ { rule_set = [ "geoip-cn" ]; } ];
+  non_dns_rules = [
+    (
+      if isDarwin then
+        {
+          type = "logical";
+          mode = "and";
+          rules = [
+            { rule_set = [ "geoip-cn" ]; }
+            {
+              invert = true;
+              ip_cidr = builtins.head config.networking.dns;
+            }
+          ];
+        }
+      else
+        { rule_set = [ "geoip-cn" ]; }
+    )
+  ];
   rules = [ { rule_set = [ "geosite-cn" ]; } ];
 in
 {

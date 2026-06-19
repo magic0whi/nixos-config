@@ -10,11 +10,7 @@
   networking = {
     knownNetworkServices = [ "Wi-Fi" ]; # List of networkservices that should be configured.
     # sing-box requires a non-local address to hijack DNS
-    dns = [
-      "223.5.5.5"
-      # "2400:3200::1"
-      # "8.8.8.8"
-    ];
+    dns = [ "223.5.5.5" ];
   };
   ## END networking.nix
   ## BEGIN ssh.nix
