@@ -1,6 +1,7 @@
 {
   mylib,
   const,
+  machineConfigs,
   features,
   nix-darwin,
   deploy-rs,
@@ -15,6 +16,7 @@ let
         name
         mylib
         const
+        machineConfigs
         ;
       overlays = with features; common.baseOverlays;
       machinePath = ./.;
