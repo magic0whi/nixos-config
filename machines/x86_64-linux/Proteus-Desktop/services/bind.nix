@@ -125,7 +125,7 @@
         # Human readable names for fields
         nameServer = "ns1.${const.domain}.";
         adminEmail = const.email; # Email address with a real `@`!
-        serial = lib.toInt const.networking.soaSerial;
+        serial = const.networking.soaSerial;
         # Sane defaults for the remaining ones
       };
 
@@ -240,7 +240,7 @@
         mutable = true;
         soa = {
           rName = const.email;
-          serial = const.networking.soaSerial;
+          serial = toString const.networking.soaSerial;
         };
         networks = [
           {
