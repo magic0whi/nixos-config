@@ -20,7 +20,7 @@
     };
     Proteus-NUC =
       let
-        sub = [
+        subs = [
           "immich"
           "jellyfin"
           "paperless"
@@ -36,16 +36,16 @@
           ipv4 = "100.64.161.20/10";
           ipv6 = "fd7a:115c:a1e0::cd3a:a114/48";
           domains = {
-            A = sub;
-            AAAA = sub;
+            A = subs;
+            AAAA = subs;
           };
         };
         easytier = {
           ipv4 = "10.0.0.2/24";
           ipv6 = "fdfe:dcba:9877::2/64";
           domains = {
-            A = sub;
-            AAAA = sub;
+            A = subs;
+            AAAA = subs;
           };
         };
         wire.name = "enp46s0";
@@ -54,15 +54,9 @@
       let
         domains =
           let
-            A = [
-              "@"
-              "ns1"
-            ];
-            AAAA = [
-              "@"
-              "ns1"
-            ];
             sub = [
+              "@"
+              "ns1"
               "*.s3"
               "*.s3-pub"
               "algo-archive"
@@ -94,8 +88,8 @@
             ];
           in
           {
-            A = A ++ sub;
-            AAAA = AAAA ++ sub;
+            A = sub;
+            AAAA = sub;
           };
       in
       {
@@ -112,55 +106,67 @@
         wire.name = "enp4s0";
         wireless = {
           name = "wlp0s20u9";
-          priv_ipv4 = "192.168.12.1";
-          ipv4_prefix_len = 24;
+          ipv4 = "192.168.12.1/24";
         };
       };
   };
-  debug = dns.lib.toString const.domain (
-    with dns.lib.combinators;
-    {
-      useOrigin = true;
-      SOA = {
-        # Human readable names for fields
-        nameServer = "ns1.${const.domain}.";
-        adminEmail = const.email; # Email address with a real `@`!
-        serial = const.networking.soaSerial;
-        # Sane defaults for the remaining ones
-      };
 
-      NS = [ "ns1.${const.domain}." ];
+  debug = dns.lib.toString const.domain {
+    useOrigin = true;
+    SOA = {
+      # Human readable names for fields
+      nameServer = "ns1.${const.domain}.";
+      adminEmail = const.email; # Email address with a real `@`!
+      serial = const.networking.soaSerial;
+      # Sane defaults for the remaining ones
+    };
 
-      A =
-        (with config.vars.hostAddrs.Proteus-Desktop; [
-          easytier.ipv4NoCidr
-          tailscale.ipv6NoCidr
-        ])
-        ++ [
-          { address = "203.0.113.1"; } # Generic A record
-          {
-            address = "203.0.113.2";
-            ttl = 60 * 60;
-          } # Generic A with TTL
-          (a "203.0.113.3") # Simple a record created with the `a` combinator
-          (ttl (60 * 60) (a "203.0.113.4")) # Equivalent to the second one
-        ];
+    NS = [ "ns1.${const.domain}." ];
 
-      AAAA = [
-        "4321:0:1:2:3:4:567:89ab" # For simple records you can use a plain string
-      ];
+    A = (
+      with config.vars.hostAddrs.Proteus-Desktop;
+      [
+        easytier.ipv4NoCidr
+        tailscale.ipv4NoCidr
+      ]
+    );
 
-      subdomains = {
-        www.A = [ "203.0.114.1" ];
+    AAAA = with config.vars.hostAddrs.Proteus-Desktop; [
+      easytier.ipv6NoCidr
+      tailscale.ipv6NoCidr
+    ];
 
-        staging = delegateTo [
-          # Another shortcut combinator
-          "ns1.another.com."
-          "ns2.another.com."
-        ];
-      };
-    }
-  );
+    subdomains = lib.mkMerge (
+      lib.flatten (
+        # Hosts
+        lib.mapAttrsToList (
+          _: host:
+          # Hosts' NICs
+          lib.mapAttrsToList (
+            _: nic:
+            # NIC's subdomains
+            lib.mapAttrsToList (
+              type: subs:
+              builtins.foldl' (
+                acc: sub:
+                acc
+                // {
+                  ${sub}.${type} = lib.singleton (
+                    if type == "A" then
+                      nic.ipv4NoCidr
+                    else if type == "AAAA" then
+                      nic.ipv6NoCidr
+                    else
+                      null
+                  );
+                }
+              ) { } subs
+            ) nic.domains
+          ) host
+        ) config.vars.hostAddrs
+      )
+    );
+  };
   networking.firewall = {
     allowedTCPPorts = [
       53
