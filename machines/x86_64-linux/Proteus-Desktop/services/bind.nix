@@ -3,9 +3,164 @@
   lib,
   const,
   pkgs,
+  dns,
   ...
 }:
 {
+  vars.hostAddrs = {
+    Proteus-MBP14M4P = {
+      tailscale = {
+        ipv4 = "100.95.17.39/10";
+        ipv6 = "fd7a:115c:a1e0::783a:1127/48";
+      };
+      easytier = {
+        ipv4 = "10.0.0.4/24";
+        ipv6 = "fdfe:dcba:9877::4/64";
+      };
+    };
+    Proteus-NUC =
+      let
+        sub = [
+          "immich"
+          "jellyfin"
+          "paperless"
+          "sb-nuc"
+          "sunshine"
+          "syncthing-nuc"
+          "traefik-nuc"
+          # "sftpgo"
+        ];
+      in
+      {
+        tailscale = {
+          ipv4 = "100.64.161.20/10";
+          ipv6 = "fd7a:115c:a1e0::cd3a:a114/48";
+          domains = {
+            A = sub;
+            AAAA = sub;
+          };
+        };
+        easytier = {
+          ipv4 = "10.0.0.2/24";
+          ipv6 = "fdfe:dcba:9877::2/64";
+          domains = {
+            A = sub;
+            AAAA = sub;
+          };
+        };
+        wire.name = "enp46s0";
+      };
+    Proteus-Desktop =
+      let
+        domains =
+          let
+            A = [
+              "@"
+              "ns1"
+            ];
+            AAAA = [
+              "@"
+              "ns1"
+            ];
+            sub = [
+              "*.s3"
+              "*.s3-pub"
+              "algo-archive"
+              "aria2"
+              "atuin"
+              "auth"
+              "cockpit-desktop"
+              "garage"
+              "git"
+              "hass"
+              "ldap"
+              "monero"
+              "navidrome"
+              "nextcloud"
+              "niks3"
+              "nixos-search"
+              "noogle"
+              "notebook"
+              "opensearch-dashboards"
+              "papra"
+              "plane"
+              "postgresql"
+              "ql"
+              "s3"
+              "s3-pub"
+              "sb-desktop"
+              "syncthing-desktop"
+              "traefik-desktop"
+            ];
+          in
+          {
+            A = A ++ sub;
+            AAAA = AAAA ++ sub;
+          };
+      in
+      {
+        tailscale = {
+          ipv4 = "100.89.227.22/10";
+          ipv6 = "fd7a:115c:a1e0::1a01:e318/48";
+          inherit domains;
+        };
+        easytier = {
+          ipv4 = "10.0.0.3/24";
+          ipv6 = "fdfe:dcba:9877::3/64";
+          inherit domains;
+        };
+        wire.name = "enp4s0";
+        wireless = {
+          name = "wlp0s20u9";
+          priv_ipv4 = "192.168.12.1";
+          ipv4_prefix_len = 24;
+        };
+      };
+  };
+  debug = dns.lib.toString const.domain (
+    with dns.lib.combinators;
+    {
+      useOrigin = true;
+      SOA = {
+        # Human readable names for fields
+        nameServer = "ns1.${const.domain}.";
+        adminEmail = const.email; # Email address with a real `@`!
+        serial = const.networking.soaSerial;
+        # Sane defaults for the remaining ones
+      };
+
+      NS = [ "ns1.${const.domain}." ];
+
+      A =
+        (with config.vars.hostAddrs.Proteus-Desktop; [
+          easytier.ipv4NoCidr
+          tailscale.ipv6NoCidr
+        ])
+        ++ [
+          { address = "203.0.113.1"; } # Generic A record
+          {
+            address = "203.0.113.2";
+            ttl = 60 * 60;
+          } # Generic A with TTL
+          (a "203.0.113.3") # Simple a record created with the `a` combinator
+          (ttl (60 * 60) (a "203.0.113.4")) # Equivalent to the second one
+        ];
+
+      AAAA = [
+        "4321:0:1:2:3:4:567:89ab" # For simple records you can use a plain string
+      ];
+
+      subdomains = {
+        www.A = [ "203.0.114.1" ];
+
+        staging = delegateTo [
+          # Another shortcut combinator
+          "ns1.another.com."
+          "ns2.another.com."
+        ];
+      };
+    }
+  );
   networking.firewall = {
     allowedTCPPorts = [
       53
