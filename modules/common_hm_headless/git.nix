@@ -71,7 +71,7 @@
           cm = "commit -m"; # Commit via `git cm <message>`
           ca = "commit -am"; # Commit all changes via `git ca <message>`
           dc = "diff --cached";
-          am = "commit --amend"; # Amend commit message via `git amend <message>`
+          ame = "commit --amend"; # Amend commit message via `git amend <message>`
           unstage = "reset HEAD --"; # Unstage file via `git unstage <file>`
           merged = "branch --merged"; # List merged(into HEAD) branches via `git merged`
           unmerged = "branch --no-merged"; # List unmerged(into HEAD) branches via `git unmerged`
