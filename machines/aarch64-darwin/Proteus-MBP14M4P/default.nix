@@ -16,6 +16,7 @@ let
         mylib
         const
         ;
+      overlays = with features; common.baseOverlays;
       machinePath = ./.;
       specialArgs = { inherit deploy-rs; };
       modules = (with features.common; base ++ seat ++ extra) ++ features.darwin;
