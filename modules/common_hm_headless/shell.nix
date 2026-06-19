@@ -95,15 +95,15 @@
   programs = {
     zsh = {
       enable = true;
-      # autosuggestion = {
-      #   enable = true;
-      #   highlight = "fg=60";
-      #   strategy = [
-      #     "match_prev_cmd"
-      #     "history"
-      #     "completion"
-      #   ];
-      # };
+      autosuggestion = lib.mkIf pkgs.stdenv.isDarwin {
+        enable = true;
+        highlight = "fg=60";
+        strategy = [
+          "match_prev_cmd"
+          "history"
+          "completion"
+        ];
+      };
       initContent = lib.mkAfter ''
         export PATH="$PATH:${
           builtins.concatStringsSep ":" [

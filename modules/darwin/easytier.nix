@@ -15,7 +15,9 @@ in
 {
   # I mainly use EasyTier for overlay network, so I put networking.search setting here
   networking.search = [ const.domain ];
-  # TIP: Flush DNS cache `sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder`
+  # TIP:
+  # - Flush DNS cache `sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder`
+  # NOTE `doggo` and `dig` won't help debug this, use `scutil --dns` instead
   environment.etc = builtins.foldl' (
     acc: zone_name:
     acc
