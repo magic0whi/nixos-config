@@ -8,24 +8,13 @@
   # For debug
   # xdg.configFile."helix/languages.toml".source =
   #   config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/Works/test/helix_lanaguages.toml";
+
   programs.helix = {
     enable = true;
     defaultEditor = true;
-    extraPackages =
-      with pkgs;
-      [
-        bash-language-server
-        vscode-json-languageserver
-        yaml-language-server
-        nixfmt-rs
-        nixd
-        taplo # TOML LSP
-        kdlfmt
-      ]
-      # NOTE: Requires bootstrap GHC
-      ++ lib.optionals (!stdenv.hostPlatform.isRiscV64) [ marksman ];
     settings = {
-      theme = if config.catppuccin.enable then "catppuccin-${const.catppuccin.flavor}" else "gruvbox"; # Disable if use catpuccin
+      # fallback to gruvbox
+      theme = if config.catppuccin.enable then "catppuccin-${const.catppuccin.flavor}" else "gruvbox";
       editor = {
         bufferline = "multiple";
         color-modes = true;
@@ -97,6 +86,13 @@
         }
         {
           name = "latex";
+          auto-format = true;
+          formatter = {
+            # command = "tex-fmt";
+            # args = [ "--stdin" ];
+            command = "latexindent";
+            args = [ "-m" ];
+          };
           language-servers = [
             "texlab"
             "ltex"
@@ -134,8 +130,10 @@
           };
         };
         texlab.config.texlab = {
-          formatterLineLength = 120;
-          latexFormatter = "tex-fmt";
+          auxDirectory = "output";
+          # formatterLineLength = 120;
+          # latexFormatter = "tex-fmt"; # Use formatter on texlab causes lose cursor position
+          # Lint
           chktex = {
             onOpenAndSave = true;
             onEdit = true;
@@ -168,14 +166,24 @@
                 ];
               };
           build = {
-            executable = "latexmk";
+            # executable = "latexmk";
+            # args = [
+            #   "-cd"
+            #   "-pdflua"
+            #   "-halt-on-error"
+            #   "-interaction=nonstopmode"
+            #   "-synctex=1"
+            #   "%f"
+            # ];
+            executable = "tectonic";
             args = [
-              "-cd"
-              "-pdflua"
-              "-halt-on-error"
-              "-interaction=nonstopmode"
-              "-synctex=1"
+              "-X" # Use experimental V2 interface
+              "compile"
               "%f"
+              "--synctex"
+              "--keep-logs"
+              "--keep-intermediates"
+              "--outdir=output"
             ];
             onSave = true;
             forwardSearchAfter = true;

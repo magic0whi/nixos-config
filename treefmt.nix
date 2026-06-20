@@ -20,7 +20,10 @@
           enable = true;
           priority = 2;
         };
-        programs.prettier.enable = true;
+        programs.prettier = {
+          enable = true;
+          # package = pkgs.prettier.override { plugins = [ ... ]; };
+        };
         programs.just.enable = true;
         programs.shfmt.enable = true;
       };
