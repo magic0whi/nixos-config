@@ -7,122 +7,212 @@
   ...
 }:
 {
-  vars.hostAddrs = {
-    Proteus-MBP14M4P = {
-      tailscale = {
-        ipv4 = "100.95.17.39/10";
-        ipv6 = "fd7a:115c:a1e0::783a:1127/48";
+  # TODO: extract v4 octets and v6 hexes with v4PrefixLen and v6PrefixLen
+  # TODO: improve
+  # https://github.com/nix-community/dns.nix/blob/a97cf4156e9f044fe4bed5be531061000dfabb07/dns/util/default.nix
+  vars.hostAddrs =
+    let
+      regHost = true;
+    in
+    {
+      # ============================================
+      # Homelab's Physical Machines (TODO: Try KubeVirt)
+      # ============================================
+      Proteus-MBP14M4P = {
+        tailscale = {
+          inherit regHost;
+          ipv4 = "100.95.17.39/10";
+          ipv6 = "fd7a:115c:a1e0::783a:1127/48";
+        };
+        easytier = {
+          inherit regHost;
+          ipv4 = "10.0.0.4/24";
+          ipv6 = "fdfe:dcba:9877::4/64";
+        };
       };
-      easytier = {
-        ipv4 = "10.0.0.4/24";
-        ipv6 = "fdfe:dcba:9877::4/64";
+      Proteus-NUC =
+        let
+          subs = [
+            "immich"
+            "jellyfin"
+            "paperless"
+            "sb-nuc"
+            "sunshine"
+            "syncthing-nuc"
+            "traefik-nuc"
+            # "sftpgo"
+          ];
+        in
+        {
+          tailscale = {
+            inherit regHost;
+            ipv4 = "100.64.161.20/10";
+            ipv6 = "fd7a:115c:a1e0::cd3a:a114/48";
+            subdomains = {
+              A = subs;
+              AAAA = subs;
+            };
+          };
+          easytier = {
+            inherit regHost;
+            ipv4 = "10.0.0.2/24";
+            ipv6 = "fdfe:dcba:9877::2/64";
+            subdomains = {
+              A = subs;
+              AAAA = subs;
+            };
+          };
+          wire.name = "enp46s0";
+        };
+      Proteus-Desktop =
+        let
+          subdomains =
+            let
+              sub = [
+                "ns1"
+                "*.s3"
+                "*.s3-pub"
+                "algo-archive"
+                "aria2"
+                "atuin"
+                "auth"
+                "cockpit-desktop"
+                "garage"
+                "git"
+                "hass"
+                "ldap"
+                "monero"
+                "navidrome"
+                "nextcloud"
+                "niks3"
+                "nixos-search"
+                "noogle"
+                "notebook"
+                "opensearch-dashboards"
+                "papra"
+                "plane"
+                "postgresql"
+                "ql"
+                "s3"
+                "s3-pub"
+                "sb-desktop"
+                "syncthing-desktop"
+                "traefik-desktop"
+              ];
+            in
+            {
+              A = sub;
+              AAAA = sub;
+            };
+        in
+        {
+          tailscale = {
+            inherit regHost;
+            ipv4 = "100.89.227.22/10";
+            ipv6 = "fd7a:115c:a1e0::1a01:e318/48";
+            inherit subdomains;
+          };
+          easytier = {
+            inherit regHost;
+            ipv4 = "10.0.0.3/24";
+            ipv6 = "fdfe:dcba:9877::3/64";
+            inherit subdomains;
+          };
+          wire.name = "enp4s0";
+          wireless = {
+            name = "wlp0s20u9";
+            ipv4 = "192.168.12.1/24";
+          };
+        };
+      # ============================================
+      # Other VMs and Physical Machines
+      # ============================================
+      Proteus-NixOS-0 = {
+        tailscale = {
+          inherit regHost;
+          ipv4 = "100.95.173.84";
+          ipv6 = "fd7a:115c:a1e0::683a:ad55";
+        };
+        easytier = {
+          inherit regHost;
+          ipv4 = "10.0.0.1";
+          ipv6 = "fdfe:dcba:9877::1";
+        };
       };
+      Proteus-NixOS-1 = {
+        tailscale = {
+          inherit regHost;
+          ipv4 = "100.121.95.98";
+          ipv6 = "fd7a:115c:a1e0::df3a:5f62";
+        };
+        easytier = {
+          inherit regHost;
+          ipv4 = "10.0.0.5";
+          ipv6 = "fdfe:dcba:9877::5";
+        };
+      };
+      Proteus-NixOS-2 = {
+        tailscale = {
+          inherit regHost;
+          ipv4 = "100.78.150.50";
+          ipv6 = "fd7a:115c:a1e0::823a:9632";
+        };
+        easytier = {
+          inherit regHost;
+          ipv4 = "10.0.0.6";
+          ipv6 = "fdfe:dcba:9877::6";
+        };
+      };
+      Proteus-NixOS-3 = {
+        tailscale = {
+          inherit regHost;
+          ipv4 = "100.113.250.94";
+          ipv6 = "fd7a:115c:a1e0::703a:fa5e";
+        };
+        easytier = {
+          inherit regHost;
+          ipv4 = "10.0.0.7";
+          ipv6 = "fdfe:dcba:9877::7";
+        };
+      };
+      Proteus-NixOS-4 = {
+        tailscale = {
+          inherit regHost;
+          ipv4 = "100.118.72.118";
+          ipv6 = "fd7a:115c:a1e0::e33a:4876";
+        };
+        easytier = {
+          inherit regHost;
+          ipv4 = "10.0.0.8";
+          ipv6 = "fdfe:dcba:9877::8";
+        };
+      };
+      Proteus-NixOS-5 = {
+        tailscale = {
+          inherit regHost;
+          ipv4 = "100.90.238.8";
+          ipv6 = "fd7a:115c:a1e0::c53a:ee08";
+        };
+        easytier = {
+          inherit regHost;
+          ipv4 = "10.0.0.9";
+          ipv6 = "fdfe:dcba:9877::9";
+        };
+      };
+      Proteus-VF2.wire.ipv4 = "192.168.1.26";
     };
-    Proteus-NUC =
-      let
-        subs = [
-          "immich"
-          "jellyfin"
-          "paperless"
-          "sb-nuc"
-          "sunshine"
-          "syncthing-nuc"
-          "traefik-nuc"
-          # "sftpgo"
-        ];
-      in
-      {
-        tailscale = {
-          ipv4 = "100.64.161.20/10";
-          ipv6 = "fd7a:115c:a1e0::cd3a:a114/48";
-          domains = {
-            A = subs;
-            AAAA = subs;
-          };
-        };
-        easytier = {
-          ipv4 = "10.0.0.2/24";
-          ipv6 = "fdfe:dcba:9877::2/64";
-          domains = {
-            A = subs;
-            AAAA = subs;
-          };
-        };
-        wire.name = "enp46s0";
-      };
-    Proteus-Desktop =
-      let
-        domains =
-          let
-            sub = [
-              "@"
-              "ns1"
-              "*.s3"
-              "*.s3-pub"
-              "algo-archive"
-              "aria2"
-              "atuin"
-              "auth"
-              "cockpit-desktop"
-              "garage"
-              "git"
-              "hass"
-              "ldap"
-              "monero"
-              "navidrome"
-              "nextcloud"
-              "niks3"
-              "nixos-search"
-              "noogle"
-              "notebook"
-              "opensearch-dashboards"
-              "papra"
-              "plane"
-              "postgresql"
-              "ql"
-              "s3"
-              "s3-pub"
-              "sb-desktop"
-              "syncthing-desktop"
-              "traefik-desktop"
-            ];
-          in
-          {
-            A = sub;
-            AAAA = sub;
-          };
-      in
-      {
-        tailscale = {
-          ipv4 = "100.89.227.22/10";
-          ipv6 = "fd7a:115c:a1e0::1a01:e318/48";
-          inherit domains;
-        };
-        easytier = {
-          ipv4 = "10.0.0.3/24";
-          ipv6 = "fdfe:dcba:9877::3/64";
-          inherit domains;
-        };
-        wire.name = "enp4s0";
-        wireless = {
-          name = "wlp0s20u9";
-          ipv4 = "192.168.12.1/24";
-        };
-      };
-  };
 
   debug = dns.lib.toString const.domain {
     useOrigin = true;
     SOA = {
-      # Human readable names for fields
       nameServer = "ns1.${const.domain}.";
-      adminEmail = const.email; # Email address with a real `@`!
+      adminEmail = const.email;
       serial = const.networking.soaSerial;
       # Sane defaults for the remaining ones
     };
-
     NS = [ "ns1.${const.domain}." ];
 
+    # Records for @
     A = (
       with config.vars.hostAddrs.Proteus-Desktop;
       [
@@ -130,7 +220,6 @@
         tailscale.ipv4NoCidr
       ]
     );
-
     AAAA = with config.vars.hostAddrs.Proteus-Desktop; [
       easytier.ipv6NoCidr
       tailscale.ipv6NoCidr
@@ -161,10 +250,13 @@
                   );
                 }
               ) { } subs
-            ) nic.domains
+            ) nic.subdomains
           ) host
         ) config.vars.hostAddrs
       )
+      ++ [
+        { }
+      ]
     );
   };
   networking.firewall = {

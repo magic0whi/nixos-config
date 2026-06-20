@@ -170,46 +170,6 @@ let
       }
     ];
     Proteus-VF2 = [ { ipv4 = "192.168.1.26"; } ];
-    # Proteus-NixOS-6.ipv4 = "100.126.174.68";
-    # Orange Pi 5 - ARM
-    # RJ45 port 1 - enP4p65s0
-    # RJ45 port 2 - enP3p49s0
-    rakushun = [
-      {
-        iface = "enP4p65s0";
-        ipv4 = "192.168.5.179";
-      }
-    ];
-    suzi = [
-      {
-        iface = "enp2s0"; # fake iface, it's not used by the host
-        ipv4 = "192.168.5.178";
-      }
-    ];
-    # ============================================
-    # Kubernetes Clusters
-    # ============================================
-    # VM
-    k3s-prod-1-master-1 = [
-      {
-        iface = "enp2s0";
-        ipv4 = "192.168.5.108";
-      }
-    ];
-    # VM
-    k3s-prod-1-worker-1 = [
-      {
-        iface = "enp2s0";
-        ipv4 = "192.168.5.111";
-      }
-    ];
-    # KubeVirt VM
-    k3s-test-1-master-1 = [
-      {
-        iface = "enp2s0";
-        ipv4 = "192.168.5.114";
-      }
-    ];
   };
 in
 {
