@@ -92,11 +92,8 @@
     wlr.enable = true;
     extraPortals = [
       pkgs.xdg-desktop-portal-gtk
-    ]
-    # Screensharing, put this on home manager will not take effect
-    ++
-      lib.optional config.home-manager.users.${const.username}.wayland.windowManager.hyprland.enable
-        pkgs.xdg-desktop-portal-hyprland;
+      pkgs.xdg-desktop-portal-hyprland # Screensharing, put this on home manager will not take effect
+    ];
 
     config.common.default = [ "gtk" ]; # Use xdg-desktop-portal-gtk for every portal interface
   };
