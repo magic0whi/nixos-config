@@ -477,15 +477,15 @@
         "xwayland-satellite-unstable": "xwayland-satellite-unstable"
       },
       "locked": {
-        "lastModified": 1781530271,
-        "narHash": "sha256-uHTxrqal01RsRjPmpn4wngrdjlcNP5zc3vPDGhX82ls=",
-        "rev": "7168ca52b9a17d2e8297b716a30f559f2753fa72",
+        "lastModified": 1781951810,
+        "narHash": "sha256-Gf+fYguQrpokFVO2JmMdXI8dAr8MZRI/h0sUZ0QnlnI=",
+        "rev": "ae316e8caaeeb720355d8f3f409ff7d325ebfbab",
         "type": "tarball",
-        "url": "https://codeberg.org/api/v1/repos/magic0whi/niri-nix/archive/7168ca52b9a17d2e8297b716a30f559f2753fa72.tar.gz?rev=7168ca52b9a17d2e8297b716a30f559f2753fa72"
+        "url": "https://codeberg.org/api/v1/repos/magic0whi/niri-nix/archive/ae316e8caaeeb720355d8f3f409ff7d325ebfbab.tar.gz?rev=ae316e8caaeeb720355d8f3f409ff7d325ebfbab"
       },
       "original": {
         "type": "tarball",
-        "url": "https://codeberg.org/magic0whi/niri-nix/archive/7168ca52b9a17d2e8297b716a30f559f2753fa72.tar.gz"
+        "url": "https://codeberg.org/magic0whi/niri-nix/archive/ae316e8caaeeb720355d8f3f409ff7d325ebfbab.tar.gz"
       }
     },
     "niri-unstable": {
