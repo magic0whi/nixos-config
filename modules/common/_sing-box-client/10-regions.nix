@@ -84,9 +84,7 @@ let
     {
       tag = "Germany";
       type = "selector";
-      outbounds = [
-        "{all}"
-      ];
+      outbounds = [ "{all}" ];
       filter = [
         {
           action = "include";
