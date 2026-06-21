@@ -37,6 +37,7 @@
   systemd.services.sing-box.serviceConfig.ExecStartPre = lib.mkAfter (
     lib.singleton (
       let
+        update_interval = 60 * 60 * 24 * 7; # Update interval in seconds
         sing-box-subscribe = pkgs.fetchFromGitHub {
           owner = "Toperlock";
           repo = "sing-box-subscribe";
@@ -71,30 +72,48 @@
               requests
               paramiko
               scp
-              chardet
-              flask
-              pyyaml
               ruamel-yaml
+              chardet
+              pyyaml
+              flask
             ]
           )
         );
       in
       pkgs.writeShellScript "sing-box-subscribe" ''
-        WORK_DIR="$STATE_DIRECTORY/sing-box-subscribe"
-        [ ! -d "$WORK_DIR" ] && mkdir "$WORK_DIR"
-        cp -r ${sing-box-subscribe}/* "$WORK_DIR"
-        chmod -R +w "$WORK_DIR"
+        PATH="${pkgs.gawk}/bin":$PATH
+        CACHE_DIR="$STATE_DIRECTORY/sing-box-subscribe"
+        CURRENT_HASH=$(sha256sum "$RUNTIME_DIRECTORY/config.json" | awk '{print $1}')
+        CURRENT_TIME=$(date +%s)
 
-        cp "$RUNTIME_DIRECTORY/config.json" "$STATE_DIRECTORY/sing-box-subscribe/config_template/0config.json"
+        # Trigger update if template changed, time interval exceeded, or cache is missing
+        if [ "$CURRENT_HASH" != "$(cat "$CACHE_DIR/last_hash" 2>/dev/null || echo "")" ] \
+          || [ $((CURRENT_TIME - $(cat "$CACHE_DIR/last_time" 2>/dev/null || echo "0"))) -ge ${toString update_interval} ] \
+          || [ ! -f "$CACHE_DIR/config.json" ]
+        then
+          work_dir="$RUNTIME_DIRECTORY/sing-box-subscribe"
 
-        ${(import "${pkgs.path}/nixos/lib/utils.nix" { inherit config lib pkgs; }).genJqSecretsReplacementSnippet
-          providerSettings
-          "/var/lib/sing-box/sing-box-subscribe/providers.json" # NOTE genJqSecretsReplacementSnippet use single quotes on path
-        }
+          echo "Updating sing-box subscription..."
+          mkdir "$work_dir"
+          cp -r ${sing-box-subscribe}/* "$work_dir"
+          chmod -R +w "$work_dir"
 
-        cd "$STATE_DIRECTORY/sing-box-subscribe"
-        ${python} main.py --template_index 0
-        cp config.json "$RUNTIME_DIRECTORY/config.json"
+          cp "$RUNTIME_DIRECTORY/config.json" "$work_dir/config_template/0config.json"
+
+          ${(import "${pkgs.path}/nixos/lib/utils.nix" { inherit config lib pkgs; }).genJqSecretsReplacementSnippet
+            providerSettings
+            "/run/sing-box/sing-box-subscribe/providers.json" # NOTE genJqSecretsReplacementSnippet use single quotes on path
+          }
+
+          cd "$work_dir"
+          ${python} main.py --template_index 0
+          cp config.json "$CACHE_DIR/"
+          echo "$CURRENT_HASH" > "$CACHE_DIR/last_hash"
+          echo "$CURRENT_TIME" > "$CACHE_DIR/last_time"
+        else
+          echo "Template unchanged and interval not reached. Using cached config."
+        fi
+        cp "$CACHE_DIR/config.json" "$RUNTIME_DIRECTORY/config.json"
       ''
     )
   );
