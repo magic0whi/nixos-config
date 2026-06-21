@@ -6,7 +6,10 @@
   virtualisation.vmVariantWithDisko = {
     # https://github.com/nix-community/disko/issues/1157#issuecomment-3559146597
     users.users.${const.username}.initialHashedPassword = const.initial_hashed_password;
-    virtualisation.fileSystems."/persistent".neededForBoot = lib.mkForce true;
+    virtualisation.fileSystems = {
+      "/home".neededForBoot = true;
+      "/persistent".neededForBoot = lib.mkForce true;
+    };
   };
 
   # BEGIN disko-config.nix

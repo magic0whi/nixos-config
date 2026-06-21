@@ -2,7 +2,7 @@ let
   # LUKS-encrypted ZFS disk helper (460GB partition)
   zroot = "zroot";
   mk_luks_part = disk_id: {
-    type = "CA7D7CCB-63ED-4C53-861C-1742536059CC";
+    type = "CA7D7CCB-63ED-4C53-861C-1742536059CC"; # Linux LUKS
     size = "500106240K"; # Unit is KiB, ~512G
     content = {
       type = "luks";

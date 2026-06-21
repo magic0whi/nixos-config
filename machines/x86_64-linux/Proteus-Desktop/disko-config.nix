@@ -17,7 +17,7 @@ let
           # For boot.initrd.luks.device.<name>.*
           settings = {
             crypttabExtraOpts = [ "nofail" ];
-            # keyFile = "/etc/dm_keyfile.key"; # Conflicts with Cievis
+            # keyFile = "/etc/dm_keyfile.key"; # Conflicts with Clevis
             keyFileTimeout = 15;
             allowDiscards = true;
             bypassWorkqueues = true;
