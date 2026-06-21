@@ -66,7 +66,7 @@
     "4gaming"
     "5music"
     "6file"
-    "7"
+    "7design"
     "8"
     "9"
   ];
