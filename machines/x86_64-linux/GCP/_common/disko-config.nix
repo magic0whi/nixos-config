@@ -37,7 +37,7 @@
             type = "luks";
             name = "crypted-root";
             extraFormatArgs = [ "--pbkdf-memory=${toString (64 * 1024)}" ];
-            passwordFile = "/tmp/secret.key";
+            passwordFile = builtins.toFile "secret.key" "vmtest";
             settings = {
               # keyFile = "/etc/dm_keyfile.key";
               # keyFileTimeout = 15;
