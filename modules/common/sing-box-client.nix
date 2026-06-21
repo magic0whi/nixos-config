@@ -83,6 +83,8 @@
         CURRENT_HASH=$(sha256sum "$RUNTIME_DIRECTORY/config.json" | awk '{print $1}')
         CURRENT_TIME=$(date +%s)
 
+        [ ! -d "$CACHE_DIR" ] && mkdir "$CACHE_DIR"
+
         # Trigger update if template changed, time interval exceeded, or cache is missing
         if [ "$CURRENT_HASH" != "$(cat "$CACHE_DIR/last_hash" 2>/dev/null || echo "")" ] \
           || [ $((CURRENT_TIME - $(cat "$CACHE_DIR/last_time" 2>/dev/null || echo "0"))) -ge ${toString update_interval} ] \
