@@ -85,7 +85,6 @@ let
       tag = "Germany";
       type = "selector";
       outbounds = [
-        "Proteus-NixOS-2"
         "{all}"
       ];
       filter = [
