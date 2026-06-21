@@ -123,7 +123,12 @@
     };
     prince213-nix-packages = {
       url = "github:Prince213/nix-packages/ccce5e6c4015bfa307469e470d777e1d1f471679";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-parts.follows = "flake-parts";
+        treefmt-nix.follows = "treefmt-nix";
+        systems.follows = "deploy-rs/utils/systems";
+      };
     };
     dns = {
       url = "github:kirelagin/dns.nix";
