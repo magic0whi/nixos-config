@@ -26,4 +26,7 @@
   ## START game.nix
   programs.lutris.enable = true;
   ## END game.nix
+  ## START cursor.nix
+  home.pointerCursor.hyprcursor.enable = true;
+  ## END cursor.nix
 }

@@ -1,6 +1,36 @@
 { lib, ... }:
 let
   super_rules = [
+    # LaTeX viewer
+    {
+      action = "open-focused false";
+      matches = [ ''match app-id=r#"^org\.pwmt\.zathura$"#'' ];
+    }
+
+    # Windows that better float
+    {
+      action = "open-floating true";
+      matches = [
+        ''match app-id="yad"''
+        ''match app-id=r#"^org\.inkscape\.Inkscape$"# title="Function Plotter"''
+        ''match title="Select what to share"'' # Screensharing (xdg-desktop-portal-hyprland)
+      ];
+    }
+
+    # Video Picture-in-Picture
+    {
+      action = ''
+        open-floating true
+        default-floating-position x=5 y=5 relative-to="bottom-right"
+        default-column-width { fixed 480; }
+        default-window-height { fixed 270; }
+      '';
+      matches = [
+        ''match app-id="^firefox$" title="^Picture-in-Picture$"''
+        ''match title="^Picture in picture$"''
+      ];
+    }
+
     # Terminal applications - open in workspace 1, with blur
     {
       action = ''

@@ -116,8 +116,6 @@ in
 
       Mod+Home { focus-column-first; }
       Mod+End  { focus-column-last; }
-      // TODO: lacks next
-      // TODO: lacks prev
 
       Mod+N { focus-workspace-down; }
       Mod+P { focus-workspace-up; }
