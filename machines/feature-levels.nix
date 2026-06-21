@@ -84,6 +84,8 @@
         "${headless}/krnl-compat.nix"
         "${headless}/zfs.nix"
         "${gui}/peripherals.nix"
+        "${gui}/bluetooth.nix"
+        "${gui}/pipewire.nix"
       ];
     };
 
