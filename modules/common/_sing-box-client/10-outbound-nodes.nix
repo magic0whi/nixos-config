@@ -27,15 +27,15 @@ let
       [
         {
           tag = "Proteus-NixOS-0";
-          server._secret = config.sops.secrets.sb_nodes_Proteus-NixOS-0.path;
+          server._secret = config.sops.secrets.easytier_peer_0.path;
         }
         {
           tag = "Proteus-NixOS-4";
-          server._secret = config.sops.secrets.sb_nodes_Proteus-NixOS-4.path;
+          server._secret = config.sops.secrets.easytier_peer_4.path;
         }
         {
           tag = "Proteus-NixOS-5";
-          server._secret = config.sops.secrets.sb_nodes_Proteus-NixOS-5.path;
+          server._secret = config.sops.secrets.easytier_peer_5.path;
         }
       ]
   # ++ lib.singleton {

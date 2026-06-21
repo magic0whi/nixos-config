@@ -28,9 +28,6 @@
         sb_nodes_reality_short_id = { inherit sopsFile; };
         sb_nodes_reality_pub_key = { inherit sopsFile; };
         sb_nodes_server_name = { inherit sopsFile; };
-        sb_nodes_Proteus-NixOS-0 = { inherit sopsFile; };
-        sb_nodes_Proteus-NixOS-4 = { inherit sopsFile; };
-        sb_nodes_Proteus-NixOS-5 = { inherit sopsFile; };
         sb_ts_auth_key = { inherit sopsFile; };
         sb_subscribe_url = { inherit sopsFile; };
       };
