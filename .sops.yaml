@@ -6,7 +6,7 @@ keys:
   - &Proteus-NUC age1mfs3eh0zwpxse06x5dwg78rp3wmpxe8ag3yvkwmkkgrx7gpea96qglanyz
   - &Proteus-MBP14M4P age1g550pxhfzh6rtj76t6v7dzyrzy02g0kuqz27adml8eq7zw6l4adqvx4pm5
   - &Proteus-Desktop age1yv5rv2s3pgc0pxy03c560lz746s9r2qp3exzqq5m3equ5yjtsexscja2r9
-  - &Proteus-NixOS-0 age18mfwt7yztju3pxw56syfufmmtvaj8smphrjrr5mgg6j9c8e00ypqkyttjy
+  - &Proteus-NixOS-0 age125zqqjhess357kqc556n8zy7da6tq9hxnn85yzynuhdxlxljhveqcv7gjh
   - &Proteus-NixOS-1 age1ez48xcmyfrl9y6ueuvhfc9drutj0r228cfs43t9uvphuyv4v6ygsy7gp4l
   - &Proteus-NixOS-2 age100tjlvhw66afqa2qkzywsywgg9hrwn2h3yuucxuvqprmnp0739vqtxlfl3
   - &Proteus-NixOS-3 age10u3w4a973l83fv8t7ndx9nzyuj993m6vrjxvf6xw9lvxm9rkwgdst862j7

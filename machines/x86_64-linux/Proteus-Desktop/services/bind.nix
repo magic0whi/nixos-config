@@ -130,7 +130,7 @@
       Proteus-NixOS-0 = {
         tailscale = {
           inherit regHost;
-          ipv4 = "100.95.173.84";
+          ipv4 = "100.68.75.16";
           ipv6 = "fd7a:115c:a1e0::683a:ad55";
         };
         easytier = {
