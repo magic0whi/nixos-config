@@ -1,11 +1,6 @@
 { dnsServerCfg, lib, ... }:
 let
   outbounds = [
-    # {
-    #   tag = "Germany";
-    #   type = "selector";
-    #   outbounds = [ ];
-    # }
     {
       tag = "HongKong";
       type = "selector";
