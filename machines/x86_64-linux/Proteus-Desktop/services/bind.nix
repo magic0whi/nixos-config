@@ -225,8 +225,8 @@
       tailscale.ipv6NoCidr
     ];
 
-    subdomains = lib.mkMerge (
-      lib.flatten (
+    subdomains = lib.pipe config.vars.hostAddrs [
+      (
         # Hosts
         lib.mapAttrsToList (
           _: host:
@@ -252,12 +252,11 @@
               ) { } subs
             ) nic.subdomains
           ) host
-        ) config.vars.hostAddrs
+        )
       )
-      ++ [
-        { }
-      ]
-    );
+      lib.flatten
+      lib.mkMerge
+    ];
   };
   networking.firewall = {
     allowedTCPPorts = [
