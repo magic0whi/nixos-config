@@ -50,6 +50,7 @@ in
       cfg = config.services.sing-box.generateMobileConfig;
     in
     lib.mkIf cfg.enable {
+      # TODO sing-box-subscribe
       systemd.services.sing-box.serviceConfig.ExecStartPre = [
         # Generate alter config.json for mobile devices
         "+-${

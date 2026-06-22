@@ -93,6 +93,7 @@
     extraPortals = [
       pkgs.xdg-desktop-portal-gtk
       pkgs.xdg-desktop-portal-hyprland # Screensharing, put this on home manager will not take effect
+      # pkgs.xdg-desktop-portal-luminous # drop-in replacement of xdg-desktop-portal-hyprland
     ];
 
     config.common.default = [ "gtk" ]; # Use xdg-desktop-portal-gtk for every portal interface

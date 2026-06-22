@@ -31,6 +31,7 @@
         sb_ts_auth_key = { inherit sopsFile; };
         sb_subscribe_url = { inherit sopsFile; };
       };
+  # TODO implement darwin
   systemd.services.sing-box.serviceConfig.ExecStartPre = lib.mkAfter (
     lib.singleton (
       let

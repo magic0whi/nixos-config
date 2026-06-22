@@ -1,3 +1,4 @@
+# TODO: remove
 {
   wayland.windowManager.hyprland.settings.curve = [
     {
