@@ -12,6 +12,7 @@ in
     systemd.services.sing-box.serviceConfig.ExecStartPre = lib.mkAfter (
       lib.singleton (
         pkgs.writeShellScript "sing-box-subscribe" ''
+          set -euo pipefail
           PATH="${pkgs.gawk}/bin":$PATH
           CACHE_DIR="$STATE_DIRECTORY/sing-box-subscribe"
           CURRENT_HASH=$(sha256sum "$RUNTIME_DIRECTORY/config.json" | awk '{print $1}')

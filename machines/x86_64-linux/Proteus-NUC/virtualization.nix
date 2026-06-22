@@ -97,6 +97,7 @@ in
       ''ATTR{vendor}=="0x8086", ATTR{device}=="0x9a60"''
       ''DRIVER!="vfio-pci"''
       ''RUN+="${pkgs.writeShellScript "i915-bind-to-vfio-pci" ''
+        set -euo pipefail
         echo $1 > /sys/bus/pci/devices/$1/driver/unbind
         echo vfio-pci > /sys/bus/pci/devices/$1/driver_override
         ${lib.getExe' pkgs.kmod "modprobe"} vfio-pci
@@ -116,7 +117,7 @@ in
         qemu.swtpm.enable = true;
         qemu.vhostUserPackages = [ pkgs.virtiofsd ];
         # hooks.qemu."99-hugepages.sh" = pkgs.writeShellScript "99-hugepages.sh" ''
-        #   set -eufo pipefail
+        #   set -euo pipefail
         #   # ## BEGIN DEBUG
         #   # LOG=/var/log/libvirt/hooks-qemu.log
         #   # exec >>"$LOG" 2>&1
@@ -193,7 +194,7 @@ in
         #   esac
         # '';
         hooks.qemu."10-igpu-sriov.sh" = pkgs.writeShellScript "10-igpu-sriov.sh" ''
-          set -eufo pipefail
+          set -euo pipefail
 
           VM="$1"
           OP="$2"

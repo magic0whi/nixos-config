@@ -333,6 +333,8 @@ in
       # starting when SSL enabled
       serviceConfig.ExecStartPost = lib.mkForce [
         (pkgs.writeShellScript "opensearch-setup-security" ''
+          set -euo pipefail
+
           echo "Injecting OIDC secrets and applying OpenSearch security config..."
 
           ${lib.concatLines (lib.mapAttrsToList (filename: drv: "cp ${drv} $RUNTIME_DIRECTORY/${filename}") sec_cfg)}

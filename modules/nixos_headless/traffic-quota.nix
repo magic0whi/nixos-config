@@ -7,7 +7,7 @@
 let
   cfg = config.services.trafficQuota;
   script = pkgs.writeShellScript "check-traffic-quota" ''
-    set -eufo pipefail
+    set -euo pipefail
 
     CURRENT_YEAR=$(date +%Y)
     CURRENT_MONTH=$(date +%-m)

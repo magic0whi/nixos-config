@@ -68,7 +68,7 @@
         wants = [ "network-online.target" ];
         after = [ "network-online.target" ];
         preStart = lib.mkBefore ''
-          set -eufo pipefail
+          set -euo pipefail
 
           echo "Waiting for LDAP (ldap.${const.domain}) to be ready..."
           while ! ${lib.getExe pkgs.netcat} -z ldap.proteus.eu.org 636; do
@@ -82,13 +82,13 @@
     {
       forgejo = {
         preStart = ''
-          set -eufo pipefail
+          set -euo pipefail
 
           mkdir -p ${config.services.forgejo.stateDir}/custom/public/assets/img/auth/
           cp -f ${pkgs.authelia.src}/docs/static/images/branding/logo.png ${config.services.forgejo.stateDir}/custom/public/assets/img/auth/authelia.png
         '';
         postStart = ''
-          set -eufo pipefail
+          set -euo pipefail
 
           # Wait for Forgejo to be fully ready to accept CLI commands
           while [ "$(${lib.getExe pkgs.curl} -sSf https://git.${const.domain}/api/healthz | ${lib.getExe pkgs.jq} -r '.status')" != "pass" ]; do

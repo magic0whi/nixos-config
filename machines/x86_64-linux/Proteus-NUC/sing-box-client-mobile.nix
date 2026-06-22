@@ -58,6 +58,7 @@ in
             utils = import "${pkgs.path}/nixos/lib/utils.nix" { inherit config lib pkgs; };
           in
           pkgs.writeShellScript "gen-mobile-config" ''
+            set -euo pipefail
             ${utils.genJqSecretsReplacementSnippet cfg.mobile "/run/secrets/mobile.json"}
             chown --reference=/run/sing-box /run/secrets/mobile.json
           ''
@@ -68,6 +69,7 @@ in
             utils = import "${pkgs.path}/nixos/lib/utils.nix" { inherit config lib pkgs; };
           in
           pkgs.writeShellScript "gen-root-mobile-config" ''
+            set -euo pipefail
             ${utils.genJqSecretsReplacementSnippet cfg.root "/run/secrets/root.json"}
             chown --reference=/run/sing-box /run/secrets/root.json
           ''

@@ -36,7 +36,7 @@ in
         wants = [ "network-online.target" ];
         after = [ "network-online.target" ];
         preStart = lib.mkBefore ''
-          # set -eufo pipefail
+          set -euo pipefail
 
           echo "Waiting for LDAP (ldap.${const.domain}) to be ready..."
           while ! ${lib.getExe pkgs.netcat} -z ldap.proteus.eu.org 636; do

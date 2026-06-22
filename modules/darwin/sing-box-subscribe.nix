@@ -14,6 +14,7 @@ in
         cfg = config.services.sing-box.subscribe;
       in
       pkgs.writeShellScript "sing-box-subscribe" ''
+        set -euo pipefail
         PATH="${pkgs.gawk}/bin":$PATH
         RUNTIME_DIRECTORY="/var/run/sing-box"
         STATE_DIRECTORY="${config.launchd.daemons.sing-box.serviceConfig.WorkingDirectory}";

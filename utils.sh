@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -eufo pipefail
+set -euo pipefail
 
 # Function: nixos-switch
 # Args:

@@ -18,7 +18,7 @@
     RuntimeDirectoryMode = "0700";
     ExecStartPre = [
       "+${pkgs.writeShellScript "fetch-authelia-token" ''
-        set -eufo pipefail
+        set -euo pipefail
 
         echo "Fetching fresh token from Authelia via client_credentials..." >&2
 

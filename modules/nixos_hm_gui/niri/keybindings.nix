@@ -65,8 +65,9 @@ in
           NOCTALIA_PREFIX = "noctalia-shell ipc --any-display call toast send";
         in
         pkgs.writeShellScript "lid-close" ''
+          set -euo pipefail
           MONITOR_COUNT=$(niri msg -j outputs | ${pkgs.jq}/bin/jq -e 'keys | length')
-          if [ $MONITOR_COUNT -gt 1 ]; then
+          if [ "$MONITOR_COUNT" -gt 1 ]; then
             ${NOCTALIA_PREFIX} '{"title": "Laptop lid closed", "body": "'"$MONITOR_COUNT"' monitors connected. Not locking.", "icon": "device-laptop-off"}'
           else
             ${NOCTALIA_PREFIX} '{"title": "Laptop lid closed", "body": "Session locked.", "icon": "device-laptop-off"}'
@@ -75,6 +76,7 @@ in
         ''
       }"; }
       lid-open  { spawn "${pkgs.writeShellScript "lid-open" ''
+        set -euo pipefail
         noctalia-shell ipc --any-display call toast send '{"title": "The laptop lid is open!", "body": "TBD", "icon": "device-laptop"}'
       ''}"; }
     }

@@ -45,6 +45,7 @@
       "${local_bin}/rge" = {
         executable = true;
         source = pkgs.writeShellScript "rge" ''
+          set -euo pipefail
           rg -LSP "$1" | fzf | cut -d: -f1 | xargs $EDITOR
         '';
       };
@@ -53,6 +54,7 @@
       "${local_bin}/rgsti" = {
         executable = true;
         source = pkgs.writeShellScript "rgsti" ''
+          set -euo pipefail
           rg -LSP "$1" \
             | fzf --delimiter=: \
               --with-nth=1.. \
@@ -71,6 +73,7 @@
       "${local_bin}/fdsti" = {
         executable = true;
         source = pkgs.writeShellScript "fdsti" ''
+          set -euo pipefail
           fd -u . ./ '.*' \
             | fzf --delimiter=: \
               --with-nth=1.. \
@@ -90,7 +93,7 @@
       "${local_bin}/export-gpg-keys" = {
         executable = true;
         source = pkgs.writeShellScript "export-gpg-keys" ''
-          set -eufo pipefail
+          set -euo pipefail
 
           local OUTPUT_DIR PRIMARY_KEY_ID EMAIL GPG_UID
           local -a KEYS=(

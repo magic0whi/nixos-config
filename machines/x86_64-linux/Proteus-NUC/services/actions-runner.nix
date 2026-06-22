@@ -41,7 +41,7 @@ in
       ExecStartPre = lib.mkAfter [
         # Wait for LDAP Online
         (pkgs.writeShellScript "wait-for-forgejo" ''
-          set -eufo pipefail
+          set -euo pipefail
 
           echo "Waiting for Forgejo to be online..."
           # Retry until Forgejo reports status=pass
