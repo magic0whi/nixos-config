@@ -1,4 +1,3 @@
-# TODO clean-up unnecessary default.nix under modules/, overlays/
 { inputs, mylib }:
 {
   common =
