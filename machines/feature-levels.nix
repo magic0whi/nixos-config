@@ -126,6 +126,7 @@
           ]
           ++ map mylib.relativeToRoot [
             # "${headless}/debug.nix"
+            "${headless}/syncthing.nix"
             "${headless}/dev-env.nix"
             "${headless}/file_sharing.nix"
             "${headless}/git.nix"
