@@ -7,7 +7,7 @@
     in
     {
       base = map mylib.relativeToRoot [
-        "modules/vars.nix"
+        "modules/variables/host-addrs.nix"
         "${common}/debug.nix"
         "${common}/easytier.nix"
         "${common}/misc.nix"
@@ -18,6 +18,7 @@
       ];
       baseOverlays = [ inputs.prince213-nix-packages.overlays.default ];
       seat = map mylib.relativeToRoot [
+        "modules/variables/sing-box-subscribe.nix"
         "${common}/sing-box-client.nix"
         "${common}/fonts.nix"
         "${common}/packages.nix"
@@ -52,6 +53,7 @@
 
       seat = {
         tui = map mylib.relativeToRoot [
+          "modules/nixos_headless/sing-box-subscribe.nix"
           "${headless}/firewall-client.nix"
           "${headless}/fhs.nix"
           "${headless}/fonts.nix"
