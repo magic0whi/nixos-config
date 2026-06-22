@@ -77,7 +77,6 @@
         inputs.lanzaboote.nixosModules.default
       ]
       ++ map mylib.relativeToRoot [
-        "${headless}/jupyter.nix"
         "${headless}/packages.nix"
         "${headless}/power-mgmt.nix"
         "${headless}/remote-build.nix"
