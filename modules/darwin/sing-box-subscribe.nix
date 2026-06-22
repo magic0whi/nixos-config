@@ -9,7 +9,7 @@ let
 in
 {
   config = lib.mkIf cfg.enable {
-    debug =
+    launchd.daemons.sing-box.script = toString (
       let
         cfg = config.services.sing-box.subscribe;
       in
@@ -59,7 +59,7 @@ in
           echo "Template unchanged and interval not reached. Using cached config."
         fi
         cp "$CACHE_DIR/config.json" "$RUNTIME_DIRECTORY/config.json"
-      '';
-    launchd.daemons.sing-box.script = toString config.debug;
+      ''
+    );
   };
 }
