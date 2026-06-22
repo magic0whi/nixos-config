@@ -159,6 +159,7 @@
       };
       dock.enabled = false;
       general.avatarImage = "https://misc.s3-pub.proteus.eu.org/siameseemoji_agadmqeaaspumeu.png";
+      # TODO this makes user cannot unlock with loginctl unlock-session ID
       # hooks = {
       #   enabled = true;
       #   screenLock = "${pkgs.writeShellScript "lock-seat" ''
