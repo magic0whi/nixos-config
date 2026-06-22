@@ -33,7 +33,7 @@ in
           work_dir="$RUNTIME_DIRECTORY/sing-box-subscribe"
 
           echo "Updating sing-box subscription..."
-          mkdir "$work_dir"
+          mkdir -p "$work_dir"
           cp -r ${cfg.src}/* "$work_dir"
           chmod -R +w "$work_dir"
 
@@ -47,7 +47,7 @@ in
             cfg.settings
             # NOTE genJqSecretsReplacementSnippet use single quotes on path, fixed on fork, PR in progress
             # "/run/sing-box/sing-box-subscribe/providers.json"
-            "$CACHE_DIR/providers.json"
+            "$work_dir/providers.json"
           }
 
           cd "$work_dir"
