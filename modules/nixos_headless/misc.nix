@@ -100,9 +100,9 @@
       '';
     };
   };
-  security.sudo-rs = {
-    enable = true;
-    inherit (config.security.sudo) extraConfig;
-  };
+  # security.sudo-rs = {
+  #   enable = true;
+  #   inherit (config.security.sudo) extraConfig;
+  # };
   ## END security.nix
 }
