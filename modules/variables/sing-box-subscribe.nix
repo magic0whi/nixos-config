@@ -1,3 +1,4 @@
+# TODO: split to a standaline flake
 { lib, pkgs, ... }:
 {
   options.services.sing-box.subscribe = {

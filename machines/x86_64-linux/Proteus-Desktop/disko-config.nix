@@ -1,4 +1,4 @@
-{ const, ... }:
+{ const, lib, ... }:
 let
   # LUKS-encrypted ZFS disk helper (460GB partition)
   mk_luks_zfs_disk = disk_id: {
@@ -86,7 +86,19 @@ in
       sata1 = mk_luks_zfs_disk "ata-ST500DM002-1BD142_S2A7EA2P";
       sata2 = mk_luks_zfs_disk "ata-WDC_WD5000AAKX-001CA0_WD-WMAYU5316042";
       sata3 = mk_luks_zfs_disk "ata-WDC_WD5000AAKX-60U6AA0_WD-WCC2E3HEXA48";
-      sata4 = mk_luks_zfs_disk "ata-ST1000DM003-1CH162_S1DE5CWF";
+      sata4 = lib.mkMerge [
+        (mk_luks_zfs_disk "ata-ST1000DM003-1CH162_S1DE5CWF")
+        {
+          content.partitions.storage2 = {
+            size = "100%";
+            type = "6A85CF4D-1DD2-11B2-99A6-080020736631";
+            content = {
+              type = "zfs";
+              pool = "storage2";
+            };
+          };
+        }
+      ];
       sata5 = mk_luks_zfs_disk "ata-ST1000LM048-2E7172_WKPEZYSN";
       sata6 = mk_luks_zfs_disk "ata-WDC_WD2002FYPS-02W3B0_WCAVY6186321";
     };
@@ -160,6 +172,16 @@ in
           datasets.data = {
             type = "zfs_fs";
             mountpoint = const.storagePath;
+            mountOptions = [ "nofail" ];
+            options.canmount = "on";
+          };
+        };
+        storage2 = {
+          inherit type options rootFsOptions;
+          datasets.data = {
+            type = "zfs_fs";
+            # Matches the mountpoint shown in your zfs list output
+            mountpoint = "/mnt/storage/data2";
             mountOptions = [ "nofail" ];
             options.canmount = "on";
           };

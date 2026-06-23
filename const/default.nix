@@ -51,6 +51,7 @@
   };
 
   storagePath = "/mnt/storage/data";
+  storage2Path = "/mnt/storage/data2";
 
   backupTimes = {
     forgejo = "02:00:00";

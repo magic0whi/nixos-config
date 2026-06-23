@@ -4,17 +4,17 @@
   ...
 }:
 let
-  path_prefix = const.storagePath;
+  path_prefix = const.storage2Path;
 in
 {
-  systemd.services.aria2.unitConfig.RequiresMountsFor = [ const.storagePath ];
+  systemd.services.aria2.unitConfig.RequiresMountsFor = [ path_prefix ];
   sops.secrets.aria2_rpc_secret = {
     sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
     restartUnits = [ "aria2.service" ];
   };
   users.users.${const.username}.extraGroups = [ "aria2" ];
   services.aria2 = {
-    enable = true;
+    enable = false; # TODO move to storage2
     rpcSecretFile = config.sops.secrets.aria2_rpc_secret.path;
     settings = {
       dir = "${path_prefix}/aria2";
