@@ -1,8 +1,9 @@
-{ config, const }:
+{ config, const, ... }:
 {
   services.prometheus = {
     enable = true;
     enableReload = true;
+    port = 9093;
     listenAddress = "127.0.0.1";
     webExternalUrl = "https://prometheus.${const.domain}";
     checkConfig = "syntax-only"; # secrets will not be visible to promtool
@@ -20,6 +21,8 @@
       service = "prometheus";
       tls = { };
     };
-    services.prometheus.loadBalancer.servers = [ { url = "http://127.0.0.1:${config.services.prometheus.port}"; } ];
+    services.prometheus.loadBalancer.servers = [
+      { url = "http://127.0.0.1:${toString config.services.prometheus.port}"; }
+    ];
   };
 }
