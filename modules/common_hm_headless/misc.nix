@@ -23,6 +23,7 @@
   # Terminal file manager
   programs.yazi = {
     # NOTE: Home Manager provides `y` to allow changing working directory when exitig Yazi
+    # NOTE: for zathura it will prompt there is task running when quiting, it's okay and will not close the zathura
     enable = true;
     settings.mgr = {
       linemode = "mtime";

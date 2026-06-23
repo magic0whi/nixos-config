@@ -20,6 +20,7 @@
     #   ko # build go project to container image
   ];
 
+  # TODO
   # programs = {
   #   k9s = {
   #     enable = true;
