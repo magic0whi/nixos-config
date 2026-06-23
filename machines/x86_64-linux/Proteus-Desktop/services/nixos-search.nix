@@ -217,6 +217,8 @@ in
   environment.systemPackages = [ pkgs.opensearch-cli ];
   services.opensearch = {
     enable = true;
+    # Mute the messy "java.lang.foreign.Linker::downcallHandle has been called by the unnamed module"
+    extraJavaOptions = [ "--enable-native-access=ALL-UNNAMED" ];
     logging = ''
       status = error
 
@@ -237,8 +239,8 @@ in
       # logger.backendregistry.level = error
 
       # JWT debug tracing (your original config)
-      logger.securityjwt.name = com.amazon.dlic.auth.http.jwt
-      logger.securityjwt.level = trace
+      # logger.securityjwt.name = com.amazon.dlic.auth.http.jwt
+      # logger.securityjwt.level = trace
     '';
     settings = {
       "network.host" = "127.0.0.1";
@@ -264,6 +266,8 @@ in
       # PEM file containing the root CA(s)
       "plugins.security.ssl.transport.pemtrustedcas_filepath" = "${certs_dir}/opensearch.crt";
       # "transport.ssl.enforce_hostname_verification" = false;
+
+      "plugins.performance_analyzer.enabled" = false;
     };
   };
   services.caddy.virtualHosts."http://nixos-search.${const.domain}:${toString const.networking.caddyPort}" =
@@ -353,7 +357,7 @@ in
                 toString cfg.settings."http.port"
               }/_cluster/health?wait_for_status=yellow&timeout=1s" 2>/dev/null || echo "{}")
 
-            HEALTH=$(echo "$RESPONSE" | ${lib.getExe pkgs.jq} -r '.status // "red"')
+            HEALTH=$(echo "$RESPONSE" | ${lib.getExe pkgs.jq} -r '.status // "red"' 2>/dev/null || echo "red")
             if [ "$HEALTH" = "yellow" ] || [ "$HEALTH" = "green" ]; then
               break
             fi
