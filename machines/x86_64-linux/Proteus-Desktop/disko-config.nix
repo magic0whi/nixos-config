@@ -23,16 +23,16 @@ let
       };
     };
   };
-  # LUKS-encrypted ZFS disk helper (460GB partition)
+  # LUKS-encrypted ZFS disk helper
   mk_luks_zfs_disk = disk_id: {
     device = "/dev/disk/by-id/${disk_id}";
     type = "disk";
     content = {
       type = "gpt";
-      partitions.luks_part = lib.mkMerge [
-        (luks_settings disk_id)
-        { size = "488385536K"; } # ~500G
-      ];
+      partitions.luks_part = (luks_settings disk_id) // {
+        priority = 1; # ~465.8G
+        size = "488385536K";
+      };
     };
   };
 in
@@ -93,20 +93,20 @@ in
       sata4 = lib.mkMerge [
         (mk_luks_zfs_disk "ata-ST1000DM003-1CH162_S1DE5CWF")
         {
-          content.partitions.storage2 = lib.mkMerge [
-            (luks_settings "storage2-ata-ST1000DM003-1CH162_S1DE5CWF")
-            { size = "488375296K"; } # ~465.8GB
-          ];
+          content.partitions.storage2 = (luks_settings "storage2-ata-ST1000DM003-1CH162_S1DE5CWF") // {
+            priority = 2;
+            size = "488375296K"; # ~465.8GB
+          };
         }
       ];
       sata5 = mk_luks_zfs_disk "ata-ST1000LM048-2E7172_WKPEZYSN";
       sata6 = lib.mkMerge [
         (mk_luks_zfs_disk "ata-WDC_WD2002FYPS-02W3B0_WCAVY6186321")
         {
-          content.partitions.storage2 = lib.mkMerge [
-            (luks_settings "storage2-ata-WDC_WD2002FYPS-02W3B0_WCAVY6186321")
-            { size = "488375296K"; } # ~465.8GB
-          ];
+          content.partitions.storage2 = (luks_settings "storage2-ata-WDC_WD2002FYPS-02W3B0_WCAVY6186321") // {
+            priority = 2;
+            size = "488375296K"; # ~465.8GB
+          };
         }
       ];
     };
