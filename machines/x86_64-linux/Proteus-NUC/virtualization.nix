@@ -10,18 +10,6 @@ let
 in
 {
   # virtualisation.waydroid.enable = true; # Usage: https://wiki.nixos.org/wiki/Waydroid
-  ## BEGIN binfmt.nix
-  boot.binfmt.emulatedSystems = [
-    "riscv64-linux"
-    "aarch64-linux"
-  ]; # Cross compilation
-  # For riscv64 docker container
-  boot.binfmt.registrations."riscv64-linux" = {
-    interpreter = "${lib.getExe' pkgs.pkgsStatic.qemu-user "qemu-riscv64"}";
-    fixBinary = true;
-    wrapInterpreterInShell = false;
-  };
-  ## END binfmt.nix
   ## BEGIN sriov.nix
   boot.extraModulePackages = with pkgs; [
     i915-sriov

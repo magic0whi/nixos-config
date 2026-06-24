@@ -26,7 +26,6 @@
       isServer = true;
     }
   );
-  boot.binfmt.emulatedSystems = [ "riscv64-linux" ]; # Cross compilation
   ## END sing-box-client.nix
   ## BEGIN zfs.nix
   networking.hostId = "953b2f69"; # ZFS requires this

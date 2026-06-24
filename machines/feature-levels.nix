@@ -77,11 +77,12 @@
         inputs.lanzaboote.nixosModules.default
       ]
       ++ map mylib.relativeToRoot [
+        "${headless}/binfmt.nix"
+        "${headless}/krnl-compat.nix"
         "${headless}/packages.nix"
         "${headless}/power-mgmt.nix"
         "${headless}/remote-build.nix"
         "${headless}/secureboot.nix"
-        "${headless}/krnl-compat.nix"
         "${headless}/zfs.nix"
         "${gui}/peripherals.nix"
         "${gui}/bluetooth.nix"
