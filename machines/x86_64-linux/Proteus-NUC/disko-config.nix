@@ -1,3 +1,4 @@
+# disko will take care of filesystems.*, swapDevices, boot.resumeDevice, boot.initrd.luks.devices
 let
   # LUKS-encrypted ZFS disk helper (460GB partition)
   zroot = "zroot";
@@ -60,7 +61,7 @@ in
                 content = {
                   type = "swap";
                   discardPolicy = "both";
-                  resumeDevice = true;
+                  resumeDevice = true; # disko will set boot.resumeDevice
                   randomEncryption = true;
                   # Not supported by disko yet
                   # encrypted.enable = true;

@@ -1,4 +1,5 @@
 {
+  # disko will take care of filesystems.*, swapDevices, boot.resumeDevice, boot.initrd.luks.devices
   disko.devices.disk.main = {
     imageSize = "4G"; # Used for NixOS disk image generation, which can be used with `dd` on low RAM devices
     type = "disk";

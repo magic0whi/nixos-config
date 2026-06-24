@@ -1,3 +1,4 @@
+# disko will take care of filesystems.*, swapDevices, boot.resumeDevice, boot.initrd.luks.devices
 { const, lib, ... }:
 let
   luks_settings = name: {
@@ -69,7 +70,7 @@ in
               content = {
                 type = "swap";
                 discardPolicy = "both";
-                resumeDevice = true;
+                resumeDevice = true; # disko will set boot.resumeDevice
               };
             };
             zfs_root = {
@@ -195,4 +196,25 @@ in
         };
       };
   };
+  environment.etc.crypttab.text =
+    let
+      storage = [
+        "ata-ST500DM002-1BD142_S2A7EA2P"
+        "ata-WDC_WD5000AAKX-001CA0_WD-WMAYU5316042"
+        "ata-WDC_WD5000AAKX-60U6AA0_WD-WCC2E3HEXA48"
+        "ata-ST1000DM003-1CH162_S1DE5CWF"
+        "ata-ST1000LM048-2E7172_WKPEZYSN"
+        "ata-WDC_WD2002FYPS-02W3B0_WCAVY6186321"
+      ];
+      storage2 = [
+        "ata-ST1000LM048-2E7172_WKPEZYSN"
+        "ata-WDC_WD2002FYPS-02W3B0_WCAVY6186321"
+      ];
+      mnt_opts = "nofail,luks,discard,no-read-workqueue,no-write-workqueue";
+      key_file = "/persistent/etc/dm_keyfile.key"; # TODO: Unsafe
+    in
+    lib.concatLines (map (disk_id: "crypted-${disk_id} /dev/disk/by-id/${disk_id}-part1 ${key_file} ${mnt_opts}") storage)
+    + lib.concatLines (
+      map (disk_id: "crypted-storage2-${disk_id} /dev/disk/by-id/${disk_id}-part2 ${key_file} ${mnt_opts}") storage2
+    );
 }

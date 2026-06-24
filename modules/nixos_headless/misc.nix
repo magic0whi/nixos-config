@@ -12,7 +12,7 @@
     configurationLimit = 8; # Limit the boot loader entries
     consoleMode = "max";
   };
-  boot.initrd.systemd.enable = true;
+  boot.initrd.systemd.enable = true; # ZFS snapshots auto rollback; Hibernation
   ## END bootloader.nix
 
   ## BEGIN i18n.nix

@@ -21,6 +21,4 @@
   networking.useDHCP = lib.mkDefault true;
 
   nixpkgs.hostPlatform = "x86_64-linux";
-
-  services.trafficQuota.enable = true;
 }

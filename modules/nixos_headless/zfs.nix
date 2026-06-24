@@ -15,4 +15,10 @@
   # });
   services.zfs.autoScrub.enable = true;
   services.zfs.trim.enable = true;
+
+  boot.zfs.forceImportRoot = false; # Disable backwards compatibility options
+  boot.zfs.unsafeAllowHibernation = true; # Make sure not having Swap on ZFS
+  # Disable zfs-mount, use NixOS systemd mount management
+  # Ref: https://wiki.nixos.org/wiki/ZFS#ZFS_conflicting_with_systemd
+  systemd.services.zfs-mount.enable = false;
 }

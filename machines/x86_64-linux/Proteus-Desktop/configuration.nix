@@ -7,6 +7,12 @@
   ...
 }:
 {
+  ## BEGIN hardware.nix
+  boot.initrd.availableKernelModules = lib.optional config.boot.initrd.systemd.network.enable "r8169";
+  # hybrid have VAProfileVP9Profile0 support
+  hardware.graphics.extraPackages = [ (pkgs.intel-vaapi-driver.override { enableHybridCodec = true; }) ];
+  ## END hardware.nix
+  ## BEGIN sing-box-client.nix
   # lib.mkForce to prevent merge
   services.sing-box.settings = lib.mkForce (
     import (mylib.relativeToRoot "modules/common/_sing-box-client") {
@@ -21,6 +27,10 @@
     }
   );
   boot.binfmt.emulatedSystems = [ "riscv64-linux" ]; # Cross compilation
+  ## END sing-box-client.nix
+  ## BEGIN zfs.nix
+  networking.hostId = "953b2f69"; # ZFS requires this
+  ## END zfs.nix
   ## BEGIN systemd_tmpfiles.nix
   # systemd.tmpfiles.settings = {
   #   # Setgid so new files inherit group; give rw to group members
@@ -32,8 +42,4 @@
   #   "01-acl-data-share"."${const.storagePath}/share".a.argument = "g:storage:rwX";
   # };
   ## END systemd_tmpfiles.nix
-  ## vaapi.nix
-  # hybrid have VAProfileVP9Profile0 support
-  hardware.graphics.extraPackages = [ (pkgs.intel-vaapi-driver.override { enableHybridCodec = true; }) ];
-  ## vaapi.nix
 }
