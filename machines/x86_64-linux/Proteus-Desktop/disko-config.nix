@@ -134,7 +134,7 @@ in
         };
       in
       {
-        # ROOT POOL (NVMe) - Impermanence Setup
+        # NVMe (Impermanence Setup)
         zroot = {
           inherit type options;
           # mode = ""; # default "" means stripe (RAID-0)
@@ -173,7 +173,7 @@ in
             };
           };
         };
-        # STORAGE POOL (SATA RAIDZ2)
+        # 6 SATAs RAIDZ2 (RAID-6)
         storage = {
           inherit type options rootFsOptions;
           mode = "raidz2";
@@ -184,6 +184,7 @@ in
             options.canmount = "on";
           };
         };
+        # 2 SATAs RAID-0
         storage2 = {
           inherit type options rootFsOptions;
           datasets.data = {
