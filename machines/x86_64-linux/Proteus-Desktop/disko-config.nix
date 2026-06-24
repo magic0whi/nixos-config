@@ -208,7 +208,7 @@ in
         "ata-WDC_WD2002FYPS-02W3B0_WCAVY6186321"
       ];
       storage2 = [
-        "ata-ST1000LM048-2E7172_WKPEZYSN"
+        "ata-ST1000DM003-1CH162_S1DE5CWF"
         "ata-WDC_WD2002FYPS-02W3B0_WCAVY6186321"
       ];
       mnt_opts = "nofail,luks,discard,no-read-workqueue,no-write-workqueue";
