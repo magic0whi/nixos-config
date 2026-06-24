@@ -13,15 +13,13 @@ let
         default = [ ];
         description = "List of subdomains that should resolve to this interface's IPv6 address.";
       };
-      # CNAME = lib.mkOption {
-      #   type = with lib.types; listOf str;
-      #   default = [ ];
-      #   description = ''
-      #     List of subdomains that should be aliased to this host's hostname via CNAME records.
-      #   '';
-      # };
-      #
-
+      CNAME = lib.mkOption {
+        type = with lib.types; listOf str;
+        default = [ ];
+        description = ''
+          List of subdomains that should be aliased to this host's hostname via CNAME records.
+        '';
+      };
     };
     config = lib.mkIf _nicCfg.config.regHost (
       lib.mkMerge [

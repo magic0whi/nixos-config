@@ -92,17 +92,14 @@
         ]
       },
       "locked": {
-        "lastModified": 1768143854,
-        "narHash": "sha256-E5/kyPz4zAZn/lZdvqlF83jMgCWNxmqYjjWuadngCbk=",
-        "owner": "kirelagin",
-        "repo": "dns.nix",
-        "rev": "a97cf4156e9f044fe4bed5be531061000dfabb07",
-        "type": "github"
+        "lastModified": 1782286745,
+        "narHash": "sha256-JOynSFjAP3NoDatdoH1T1CkN6NPVsxRt/2KkgKzsHSI=",
+        "path": "/home/proteus/Works-References/dns.nix",
+        "type": "path"
       },
       "original": {
-        "owner": "kirelagin",
-        "repo": "dns.nix",
-        "type": "github"
+        "path": "/home/proteus/Works-References/dns.nix",
+        "type": "path"
       }
     },
     "flake-compat": {

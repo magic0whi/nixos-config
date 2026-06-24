@@ -2,11 +2,120 @@
   config,
   lib,
   const,
-  pkgs,
   dns,
   ...
 }:
 {
+  # Example 100.in-addr.arpa.zone
+  # $ORIGIN 100.in-addr.arpa.
+  # $TTL 1d
+  # @ IN SOA ns1.proteus.eu.org. sudaku233.outlook.com. (2026062300 1h 15m 1w 1d)
+  # ; Nameserver definitions
+  # @ IN NS ns1.proteus.eu.org.
+
+  # ; PTR Records
+  # 22.227.89 IN PTR Proteus-Desktop.proteus.eu.org.
+  # 22.227.89 IN PTR proteus.eu.org.
+  # 22.227.89 IN PTR ns1.proteus.eu.org.
+
+  # 22.227.89 IN PTR algo-archive.proteus.eu.org.
+  # 22.227.89 IN PTR aria2.proteus.eu.org.
+  # 22.227.89 IN PTR atuin.proteus.eu.org.
+  # 22.227.89 IN PTR auth.proteus.eu.org.
+  # 22.227.89 IN PTR cockpit-desktop.proteus.eu.org.
+  # 22.227.89 IN PTR garage.proteus.eu.org.
+  # 22.227.89 IN PTR git.proteus.eu.org.
+  # 22.227.89 IN PTR hass.proteus.eu.org.
+  # 22.227.89 IN PTR ldap.proteus.eu.org.
+  # 22.227.89 IN PTR monero.proteus.eu.org.
+  # 22.227.89 IN PTR navidrome.proteus.eu.org.
+  # 22.227.89 IN PTR nextcloud.proteus.eu.org.
+  # 22.227.89 IN PTR niks3.proteus.eu.org.
+  # 22.227.89 IN PTR nixos-search.proteus.eu.org.
+  # 22.227.89 IN PTR noogle.proteus.eu.org.
+  # 22.227.89 IN PTR notebook.proteus.eu.org.
+  # 22.227.89 IN PTR opensearch-dashboards.proteus.eu.org.
+  # 22.227.89 IN PTR papra.proteus.eu.org.
+  # 22.227.89 IN PTR plane.proteus.eu.org.
+  # 22.227.89 IN PTR postgresql.proteus.eu.org.
+  # 22.227.89 IN PTR ql.proteus.eu.org.
+  # 22.227.89 IN PTR s3.proteus.eu.org.
+  # 22.227.89 IN PTR s3-pub.proteus.eu.org.
+  # 22.227.89 IN PTR sb-desktop.proteus.eu.org.
+  # 22.227.89 IN PTR syncthing-desktop.proteus.eu.org.
+  # 22.227.89 IN PTR traefik-desktop.proteus.eu.org.
+  # 22.227.89 IN PTR prometheus.proteus.eu.org.
+  # 39.17.95 IN PTR Proteus-MBP14M4P.proteus.eu.org.
+  # 20.161.64 IN PTR Proteus-NUC.proteus.eu.org.
+  # 20.161.64 IN PTR immich.proteus.eu.org.
+  # 20.161.64 IN PTR jellyfin.proteus.eu.org.
+  # 20.161.64 IN PTR paperless.proteus.eu.org.
+  # 20.161.64 IN PTR sb-nuc.proteus.eu.org.
+  # 20.161.64 IN PTR sunshine.proteus.eu.org.
+  # 20.161.64 IN PTR syncthing-nuc.proteus.eu.org.
+  # 20.161.64 IN PTR traefik-nuc.proteus.eu.org.
+  # 16.75.68 IN PTR Proteus-NixOS-0.proteus.eu.org.
+  # 98.95.121 IN PTR Proteus-NixOS-1.proteus.eu.org.
+  # 50.150.78 IN PTR Proteus-NixOS-2.proteus.eu.org.
+  # 94.250.113 IN PTR Proteus-NixOS-3.proteus.eu.org.
+  # 118.72.118 IN PTR Proteus-NixOS-4.proteus.eu.org.
+  # 8.238.90 IN PTR Proteus-NixOS-5.proteus.eu.org.
+  #
+  # Example 100.in-addr.arpa.zone
+  # $ORIGIN 0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa.
+  # $TTL 1d
+  # @ IN SOA ns1.proteus.eu.org. sudaku233.outlook.com. (2026062300 1h 15m 1w 1d)
+  # ; Nameserver definitions
+  # @ IN NS ns1.proteus.eu.org.
+
+  # ; PTR Records
+  # 8.1.3.e.1.0.a.1.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR Proteus-Desktop.proteus.eu.org.
+  # 8.1.3.e.1.0.a.1.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR proteus.eu.org.
+  # 8.1.3.e.1.0.a.1.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR ns1.proteus.eu.org.
+
+  # 8.1.3.e.1.0.a.1.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR algo-archive.proteus.eu.org.
+  # 8.1.3.e.1.0.a.1.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR aria2.proteus.eu.org.
+  # 8.1.3.e.1.0.a.1.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR atuin.proteus.eu.org.
+  # 8.1.3.e.1.0.a.1.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR auth.proteus.eu.org.
+  # 8.1.3.e.1.0.a.1.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR cockpit-desktop.proteus.eu.org.
+  # 8.1.3.e.1.0.a.1.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR garage.proteus.eu.org.
+  # 8.1.3.e.1.0.a.1.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR git.proteus.eu.org.
+  # 8.1.3.e.1.0.a.1.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR hass.proteus.eu.org.
+  # 8.1.3.e.1.0.a.1.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR ldap.proteus.eu.org.
+  # 8.1.3.e.1.0.a.1.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR monero.proteus.eu.org.
+  # 8.1.3.e.1.0.a.1.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR navidrome.proteus.eu.org.
+  # 8.1.3.e.1.0.a.1.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR nextcloud.proteus.eu.org.
+  # 8.1.3.e.1.0.a.1.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR niks3.proteus.eu.org.
+  # 8.1.3.e.1.0.a.1.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR nixos-search.proteus.eu.org.
+  # 8.1.3.e.1.0.a.1.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR noogle.proteus.eu.org.
+  # 8.1.3.e.1.0.a.1.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR notebook.proteus.eu.org.
+  # 8.1.3.e.1.0.a.1.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR opensearch-dashboards.proteus.eu.org.
+  # 8.1.3.e.1.0.a.1.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR papra.proteus.eu.org.
+  # 8.1.3.e.1.0.a.1.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR plane.proteus.eu.org.
+  # 8.1.3.e.1.0.a.1.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR postgresql.proteus.eu.org.
+  # 8.1.3.e.1.0.a.1.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR ql.proteus.eu.org.
+  # 8.1.3.e.1.0.a.1.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR s3.proteus.eu.org.
+  # 8.1.3.e.1.0.a.1.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR s3-pub.proteus.eu.org.
+  # 8.1.3.e.1.0.a.1.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR sb-desktop.proteus.eu.org.
+  # 8.1.3.e.1.0.a.1.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR syncthing-desktop.proteus.eu.org.
+  # 8.1.3.e.1.0.a.1.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR traefik-desktop.proteus.eu.org.
+  # 8.1.3.e.1.0.a.1.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR prometheus.proteus.eu.org.
+  # 7.2.1.1.a.3.8.7.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR Proteus-MBP14M4P.proteus.eu.org.
+  # 4.1.1.a.a.3.d.c.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR Proteus-NUC.proteus.eu.org.
+  # 4.1.1.a.a.3.d.c.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR immich.proteus.eu.org.
+  # 4.1.1.a.a.3.d.c.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR jellyfin.proteus.eu.org.
+  # 4.1.1.a.a.3.d.c.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR paperless.proteus.eu.org.
+  # 4.1.1.a.a.3.d.c.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR sb-nuc.proteus.eu.org.
+  # 4.1.1.a.a.3.d.c.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR sunshine.proteus.eu.org.
+  # 4.1.1.a.a.3.d.c.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR syncthing-nuc.proteus.eu.org.
+  # 4.1.1.a.a.3.d.c.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR traefik-nuc.proteus.eu.org.
+  # 5.5.d.a.a.3.8.6.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR Proteus-NixOS-0.proteus.eu.org.
+  # 2.6.f.5.a.3.f.d.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR Proteus-NixOS-1.proteus.eu.org.
+  # 2.3.6.9.a.3.2.8.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR Proteus-NixOS-2.proteus.eu.org.
+  # e.5.a.f.a.3.0.7.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR Proteus-NixOS-3.proteus.eu.org.
+  # 6.7.8.4.a.3.3.e.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR Proteus-NixOS-4.proteus.eu.org.
+  # 8.0.e.e.a.3.5.c.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR Proteus-NixOS-5.proteus.eu.org.
+
   # TODO: extract v4 octets and v6 hexes with v4PrefixLen and v6PrefixLen
   # TODO: improve
   # https://github.com/nix-community/dns.nix/blob/a97cf4156e9f044fe4bed5be531061000dfabb07/dns/util/default.nix
@@ -69,6 +178,7 @@
           subdomains =
             let
               sub = [
+                "@"
                 "ns1"
                 "*.s3"
                 "*.s3-pub"
@@ -110,7 +220,9 @@
             inherit regHost;
             ipv4 = "100.89.227.22/10";
             ipv6 = "fd7a:115c:a1e0::1a01:e318/48";
-            inherit subdomains;
+            subdomains = subdomains // {
+              CNAME = [ "test" ];
+            };
           };
           easytier = {
             inherit regHost;
@@ -202,61 +314,96 @@
       Proteus-VF2.wire.ipv4 = "192.168.1.26";
     };
 
-  debug = dns.lib.toString const.domain {
-    useOrigin = true;
-    SOA = {
-      nameServer = "ns1.${const.domain}.";
-      adminEmail = const.email;
-      serial = const.networking.soaSerial;
-      # Sane defaults for the remaining ones
-    };
-    NS = [ "ns1.${const.domain}." ];
+  debug = {
+    main = dns.lib.toString const.domain {
+      useOrigin = true;
+      SOA = {
+        nameServer = "ns1.${const.domain}.";
+        adminEmail = const.email;
+        serial = const.networking.soaSerial;
+        # Sane defaults for the remaining ones
+      };
+      NS = [ "ns1.${const.domain}." ];
 
-    # Records for @
-    A = (
-      with config.vars.hostAddrs.Proteus-Desktop;
-      [
-        easytier.ipv4NoCidr
-        tailscale.ipv4NoCidr
-      ]
-    );
-    AAAA = with config.vars.hostAddrs.Proteus-Desktop; [
-      easytier.ipv6NoCidr
-      tailscale.ipv6NoCidr
-    ];
+      # Records for @, I specify them in subdomains
+      # A = (
+      #   with config.vars.hostAddrs.Proteus-Desktop;
+      #   [
+      #     easytier.ipv4NoCidr
+      #     tailscale.ipv4NoCidr
+      #   ]
+      # );
+      # AAAA = with config.vars.hostAddrs.Proteus-Desktop; [
+      #   easytier.ipv6NoCidr
+      #   tailscale.ipv6NoCidr
+      # ];
 
-    subdomains = lib.pipe config.vars.hostAddrs [
-      (
-        # Hosts
-        lib.mapAttrsToList (
-          _: host:
-          # Hosts' NICs
-          lib.mapAttrsToList (
-            _: nic:
-            # NIC's subdomains
+      subdomains =
+        # Rewrite of the old gen_subdomain_records in https://github.com/NixOS/nixpkgs/pull/522745
+        lib.pipe config.vars.hostAddrs [
+          (
+            # Hosts
             lib.mapAttrsToList (
-              type: subs:
-              builtins.foldl' (
-                acc: sub:
-                acc
-                // {
-                  ${sub}.${type} = lib.singleton (
-                    if type == "A" then
-                      nic.ipv4NoCidr
-                    else if type == "AAAA" then
-                      nic.ipv6NoCidr
-                    else
-                      null
+              hostname: host:
+              # Hosts' NICs
+              lib.mapAttrsToList (
+                _: nic:
+                # NIC's subdomains
+                lib.mapAttrsToList (
+                  type: subs:
+                  builtins.foldl' (
+                    acc: sub:
+                    acc
+                    // {
+                      ${sub}.${type} = lib.singleton (
+                        if type == "A" then
+                          nic.ipv4NoCidr
+                        else if type == "AAAA" then
+                          nic.ipv6NoCidr
+                        else
+                          "${hostname}.${const.domain}"
+                      );
+                    }
+                  ) { } subs
+                ) nic.subdomains
+              ) host
+            )
+          )
+          lib.flatten
+          lib.mkMerge
+        ];
+    };
+    test_reverse_v4 =
+      dns.lib.toString
+        "${lib.last (dns.lib.mkIPv4ReverseRecord' 1 config.vars.hostAddrs.Proteus-NUC.tailscale.ipv4NoCidr)}.in-addr.arpa"
+        {
+          useOrigin = true;
+          SOA = {
+            nameServer = "ns1.${const.domain}.";
+            adminEmail = const.email;
+            serial = const.networking.soaSerial;
+            # Sane defaults for the remaining ones
+          };
+          NS = [ "ns1.${const.domain}." ];
+          subdomains =
+            let
+              mkV4Reverse = v4: builtins.head (dns.lib.mkIPv4ReverseRecord' 1 v4);
+            in
+            lib.mkMerge (
+              # Rewrite of the old gen_reverse_v4_records in https://github.com/NixOS/nixpkgs/pull/522745
+              lib.mapAttrsToList (
+                _: host:
+                lib.optionalAttrs (host ? tailscale) {
+                  ${mkV4Reverse host.tailscale.ipv4NoCidr}.PTR = lib.flatten (
+                    lib.mapAttrsToList (
+                      type: subs:
+                      lib.optional (type != "AAAA") (map (sub: if sub == "@" then "${const.domain}." else "${sub}.${const.domain}.") subs)
+                    ) host.tailscale.subdomains or { }
                   );
                 }
-              ) { } subs
-            ) nic.subdomains
-          ) host
-        )
-      )
-      lib.flatten
-      lib.mkMerge
-    ];
+              ) config.vars.hostAddrs
+            );
+        };
   };
   networking.firewall = {
     allowedTCPPorts = [
@@ -267,17 +414,17 @@
   };
   services.bind = {
     enable = true;
-    # Persistent directory for DNSSEC key states. Defaults to "/run/named", which clears on reboot.
-    # directory = "/srv/bind";
 
     # Access-control of what networks are allowed for recursive queries
-    cacheNetworks = [ "none" ]; # Do not allow access to cache
     # cacheNetworks = [
     #   "127.0.0.0/8" "::1/128"
     #   "100.64.0.0/10" "fd7a:115c:a1e0::/48"
     #   "192.168.0.0/16"
     # ];
+    cacheNetworks = [ "none" ]; # Do not allow access to cache
+
     forwarders = [ ];
+
     # Bind standard port 53 strictly to the specific interface IPs
     listenOn = [
       "127.0.0.1"
@@ -289,7 +436,8 @@
     ++ (builtins.catAttrs "ipv6" const.networking.hostAddrs.${config.networking.hostName});
     # Inject the variables into the raw extraOptions string for DoT and DoH
     extraOptions = ''
-      # Strictly Authoritative-Only Mode, implies 'empty-zones-enable no'
+      # Strictly Authoritative-Only Mode, implies 'empty-zones-enable no', as empty zones would shadow my overlay
+      # network's IP
       recursion no;
 
       # Dedicated unencrypted TCP port strictly for Traefik's DoT proxy stream
@@ -308,31 +456,17 @@
 
       # Who can request zone transfers (full zone dump)
       allow-transfer { none; };
-      # Who can dynamic DNS updates (add/remove records on the fly).
+      # Who can perform dynamic DNS updates (add/remove records on the fly).
       allow-update { none; };
-      server-id none;
 
-      # Disable global validation if relying solely on the trusted island
-      dnssec-validation no;
-    '';
-    extraConfig = ''
-      # DNSSEC Trusted Island Policy
-      dnssec-policy custom {
-        keys {
-          csk key-directory lifetime unlimited algorithm 15; # ED25519
-        };
-        max-zone-ttl 24h;
-        signatures-refresh 8d; # Regenerate 8 days before expire
-        signatures-validity 10d; # ZSK validity last for 10 days
-        signatures-validity-dnskey 10d; # KSK validity last for 10 days
-      };
+      server-id none;
     '';
     domains = {
       ${const.domain} = {
         bindZoneOptions = {
           master = true;
           # Apply the DNSSEC policy to sign the zone locally
-          extraConfig = "dnssec-policy custom;";
+          # extraConfig = "dnssec-policy custom;";
         };
         mutable = true;
         soa = {
@@ -422,91 +556,4 @@
       };
     };
   };
-
-  # NOTE: To get a DS records for reverse zone, query the zone apex (`proteus.eu.org`, `161.64.100.in-addr.arpa`
-  # `0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa`)
-  # nix run nixpkgs#dig -- @100.64.161.20 161.64.100.in-addr.arpa DNSKEY +noall +answer | nix shell nixpkgs#bind --command dnssec-dsfromkey -f - 161.64.100.in-addr.arpa
-  # Or
-  # nix run nixpkgs#dig -- @100.64.161.20 161.64.100.in-addr.arpa DNSKEY +noall +answer | nix shell nixpkgs#ldns.examples --command ldns-key2ds -n /dev/stdin
-  sops =
-    let
-      sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
-      restartUnits = [ "bind.service" ];
-      owner = config.systemd.services.bind.serviceConfig.User;
-      mode = "0600";
-    in
-    {
-      secrets = {
-        "bind_domain_zone_priv" = { inherit sopsFile restartUnits; };
-        "bind_ts_v4_rev_zone_priv" = { inherit sopsFile restartUnits; };
-        "bind_ts_v6_rev_zone_priv" = { inherit sopsFile restartUnits; };
-        "bind_et_v4_rev_zone_priv" = { inherit sopsFile restartUnits; };
-        "bind_et_v6_rev_zone_priv" = { inherit sopsFile restartUnits; };
-      };
-      templates =
-        let
-          shared_priv_cfg = ''
-            Private-key-format: v1.3
-            Algorithm: 15 (ED25519)
-          '';
-          shared_priv_timestamp = ''
-            Created: 20260523080310
-            Publish: 20260523080310
-            Activate: 20260523080310
-            SyncPublish: 20260524080810
-          '';
-        in
-        {
-          "bind_domain_zone_priv" = {
-            inherit restartUnits owner mode;
-            content = shared_priv_cfg + "PrivateKey: ${config.sops.placeholder.bind_domain_zone_priv}\n" + shared_priv_timestamp;
-            path = "${config.services.bind.directory}/Kproteus.eu.org.+015+40751.private";
-          };
-          "bind_ts_v4_rev_zone_priv" = {
-            inherit restartUnits owner mode;
-            content = shared_priv_cfg + "PrivateKey: ${config.sops.placeholder.bind_ts_v4_rev_zone_priv}\n" + shared_priv_timestamp;
-            path = "${config.services.bind.directory}/K100.in-addr.arpa.+015+16452.private";
-          };
-          "bind_ts_v6_rev_zone_priv" = {
-            inherit restartUnits owner mode;
-            content = shared_priv_cfg + "PrivateKey: ${config.sops.placeholder.bind_ts_v6_rev_zone_priv}\n" + shared_priv_timestamp;
-            path = "${config.services.bind.directory}/K0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa.+015+02790.private";
-          };
-          "bind_et_v4_rev_zone_priv" = {
-            inherit restartUnits owner mode;
-            content = shared_priv_cfg + "PrivateKey: ${config.sops.placeholder.bind_et_v4_rev_zone_priv}\n" + shared_priv_timestamp;
-            path = "${config.services.bind.directory}/K0.0.10.in-addr.arpa.+015+03009.private";
-          };
-          "bind_et_v6_rev_zone_priv" = {
-            inherit restartUnits owner mode;
-            content = shared_priv_cfg + "PrivateKey: ${config.sops.placeholder.bind_et_v6_rev_zone_priv}\n" + shared_priv_timestamp;
-            path = "${config.services.bind.directory}/K0.0.0.0.7.7.8.9.a.b.c.d.e.f.d.f.ip6.arpa.+015+01147.private";
-          };
-        };
-    };
-
-  systemd.services.bind.preStart =
-    let
-      zones_pubs = [
-        (pkgs.writeText "Kproteus.eu.org.+015+40751.key" ''
-          proteus.eu.org. 3600 IN DNSKEY 257 3 15 f1EhcwJnyqstgxFUySK5m650d2fg+w8DLh8FNwVKHTc=
-        '')
-        (pkgs.writeText "K100.in-addr.arpa.+015+16452.key" ''
-          100.in-addr.arpa. 3600 IN DNSKEY 257 3 15 PwFirzXup9sShggRjrky0w1g+OgDc32HLIJ9n+acyJM=
-        '')
-        (pkgs.writeText "K0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa.+015+02790.key" ''
-          0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa. 3600 IN DNSKEY 257 3 15 VZFDZ7Hu0xm2Lu/8myOO5zpAs9fjNTx6nfeNq6Y4OPo=
-        '')
-        (pkgs.writeText "K0.0.10.in-addr.arpa.+015+03009.key" ''
-          0.0.10.in-addr.arpa. 3600 IN DNSKEY 257 3 15 r3yhoiw0ch3YhWpvVNneJ9hTuxwfrc9rl+dJVbm+hMQ=
-        '')
-        (pkgs.writeText "K0.0.0.0.7.7.8.9.a.b.c.d.e.f.d.f.ip6.arpa.+015+01147.key" ''
-          0.0.0.0.7.7.8.9.a.b.c.d.e.f.d.f.ip6.arpa. 3600 IN DNSKEY 257 3 15 wP+4ropyVJWnhxzY67Lx1WDlW2b2yZ7M/fpzMZVurU4=
-        '')
-      ];
-    in
-    # Generate the install commands for all public keys
-    lib.concatMapStringsSep "\n" (
-      file: "install -m 0644 ${file} ${config.services.bind.directory}/${file.name}"
-    ) zones_pubs;
 }
