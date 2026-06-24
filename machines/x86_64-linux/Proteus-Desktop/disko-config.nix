@@ -1,34 +1,37 @@
 { const, lib, ... }:
 let
+  luks_settings = name: {
+    type = "CA7D7CCB-63ED-4C53-861C-1742536059CC";
+    content = {
+      type = "luks";
+      name = "crypted-${name}";
+      # passwordFile = "/tmp/dm_password.key";
+      initrdUnlock = false; # Manually manage in stage 2 by `environment.etc."crypttab"`
+      # For boot.initrd.luks.device.<name>.*
+      settings = {
+        crypttabExtraOpts = [ "nofail" ];
+        # keyFile = "/etc/dm_keyfile.key"; # Conflicts with Clevis
+        keyFileTimeout = 15;
+        allowDiscards = true;
+        bypassWorkqueues = true;
+        # fallbackToPassword = false;
+      };
+      content = {
+        type = "zfs";
+        pool = "storage";
+      };
+    };
+  };
   # LUKS-encrypted ZFS disk helper (460GB partition)
   mk_luks_zfs_disk = disk_id: {
     device = "/dev/disk/by-id/${disk_id}";
     type = "disk";
     content = {
       type = "gpt";
-      partitions.luks_part = {
-        type = "CA7D7CCB-63ED-4C53-861C-1742536059CC";
-        size = "488385536K"; # Unit is KiB, ~500G
-        content = {
-          type = "luks";
-          name = "crypted-${disk_id}";
-          # passwordFile = "/tmp/dm_password.key";
-          initrdUnlock = false; # Manually manage in stage 2 by `environment.etc."crypttab"`
-          # For boot.initrd.luks.device.<name>.*
-          settings = {
-            crypttabExtraOpts = [ "nofail" ];
-            # keyFile = "/etc/dm_keyfile.key"; # Conflicts with Clevis
-            keyFileTimeout = 15;
-            allowDiscards = true;
-            bypassWorkqueues = true;
-            # fallbackToPassword = false;
-          };
-          content = {
-            type = "zfs";
-            pool = "storage";
-          };
-        };
-      };
+      partitions.luks_part = lib.mkMerge [
+        (luks_settings disk_id)
+        { size = "488385536K"; } # ~500G
+      ];
     };
   };
 in
@@ -89,18 +92,22 @@ in
       sata4 = lib.mkMerge [
         (mk_luks_zfs_disk "ata-ST1000DM003-1CH162_S1DE5CWF")
         {
-          content.partitions.storage2 = {
-            size = "100%";
-            type = "6A85CF4D-1DD2-11B2-99A6-080020736631";
-            content = {
-              type = "zfs";
-              pool = "storage2";
-            };
-          };
+          content.partitions.storage2 = lib.mkMerge [
+            (luks_settings "storage2-ata-ST1000DM003-1CH162_S1DE5CWF")
+            { size = "488375296K"; } # ~465.8GB
+          ];
         }
       ];
       sata5 = mk_luks_zfs_disk "ata-ST1000LM048-2E7172_WKPEZYSN";
-      sata6 = mk_luks_zfs_disk "ata-WDC_WD2002FYPS-02W3B0_WCAVY6186321";
+      sata6 = lib.mkMerge [
+        (mk_luks_zfs_disk "ata-WDC_WD2002FYPS-02W3B0_WCAVY6186321")
+        {
+          content.partitions.storage2 = lib.mkMerge [
+            (luks_settings "storage2-ata-WDC_WD2002FYPS-02W3B0_WCAVY6186321")
+            { size = "488375296K"; } # ~465.8GB
+          ];
+        }
+      ];
     };
     # --- 3. ZFS Pools ---
     zpool =
@@ -129,7 +136,7 @@ in
         # ROOT POOL (NVMe) - Impermanence Setup
         zroot = {
           inherit type options;
-          mode = "";
+          # mode = ""; # default "" means stripe (RAID-0)
           rootFsOptions = rootFsOptions // {
             mountpoint = "/";
           };
