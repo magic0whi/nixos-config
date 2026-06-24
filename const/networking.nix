@@ -188,7 +188,7 @@ in
     ) null (builtins.attrNames hostAddrs);
   caddyPort = 8080;
 
-  soaSerial = 2026062300;
+  soaSerial = 2026062500;
   knownHosts =
     let
       github = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl";

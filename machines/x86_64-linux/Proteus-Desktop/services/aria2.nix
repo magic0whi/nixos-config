@@ -14,7 +14,7 @@ in
   };
   users.users.${const.username}.extraGroups = [ "aria2" ];
   services.aria2 = {
-    enable = false; # TODO move to storage2
+    enable = true;
     rpcSecretFile = config.sops.secrets.aria2_rpc_secret.path;
     settings = {
       dir = "${path_prefix}/aria2";

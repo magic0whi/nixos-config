@@ -92,8 +92,8 @@
         ]
       },
       "locked": {
-        "lastModified": 1782286745,
-        "narHash": "sha256-JOynSFjAP3NoDatdoH1T1CkN6NPVsxRt/2KkgKzsHSI=",
+        "lastModified": 1782317042,
+        "narHash": "sha256-CZ97HlCApdOtqIR5Vb9lbsSEMSdPxrws1MOWUGFQOC8=",
         "path": "/home/proteus/Works-References/dns.nix",
         "type": "path"
       },

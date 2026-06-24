@@ -3,8 +3,109 @@
   lib,
   const,
   dns,
+  pkgs,
   ...
 }:
+let
+  inherit (dns.util.${pkgs.stdenv.system}) writeZone;
+  shared_head_cfg = {
+    useOrigin = true;
+    SOA = {
+      nameServer = "ns1.${const.domain}.";
+      adminEmail = const.email;
+      serial = const.networking.soaSerial;
+      # Sane defaults for the remaining ones
+    };
+    NS = [ "ns1.${const.domain}." ];
+  };
+
+  # Rewrite of the old gen_subdomain_records in https://github.com/NixOS/nixpkgs/pull/522745
+  # It's lure to use `builtins.zipAttrsWith` here, the problem is the loop sequence, you'll found you must loop
+  # subdomains for the attribute names, as the dns.nix requires the format:
+  # <subname>.A = [ IP1 IP2 ... ]
+  # But if you loop subdomains first this means all the NICs in a host shares the same subdomain list
+  mkSubdomainRecords =
+    hostAddrs:
+    let
+      # Convert subnames to records
+      # A "11.4.5.14" [ subname1  subname 2 ... ]
+      # -> { subname1.A = [ "11.4.5.14" ];  subname2.A = [ "11.4.5.14" ]; ... }
+      concat_map_subs = type: target: builtins.foldl' (acc: sub: acc // { ${sub}.${type} = lib.singleton target; }) { };
+
+      # Traverse NIC's subdomains (may has types A, AAAA, CNAME)
+      # { A = [ subname1 ... ]; AAAA = [ subname1 ... ]; CNAME = [ subnasme2 ...]; }
+      #  -> [
+      #   { subname1.A = nic.ipv4NoCidr; }
+      #   { subname1.AAAA = nic.ipv6NoCidr; }
+      #   { subname2.CNAME = hostname.domain. }
+      # ]
+      # I can do recursive merge but it's senseless at this stage as other NICs may contain same subname, as well as
+      # other hosts, so just make all the records molecule and finally do `lib.mkMerge` at the option level.
+      concat_map_sub_types =
+        hostname: nic:
+        lib.mapAttrsToList (
+          type:
+          concat_map_subs type (
+            if type == "A" then
+              nic.ipv4NoCidr
+            else if type == "AAAA" then
+              nic.ipv6NoCidr
+            else
+              "${hostname}.${const.domain}."
+          )
+        ) nic.subdomains;
+
+      # Traverse hosts' NICs
+      concat_map_hostname = hostname: host: lib.concatMap (concat_map_sub_types hostname) (builtins.attrValues host);
+    in
+    # Traverse hosts
+    builtins.concatLists (lib.mapAttrsToList concat_map_hostname hostAddrs);
+
+  # [ "@" subname1 ] -> [ example.com. subname1.example.com. ]
+  gen_ptr_targets =
+    subs:
+    map (sub: if sub == "@" then "${const.domain}." else "${sub}.${const.domain}.")
+      # Reverse records doesn't support wildcard subnames
+      (lib.filter (sub: !lib.hasInfix "*" sub) subs);
+
+  # Rewrite of the old gen_reverse_v4_records in https://github.com/NixOS/nixpkgs/pull/522745
+  mkIPv4ReverseRecords =
+    depth: nicName:
+    let
+      # { A = [ subname1 ...]; AAAA = [ subname2 ...]; CNAME = [ subname3 ...]; } -> [ subname1 subname3 ... ]
+      extract_v4_compat_subs = lib.foldlAttrs (
+        acc: type: subs:
+        acc ++ lib.optionals (type != "AAAA") (gen_ptr_targets subs)
+      ) [ ];
+
+      mk_host_octet = v4: builtins.head (dns.lib.mkIPv4ReverseRecord' depth v4);
+    in
+    lib.concatMapAttrs (
+      _: host:
+      lib.optionalAttrs (host ? ${nicName}) {
+        ${mk_host_octet host.${nicName}.ipv4NoCidr}.PTR = extract_v4_compat_subs host.${nicName}.subdomains;
+      }
+    );
+
+  # Rewrite of the old gen_reverse_v6_records in https://github.com/NixOS/nixpkgs/pull/522745
+  mkIPv6ReverseRecords =
+    depth: nicName:
+    let
+      # { A = [ subname1 ...]; AAAA = [ subname2 ...]; CNAME = [ subname3 ...]; } -> [ subname2 subname3 ... ]
+      extract_v6_compat_subs = lib.foldlAttrs (
+        acc: type: subs:
+        acc ++ lib.optionals (type != "A") (gen_ptr_targets subs)
+      ) [ ];
+
+      mk_host_hex = v6: builtins.head (dns.lib.mkIPv6ReverseRecord' depth v6);
+    in
+    lib.concatMapAttrs (
+      _: host:
+      lib.optionalAttrs (host ? ${nicName}) {
+        ${mk_host_hex host.${nicName}.ipv6NoCidr}.PTR = extract_v6_compat_subs host.${nicName}.subdomains;
+      }
+    );
+in
 {
   # Example 100.in-addr.arpa.zone
   # $ORIGIN 100.in-addr.arpa.
@@ -220,9 +321,7 @@
             inherit regHost;
             ipv4 = "100.89.227.22/10";
             ipv6 = "fd7a:115c:a1e0::1a01:e318/48";
-            subdomains = subdomains // {
-              CNAME = [ "test" ];
-            };
+            subdomains = subdomains;
           };
           easytier = {
             inherit regHost;
@@ -314,97 +413,6 @@
       Proteus-VF2.wire.ipv4 = "192.168.1.26";
     };
 
-  debug = {
-    main = dns.lib.toString const.domain {
-      useOrigin = true;
-      SOA = {
-        nameServer = "ns1.${const.domain}.";
-        adminEmail = const.email;
-        serial = const.networking.soaSerial;
-        # Sane defaults for the remaining ones
-      };
-      NS = [ "ns1.${const.domain}." ];
-
-      # Records for @, I specify them in subdomains
-      # A = (
-      #   with config.vars.hostAddrs.Proteus-Desktop;
-      #   [
-      #     easytier.ipv4NoCidr
-      #     tailscale.ipv4NoCidr
-      #   ]
-      # );
-      # AAAA = with config.vars.hostAddrs.Proteus-Desktop; [
-      #   easytier.ipv6NoCidr
-      #   tailscale.ipv6NoCidr
-      # ];
-
-      subdomains =
-        # Rewrite of the old gen_subdomain_records in https://github.com/NixOS/nixpkgs/pull/522745
-        lib.pipe config.vars.hostAddrs [
-          (
-            # Hosts
-            lib.mapAttrsToList (
-              hostname: host:
-              # Hosts' NICs
-              lib.mapAttrsToList (
-                _: nic:
-                # NIC's subdomains
-                lib.mapAttrsToList (
-                  type: subs:
-                  builtins.foldl' (
-                    acc: sub:
-                    acc
-                    // {
-                      ${sub}.${type} = lib.singleton (
-                        if type == "A" then
-                          nic.ipv4NoCidr
-                        else if type == "AAAA" then
-                          nic.ipv6NoCidr
-                        else
-                          "${hostname}.${const.domain}"
-                      );
-                    }
-                  ) { } subs
-                ) nic.subdomains
-              ) host
-            )
-          )
-          lib.flatten
-          lib.mkMerge
-        ];
-    };
-    test_reverse_v4 =
-      dns.lib.toString
-        "${lib.last (dns.lib.mkIPv4ReverseRecord' 1 config.vars.hostAddrs.Proteus-NUC.tailscale.ipv4NoCidr)}.in-addr.arpa"
-        {
-          useOrigin = true;
-          SOA = {
-            nameServer = "ns1.${const.domain}.";
-            adminEmail = const.email;
-            serial = const.networking.soaSerial;
-            # Sane defaults for the remaining ones
-          };
-          NS = [ "ns1.${const.domain}." ];
-          subdomains =
-            let
-              mkV4Reverse = v4: builtins.head (dns.lib.mkIPv4ReverseRecord' 1 v4);
-            in
-            lib.mkMerge (
-              # Rewrite of the old gen_reverse_v4_records in https://github.com/NixOS/nixpkgs/pull/522745
-              lib.mapAttrsToList (
-                _: host:
-                lib.optionalAttrs (host ? tailscale) {
-                  ${mkV4Reverse host.tailscale.ipv4NoCidr}.PTR = lib.flatten (
-                    lib.mapAttrsToList (
-                      type: subs:
-                      lib.optional (type != "AAAA") (map (sub: if sub == "@" then "${const.domain}." else "${sub}.${const.domain}.") subs)
-                    ) host.tailscale.subdomains or { }
-                  );
-                }
-              ) config.vars.hostAddrs
-            );
-        };
-  };
   networking.firewall = {
     allowedTCPPorts = [
       53
@@ -461,53 +469,54 @@
 
       server-id none;
     '';
-    domains = {
-      ${const.domain} = {
-        bindZoneOptions = {
+    zones =
+      let
+        shared_zone_cfg = {
           master = true;
           # Apply the DNSSEC policy to sign the zone locally
           # extraConfig = "dnssec-policy custom;";
         };
-        mutable = true;
-        soa = {
-          rName = const.email;
-          serial = toString const.networking.soaSerial;
-        };
-        networks = [
-          {
-            v4PrefixLen = 10 / 8;
-            v6PrefixLen = 48 / 4;
-          }
-          {
-            v4PrefixLen = 24 / 8;
-            v6PrefixLen = 64 / 4;
-          }
-        ];
-        hosts =
+        mk_ipv4_reverse_zone =
+          depth: nic_name:
           let
-            allowed_hosts = [
-              "Proteus-NUC"
-              "Proteus-MBP14M4P"
-              "Proteus-Desktop"
-            ]
-            ++ map (i: "Proteus-NixOS-${toString i}") (lib.range 0 5);
+            name = "${
+              lib.last (dns.lib.mkIPv4ReverseRecord' depth config.vars.hostAddrs.Proteus-NUC.${nic_name}.ipv4NoCidr)
+            }.in-addr.arpa";
           in
-          lib.mapAttrs (
-            _: ifaces:
-            map (
-              iface:
-              lib.filterAttrs (
-                key: _:
-                builtins.elem key [
-                  "ipv4"
-                  "ipv6"
-                  "domains"
-                ]
-              ) iface
-            ) ifaces
-          ) (lib.filterAttrs (name: _: builtins.elem name allowed_hosts) const.networking.hostAddrs);
+          shared_zone_cfg
+          // {
+            inherit name;
+            file =
+              # dns.lib.toString
+              writeZone name (shared_head_cfg // { subdomains = mkIPv4ReverseRecords depth nic_name config.vars.hostAddrs; });
+          };
+
+        mk_ipv6_reverse_zone =
+          depth: nic_name:
+          let
+            name = "${
+              lib.last (dns.lib.mkIPv6ReverseRecord' depth config.vars.hostAddrs.Proteus-NUC.${nic_name}.ipv6NoCidr)
+            }.ip6.arpa";
+          in
+          shared_zone_cfg
+          // {
+            inherit name;
+            file =
+              # dns.lib.toString
+              writeZone name (shared_head_cfg // { subdomains = mkIPv6ReverseRecords depth nic_name config.vars.hostAddrs; });
+          };
+      in
+      {
+        ${const.domain} = shared_zone_cfg // {
+          file = writeZone const.domain (
+            shared_head_cfg // { subdomains = lib.mkMerge (mkSubdomainRecords config.vars.hostAddrs); }
+          );
+        };
+        reverse_v4_et = mk_ipv4_reverse_zone 1 "tailscale";
+        reverse_v4_ts = mk_ipv4_reverse_zone 3 "easytier";
+        reverse_v6_et = mk_ipv6_reverse_zone (48 / 4) "tailscale";
+        reverse_v6_ts = mk_ipv6_reverse_zone (64 / 4) "easytier";
       };
-    };
   };
 
   services.traefik = {
