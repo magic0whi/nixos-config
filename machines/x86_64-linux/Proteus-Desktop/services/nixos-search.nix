@@ -128,6 +128,8 @@ let
                 "*-nixos-*"
                 "latest-*"
                 "group-*-manual-*"
+                "error"
+                "status"
               ];
               # https://docs.opensearch.org/latest/security/access-control/permissions/
               allowed_actions = [
