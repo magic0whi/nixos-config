@@ -24,7 +24,7 @@
           config.services.easytier.instances.main.extraSettings.flags.dev_name
         else
           config.services.tailscale.interfaceName;
-      networkConfig.KeepConfiguration = "yes";
+      networkConfig.KeepConfiguration = "yes"; # Prevent systemd-networkd managing other things (like IP addresses)
       domains = [
         "${const.domain}" # Search Domain
       ]
