@@ -13,7 +13,7 @@ in
       restartUnits = [ "${config.virtualisation.oci-containers.containers.opensearch-dashboards.serviceName}.service" ];
     in
     {
-      secrets."opensearch_dashboards_password" = {
+      secrets.opensearch_dashboards_password = {
         sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
         inherit restartUnits;
       };

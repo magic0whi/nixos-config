@@ -20,24 +20,10 @@
           service = "sb-dashboard";
           tls = { };
         };
-        papra = {
-          rule = "Host(`papra.${const.domain}`)";
-          entryPoints = [ "websecure" ];
-          service = "papra";
-          tls = { };
-        };
-        plane = {
-          rule = "Host(`plane.${const.domain}`)";
-          entryPoints = [ "websecure" ];
-          service = "plane";
-          tls = { };
-        };
       };
       services = {
         qinglong.loadBalancer.servers = [ { url = "http://127.0.0.1:5700"; } ];
         sb-dashboard.loadBalancer.servers = [ { url = "http://127.0.0.1:9091"; } ];
-        papra.loadBalancer.servers = [ { url = "http://127.0.0.1:1221"; } ];
-        plane.loadBalancer.servers = [ { url = "http://127.0.0.1:8082"; } ];
       };
     };
   };
