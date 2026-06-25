@@ -16,7 +16,7 @@
 
   systemd.network.networks."50-overlay-dns" =
     let
-      ns_hostname = const.networking.findHost "ns1";
+      ns_hostname = config.utils.findFirstHostBySubdomain "ns1";
     in
     {
       name =
@@ -24,26 +24,34 @@
           config.services.easytier.instances.main.extraSettings.flags.dev_name
         else
           config.services.tailscale.interfaceName;
+
       networkConfig.KeepConfiguration = "yes"; # Prevent systemd-networkd managing other things (like IP addresses)
+
       domains = [
         "${const.domain}" # Search Domain
       ]
       # Routing Domain for reverse zones
       ++ lib.remove "~${const.domain}" (
-        lib.mapAttrsToList (
-          _: zone:
-          if (lib.isDerivation zone.file) then
-            "~${lib.removeSuffix ".zone" zone.file.name}" # The '~' prefix makes this a routing domain
-          else
-            "~${lib.removeSuffix ".zone" zone.file}"
-        ) machineConfigs.${ns_hostname}.config.services.bind.zones
+        # The '~' prefix makes this a routing domain
+        lib.mapAttrsToList (_: zone: "~${zone.name}") machineConfigs.${ns_hostname}.config.services.bind.zones
       );
+
       dns =
         let
-          iface = builtins.elemAt const.networking.hostAddrs.${ns_hostname} 0;
+          ns_host_nics = config.vars.hostAddrs.${ns_hostname};
         in
-        lib.optional (iface ? ipv4) "${iface.ipv4}#${const.domain}"
-        ++ lib.optional (iface ? ipv6) "${iface.ipv6}#${const.domain}";
+        if config.services.easytier.enable then
+          with ns_host_nics.easytier;
+          [
+            "${ipv4NoCidr}#${const.domain}"
+            "${ipv6NoCidr}#${const.domain}"
+          ]
+        else
+          with ns_host_nics.tailscale;
+          [
+            "${ipv4NoCidr}#${const.domain}"
+            "${ipv6NoCidr}#${const.domain}"
+          ];
     };
 
   # Trust Island

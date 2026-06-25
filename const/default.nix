@@ -1,5 +1,4 @@
 {
-  lib,
   pkgs,
   mylib,
 }:
@@ -83,5 +82,5 @@
 
   domain = "proteus.eu.org";
   tailnet = "tailba6c3f.ts.net";
-  networking = import ./networking.nix lib;
+  networking = import ./networking.nix;
 }

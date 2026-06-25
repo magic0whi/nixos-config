@@ -17,7 +17,7 @@ let
     // {
       inherit lib system;
 
-      const = import ./const { inherit lib pkgs mylib; };
+      const = import ./const { inherit pkgs mylib; };
       mylib =
         let
           mylib_pkg_funcs = mylib.mkForPkgs pkgs;

@@ -71,15 +71,11 @@ in
     else
       null;
 
-  genDeployNode_unwrapped = deployLib: ifaces: nixosCfg: {
+  genDeployNode_unwrapped = deployLib: nics: nixosCfg: {
     hostname =
-      let
-        ts_iface = builtins.elemAt ifaces 0;
-        # TODO temporary disable
-        # et_iface = lib.optionalAttrs (builtins.length ifaces >= 2) (builtins.elemAt ifaces 1);
-      in
-      # et_iface.ipv4 or
-      ts_iface.ipv4 or nixosCfg.config.networking.hostName;
+      # TODO temporary disable EasyTier
+      # nics.easytier.ipv4NoCidr or
+      nics.tailscale.ipv4NoCidr or nixosCfg.config.networking.hostName;
     sshUser = "root";
     interactiveSudo = false; # I use the root user to ssh deploy
     profiles.system = {

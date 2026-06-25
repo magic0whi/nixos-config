@@ -8,12 +8,12 @@
 }:
 let
   machine_config = {
-    authelia = machineConfigs.${const.networking.findHost "auth"}.config;
-    forgejo = machineConfigs.${const.networking.findHost "git"}.config;
-    immich = machineConfigs.${const.networking.findHost "immich"}.config;
-    paperless = machineConfigs.${const.networking.findHost "paperless"}.config;
-    postgresql = machineConfigs.${const.networking.findHost "postgresql"}.config;
-    niks3 = machineConfigs.${const.networking.findHost "niks3"}.config;
+    authelia = machineConfigs.${config.utils.findFirstHostBySubdomain "auth"}.config;
+    forgejo = machineConfigs.${config.utils.findFirstHostBySubdomain "git"}.config;
+    immich = machineConfigs.${config.utils.findFirstHostBySubdomain "immich"}.config;
+    paperless = machineConfigs.${config.utils.findFirstHostBySubdomain "paperless"}.config;
+    postgresql = machineConfigs.${config.utils.findFirstHostBySubdomain "postgresql"}.config;
+    niks3 = machineConfigs.${config.utils.findFirstHostBySubdomain "niks3"}.config;
   };
 
   openldap_port = 636; # OpenLDAP (Secure)

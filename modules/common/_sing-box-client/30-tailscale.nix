@@ -65,7 +65,7 @@ lib.mkMerge [
           tag = "myNs";
           type = "tls";
           detour = if isDarwin then "Default" else out; # Query through tailscaled on Darwin
-          server = (builtins.head const.networking.hostAddrs.${const.networking.findHost "ns1"}).ipv4;
+          server = config.vars.hostAddrs.${config.utils.findFirstHostBySubdomain "ns1"}.tailscale.ipv4NoCidr;
           tls.server_name = "ns1.${const.domain}";
         };
       rules =

@@ -6,7 +6,7 @@
 }:
 let
   cfg = config.services.niks3;
-  machine_config_s3 = machineConfigs.${const.networking.findHost "s3"}.config;
+  machine_cfg_s3 = machineConfigs.${config.utils.findFirstHostBySubdomain "s3"}.config;
 in
 {
   sops =
@@ -58,7 +58,7 @@ in
     s3 = {
       endpoint = "s3.${const.domain}";
       bucket = "nix-cache";
-      region = machine_config_s3.services.garage.settings.s3_api.s3_region;
+      region = machine_cfg_s3.services.garage.settings.s3_api.s3_region;
       useSSL = true;
       accessKeyFile = config.sops.secrets.aws_access_key.path;
       secretKeyFile = config.sops.secrets.aws_secret_key.path;

@@ -46,5 +46,5 @@ in
 {
   _DEBUG = { inherit name features; };
   nixos_configurations.${name} = nixos_cfg;
-  deploy_nodes.${name} = mylib.genDeployNode const.networking.hostAddrs.${name} nixos_cfg;
+  deploy_nodes.${name} = mylib.genDeployNode nixos_cfg.config.vars.hostAddrs.${name} nixos_cfg;
 }

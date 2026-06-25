@@ -71,7 +71,7 @@ in
           # Define the list of Syncthing folders to mount
           declare -A external_mounts=(
             [KeePassXC]="${const.storagePath}/share/KeePassXC"
-            [Aria2 Downloads]="${const.storagePath}/aria2"
+            [Aria2 Downloads]="${const.storage2Path}/aria2"
           )
           for mount_point in "''${!external_mounts[@]}"; do
             # Ensure the external mount doesn't duplicate mountpoints

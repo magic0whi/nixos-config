@@ -10,7 +10,7 @@
   ...
 }:
 let
-  machine_config_s3 = machineConfigs.${const.networking.findHost "s3"}.config;
+  machine_cfg_s3 = machineConfigs.${config.utils.findFirstHostBySubdomain "s3"}.config;
 in
 {
   sops =
@@ -63,7 +63,7 @@ in
         extraBackupArgs = [ "--limit-upload ${toString (50 * 1024)}" ];
         # Limit upload speed to 50 MB/s, unit is KiB/s
         extraOptions = [
-          "s3.region=${machine_config_s3.services.garage.settings.s3_api.s3_region}"
+          "s3.region=${machine_cfg_s3.services.garage.settings.s3_api.s3_region}"
           "read-concurrency=4" # Read concurrency for better throughput on ZFS
         ];
         # Paths to exclude from backup

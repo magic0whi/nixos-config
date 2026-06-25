@@ -26,10 +26,10 @@
 }:
 let
   backup_location = "${const.storagePath}/psql";
-  machine_config = {
-    authelia = machineConfigs.${const.networking.findHost "auth"}.config;
-    paperless = machineConfigs.${const.networking.findHost "paperless"}.config;
-    immich = machineConfigs.${const.networking.findHost "immich"}.config;
+  machine_cfg = {
+    authelia = machineConfigs.${config.utils.findFirstHostBySubdomain "auth"}.config;
+    paperless = machineConfigs.${config.utils.findFirstHostBySubdomain "paperless"}.config;
+    immich = machineConfigs.${config.utils.findFirstHostBySubdomain "immich"}.config;
   };
 in
 {
@@ -107,8 +107,8 @@ in
     ensureDatabases = [
       "mydatabase" # TODO: For learning
       "atuin"
-      machine_config.paperless.services.paperless.user
-      machine_config.authelia.services.authelia.instances.main.user
+      machine_cfg.paperless.services.paperless.user
+      machine_cfg.authelia.services.authelia.instances.main.user
       # (builtins.trace machine_config.authelia machine_config.authelia.services.authelia.instances.main.user)
       "nextcloud"
     ];
@@ -126,11 +126,11 @@ in
         ensureDBOwnership = true;
       }
       {
-        name = machine_config.paperless.services.paperless.user;
+        name = machine_cfg.paperless.services.paperless.user;
         ensureDBOwnership = true;
       }
       {
-        name = machine_config.authelia.services.authelia.instances.main.user;
+        name = machine_cfg.authelia.services.authelia.instances.main.user;
         ensureDBOwnership = true;
       }
       {

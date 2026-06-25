@@ -103,104 +103,110 @@ in
     ];
     allowedUDPPorts = [ 53 ]; # Bind don't support DNS-over QUIC
   };
-  services.bind = {
-    enable = true;
+  services.bind =
+    let
+      nics = config.vars.hostAddrs.${config.networking.hostName};
+    in
+    {
+      enable = true;
 
-    # Access-control of what networks are allowed for recursive queries
-    # cacheNetworks = [
-    #   "127.0.0.0/8" "::1/128"
-    #   "100.64.0.0/10" "fd7a:115c:a1e0::/48"
-    #   "192.168.0.0/16"
-    # ];
-    cacheNetworks = [ "none" ]; # Do not allow access to cache
+      # Access-control of what networks are allowed for recursive queries
+      # cacheNetworks = [
+      #   "127.0.0.0/8" "::1/128"
+      #   "100.64.0.0/10" "fd7a:115c:a1e0::/48"
+      #   "192.168.0.0/16"
+      # ];
+      cacheNetworks = [ "none" ]; # Do not allow access to cache
 
-    forwarders = [ ];
+      forwarders = [ ];
 
-    # Bind standard port 53 strictly to the specific interface IPs
-    listenOn = [
-      "127.0.0.1"
-    ]
-    ++ (builtins.catAttrs "ipv4" const.networking.hostAddrs.${config.networking.hostName});
-    listenOnIpv6 = [
-      "::1"
-    ]
-    ++ (builtins.catAttrs "ipv6" const.networking.hostAddrs.${config.networking.hostName});
-    # Inject the variables into the raw extraOptions string for DoT and DoH
-    extraOptions = ''
-      # Strictly Authoritative-Only Mode, implies 'empty-zones-enable no', as empty zones would shadow my overlay
-      # network's IP
-      recursion no;
+      # Bind standard port 53 strictly to the specific interface IPs
+      listenOn = [
+        "127.0.0.1"
+        nics.easytier.ipv4NoCidr
+        nics.tailscale.ipv4NoCidr
+      ];
+      listenOnIpv6 = [
+        "::1"
+        nics.easytier.ipv6NoCidr
+        nics.tailscale.ipv6NoCidr
+      ];
+      # Inject the variables into the raw extraOptions string for DoT and DoH
+      extraOptions = ''
+        # Strictly Authoritative-Only Mode, implies 'empty-zones-enable no', as empty zones would shadow my overlay
+        # network's IP
+        recursion no;
 
-      # Dedicated unencrypted TCP port strictly for Traefik's DoT proxy stream
-      listen-on port 8530 proxy plain { 127.0.0.1; };
-      listen-on-v6 port 8530 proxy plain { ::1; };
+        # Dedicated unencrypted TCP port strictly for Traefik's DoT proxy stream
+        listen-on port 8530 proxy plain { 127.0.0.1; };
+        listen-on-v6 port 8530 proxy plain { ::1; };
 
-      # Plain HTTP endpoint strictly for Traefik's DoH forwarding
-      listen-on port 8053 tls none http default { 127.0.0.1; };
-      listen-on-v6 port 8053 tls none http default { ::1; };
+        # Plain HTTP endpoint strictly for Traefik's DoH forwarding
+        listen-on port 8053 tls none http default { 127.0.0.1; };
+        listen-on-v6 port 8053 tls none http default { ::1; };
 
-      # Trust PROXYv2 headers from Traefik
-      # Who is talking to me?
-      allow-proxy { 127.0.0.1; ::1; };
-      # Which of my doors are they knocking on?
-      allow-proxy-on { 127.0.0.1; ::1; };
+        # Trust PROXYv2 headers from Traefik
+        # Who is talking to me?
+        allow-proxy { 127.0.0.1; ::1; };
+        # Which of my doors are they knocking on?
+        allow-proxy-on { 127.0.0.1; ::1; };
 
-      # Who can request zone transfers (full zone dump)
-      allow-transfer { none; };
-      # Who can perform dynamic DNS updates (add/remove records on the fly).
-      allow-update { none; };
+        # Who can request zone transfers (full zone dump)
+        allow-transfer { none; };
+        # Who can perform dynamic DNS updates (add/remove records on the fly).
+        allow-update { none; };
 
-      server-id none;
-    '';
-    zones =
-      let
-        shared_zone_cfg = {
-          master = true;
-          # Apply the DNSSEC policy to sign the zone locally
-          # extraConfig = "dnssec-policy custom;";
-        };
-        mk_ipv4_reverse_zone =
-          depth: nic_name:
-          let
-            name = "${
-              lib.last (dns.lib.mkIPv4ReverseRecord' depth config.vars.hostAddrs.Proteus-NUC.${nic_name}.ipv4NoCidr)
-            }.in-addr.arpa";
-          in
-          shared_zone_cfg
-          // {
-            inherit name;
-            file =
-              # dns.lib.toString
-              writeZone name (shared_head_cfg // { subdomains = mkIPv4ReverseRecords depth nic_name config.vars.hostAddrs; });
+        server-id none;
+      '';
+      zones =
+        let
+          shared_zone_cfg = {
+            master = true;
+            # Apply the DNSSEC policy to sign the zone locally
+            # extraConfig = "dnssec-policy custom;";
           };
+          mk_ipv4_reverse_zone =
+            depth: nic_name:
+            let
+              name = "${
+                lib.last (dns.lib.mkIPv4ReverseRecord' depth config.vars.hostAddrs.Proteus-NUC.${nic_name}.ipv4NoCidr)
+              }.in-addr.arpa";
+            in
+            shared_zone_cfg
+            // {
+              inherit name;
+              file =
+                # dns.lib.toString
+                writeZone name (shared_head_cfg // { subdomains = mkIPv4ReverseRecords depth nic_name config.vars.hostAddrs; });
+            };
 
-        mk_ipv6_reverse_zone =
-          depth: nic_name:
-          let
-            name = "${
-              lib.last (dns.lib.mkIPv6ReverseRecord' depth config.vars.hostAddrs.Proteus-NUC.${nic_name}.ipv6NoCidr)
-            }.ip6.arpa";
-          in
-          shared_zone_cfg
-          // {
-            inherit name;
-            file =
-              # dns.lib.toString
-              writeZone name (shared_head_cfg // { subdomains = mkIPv6ReverseRecords depth nic_name config.vars.hostAddrs; });
+          mk_ipv6_reverse_zone =
+            depth: nic_name:
+            let
+              name = "${
+                lib.last (dns.lib.mkIPv6ReverseRecord' depth config.vars.hostAddrs.Proteus-NUC.${nic_name}.ipv6NoCidr)
+              }.ip6.arpa";
+            in
+            shared_zone_cfg
+            // {
+              inherit name;
+              file =
+                # dns.lib.toString
+                writeZone name (shared_head_cfg // { subdomains = mkIPv6ReverseRecords depth nic_name config.vars.hostAddrs; });
+            };
+        in
+        {
+          ${const.domain} = shared_zone_cfg // {
+            file = writeZone const.domain (
+              shared_head_cfg // { subdomains = lib.mkMerge (mkSubdomainRecords config.vars.hostAddrs); }
+            );
           };
-      in
-      {
-        ${const.domain} = shared_zone_cfg // {
-          file = writeZone const.domain (
-            shared_head_cfg // { subdomains = lib.mkMerge (mkSubdomainRecords config.vars.hostAddrs); }
-          );
+          reverse_v4_et = mk_ipv4_reverse_zone 1 "tailscale";
+          reverse_v4_ts = mk_ipv4_reverse_zone 3 "easytier";
+          reverse_v6_et = mk_ipv6_reverse_zone (48 / 4) "tailscale";
+          reverse_v6_ts = mk_ipv6_reverse_zone (64 / 4) "easytier";
         };
-        reverse_v4_et = mk_ipv4_reverse_zone 1 "tailscale";
-        reverse_v4_ts = mk_ipv4_reverse_zone 3 "easytier";
-        reverse_v6_et = mk_ipv6_reverse_zone (48 / 4) "tailscale";
-        reverse_v6_ts = mk_ipv6_reverse_zone (64 / 4) "easytier";
-      };
-  };
+    };
 
   services.traefik = {
     staticConfigOptions.entryPoints.dot.address = ":853"; # Add the standard DoT port as a TCP entrypoint

@@ -101,5 +101,5 @@ in
   nixos_configurations.${name} = nixos_cfg;
   # packages.${name} = nixos_sd_image.config.system.build.images.sd-card; # Generate iso image
   packages.${name} = nixos_sd_image.config.system.build.sdImage;
-  deploy-rs_nodes.${name} = mylib.genDeployNode const.networking.hostAddrs.${name} nixos_cfg;
+  deploy_nodes.${name} = mylib.genDeployNode nixos_cfg.config.vars.hostAddrs.${name} nixos_cfg;
 }

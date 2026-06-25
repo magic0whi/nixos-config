@@ -5,9 +5,7 @@
   ...
 }:
 let
-  ifaces = const.networking.hostAddrs.${config.networking.hostName};
-  iface_wire = builtins.elemAt ifaces 2;
-  iface_wlan = builtins.elemAt ifaces 3;
+  nics = config.vars.hostAddrs.${config.networking.hostName};
 in
 {
   boot.extraModulePackages = [ config.boot.kernelPackages.rtl8812au ];
@@ -20,7 +18,7 @@ in
   };
   services.hostapd = {
     enable = true;
-    radios.${iface_wlan.name} = {
+    radios.${nics.wireless.name} = {
       band = "2g"; # "5g" is `hw_mode=a`, "2g" is `hw_mode=g`
       # Primary control channel, `0` use ACS (not all devices supported)
       channel = 6;
@@ -40,7 +38,7 @@ in
       # These are in Band 2 Capabilities
       # wifi5.capabilities = ["MAX-MPDU-11454" "SHORT-GI-80" "TX-STBC-2BY1" "SU-BEAMFORMEE" "HTC-VHT"];
       networks = {
-        ${iface_wlan.name} = {
+        ${nics.wireless.name} = {
           ssid = "Proteus_AP";
           settings = {
             # vht_oper_centr_freq_seg0_idx = "155"; # Center frequency index (only for 80MHz or wider)
@@ -59,16 +57,16 @@ in
       };
     };
   };
-  networking.interfaces.${iface_wlan.name}.ipv4.addresses = [
+  networking.interfaces.${nics.wireless.name}.ipv4.addresses = [
     {
-      address = iface_wlan.priv_ipv4;
-      prefixLength = iface_wlan.ipv4_prefix_len;
+      address = nics.wireless.ipv4NoCidr;
+      prefixLength = lib.toInt (lib.last (lib.splitString "/" nics.wireless.ipv4));
     }
   ];
   networking.nftables.tables = lib.mkIf config.services.sing-box.enable {
     hostapd_bypass = {
       family = "inet";
-      content = with (builtins.head config.networking.interfaces.${iface_wlan.name}.ipv4.addresses); ''
+      content = with (builtins.head config.networking.interfaces.${nics.wireless.name}.ipv4.addresses); ''
         chain prerouting {
           type filter hook prerouting priority dstnat - 5; policy accept;
 
@@ -82,7 +80,7 @@ in
     };
   };
   networking.firewall.extraInputRules =
-    with (builtins.head config.networking.interfaces.${iface_wlan.name}.ipv4.addresses); ''
+    with (builtins.head config.networking.interfaces.${nics.wireless.name}.ipv4.addresses); ''
       ip saddr ${address}/${toString prefixLength} accept comment "Allow hostapd clients to reach auto_redirect ports"
     '';
   services.dnsmasq = {
@@ -90,7 +88,7 @@ in
     settings = {
       # We can keep systemd-resolved listening on 127.0.0.53:53 and keep dnsmasq solely on the wlan interface by telling
       # it to only bind there, this prevents conflicts with systemd-resolved
-      interface = iface_wlan.name;
+      interface = nics.wireless.name;
       bind-interfaces = true;
       dhcp-range = [ "192.168.12.10,192.168.12.240,12h" ];
       # Tell DHCP clients to use 223.5.5.5 as their DNS server so sing-box can hijack
@@ -100,7 +98,7 @@ in
   networking.nat = {
     enable = true;
     # The interface connected to the internet (e.g., eth0, wlan0 onboard)
-    externalInterface = iface_wire.name;
-    internalInterfaces = [ iface_wlan.name ]; # The interface acting as the hotspot
+    externalInterface = nics.wire.name;
+    internalInterfaces = [ nics.wireless.name ]; # The interface acting as the hotspot
   };
 }
