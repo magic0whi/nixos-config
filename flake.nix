@@ -132,8 +132,8 @@
       };
     };
     dns = {
-      # url = "github:kirelagin/dns.nix";
-      url = "path:/home/proteus/Works-References/dns.nix";
+      url = "github:magic0whi/dns.nix";
+      # url = "path:/home/proteus/Works-References/dns.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

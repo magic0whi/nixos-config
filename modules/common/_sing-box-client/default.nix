@@ -142,7 +142,9 @@ lib.mkMerge (
               # I have custom NS setup, so I still need to specify here to prevent sing-box hijack my NS queries
               "10.0.0.0/24"
               "fdfe:dcba:9877::2/64"
-            ];
+            ]
+            # I have split DNS listen on 172.17.0.1 when docker is enabled
+            ++ lib.optional config.virtualisation.docker.enable "172.17.0.1/32";
           })
           # FakeIP-only mode
           (lib.mkIf isServer {

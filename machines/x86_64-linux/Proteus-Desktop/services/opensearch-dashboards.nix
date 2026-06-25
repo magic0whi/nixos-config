@@ -1,6 +1,7 @@
 {
   config,
   const,
+  lib,
   ...
 }:
 let
@@ -34,7 +35,7 @@ in
             # ssl.certificateAuthorities: [ "/etc/ssl/certs/ca-certificates.crt" ]
             hosts: [ "https://nixos-search.${const.domain}/backend" ]
             username: kibanaserver
-            # opensearch-dashboards don't suppport urlencode
+            # NOTE opensearch-dashboards don't suppport urlencode
             password: '${config.sops.placeholder.opensearch_dashboards_password}'
             requestHeadersAllowlist: ["securitytenant","Authorization"]
 
@@ -75,10 +76,8 @@ in
       service = "opensearch-dashboards";
       tls = { };
     };
-    services.opensearch-dashboards.loadBalancer.servers = [
-      {
-        url = "http://127.0.0.1:${toString opensearch_dashboards_port}";
-      }
-    ];
+    services.opensearch-dashboards.loadBalancer.servers = lib.singleton {
+      url = "http://127.0.0.1:${toString opensearch_dashboards_port}";
+    };
   };
 }

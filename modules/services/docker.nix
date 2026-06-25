@@ -9,6 +9,7 @@ let
   docker_cidr = "172.16.0.0-172.31.255.252";
 in
 {
+  services.resolved.settings.Resolve.DNSStubListenerExtra = "172.17.0.1"; # for split DNS
   users.users.${const.username}.extraGroups = [ "docker" ];
   #  With auto_redirect enabled, sing-box allocates a dynamic local TCP port and installs several nft rules. Because
   # `redirect` rewrites the packet destination to the host, traffic finally enters the INPUT chain. But nixos-fw's
@@ -37,6 +38,7 @@ in
       # Enables pulling using containerd, which supports restarting from a partial pull.
       # Ref https://docs.docker.com/storage/containerd/
       features.containerd-snapshotter = true;
+      dns = [ "172.17.0.1" ]; # systemd-resolved for split DNS
     };
   };
 }

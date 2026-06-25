@@ -92,14 +92,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1782317042,
-        "narHash": "sha256-CZ97HlCApdOtqIR5Vb9lbsSEMSdPxrws1MOWUGFQOC8=",
-        "path": "/home/proteus/Works-References/dns.nix",
-        "type": "path"
+        "lastModified": 1782324651,
+        "narHash": "sha256-agGRz7TziK0M26kbFLY2QjsMKwx6ZsLT+josBHR23J8=",
+        "owner": "magic0whi",
+        "repo": "dns.nix",
+        "rev": "21758cb568569ba6e79e0573ebd7ec85facf29f6",
+        "type": "github"
       },
       "original": {
-        "path": "/home/proteus/Works-References/dns.nix",
-        "type": "path"
+        "owner": "magic0whi",
+        "repo": "dns.nix",
+        "type": "github"
       }
     },
     "flake-compat": {
