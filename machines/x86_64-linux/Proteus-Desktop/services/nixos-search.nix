@@ -266,8 +266,6 @@ in
       # PEM file containing the root CA(s)
       "plugins.security.ssl.transport.pemtrustedcas_filepath" = "${certs_dir}/opensearch.crt";
       # "transport.ssl.enforce_hostname_verification" = false;
-
-      "plugins.performance_analyzer.enabled" = false;
     };
   };
   services.caddy.virtualHosts."http://nixos-search.${const.domain}:${toString const.networking.caddyPort}" =
@@ -350,18 +348,46 @@ in
 
           # Wait for yellow status
           while true; do
-            RESPONSE=$(${lib.getExe pkgs.curl} -u aWVSALXpZv:X8gPHnzL52wFEekuxsfQ9cSh -sS --cacert ${
+            RESPONSE=$(${pkgs.curl}/bin/curl -u aWVSALXpZv:X8gPHnzL52wFEekuxsfQ9cSh -sS --cacert ${
               cfg.settings."plugins.security.ssl.transport.pemcert_filepath"
             } \
               "https://${cfg.settings."network.host"}:${
                 toString cfg.settings."http.port"
               }/_cluster/health?wait_for_status=yellow&timeout=1s" 2>/dev/null || echo "{}")
 
-            HEALTH=$(echo "$RESPONSE" | ${lib.getExe pkgs.jq} -r '.status // "red"' 2>/dev/null || echo "red")
+            HEALTH=$(echo "$RESPONSE" | ${pkgs.jq}/bin/jq -r '.status // "red"' 2>/dev/null || echo "red")
             if [ "$HEALTH" = "yellow" ] || [ "$HEALTH" = "green" ]; then
               break
             fi
             sleep 2
+          done
+
+          while true; do
+            SETTINGS=$(${pkgs.curl}/bin/curl -u aWVSALXpZv:X8gPHnzL52wFEekuxsfQ9cSh -sS --cacert ${
+              cfg.settings."plugins.security.ssl.transport.pemcert_filepath"
+            } \
+              "https://${cfg.settings."network.host"}:${
+                toString cfg.settings."http.port"
+              }/_all/_settings" 2>/dev/null || echo "{}")
+
+            if echo "$SETTINGS" | grep -q '"read_only_allow_delete":"true"'; then
+              echo "================================================================================="
+              echo '🚨 MANUAL INTERVENTION REQUIRED: OpenSearch indices are locked in read-only mode!'
+              echo "This could happen when the disk space is full"
+              echo '1. Free up disk space'
+              echo '2. Clear the block:'
+              echo '   curl -sS -X PUT \'
+              echo '     --cacert ${cfg.settings."plugins.security.ssl.transport.pemcert_filepath"} \'
+              echo '     -H "Authorization: Bearer <TOKEN>"'
+              echo '     -H \"Content-Type: application/json\" \'
+              echo "     -d '{\"index.blocks.read_only_allow_delete\": null}' \\"
+              echo '     "https://${cfg.settings."network.host"}:${toString cfg.settings."http.port"}/_all/_settings"'
+              echo '======================================================================'
+              sleep 30
+            else
+              echo "No read-only block detected. Proceeding with security setup..."
+              break
+            fi
           done
 
           # Apply the configuration to the OpenSearch index
