@@ -32,34 +32,23 @@ let
       # -> { subname1.A = [ "11.4.5.14" ];  subname2.A = [ "11.4.5.14" ]; ... }
       concat_map_subs = type: target: builtins.foldl' (acc: sub: acc // { ${sub}.${type} = lib.singleton target; }) { };
 
-      # Traverse NIC's subdomains (may has types A, AAAA, CNAME)
-      # { A = [ subname1 ... ]; AAAA = [ subname1 ... ]; CNAME = [ subnasme2 ...]; }
+      # Traverse NIC's subdomains (may have types A, AAAA)
+      # { A = [ subname1 ... ]; AAAA = [ subname1 ... ]; }
       #  -> [
       #   { subname1.A = nic.ipv4NoCidr; }
       #   { subname1.AAAA = nic.ipv6NoCidr; }
-      #   { subname2.CNAME = hostname.domain. }
       # ]
       # I can do recursive merge but it's senseless at this stage as other NICs may contain same subname, as well as
       # other hosts, so just make all the records molecule and finally do `lib.mkMerge` at the option level.
       concat_map_sub_types =
-        hostname: nic:
-        lib.mapAttrsToList (
-          type:
-          concat_map_subs type (
-            if type == "A" then
-              nic.ipv4NoCidr
-            else if type == "AAAA" then
-              nic.ipv6NoCidr
-            else
-              "${hostname}.${const.domain}."
-          )
-        ) nic.subdomains;
+        nic:
+        lib.mapAttrsToList (type: concat_map_subs type (if type == "A" then nic.ipv4NoCidr else nic.ipv6NoCidr)) nic.subdomains;
 
       # Traverse hosts' NICs
-      concat_map_hostname = hostname: host: lib.concatMap (concat_map_sub_types hostname) (builtins.attrValues host);
+      concat_map_nics = host: lib.concatMap concat_map_sub_types (builtins.attrValues host);
     in
     # Traverse hosts
-    builtins.concatLists (lib.mapAttrsToList concat_map_hostname hostAddrs);
+    lib.concatMap concat_map_nics (builtins.attrValues hostAddrs);
 
   # [ "@" subname1 ] -> [ example.com. subname1.example.com. ]
   gen_ptr_targets =
@@ -72,7 +61,7 @@ let
   mkIPv4ReverseRecords =
     depth: nicName:
     let
-      # { A = [ subname1 ...]; AAAA = [ subname2 ...]; CNAME = [ subname3 ...]; } -> [ subname1 subname3 ... ]
+      # { A = [ subname1 ...]; AAAA = [ subname2 ...]; } -> [ subname1 ... ]
       extract_v4_compat_subs = lib.foldlAttrs (
         acc: type: subs:
         acc ++ lib.optionals (type != "AAAA") (gen_ptr_targets subs)
@@ -91,7 +80,7 @@ let
   mkIPv6ReverseRecords =
     depth: nicName:
     let
-      # { A = [ subname1 ...]; AAAA = [ subname2 ...]; CNAME = [ subname3 ...]; } -> [ subname2 subname3 ... ]
+      # { A = [ subname1 ...]; AAAA = [ subname2 ...]; } -> [ subname2 ... ]
       extract_v6_compat_subs = lib.foldlAttrs (
         acc: type: subs:
         acc ++ lib.optionals (type != "A") (gen_ptr_targets subs)

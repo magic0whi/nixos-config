@@ -13,13 +13,8 @@ let
         default = [ ];
         description = "List of subdomains that should resolve to this interface's IPv6 address.";
       };
-      CNAME = lib.mkOption {
-        type = with lib.types; listOf str;
-        default = [ ];
-        description = ''
-          List of subdomains that should be aliased to this host's hostname via CNAME records.
-        '';
-      };
+      # NOTE: CNAME is problematic when specify at NIC level, and it will prevent other hosts share the same subname since
+      # it only allows one target, so it's better define A/AAAA directly
     };
     config = lib.mkIf _nicCfg.config.regHost (
       lib.mkMerge [
