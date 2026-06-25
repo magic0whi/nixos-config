@@ -1,8 +1,5 @@
 {
   config,
-  lib,
-  machineConfigs,
-  const,
   ...
 }:
 let
@@ -26,31 +23,4 @@ in
       }
     ];
   };
-  systemd.network.networks."50-easytier-dns" =
-    let
-      ns_hostname = const.networking.findHost "ns1";
-    in
-    {
-      name = nic_name;
-      networkConfig.KeepConfiguration = "yes";
-      domains = [
-        "${const.domain}" # Search Domain
-      ]
-      # Routing Domain for reverse zones
-      ++ lib.remove "~${const.domain}" (
-        lib.mapAttrsToList (
-          _: zone:
-          if (lib.isDerivation zone.file) then
-            "~${lib.removeSuffix ".zone" zone.file.name}" # The '~' prefix makes this a routing domain
-          else
-            "~${lib.removeSuffix ".zone" zone.file}"
-        ) machineConfigs.${ns_hostname}.config.services.bind.zones
-      );
-      dns =
-        let
-          iface = builtins.elemAt const.networking.hostAddrs.${ns_hostname} 1;
-        in
-        lib.optional (iface ? ipv4) "${iface.ipv4}#${const.domain}"
-        ++ lib.optional (iface ? ipv6) "${iface.ipv6}#${const.domain}";
-    };
 }

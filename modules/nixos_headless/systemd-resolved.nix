@@ -1,6 +1,8 @@
 {
   config,
   const,
+  lib,
+  machineConfigs,
   ...
 }:
 {
@@ -11,6 +13,39 @@
     # proxied apex domains like "com"
     settings.Resolve.DNSSEC = if config.services.sing-box.enable then false else "allow-downgrade";
   };
+
+  systemd.network.networks."50-overlay-dns" =
+    let
+      ns_hostname = const.networking.findHost "ns1";
+    in
+    {
+      name =
+        if config.services.easytier.enable then
+          config.services.easytier.instances.main.extraSettings.flags.dev_name
+        else
+          config.services.tailscale.interfaceName;
+      networkConfig.KeepConfiguration = "yes";
+      domains = [
+        "${const.domain}" # Search Domain
+      ]
+      # Routing Domain for reverse zones
+      ++ lib.remove "~${const.domain}" (
+        lib.mapAttrsToList (
+          _: zone:
+          if (lib.isDerivation zone.file) then
+            "~${lib.removeSuffix ".zone" zone.file.name}" # The '~' prefix makes this a routing domain
+          else
+            "~${lib.removeSuffix ".zone" zone.file}"
+        ) machineConfigs.${ns_hostname}.config.services.bind.zones
+      );
+      dns =
+        let
+          iface = builtins.elemAt const.networking.hostAddrs.${ns_hostname} 0;
+        in
+        lib.optional (iface ? ipv4) "${iface.ipv4}#${const.domain}"
+        ++ lib.optional (iface ? ipv6) "${iface.ipv6}#${const.domain}";
+    };
+
   # Trust Island
   environment.etc."dnssec-trust-anchors.d/${const.domain}.positive".text = ''
     ${const.domain}. IN DS 40751 15 2 EFFF70FD3922613584774DE050E31D5A3FFF988E45EB5C75296BF448B5B01FCF

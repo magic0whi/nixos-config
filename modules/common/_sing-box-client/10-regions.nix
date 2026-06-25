@@ -5,7 +5,7 @@ let
       tag = "HongKong";
       type = "selector";
       outbounds = [
-        "Proteus-NixOS-5"
+        # "Proteus-NixOS-5"
         "{all}"
       ];
       filter = [
@@ -19,7 +19,7 @@ let
       tag = "UnitedKingdom";
       type = "selector";
       outbounds = [
-        "Proteus-NixOS-4"
+        # "Proteus-NixOS-4"
         "{all}"
       ];
       filter = [
@@ -33,7 +33,7 @@ let
       tag = "UnitedStates";
       type = "selector";
       outbounds = [
-        "Proteus-NixOS-0"
+        # "Proteus-NixOS-0"
         "{all}"
       ];
       filter = [

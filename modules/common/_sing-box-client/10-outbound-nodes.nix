@@ -25,18 +25,19 @@ let
         // node
       )
       [
-        {
-          tag = "Proteus-NixOS-0";
-          server._secret = config.sops.secrets.easytier_peer_0.path;
-        }
-        {
-          tag = "Proteus-NixOS-4";
-          server._secret = config.sops.secrets.easytier_peer_4.path;
-        }
-        {
-          tag = "Proteus-NixOS-5";
-          server._secret = config.sops.secrets.easytier_peer_5.path;
-        }
+        # TODO: temporary disable
+        # {
+        #   tag = "Proteus-NixOS-0";
+        #   server._secret = config.sops.secrets.easytier_peer_0.path;
+        # }
+        # {
+        #   tag = "Proteus-NixOS-4";
+        #   server._secret = config.sops.secrets.easytier_peer_4.path;
+        # }
+        # {
+        #   tag = "Proteus-NixOS-5";
+        #   server._secret = config.sops.secrets.easytier_peer_5.path;
+        # }
       ]
   # ++ lib.singleton {
   #   tag = "Socks5";
