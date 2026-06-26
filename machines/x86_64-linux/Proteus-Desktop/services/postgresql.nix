@@ -92,7 +92,7 @@ in
     # package = nixpkgs-postgresql.legacyPackages.${
     #   pkgs.stdenv.hostPlatform.system
     # }.postgresql.override {ldapSupport = true;};
-    package = pkgs.postgresql.override { ldapSupport = true; };
+    package = pkgs.postgresql_17.override { ldapSupport = true; };
     enableJIT = true;
     enableTCPIP = true;
     settings = {
@@ -105,7 +105,7 @@ in
     # NOTE: DO NOT USE `services.postgresql.authentication`, because I use SOPS-templateed
     # `services.postgresql.settings.hba_file` instead
     ensureDatabases = [
-      "mydatabase" # TODO: For learning
+      "playground" # TODO: For learning
       "atuin"
       machine_cfg.paperless.services.paperless.user
       machine_cfg.authelia.services.authelia.instances.main.user

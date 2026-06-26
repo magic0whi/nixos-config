@@ -138,10 +138,10 @@ in
   objectClass: person
   objectClass: organizationalPerson
   objectClass: inetOrgPerson
-  uid: ${toString config.ids.uids.grafana}
+  uid: grafana
   o: Proteus Homelab
   cn: Grafana Database Auth Service
   sn: Service
-  description: Dedicated LDAP account for authenticating database user
+  description: Dedicated LDAP account for authenticating database user and prometheus user
   userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$JQgfWUpO29+6dRxSw4ubiQ$rOHob39QO18/4PIxhmvHOpMOo1bBdDrMMgB7NP7NvLY
 ''

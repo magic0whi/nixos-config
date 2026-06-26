@@ -31,29 +31,13 @@
       #   static_configs = [ { targets = [ "127.0.0.1:${toString config.services.prometheus.exporters.restic.port}" ]; } ];
       # }
     ];
-    exporters = {
-      # Exposes overall system network traffic (eth0, etc.)
-      node = {
-        enable = true;
-        enabledCollectors = [
-          "systemd"
-          "netdev"
-        ];
-      };
-      systemd.enable = true;
-      # restic = {
-      #   enable = true;
-      #   # Restic exporter requires either a repository or repositoryFile to be set [file:2]
-      #   repository = "s3:https://s3.example.com/bucket";
-      #   # passwordFile = "/path/to/restic/password";
-      # };
-    };
   };
 
   services.traefik.dynamicConfigOptions.http = {
     routers.prometheus = {
       rule = "Host(`prometheus.${const.domain}`)";
       entryPoints = [ "websecure" ];
+      middlewares = [ "authelia-auth" ];
       service = "prometheus";
       tls = { };
     };
