@@ -19,19 +19,61 @@ in
   sops =
     let
       sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
+
+      restart_units = with config.virtualisation.oci-containers.containers; {
+        plane-web = "${plane-web.serviceName}.service";
+        plane-space = "${plane-space.serviceName}.service";
+        plane-admin = "${plane-admin.serviceName}.service";
+        plane-live = "${plane-live.serviceName}.service";
+        plane-api = "${plane-api.serviceName}.service";
+        plane-worker = "${plane-worker.serviceName}.service";
+        plane-beat-worker = "${plane-beat-worker.serviceName}.service";
+        plane-migrator = "${plane-migrator.serviceName}.service";
+        plane-db = "${plane-db.serviceName}.service";
+        plane-redis = "${plane-redis.serviceName}.service";
+        plane-mq = "${plane-mq.serviceName}.service";
+        plane-minio = "${plane-minio.serviceName}.service";
+        plane-proxy = "${plane-proxy.serviceName}.service";
+      };
+
+      backend_units = with restart_units; [
+        plane-api
+        plane-worker
+        plane-beat-worker
+        plane-migrator
+      ];
     in
     {
       secrets = {
         # TIP: generate a random secret key using: openssl rand -hex 32
-        plane_postgres_password = { inherit sopsFile; };
-        plane_rabbitmq_password = { inherit sopsFile; };
-        plane_secret_key = { inherit sopsFile; };
-        plane_aws_secret_access_key = { inherit sopsFile; };
-        plane_live_server_secret_key = { inherit sopsFile; };
-        plane_gitea_client_secret = { inherit sopsFile; };
+        plane_postgres_password = {
+          inherit sopsFile;
+          restartUnits = [ restart_units.plane-db ] ++ backend_units;
+        };
+        plane_rabbitmq_password = {
+          inherit sopsFile;
+          restartUnits = [ restart_units.plane-mq ] ++ backend_units;
+        };
+        plane_secret_key = {
+          inherit sopsFile;
+          restartUnits = backend_units;
+        };
+        plane_aws_secret_access_key = {
+          inherit sopsFile;
+          restartUnits = [ restart_units.plane-minio ] ++ backend_units;
+        };
+        plane_live_server_secret_key = {
+          inherit sopsFile;
+          restartUnits = [ restart_units.plane-live ] ++ backend_units;
+        };
+        plane_gitea_client_secret = {
+          inherit sopsFile;
+          restartUnits = backend_units;
+        };
       };
       templates = {
         "plane-app.env" = {
+          restartUnits = backend_units;
           content = ''
             WEB_URL=https://plane.${const.domain}
             CORS_ALLOWED_ORIGINS=https://plane.${const.domain}
@@ -70,12 +112,14 @@ in
           '';
         };
         "plane-minio.env" = {
+          restartUnits = [ restart_units.plane-minio ];
           content = ''
             MINIO_ROOT_USER=access-key
             MINIO_ROOT_PASSWORD=${config.sops.placeholder.plane_aws_secret_access_key}
           '';
         };
         "plane-proxy.env" = {
+          restartUnits = [ restart_units.plane-proxy ] ++ backend_units;
           content = ''
             # Proxy Configuration (proxy-env)
             APP_DOMAIN=plane.${const.domain}
@@ -91,6 +135,7 @@ in
           '';
         };
         "plane-db.env" = {
+          restartUnits = [ restart_units.plane-db ] ++ backend_units;
           content = ''
             POSTGRES_USER=plane
             # NOTE: Changing POSTGRES_PASSWORD here or in secrets.env after the database
@@ -104,9 +149,15 @@ in
           '';
         };
         "plane-redis.env" = {
+          restartUnits = [
+            restart_units.plane-redis
+            restart_units.plane-live
+          ]
+          ++ backend_units;
           content = toEnv { REDIS_URL = "redis://plane-redis:6379/"; };
         };
         "plane-mq.env" = {
+          restartUnits = [ restart_units.plane-mq ];
           content = toEnv {
             RABBITMQ_DEFAULT_USER = "plane";
             RABBITMQ_DEFAULT_PASS = config.sops.placeholder.plane_rabbitmq_password;
@@ -115,6 +166,7 @@ in
         };
 
         "plane-live.env" = {
+          restartUnits = [ restart_units.plane-live ];
           content = toEnv {
             API_BASE_URL = "http://plane-api:8000";
             LIVE_SERVER_SECRET_KEY = "${config.sops.placeholder.plane_live_server_secret_key}";
