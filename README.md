@@ -226,3 +226,12 @@ Inspired by:
 ASCII Logo:
 
 - [darwin-nix](https://github.com/nix-darwin/nix-darwin)
+
+## Contents that Exists before
+
+- mpd - > navidrome
+
+## TODOs
+
+- Limit the snake_name usage: only in `let in`, if a variable across multiple nix, it should be camelCase
+- Remove Cockpit
