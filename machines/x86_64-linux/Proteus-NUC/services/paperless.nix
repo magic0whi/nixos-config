@@ -34,7 +34,7 @@
           PAPERLESS_ADMIN_PASSWORD = mylib.escapeStr config.sops.placeholder.paperless_admin_password;
           PAPERLESS_SOCIALACCOUNT_PROVIDERS = mylib.escapeStr (
             builtins.toJSON {
-              socialaccount_providers.openid_connect.APPS = lib.singleton {
+              openid_connect.APPS = lib.singleton {
                 client_id = "paperless";
                 name = "Authelia";
                 provider_id = "authelia";
