@@ -1,13 +1,14 @@
-{
-  config,
+args@{
   lib,
   mylib,
   const,
+  config,
   pkgs,
   isDarwin ? pkgs.stdenv.isDarwin,
   isLinux ? pkgs.stdenv.isLinux,
   isMobile ? false,
   isServer ? false,
+  ...
 }:
 let
   shared_cfg = {
@@ -227,22 +228,8 @@ lib.mkMerge (
     }
   ]
   # Separate complex config to modular parts
-  ++ map (
-    file:
-    import file (
-      {
-        inherit
-          config
-          lib
-          mylib
-          const
-          isDarwin
-          isLinux
-          isMobile
-          ;
-      }
-      // const.sb
-      // shared_cfg
-    )
-  ) (mylib.scanPath ./.)
+  # NOTE: `args` only has arguments from what this files being imported
+  ++ map (file: import file ({ inherit isDarwin isLinux isMobile; } // args // const.sb // shared_cfg)) (
+    mylib.scanPath ./.
+  )
 )
