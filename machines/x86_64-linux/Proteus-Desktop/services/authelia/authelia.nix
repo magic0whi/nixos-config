@@ -57,7 +57,7 @@ in
     # https://github.com/authelia/authelia/blob/8a7b642dd78f29c76d126b6f53806472b2a360bd/config.template.yml
     settings = {
       log.level = "error";
-      theme = "dark";
+      theme = "auto";
       default_2fa_method = "totp";
       server = {
         address = "tcp://127.0.0.1:9092"; # Use the new server.address syntax required by the module
@@ -66,6 +66,9 @@ in
           write = "120s";
         };
       };
+      # Default: https://www.authelia.com/reference/guides/proxy-authorization/#default-endpoints
+      # Config Ref: https://www.authelia.com/configuration/miscellaneous/server-endpoints-authz/#schemes
+      # endpoints.authz.forward-auth = { };
       session.cookies = [
         {
           # This allows the login cookie to work across all your subdomains
@@ -181,7 +184,9 @@ in
         authelia_port = toString (mylib.getUriPort config.services.authelia.instances.main.settings.server.address);
       in
       {
-        middlewares.authelia-auth.forwardAuth.address = "http://127.0.0.1:${authelia_port}/api/authz/forward-auth?authelia_url=https://auth.${const.domain}/";
+        # Authelia's endpoint name correlates with the path of the endpoint, e.g., /api/authz/forward-auth for forward-auth
+        # Ref: https://www.authelia.com/configuration/miscellaneous/server-endpoints-authz/#name
+        middlewares.authelia-auth.forwardAuth.address = "http://127.0.0.1:${authelia_port}/api/authz/forward-auth?authelia_url=${(builtins.head config.services.authelia.instances.main.settings.session.cookies).authelia_url}/";
         # Router for the login portal
         routers.authelia = {
           rule = "Host(`auth.${const.domain}`)";
