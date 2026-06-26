@@ -17,12 +17,12 @@
       templates."atuin.env" = {
         inherit restartUnits;
         # If using unix socket, Atuin doesn't allow empty host, add a bogus host "114514"
-        # content = mylib.toEnv {
-        #   ATUIN_DB_URI = "postgres://atuin:${config.sops.placeholder.atuin_db_password}@114514/?host=/run/postgresql";
-        # };
         content = mylib.toEnv {
-          ATUIN_DB_URI = "postgres://atuin:${config.sops.placeholder.atuin_db_password}@postgresql.${const.domain}/atuin?sslmode=require";
+          ATUIN_DB_URI = "postgres://atuin:${config.sops.placeholder.atuin_db_password}@114514/?host=/run/postgresql";
         };
+        # content = mylib.toEnv {
+        #   ATUIN_DB_URI = "postgres://atuin:${config.sops.placeholder.atuin_db_password}@postgresql.${const.domain}/atuin?sslmode=require";
+        # };
       };
     };
   services.atuin = {
