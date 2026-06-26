@@ -217,6 +217,8 @@ in
                   "sb-desktop"
                   "syncthing-desktop"
                   "traefik-desktop"
+                  "grafana"
+                  "prometheus"
                 ];
               in
               {

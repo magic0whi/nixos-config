@@ -17,6 +17,37 @@
       "--storage.tsdb.retention.time=365d"
       "--storage.tsdb.retention.size=10GB"
     ];
+    scrapeConfigs = [
+      {
+        job_name = "node";
+        static_configs = [ { targets = [ "127.0.0.1:${toString config.services.prometheus.exporters.node.port}" ]; } ];
+      }
+      {
+        job_name = "systemd";
+        static_configs = [ { targets = [ "127.0.0.1:${toString config.services.prometheus.exporters.systemd.port}" ]; } ];
+      }
+      # {
+      #   job_name = "restic";
+      #   static_configs = [ { targets = [ "127.0.0.1:${toString config.services.prometheus.exporters.restic.port}" ]; } ];
+      # }
+    ];
+    exporters = {
+      # Exposes overall system network traffic (eth0, etc.)
+      node = {
+        enable = true;
+        enabledCollectors = [
+          "systemd"
+          "netdev"
+        ];
+      };
+      systemd.enable = true;
+      # restic = {
+      #   enable = true;
+      #   # Restic exporter requires either a repository or repositoryFile to be set [file:2]
+      #   repository = "s3:https://s3.example.com/bucket";
+      #   # passwordFile = "/path/to/restic/password";
+      # };
+    };
   };
 
   services.traefik.dynamicConfigOptions.http = {

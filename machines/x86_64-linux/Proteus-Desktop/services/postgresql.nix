@@ -111,6 +111,7 @@ in
       machine_cfg.authelia.services.authelia.instances.main.user
       # (builtins.trace machine_config.authelia machine_config.authelia.services.authelia.instances.main.user)
       "nextcloud"
+      "grafana"
     ];
     ensureUsers = [
       {
@@ -135,6 +136,10 @@ in
       }
       {
         name = "nextcloud";
+        ensureDBOwnership = true;
+      }
+      {
+        name = "grafana";
         ensureDBOwnership = true;
       }
     ];

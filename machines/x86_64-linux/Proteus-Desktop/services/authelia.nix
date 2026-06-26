@@ -176,6 +176,7 @@ in
           {
             client_id = "papra";
             client_name = "Papra";
+            # TIP:
             # `nix run nixpkgs#authelia -- crypto rand --length 64 --charset alphanumeric`
             # `nix run nixpkgs#authelia -- crypto hash generate pbkdf2 --variant sha512 --password "$(systemd-ask-password)"`
             # To verify the PBKDF2 digest, run
@@ -320,6 +321,20 @@ in
               "profile"
               "email"
               "groups"
+            ];
+          }
+          {
+            client_id = "grafana";
+            client_name = "Grafana";
+            client_secret = "$pbkdf2-sha512$310000$Pa88imsImH54Txr28109eg$KhvhekOpdjSXC4A60RBpAzeyDj7824/twTeT52bYArZL2RtzkBU49g.0XNp9MMStsM8yJN.JXZeBkOabc07mrA";
+            require_pkce = true;
+            pkce_challenge_method = "S256";
+            redirect_uris = [ "https://grafana.${const.domain}/login/generic_oauth" ];
+            scopes = [
+              "openid"
+              "profile"
+              "groups"
+              "email"
             ];
           }
         ];
