@@ -1,12 +1,10 @@
 {
   const,
   config,
-  lib,
+  mylib,
   ...
 }:
 let
-  toEnv = lib.generators.toKeyValue { };
-
   app_release = "stable";
   plane_path = "${const.storagePath}/plane";
 
@@ -76,7 +74,7 @@ in
       templates = {
         "plane-app.env" = {
           restartUnits = backend_units;
-          content = toEnv {
+          content = mylib.toEnv {
             # For default values, Ref:
             # https://github.com/makeplane/plane/blob/1e8f3630c7697129b61eb57f2453f0bf09224920/apps/api/plane/settings/common.py
             WEB_URL = "https://plane.${const.domain}";
@@ -111,14 +109,14 @@ in
         };
         "plane-minio.env" = {
           restartUnits = [ restart_units.plane-minio ];
-          content = toEnv {
+          content = mylib.toEnv {
             MINIO_ROOT_USER = "access-key";
             MINIO_ROOT_PASSWORD = config.sops.placeholder.plane_aws_secret_access_key;
           };
         };
         "plane-proxy.env" = {
           restartUnits = [ restart_units.plane-proxy ] ++ backend_units;
-          content = toEnv {
+          content = mylib.toEnv {
             APP_DOMAIN = "plane.${const.domain}";
             FILE_SIZE_LIMIT = 5242880;
             BUCKET_NAME = "uploads";
@@ -127,7 +125,7 @@ in
         };
         "plane-db.env" = {
           restartUnits = [ restart_units.plane-db ] ++ backend_units;
-          content = toEnv {
+          content = mylib.toEnv {
             POSTGRES_USER = "plane";
             # NOTE: Changing POSTGRES_PASSWORD here or in secrets.env after the database
             # is already initialized will NOT update the existing database user's
@@ -144,11 +142,11 @@ in
             restart_units.plane-live
           ]
           ++ backend_units;
-          content = toEnv { REDIS_URL = "redis://plane-redis:6379/"; };
+          content = mylib.toEnv { REDIS_URL = "redis://plane-redis:6379/"; };
         };
         "plane-mq.env" = {
           restartUnits = [ restart_units.plane-mq ];
-          content = toEnv {
+          content = mylib.toEnv {
             RABBITMQ_DEFAULT_USER = "plane";
             RABBITMQ_DEFAULT_PASS = config.sops.placeholder.plane_rabbitmq_password;
             RABBITMQ_DEFAULT_VHOST = "plane";
@@ -157,7 +155,7 @@ in
 
         "plane-live.env" = {
           restartUnits = [ restart_units.plane-live ];
-          content = toEnv {
+          content = mylib.toEnv {
             API_BASE_URL = "http://plane-api:8000";
             LIVE_SERVER_SECRET_KEY = config.sops.placeholder.plane_live_server_secret_key;
           };

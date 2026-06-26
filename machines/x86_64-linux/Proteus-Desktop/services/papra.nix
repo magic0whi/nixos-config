@@ -8,8 +8,6 @@
 {
   sops =
     let
-      toEnv = lib.generators.toKeyValue { };
-
       restartUnits = [ "${config.virtualisation.oci-containers.containers.papra.serviceName}.service" ];
       sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
     in
@@ -20,7 +18,7 @@
       };
       templates."papra.env" = {
         inherit restartUnits;
-        content = toEnv {
+        content = mylib.toEnv {
           AUTH_SECRET = config.sops.placeholder.papra_auth_secret;
           AUTH_PROVIDERS_CUSTOMS = builtins.toJSON (
             lib.singleton {

@@ -102,6 +102,8 @@ in
       encode
     '';
   };
+
+  toEnv = lib.generators.toKeyValue { };
   ## END pkgs agnostic functions
   ## BEGIN pkgs dependent functions
   mkForPkgs = pkgs: {
