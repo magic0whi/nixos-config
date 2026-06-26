@@ -28,26 +28,22 @@
         # Fixes `paperless-manage`
         # https://github.com/NixOS/nixpkgs/blob/15f4ee454b1dce334612fa6843b3e05cf546efab/nixos/modules/services/misc/paperless.nix#L53
         owner = config.services.paperless.user;
-        content =
-          let
-            escape = str: "'${str}'";
-          in
-          mylib.toEnv {
-            # paperless-manage use bash `souece` to import environments
-            PAPERLESS_DBPASS = escape config.sops.placeholder.paperless_dbpass;
-            PAPERLESS_ADMIN_PASSWORD = escape config.sops.placeholder.paperless_admin_password;
-            PAPERLESS_SOCIALACCOUNT_PROVIDERS = escape (
-              builtins.toJSON {
-                socialaccount_providers.openid_connect.APPS = lib.singleton {
-                  client_id = "paperless";
-                  name = "Authelia";
-                  provider_id = "authelia";
-                  secret = config.sops.placeholder.paperless_authelia_secret;
-                  settings.server_url = "https://auth.${const.domain}/.well-known/openid-configuration";
-                };
-              }
-            );
-          };
+        content = mylib.toEnv {
+          # paperless-manage use bash `souece` to import environments
+          PAPERLESS_DBPASS = mylib.escapeStr config.sops.placeholder.paperless_dbpass;
+          PAPERLESS_ADMIN_PASSWORD = mylib.escapeStr config.sops.placeholder.paperless_admin_password;
+          PAPERLESS_SOCIALACCOUNT_PROVIDERS = mylib.escapeStr (
+            builtins.toJSON {
+              socialaccount_providers.openid_connect.APPS = lib.singleton {
+                client_id = "paperless";
+                name = "Authelia";
+                provider_id = "authelia";
+                secret = config.sops.placeholder.paperless_authelia_secret;
+                settings.server_url = "https://auth.${const.domain}/.well-known/openid-configuration";
+              };
+            }
+          );
+        };
       };
     };
   services.paperless = {

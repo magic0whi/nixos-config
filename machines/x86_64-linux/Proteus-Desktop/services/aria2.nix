@@ -1,6 +1,7 @@
 {
   config,
   const,
+  lib,
   ...
 }:
 let
@@ -128,8 +129,8 @@ in
       tls = { };
     };
     # Even though it's WebSockets, we define it as http://
-    services.aria2-rpc.loadBalancer.servers = [
-      { url = "http://127.0.0.1:${toString config.services.aria2.settings.rpc-listen-port}"; }
-    ];
+    services.aria2-rpc.loadBalancer.servers = lib.singleton {
+      url = "http://127.0.0.1:${toString config.services.aria2.settings.rpc-listen-port}";
+    };
   };
 }

@@ -1,6 +1,7 @@
 {
   config,
   const,
+  mylib,
   ...
 }:
 {
@@ -18,14 +19,17 @@
     };
     templates = {
       "aws_credentials" = {
-        content = ''
-          [nixbuilder]
-          aws_access_key_id=${config.sops.placeholder.aws_access_key}
-          aws_secret_access_key=${config.sops.placeholder.aws_secret_key}
-        '';
+        content = mylib.toINI {
+          nixbuilder = {
+            aws_access_key_id = config.sops.placeholder.aws_access_key;
+            aws_secret_access_key = config.sops.placeholder.aws_secret_key;
+          };
+        };
         path = "${config.home.homeDirectory}/.aws/credentials";
       };
-      "nix-access-tokens.conf".content = "access-tokens = github.com=${config.sops.placeholder.github_access_tokens}";
+      "nix-access-tokens.conf".content = mylib.toConf {
+        access-tokens = "github.com=${config.sops.placeholder.github_access_tokens}";
+      };
     };
   };
   nix.extraOptions = ''

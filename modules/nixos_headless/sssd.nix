@@ -1,4 +1,9 @@
-{ config, const, ... }:
+{
+  config,
+  const,
+  mylib,
+  ...
+}:
 {
   system.nssDatabases.sudoers = [ "sss" ]; # Use LDAP to distribute configuration of sudo as well
   sops =
@@ -9,9 +14,12 @@
     {
       secrets."sssd_ldap_default_authtok" = { inherit sopsFile restartUnits; };
       templates."sssd.env" = {
-        # https://github.com/NixOS/nixpkgs/blob/15f4ee454b1dce334612fa6843b3e05cf546efab/nixos/modules/services/misc/sssd.nix#L111-L113
         inherit restartUnits;
-        content = "SSSD_LDAP_DEFAULT_AUTHTOK='${config.sops.placeholder.sssd_ldap_default_authtok}'";
+        # https://github.com/NixOS/nixpkgs/blob/15f4ee454b1dce334612fa6843b3e05cf546efab/nixos/modules/services/misc/sssd.nix#L111-L113
+        content = mylib.toEnv {
+          # SSSD needs escape if the password has special symbols
+          SSSD_LDAP_DEFAULT_AUTHTOK = mylib.escapeStr config.sops.placeholder.sssd_ldap_default_authtok;
+        };
       };
     };
   services.sssd = {

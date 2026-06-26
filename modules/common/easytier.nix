@@ -1,4 +1,5 @@
 {
+  mylib,
   config,
   const,
   lib,
@@ -29,11 +30,15 @@
             "easytier_peer_5" = { inherit sopsFile; };
           };
         templates."easytier.env" = {
-          content = ''
-            ET_NETWORK_SECRET=${config.sops.placeholder.easytier_network_secret}
+          content = mylib.toEnv {
+            ET_NETWORK_SECRET = config.sops.placeholder.easytier_network_secret;
             # ET_PEERS uses comma delimiter
-            ET_PEERS=udp://${config.sops.placeholder.easytier_peer_0},udp://${config.sops.placeholder.easytier_peer_4},udp://${config.sops.placeholder.easytier_peer_5}
-          '';
+            ET_PEERS = builtins.concatStringsSep "," [
+              "udp://${config.sops.placeholder.easytier_peer_0}"
+              "udp://${config.sops.placeholder.easytier_peer_4}"
+              "udp://${config.sops.placeholder.easytier_peer_5}"
+            ];
+          };
         };
       };
   services.easytier = {

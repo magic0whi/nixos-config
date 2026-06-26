@@ -105,6 +105,9 @@ in
 
   toEnv = lib.generators.toKeyValue { };
   toYAML = lib.generators.toYAML { };
+  toINI = lib.generators.toINI { };
+  toConf = with lib.generators; toKeyValue { mkKeyValue = mkKeyValueDefault { } " = "; };
+  escapeStr = str: "'${str}'";
   ## END pkgs agnostic functions
   ## BEGIN pkgs dependent functions
   mkForPkgs = pkgs: {

@@ -2,6 +2,7 @@
   config,
   machineConfigs,
   const,
+  mylib,
   ...
 }:
 let
@@ -41,9 +42,9 @@ in
         };
       };
       templates."niks3.env" = {
-        content = ''
-          CONN_URL=postgres://${cfg.user}:${config.sops.placeholder.niks3_db_password}@postgresql.${const.domain}/${cfg.user}?sslmode=require
-        '';
+        content = mylib.toEnv {
+          CONN_URL = "postgres://${cfg.user}:${config.sops.placeholder.niks3_db_password}@postgresql.${const.domain}/${cfg.user}?sslmode=require";
+        };
         inherit restartUnits;
       };
     };

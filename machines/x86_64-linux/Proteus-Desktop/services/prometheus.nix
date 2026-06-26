@@ -1,4 +1,9 @@
-{ config, const, ... }:
+{
+  config,
+  const,
+  lib,
+  ...
+}:
 {
   services.prometheus = {
     enable = true;
@@ -21,8 +26,8 @@
       service = "prometheus";
       tls = { };
     };
-    services.prometheus.loadBalancer.servers = [
-      { url = "http://127.0.0.1:${toString config.services.prometheus.port}"; }
-    ];
+    services.prometheus.loadBalancer.servers = lib.singleton {
+      url = "http://127.0.0.1:${toString config.services.prometheus.port}";
+    };
   };
 }

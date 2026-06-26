@@ -29,16 +29,16 @@
       };
       templates."garage.env" = {
         inherit restartUnits;
-        content = ''
-          GARAGE_RPC_SECRET=${config.sops.placeholder.garage_rpc_secret}
-          GARAGE_ADMIN_TOKEN=${config.sops.placeholder.garage_admin_token}
+        content = mylib.toEnv {
+          GARAGE_RPC_SECRET = config.sops.placeholder.garage_rpc_secret;
+          GARAGE_ADMIN_TOKEN = config.sops.placeholder.garage_admin_token;
           # TODO: For Prometheus
-          # GARAGE_METRICS_TOKEN=
-        '';
+          # GARAGE_METRICS_TOKEN = "";
+        };
       };
       templates."garage-webui.env" = {
         restartUnits = [ "garage-webui.service" ];
-        content = "API_ADMIN_KEY=${config.sops.placeholder.garage_admin_token}";
+        content = mylib.toEnv { API_ADMIN_KEY = config.sops.placeholder.garage_admin_token; };
       };
     };
   # systemd.tmpfiles.settings."10-garage-create-dir" = {
@@ -161,18 +161,16 @@
             path = "/health";
           };
         };
-      garage-webui.loadBalancer.servers = [
-        {
-          url =
-            let
-              find_first_prefix = key: list: builtins.elemAt list (lib.lists.findFirstIndex (i: lib.hasPrefix key i) null list);
-              port = lib.last (
-                lib.splitString "=" (find_first_prefix "PORT=" config.systemd.services.garage-webui.serviceConfig.Environment)
-              );
-            in
-            "http://127.0.0.1:${port}"; # Default :3909
-        }
-      ];
+      garage-webui.loadBalancer.servers = lib.singleton {
+        url =
+          let
+            find_first_prefix = key: list: builtins.elemAt list (lib.lists.findFirstIndex (i: lib.hasPrefix key i) null list);
+            port = lib.last (
+              lib.splitString "=" (find_first_prefix "PORT=" config.systemd.services.garage-webui.serviceConfig.Environment)
+            );
+          in
+          "http://127.0.0.1:${port}"; # Default :3909
+      };
     };
   };
 }

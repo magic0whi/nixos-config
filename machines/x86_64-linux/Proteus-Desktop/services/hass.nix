@@ -2,6 +2,7 @@
   config,
   const,
   pkgs,
+  mylib,
   ...
 }:
 {
@@ -16,7 +17,7 @@
       };
       templates."hass_secrets.yaml" = {
         inherit restartUnits;
-        content = "hass_oidc_secret: ${config.sops.placeholder.hass_oidc_secret}";
+        content = mylib.toYAML { hass_oidc_secret = config.sops.placeholder.hass_oidc_secret; };
       };
     };
   systemd.services.home-assistant = {

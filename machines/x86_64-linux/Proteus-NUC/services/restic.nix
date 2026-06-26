@@ -7,6 +7,7 @@
   config,
   machineConfigs,
   const,
+  mylib,
   ...
 }:
 let
@@ -30,10 +31,10 @@ in
       };
       templates."restic.env" = {
         inherit restartUnits owner;
-        content = ''
-          AWS_ACCESS_KEY_ID=${config.sops.placeholder.restic_aws_access_key}
-          AWS_SECRET_ACCESS_KEY=${config.sops.placeholder.restic_aws_secret_key}
-        '';
+        content = mylib.toEnv {
+          AWS_ACCESS_KEY_ID = config.sops.placeholder.restic_aws_access_key;
+          AWS_SECRET_ACCESS_KEY = config.sops.placeholder.restic_aws_secret_key;
+        };
       };
     };
   services.restic.backups =

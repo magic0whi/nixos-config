@@ -1,6 +1,6 @@
 {
   config,
-  # lib,
+  lib,
   const,
   ...
 }:
@@ -10,8 +10,8 @@
     enable = true;
     settings = {
       BaseUrl = "https://navidrome.${const.domain}";
-      # MusicFolder = config.home-manager.users.${const.username}.xdg.userDirs.music;
       MusicFolder = "${const.storagePath}/share/Music";
+      # NOTE: Rollback from OAuth to builtin IAM requires manually modify the sqlite db to add an admin password
       # ExtAuth = {
       #   TrustedSources = "127.0.0.1/32,::1/128";
       #   LogoutURL = "https://auth.${const.domain}/logout?rd=https://navidrome.${const.domain}";
@@ -40,10 +40,8 @@
         tls = { };
       };
     };
-    services.navidrome.loadBalancer.servers = [
-      (with config.services.navidrome.settings; {
-        url = "http://${Address}:${toString Port}";
-      })
-    ];
+    services.navidrome.loadBalancer.servers = lib.singleton (
+      with config.services.navidrome.settings; { url = "http://${Address}:${toString Port}"; }
+    );
   };
 }

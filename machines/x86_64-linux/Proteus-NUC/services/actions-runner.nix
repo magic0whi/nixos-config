@@ -1,4 +1,5 @@
 {
+  mylib,
   config,
   lib,
   const,
@@ -28,7 +29,7 @@ in
       };
       templates."forgejo_runner_token.env" = {
         restartUnits = restart_runner_units;
-        content = "TOKEN=${config.sops.placeholder.forgejo_runner_token}";
+        content = mylib.toEnv { TOKEN = config.sops.placeholder.forgejo_runner_token; };
         # The module uses DynamicUser
         # owner = config.systemd.services."gitea-runner-${builtins.head (builtins.attrNames config.services.gitea-actions-runner.instances)}".serviceConfig.User;
       };
