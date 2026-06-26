@@ -37,6 +37,7 @@ let
           "modules/nixos_headless/iwd.nix"
           "modules/services/traefik.nix"
           "modules/services/docker.nix"
+          "modules/services/prometheus-exporters.nix"
         ];
 
       hmModules = (with features.hm.common; base ++ seat) ++ features.hm.nixos;

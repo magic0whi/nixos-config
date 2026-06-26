@@ -20,7 +20,14 @@
     scrapeConfigs = [
       {
         job_name = "node";
-        static_configs = [ { targets = [ "127.0.0.1:${toString config.services.prometheus.exporters.node.port}" ]; } ];
+        static_configs = [
+          {
+            # TODO
+            targets = [
+              "127.0.0.1:${toString config.services.prometheus.exporters.node.port}"
+            ];
+          }
+        ];
       }
       {
         job_name = "systemd";
