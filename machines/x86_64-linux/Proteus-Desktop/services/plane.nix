@@ -10,10 +10,12 @@ let
   app_release = "stable";
   plane_path = "${const.storagePath}/plane";
 
-  common_volumes = [
+  backend_volumes = [
     "${./plane_gitea_authelia.py}:/code/plane/authentication/provider/oauth/gitea.py"
     "${config.security.pki.caBundle}:/usr/local/share/ca-certificates/proteus_ca.crt:ro"
   ];
+
+  pgdata = "/var/lib/postgresql/data";
 in
 {
   sops =
@@ -74,79 +76,67 @@ in
       templates = {
         "plane-app.env" = {
           restartUnits = backend_units;
-          content = ''
-            WEB_URL=https://plane.${const.domain}
-            CORS_ALLOWED_ORIGINS=https://plane.${const.domain}
-            REQUESTS_CA_BUNDLE=/usr/local/share/ca-certificates/proteus_ca.crt
-            NODE_EXTRA_CA_CERTS=/usr/local/share/ca-certificates/proteus_ca.crt
-            API_KEY_RATE_LIMIT=60/minute
-            AUTHENTICATION_RATE_LIMIT=10/minute
-            DEBUG=0
-            GUNICORN_WORKERS=1
-            WEBHOOK_ALLOWED_IPS=
-            WEBHOOK_ALLOWED_HOSTS=
+          content = toEnv {
+            # For default values, Ref:
+            # https://github.com/makeplane/plane/blob/1e8f3630c7697129b61eb57f2453f0bf09224920/apps/api/plane/settings/common.py
+            WEB_URL = "https://plane.${const.domain}";
+            CORS_ALLOWED_ORIGINS = "https://plane.${const.domain}";
+            REQUESTS_CA_BUNDLE = "/usr/local/share/ca-certificates/proteus_ca.crt";
+            NODE_EXTRA_CA_CERTS = "/usr/local/share/ca-certificates/proteus_ca.crt";
+            # DEBUG = 1;
+            GUNICORN_WORKERS = 5;
 
             # DB & Auth Secrets
             # Secret Key (Primary cryptographic key for the main backend application)
-            SECRET_KEY=${config.sops.placeholder.plane_secret_key}
-            DATABASE_URL=postgresql://plane:${config.sops.placeholder.plane_postgres_password}@plane-db/plane
-            AMQP_URL=amqp://plane:${config.sops.placeholder.plane_rabbitmq_password}@plane-mq:5672/plane
+            SECRET_KEY = config.sops.placeholder.plane_secret_key;
+            DATABASE_URL = "postgresql://plane:${config.sops.placeholder.plane_postgres_password}@plane-db/plane";
+            AMQP_URL = "amqp://plane:${config.sops.placeholder.plane_rabbitmq_password}@plane-mq:5672/plane";
+
             # Live server environment variables (Shared auth key for real-time WebSocket architecture)
-            LIVE_SERVER_SECRET_KEY=${config.sops.placeholder.plane_live_server_secret_key}
+            LIVE_SERVER_SECRET_KEY = config.sops.placeholder.plane_live_server_secret_key;
 
             # Authelia SSO
-            IS_GITEA_ENABLED=1
-            GITEA_HOST=https://auth.${const.domain}
-            GITEA_CLIENT_ID=plane
-            GITEA_CLIENT_SECRET=${config.sops.placeholder.plane_gitea_client_secret}
-            ENABLE_GITEA_SYNC=1
+            IS_GITEA_ENABLED = 1;
+            GITEA_HOST = "https://auth.${const.domain}";
+            GITEA_CLIENT_ID = "plane";
+            GITEA_CLIENT_SECRET = config.sops.placeholder.plane_gitea_client_secret;
+            ENABLE_GITEA_SYNC = 1;
 
             # S3 Configuration
-            USE_MINIO=1
-            MINIO_ENDPOINT_SSL=0
-            AWS_REGION=
-            AWS_ACCESS_KEY_ID=access-key
-            AWS_SECRET_ACCESS_KEY=${config.sops.placeholder.plane_aws_secret_access_key}
-            AWS_S3_ENDPOINT_URL=http://plane-minio:9000
-            AWS_S3_BUCKET_NAME=uploads
-          '';
+            USE_MINIO = 1;
+            MINIO_ENDPOINT_SSL = 0;
+            AWS_SECRET_ACCESS_KEY = config.sops.placeholder.plane_aws_secret_access_key;
+            AWS_S3_ENDPOINT_URL = "http://plane-minio:9000";
+          };
         };
         "plane-minio.env" = {
           restartUnits = [ restart_units.plane-minio ];
-          content = ''
-            MINIO_ROOT_USER=access-key
-            MINIO_ROOT_PASSWORD=${config.sops.placeholder.plane_aws_secret_access_key}
-          '';
+          content = toEnv {
+            MINIO_ROOT_USER = "access-key";
+            MINIO_ROOT_PASSWORD = config.sops.placeholder.plane_aws_secret_access_key;
+          };
         };
         "plane-proxy.env" = {
           restartUnits = [ restart_units.plane-proxy ] ++ backend_units;
-          content = ''
-            # Proxy Configuration (proxy-env)
-            APP_DOMAIN=plane.${const.domain}
-            FILE_SIZE_LIMIT=5242880
-            # If SSL Cert to be generated, set CERT_EMAIl="email <EMAIL_ADDRESS>"
-            CERT_EMAIL=
-            CERT_ACME_CA=https://acme-v02.api.letsencrypt.org/directory
-            # For DNS Challenge based certificate generation, set the CERT_ACME_DNS, CERT_EMAIL
-            # CERT_ACME_DNS="acme_dns <CERT_DNS_PROVIDER> <CERT_DNS_PROVIDER_API_KEY>"
-            BUCKET_NAME=uploads
-            SITE_ADDRESS=:80
-            TRUSTED_PROXIES=0.0.0.0/0
-          '';
+          content = toEnv {
+            APP_DOMAIN = "plane.${const.domain}";
+            FILE_SIZE_LIMIT = 5242880;
+            BUCKET_NAME = "uploads";
+            SITE_ADDRESS = ":80";
+          };
         };
         "plane-db.env" = {
           restartUnits = [ restart_units.plane-db ] ++ backend_units;
-          content = ''
-            POSTGRES_USER=plane
+          content = toEnv {
+            POSTGRES_USER = "plane";
             # NOTE: Changing POSTGRES_PASSWORD here or in secrets.env after the database
             # is already initialized will NOT update the existing database user's
             # password. You must manually run an SQL command:
             # docker exec -e PGPASSWORD=<old_pw> <container_name> psql -U plane -d plane -c "ALTER USER plane WITH PASSWORD '<new_pw>';"
-            POSTGRES_PASSWORD=${config.sops.placeholder.plane_postgres_password}
-            POSTGRES_DB=plane
-            POSTGRES_PORT=5432
-            PGDATA=/var/lib/postgresql/data
-          '';
+            POSTGRES_PASSWORD = config.sops.placeholder.plane_postgres_password;
+            POSTGRES_DB = "plane";
+            PGDATA = pgdata;
+          };
         };
         "plane-redis.env" = {
           restartUnits = [
@@ -169,7 +159,7 @@ in
           restartUnits = [ restart_units.plane-live ];
           content = toEnv {
             API_BASE_URL = "http://plane-api:8000";
-            LIVE_SERVER_SECRET_KEY = "${config.sops.placeholder.plane_live_server_secret_key}";
+            LIVE_SERVER_SECRET_KEY = config.sops.placeholder.plane_live_server_secret_key;
           };
         };
       };
@@ -230,7 +220,7 @@ in
         templates."plane-redis.env".path
         templates."plane-proxy.env".path
       ];
-      volumes = [ "${plane_path}/logs_api:/code/plane/logs" ] ++ common_volumes;
+      volumes = [ "${plane_path}/logs_api:/code/plane/logs" ] ++ backend_volumes;
       dependsOn = [
         "plane-db"
         "plane-redis"
@@ -247,7 +237,7 @@ in
         templates."plane-redis.env".path
         templates."plane-proxy.env".path
       ];
-      volumes = [ "${plane_path}/logs_worker:/code/plane/logs" ] ++ common_volumes;
+      volumes = [ "${plane_path}/logs_worker:/code/plane/logs" ] ++ backend_volumes;
       dependsOn = [
         "plane-api"
         "plane-db"
@@ -265,7 +255,7 @@ in
         templates."plane-redis.env".path
         templates."plane-proxy.env".path
       ];
-      volumes = [ "${plane_path}/logs_beat-worker:/code/plane/logs" ] ++ common_volumes;
+      volumes = [ "${plane_path}/logs_beat-worker:/code/plane/logs" ] ++ backend_volumes;
       dependsOn = [
         "plane-api"
         "plane-db"
@@ -283,7 +273,7 @@ in
         templates."plane-redis.env".path
         templates."plane-proxy.env".path
       ];
-      volumes = [ "${plane_path}/logs_migrator:/code/plane/logs" ] ++ common_volumes;
+      volumes = [ "${plane_path}/logs_migrator:/code/plane/logs" ] ++ backend_volumes;
       dependsOn = [
         "plane-db"
         "plane-redis"
@@ -300,7 +290,7 @@ in
         "max_connections=1000"
       ];
       environmentFiles = [ config.sops.templates."plane-db.env".path ];
-      volumes = [ "${plane_path}/pgdata:/var/lib/postgresql/data" ];
+      volumes = [ "${plane_path}/pgdata:${pgdata}" ];
       extraOptions = [ "--network=plane" ];
     };
 

@@ -8,6 +8,8 @@
 {
   sops =
     let
+      toEnv = lib.generators.toKeyValue { };
+
       restartUnits = [ "${config.virtualisation.oci-containers.containers.papra.serviceName}.service" ];
       sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
     in
@@ -18,27 +20,25 @@
       };
       templates."papra.env" = {
         inherit restartUnits;
-        content = ''
-          AUTH_SECRET=${config.sops.placeholder.papra_auth_secret}
-          AUTH_PROVIDERS_CUSTOMS=${
-            builtins.toJSON (
-              lib.singleton {
-                providerId = "authelia";
-                providerName = "Authelia";
-                type = "oidc";
-                discoveryUrl = "https://auth.${const.domain}/.well-known/openid-configuration";
-                clientId = "papra";
-                clientSecret = config.sops.placeholder.papra_oidc_client_secret;
-                scopes = [
-                  "openid"
-                  "profile"
-                  "email"
-                ];
-                pkce = true;
-              }
-            )
-          }
-        '';
+        content = toEnv {
+          AUTH_SECRET = config.sops.placeholder.papra_auth_secret;
+          AUTH_PROVIDERS_CUSTOMS = builtins.toJSON (
+            lib.singleton {
+              providerId = "authelia";
+              providerName = "Authelia";
+              type = "oidc";
+              discoveryUrl = "https://auth.${const.domain}/.well-known/openid-configuration";
+              clientId = "papra";
+              clientSecret = config.sops.placeholder.papra_oidc_client_secret;
+              scopes = [
+                "openid"
+                "profile"
+                "email"
+              ];
+              pkce = true;
+            }
+          );
+        };
       };
     };
   virtualisation.oci-containers.containers.papra = {
