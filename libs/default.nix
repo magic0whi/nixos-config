@@ -104,6 +104,7 @@ in
   };
 
   toEnv = lib.generators.toKeyValue { };
+  toYAML = lib.generators.toYAML { };
   ## END pkgs agnostic functions
   ## BEGIN pkgs dependent functions
   mkForPkgs = pkgs: {

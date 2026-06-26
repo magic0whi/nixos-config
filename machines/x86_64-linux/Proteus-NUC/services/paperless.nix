@@ -3,6 +3,7 @@
   lib,
   const,
   pkgs,
+  mylib,
   ...
 }:
 {
@@ -29,24 +30,26 @@
         owner = config.services.paperless.user;
         content =
           let
-            socialaccount_providers.openid_connect.APPS = [
-              {
-                client_id = "paperless";
-                name = "Authelia";
-                provider_id = "authelia";
-                secret = "${config.sops.placeholder.paperless_authelia_secret}";
-                settings.server_url = "https://auth.${const.domain}/.well-known/openid-configuration";
-              }
-            ];
+            escape = str: "'${str}'";
           in
-          ''
-            PAPERLESS_DBPASS='${config.sops.placeholder.paperless_dbpass}'
-            PAPERLESS_ADMIN_PASSWORD='${config.sops.placeholder.paperless_admin_password}'
-            PAPERLESS_SOCIALACCOUNT_PROVIDERS='${builtins.toJSON socialaccount_providers}'
-          '';
+          mylib.toEnv {
+            # paperless-manage use bash `souece` to import environments
+            PAPERLESS_DBPASS = escape config.sops.placeholder.paperless_dbpass;
+            PAPERLESS_ADMIN_PASSWORD = escape config.sops.placeholder.paperless_admin_password;
+            PAPERLESS_SOCIALACCOUNT_PROVIDERS = escape (
+              builtins.toJSON {
+                socialaccount_providers.openid_connect.APPS = lib.singleton {
+                  client_id = "paperless";
+                  name = "Authelia";
+                  provider_id = "authelia";
+                  secret = config.sops.placeholder.paperless_authelia_secret;
+                  settings.server_url = "https://auth.${const.domain}/.well-known/openid-configuration";
+                };
+              }
+            );
+          };
       };
     };
-  # As of 2026-05-01, paperless.nix still hardcoded group to be same with uesr
   services.paperless = {
     domain = "paperless.${const.domain}";
     enable = true;
@@ -93,6 +96,7 @@
     };
   };
 
+  # As of 2026-05-01, paperless.nix still hardcoded group to be same with uesr
   systemd.tmpfiles.settings =
     let
       cfg = config.services.paperless.exporter;
@@ -103,6 +107,7 @@
         group = "storage";
       };
     };
+
   systemd.services =
     let
       cfg = config.services.paperless.exporter;
