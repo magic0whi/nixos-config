@@ -70,7 +70,7 @@
       "automation ui" = "!include automations.yaml";
       "script ui" = "!include scripts.yaml";
       auth_oidc = {
-        client_id = "home-assistant";
+        client_id = "hass";
         client_secret = "!secret hass_oidc_secret";
         discovery_url = "https://auth.${const.domain}/.well-known/openid-configuration";
         display_name = "Authelia";
