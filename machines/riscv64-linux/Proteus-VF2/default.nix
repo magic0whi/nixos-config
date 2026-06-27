@@ -4,13 +4,14 @@
   const,
   nixos-hardware,
   nixpkgs,
+  disko,
   ...
 }:
 let
   name = baseNameOf ./.;
   # TODO: import common modules here is bad practice, blacklist from
   # `const.features` instead
-  nixpkgs_modules = map mylib.relativeToRoot [
+  modules = map mylib.relativeToRoot [
     # "modules/common/easytier.nix"
     # "modules/common/misc.nix"
     # "modules/common/nix.nix"
@@ -33,9 +34,12 @@ let
         mylib
         const
         ;
-      nixpkgsModules =
-        nixpkgs_modules
-        ++ [ nixos-hardware.nixosModules.starfive-visionfive-2 ]
+      modules =
+        modules
+        ++ [
+          disko.nixosModules.disko
+          nixos-hardware.nixosModules.starfive-visionfive-2
+        ]
         ++ [
           {
             nixpkgs.overlays = [
@@ -71,7 +75,7 @@ let
         const
         ;
       machinePath = ./.;
-      nixpkgsModules = nixpkgs_modules ++ [
+      modules = modules ++ [
         {
           # Cross-compile, either
           # nixpkgs.buildPlatform = "x86_64-linux";
@@ -92,10 +96,7 @@ in
   _DEBUG = {
     inherit
       name
-      nixpkgs_modules
-      const
-      mylib
-      nixos_cfg
+      modules
       ;
   };
   nixos_configurations.${name} = nixos_cfg;

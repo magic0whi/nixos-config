@@ -1,4 +1,10 @@
 {
+  lib,
+  self,
+  mylib,
+  ...
+}:
+{
   # Services that uses Authelia as IAM, hosts have these subdomains will be allowed forwardedHeaders in Traefik
   oauthServices = [
     "git"
@@ -33,4 +39,15 @@
       Proteus-NixOS-4 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGvVGDKkAWK2gSnNB+dS8ie2WN5yzeH3/FQAiIXRZ1i8 root@Proteus-NixOS-4";
       Proteus-NixOS-5 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBwHWbs4PsCW9Ji6Z4GepwjrXxhrD1DWGPdtNk9LdXwZ root@Proteus-NixOS-5";
     };
+  allHostAddrs = lib.mapAttrs (name: host: host.config.vars.hostAddrs.${name} or { }) self.nixosConfigurations;
+
+  # allHostAddrs = lib.evalModules {
+  #   modules = [
+  #     import
+  #     (mylib.relativeToRoot "modules/variables/host-addrs.nix")
+  #     config = lib.mapAttrs
+  #     (name: host: host.config.vars.hostAddrs.${name} or { })
+  #     self.nixosConfigurations
+  #   ];
+  # };
 }
