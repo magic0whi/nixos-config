@@ -6,7 +6,7 @@
   ...
 }:
 let
-  ns_hostname = config.utils.findFirstHostBySubdomain "ns1";
+  ns_hostname = const.networking.findFirstHostBySubdomain "ns1";
   zone_names = lib.mapAttrsToList (_: zone: zone.name) machineConfigs.${ns_hostname}.config.services.bind.zones;
 in
 {

@@ -11,7 +11,7 @@
   ...
 }:
 let
-  machine_cfg_s3 = machineConfigs.${config.utils.findFirstHostBySubdomain "s3"}.config;
+  machine_cfg_s3 = machineConfigs.${const.networking.findFirstHostBySubdomain "s3"}.config;
 in
 {
   sops =

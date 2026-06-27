@@ -5,6 +5,47 @@
   mylib,
   ...
 }:
+let
+  custom_module =
+    (lib.evalModules {
+      modules = [
+        (
+          { config, lib, ... }:
+          import (mylib.relativeToRoot "modules/variables/host-addrs.nix") {
+            inherit config lib;
+            isGlobal = true;
+          }
+        )
+        {
+          config.vars.hostAddrs = lib.mkMerge (
+            lib.mapAttrsToList (name: host: {
+              ${name} = host.config.vars.hostAddrs.${name} or { };
+            }) (nixosConfigurations // darwinConfigurations)
+          );
+        }
+        (
+          { config, ... }:
+          {
+            options.utils.findFirstHostBySubdomain = lib.mkOption {
+              type = with lib.types; functionTo (nullOr str);
+              default =
+                sub:
+                lib.findFirst (
+                  hostname:
+                  lib.any (nic: builtins.elem sub nic.subdomains.A || builtins.elem sub nic.subdomains.AAAA) (
+                    builtins.attrValues config.vars.hostAddrs.${hostname}
+                  )
+                ) null (builtins.attrNames config.vars.hostAddrs);
+              description = ''
+                Function that returns the first hostname containing the specified subdomain, or null if not found.
+              '';
+              readOnly = true;
+            };
+          }
+        )
+      ];
+    }).config;
+in
 {
   # Services that uses Authelia as IAM, hosts have these subdomains will be allowed forwardedHeaders in Traefik
   oauthServices = [
@@ -41,23 +82,6 @@
       Proteus-NixOS-5 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBwHWbs4PsCW9Ji6Z4GepwjrXxhrD1DWGPdtNk9LdXwZ root@Proteus-NixOS-5";
     };
 
-  allHostAddrs =
-    (lib.evalModules {
-      modules = [
-        (
-          { config, lib, ... }:
-          import (mylib.relativeToRoot "modules/variables/host-addrs.nix") {
-            inherit config lib;
-            isGlobal = true;
-          }
-        )
-        {
-          config.vars.hostAddrs = lib.mkMerge (
-            lib.mapAttrsToList (name: host: {
-              ${name} = host.config.vars.hostAddrs.${name} or { };
-            }) (nixosConfigurations // darwinConfigurations)
-          );
-        }
-      ];
-    }).config.vars.hostAddrs;
+  allHostAddrs = custom_module.vars.hostAddrs;
+  inherit (custom_module.utils) findFirstHostBySubdomain;
 }

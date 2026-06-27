@@ -1,4 +1,5 @@
 {
+  const,
   config,
   lib,
   machineConfigs,
@@ -6,7 +7,7 @@
   ...
 }:
 let
-  machine_config.immich = machineConfigs.${config.utils.findFirstHostBySubdomain "immich"}.config;
+  machine_config.immich = machineConfigs.${const.networking.findFirstHostBySubdomain "immich"}.config;
 in
 {
   services.postgresql = {

@@ -2,18 +2,18 @@
   baseDN,
   pkgs,
   lib,
-  config,
   machineConfigs,
+  const,
   ...
 }:
 let
   machine_config = {
-    authelia = machineConfigs.${config.utils.findFirstHostBySubdomain "auth"}.config;
-    forgejo = machineConfigs.${config.utils.findFirstHostBySubdomain "git"}.config;
-    immich = machineConfigs.${config.utils.findFirstHostBySubdomain "immich"}.config;
-    paperless = machineConfigs.${config.utils.findFirstHostBySubdomain "paperless"}.config;
-    postgresql = machineConfigs.${config.utils.findFirstHostBySubdomain "postgresql"}.config;
-    niks3 = machineConfigs.${config.utils.findFirstHostBySubdomain "niks3"}.config;
+    authelia = machineConfigs.${const.networking.findFirstHostBySubdomain "auth"}.config;
+    forgejo = machineConfigs.${const.networking.findFirstHostBySubdomain "git"}.config;
+    immich = machineConfigs.${const.networking.findFirstHostBySubdomain "immich"}.config;
+    paperless = machineConfigs.${const.networking.findFirstHostBySubdomain "paperless"}.config;
+    postgresql = machineConfigs.${const.networking.findFirstHostBySubdomain "postgresql"}.config;
+    niks3 = machineConfigs.${const.networking.findFirstHostBySubdomain "niks3"}.config;
   };
 in
 ''

@@ -27,9 +27,9 @@
 let
   backup_location = "${const.storagePath}/psql";
   machine_cfg = {
-    authelia = machineConfigs.${config.utils.findFirstHostBySubdomain "auth"}.config;
-    paperless = machineConfigs.${config.utils.findFirstHostBySubdomain "paperless"}.config;
-    immich = machineConfigs.${config.utils.findFirstHostBySubdomain "immich"}.config;
+    authelia = machineConfigs.${const.networking.findFirstHostBySubdomain "auth"}.config;
+    paperless = machineConfigs.${const.networking.findFirstHostBySubdomain "paperless"}.config;
+    immich = machineConfigs.${const.networking.findFirstHostBySubdomain "immich"}.config;
   };
 in
 {

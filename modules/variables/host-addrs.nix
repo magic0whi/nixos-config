@@ -72,61 +72,44 @@ let
     };
 in
 {
-  options = {
-    vars.hostAddrs = lib.mkOption {
-      type = lib.types.attrsOf (
-        lib.types.submodule (
-          { name, ... }:
-          {
-            freeformType = with lib.types; attrsOf (submodule (nicCfg name));
-          }
-        )
-      );
-      example = {
-        Proteus-MBP14M4P = {
-          tailscale = {
-            ipv4 = "100.95.17.39/10";
-            ipv6 = "fd7a:115c:a1e0::783a:1127/48";
-          };
-          easytier = {
-            regHost = true;
-            ipv4 = "10.0.0.4/24";
-            ipv6 = "fdfe:dcba:9877::4/64";
-          };
+  options.vars.hostAddrs = lib.mkOption {
+    type = lib.types.attrsOf (
+      lib.types.submodule (
+        { name, ... }:
+        {
+          freeformType = with lib.types; attrsOf (submodule (nicCfg name));
+        }
+      )
+    );
+    example = {
+      Proteus-MBP14M4P = {
+        tailscale = {
+          ipv4 = "100.95.17.39/10";
+          ipv6 = "fd7a:115c:a1e0::783a:1127/48";
         };
-        Proteus-NUC =
-          let
-            subs = [ "immich" ];
-          in
-          {
-            tailscale = {
-              ipv4 = "100.64.161.20/10";
-              ipv6 = "fd7a:115c:a1e0::cd3a:a114/48";
-              subdomains = {
-                A = subs;
-                AAAA = subs;
-              };
-            };
-            wire.name = "enp46s0";
-          };
+        easytier = {
+          regHost = true;
+          ipv4 = "10.0.0.4/24";
+          ipv6 = "fdfe:dcba:9877::4/64";
+        };
       };
-      description = "hosts with addresses and subdomains";
+      Proteus-NUC =
+        let
+          subs = [ "immich" ];
+        in
+        {
+          tailscale = {
+            ipv4 = "100.64.161.20/10";
+            ipv6 = "fd7a:115c:a1e0::cd3a:a114/48";
+            subdomains = {
+              A = subs;
+              AAAA = subs;
+            };
+          };
+          wire.name = "enp46s0";
+        };
     };
-    utils.findFirstHostBySubdomain = lib.mkOption {
-      type = with lib.types; functionTo (nullOr str);
-      default =
-        sub:
-        lib.findFirst (
-          hostname:
-          lib.any (nic: builtins.elem sub nic.subdomains.A || builtins.elem sub nic.subdomains.AAAA) (
-            builtins.attrValues config.vars.hostAddrs.${hostname}
-          )
-        ) null (builtins.attrNames config.vars.hostAddrs);
-      description = ''
-        Function that returns the first hostname containing the specified subdomain, or null if not found.
-      '';
-      readOnly = true;
-    };
+    description = "hosts with addresses and subdomains";
   };
 
   config = {

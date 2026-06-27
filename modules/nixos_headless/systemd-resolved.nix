@@ -16,7 +16,7 @@
 
   systemd.network.networks."50-overlay-dns" =
     let
-      ns_hostname = config.utils.findFirstHostBySubdomain "ns1";
+      ns_hostname = const.networking.findFirstHostBySubdomain "ns1";
     in
     {
       name =
