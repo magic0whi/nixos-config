@@ -12,6 +12,7 @@ let
   # TODO: import common modules here is bad practice, blacklist from
   # `const.features` instead
   modules = map mylib.relativeToRoot [
+    "modules/variables/host-addrs.nix"
     # "modules/common/easytier.nix"
     # "modules/common/misc.nix"
     # "modules/common/nix.nix"

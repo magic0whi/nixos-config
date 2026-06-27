@@ -5,6 +5,17 @@
   ...
 }:
 {
+  vars.hostAddrs.${config.networking.hostName} =
+    let
+      subdomains = {
+        A = [ "navidrome" ];
+        AAAA = [ "navidrome" ];
+      };
+    in
+    {
+      tailscale = { inherit subdomains; };
+      easytier = { inherit subdomains; };
+    };
   systemd.services.navidrome.unitConfig.RequiresMountsFor = [ const.storagePath ];
   services.navidrome = {
     enable = true;

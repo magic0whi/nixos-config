@@ -5,6 +5,17 @@
   ...
 }:
 {
+  vars.hostAddrs.${config.networking.hostName} =
+    let
+      subdomains = {
+        A = [ "atuin" ];
+        AAAA = [ "atuin" ];
+      };
+    in
+    {
+      tailscale = { inherit subdomains; };
+      easytier = { inherit subdomains; };
+    };
   sops =
     let
       restartUnits = [ "atuin.service" ];

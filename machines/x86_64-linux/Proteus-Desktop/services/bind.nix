@@ -97,6 +97,24 @@ let
     );
 in
 {
+  vars.hostAddrs.${config.networking.hostName} =
+    let
+      subdomains =
+        let
+          subs = [
+            "@"
+            "ns1"
+          ];
+        in
+        {
+          A = subs;
+          AAAA = subs;
+        };
+    in
+    {
+      tailscale = { inherit subdomains; };
+      easytier = { inherit subdomains; };
+    };
   networking.firewall = {
     allowedTCPPorts = [
       53

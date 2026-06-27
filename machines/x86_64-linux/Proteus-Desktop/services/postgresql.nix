@@ -33,6 +33,17 @@ let
   };
 in
 {
+  vars.hostAddrs.${config.networking.hostName} =
+    let
+      subdomains = {
+        A = [ "postgresql" ];
+        AAAA = [ "postgresql" ];
+      };
+    in
+    {
+      tailscale = { inherit subdomains; };
+      easytier = { inherit subdomains; };
+    };
   networking.firewall.allowedTCPPorts = [ config.services.postgresql.settings.port ];
   sops.secrets =
     let

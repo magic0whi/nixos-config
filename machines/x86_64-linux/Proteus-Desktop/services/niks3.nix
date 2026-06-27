@@ -10,6 +10,17 @@ let
   machine_cfg_s3 = machineConfigs.${const.networking.findFirstHostBySubdomain "s3"}.config;
 in
 {
+  vars.hostAddrs.${config.networking.hostName} =
+    let
+      subdomains = {
+        A = [ "niks3" ];
+        AAAA = [ "niks3" ];
+      };
+    in
+    {
+      tailscale = { inherit subdomains; };
+      easytier = { inherit subdomains; };
+    };
   sops =
     let
       restartUnits = [ "niks3.service" ];

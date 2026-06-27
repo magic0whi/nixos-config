@@ -5,6 +5,17 @@
   ...
 }:
 {
+  vars.hostAddrs.${config.networking.hostName} =
+    let
+      subdomains = {
+        A = [ "prometheus" ];
+        AAAA = [ "prometheus" ];
+      };
+    in
+    {
+      tailscale = { inherit subdomains; };
+      easytier = { inherit subdomains; };
+    };
   services.prometheus = {
     enable = true;
     enableReload = true;

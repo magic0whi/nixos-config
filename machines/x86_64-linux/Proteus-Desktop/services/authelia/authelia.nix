@@ -9,6 +9,17 @@ let
   restartUnits = map (name: "authelia-${name}.service") (builtins.attrNames config.services.authelia.instances);
 in
 {
+  vars.hostAddrs.${config.networking.hostName} =
+    let
+      subdomains = {
+        A = [ "auth" ];
+        AAAA = [ "auth" ];
+      };
+    in
+    {
+      tailscale = { inherit subdomains; };
+      easytier = { inherit subdomains; };
+    };
   sops.secrets =
     let
       sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";

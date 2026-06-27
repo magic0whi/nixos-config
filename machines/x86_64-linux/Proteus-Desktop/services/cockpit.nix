@@ -6,6 +6,17 @@
   ...
 }:
 {
+  vars.hostAddrs.${config.networking.hostName} =
+    let
+      subdomains = {
+        A = [ "cockpit-desktop" ];
+        AAAA = [ "cockpit-desktop" ];
+      };
+    in
+    {
+      tailscale = { inherit subdomains; };
+      easytier = { inherit subdomains; };
+    };
   systemd.services.cockpit-wsinstance-http.environment = {
     # G_MESSAGES_DEBUG = "all";
     REQUESTS_CA_BUNDLE = config.security.pki.caBundle; # Use system CA for pkgs.python3Packages.requests

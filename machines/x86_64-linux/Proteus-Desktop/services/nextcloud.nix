@@ -16,6 +16,17 @@ let
   ];
 in
 {
+  vars.hostAddrs.${config.networking.hostName} =
+    let
+      subdomains = {
+        A = [ "nextcloud" ];
+        AAAA = [ "nextcloud" ];
+      };
+    in
+    {
+      tailscale = { inherit subdomains; };
+      easytier = { inherit subdomains; };
+    };
   sops.secrets =
     let
       sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";

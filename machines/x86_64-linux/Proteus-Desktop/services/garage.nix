@@ -17,6 +17,27 @@
   ...
 }:
 {
+  vars.hostAddrs.${config.networking.hostName} =
+    let
+      subdomains =
+        let
+          subs = [
+            "*.s3"
+            "*.s3-pub"
+            "s3"
+            "s3-pub"
+            "garage"
+          ];
+        in
+        {
+          A = subs;
+          AAAA = subs;
+        };
+    in
+    {
+      tailscale = { inherit subdomains; };
+      easytier = { inherit subdomains; };
+    };
   sops =
     let
       restartUnits = [ "garage.service" ];

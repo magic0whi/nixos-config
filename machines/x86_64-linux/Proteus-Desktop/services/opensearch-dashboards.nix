@@ -9,6 +9,17 @@ let
   opensearch_dashboards_port = 5601;
 in
 {
+  vars.hostAddrs.${config.networking.hostName} =
+    let
+      subdomains = {
+        A = [ "opensearch-dashboards" ];
+        AAAA = [ "opensearch-dashboards" ];
+      };
+    in
+    {
+      tailscale = { inherit subdomains; };
+      easytier = { inherit subdomains; };
+    };
   sops =
     let
       restartUnits = [ "${config.virtualisation.oci-containers.containers.opensearch-dashboards.serviceName}.service" ];

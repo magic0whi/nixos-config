@@ -10,6 +10,25 @@ let
   web_root = "${const.storagePath}/www";
 in
 {
+  vars.hostAddrs.${config.networking.hostName} =
+    let
+      subdomains =
+        let
+          subs = [
+            "noogle"
+            "notebook"
+            "algo-archive"
+          ];
+        in
+        {
+          A = subs;
+          AAAA = subs;
+        };
+    in
+    {
+      tailscale = { inherit subdomains; };
+      easytier = { inherit subdomains; };
+    };
   systemd.services.caddy.unitConfig.RequiresMountsFor = [ const.storagePath ];
   # systemd.tmpfiles.settings."10-caddy-create-web-root".${web_root}.d = {
   #   user = config.services.caddy.user;

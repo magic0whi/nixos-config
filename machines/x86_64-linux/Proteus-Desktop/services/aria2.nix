@@ -8,6 +8,17 @@ let
   path_prefix = const.storage2Path;
 in
 {
+  vars.hostAddrs.${config.networking.hostName} =
+    let
+      subdomains = {
+        A = [ "aria2" ];
+        AAAA = [ "aria2" ];
+      };
+    in
+    {
+      tailscale = { inherit subdomains; };
+      easytier = { inherit subdomains; };
+    };
   systemd.services.aria2.unitConfig.RequiresMountsFor = [ path_prefix ];
   sops.secrets.aria2_rpc_secret = {
     sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";

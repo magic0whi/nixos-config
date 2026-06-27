@@ -5,6 +5,17 @@
   ...
 }:
 {
+  vars.hostAddrs.${config.networking.hostName} =
+    let
+      subdomains = {
+        A = [ "syncthing-desktop" ];
+        AAAA = [ "syncthing-desktop" ];
+      };
+    in
+    {
+      tailscale = { inherit subdomains; };
+      easytier = { inherit subdomains; };
+    };
   imports = [ (mylib.relativeToRoot "const/syncthing.nix") ];
 
   systemd.services.syncthing.unitConfig.RequiresMountsFor = [ const.storagePath ];

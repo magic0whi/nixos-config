@@ -16,6 +16,17 @@ let
   pgdata = "/var/lib/postgresql/data";
 in
 {
+  vars.hostAddrs.${config.networking.hostName} =
+    let
+      subdomains = {
+        A = [ "plane" ];
+        AAAA = [ "plane" ];
+      };
+    in
+    {
+      tailscale = { inherit subdomains; };
+      easytier = { inherit subdomains; };
+    };
   sops =
     let
       sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";

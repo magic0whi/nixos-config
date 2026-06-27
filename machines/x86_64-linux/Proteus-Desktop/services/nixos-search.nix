@@ -208,7 +208,17 @@ let
     };
 in
 {
-
+  vars.hostAddrs.${config.networking.hostName} =
+    let
+      subdomains = {
+        A = [ "nixos-search" ];
+        AAAA = [ "nixos-search" ];
+      };
+    in
+    {
+      tailscale = { inherit subdomains; };
+      easytier = { inherit subdomains; };
+    };
   sops.secrets.opensearch-dashboards_client_secret = {
     sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
     restartUnits = [ "opensearch.service" ];

@@ -1,8 +1,27 @@
 {
   const,
+  config,
   ...
 }:
 {
+  vars.hostAddrs.${config.networking.hostName} =
+    let
+      subdomains =
+        let
+          subs = [
+            "traefik-desktop"
+            "sb-desktop"
+          ];
+        in
+        {
+          A = subs;
+          AAAA = subs;
+        };
+    in
+    {
+      tailscale = { inherit subdomains; };
+      easytier = { inherit subdomains; };
+    };
   services.traefik = {
     dynamicConfigOptions.http = {
       routers = {
