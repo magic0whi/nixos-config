@@ -138,52 +138,6 @@ in
         # ============================================
         # Homelab's Physical Machines (TODO: Try KubeVirt)
         # ============================================
-        Proteus-MBP14M4P = {
-          tailscale = {
-            inherit regHost;
-            ipv4 = "100.95.17.39/10";
-            ipv6 = "fd7a:115c:a1e0::783a:1127/48";
-          };
-          easytier = {
-            inherit regHost;
-            ipv4 = "10.0.0.4/24";
-            ipv6 = "fdfe:dcba:9877::4/64";
-          };
-        };
-        Proteus-NUC =
-          let
-            subs = [
-              "immich"
-              "jellyfin"
-              "paperless"
-              "sb-nuc"
-              "sunshine"
-              "syncthing-nuc"
-              "traefik-nuc"
-              # "sftpgo"
-            ];
-          in
-          {
-            tailscale = {
-              inherit regHost;
-              ipv4 = "100.64.161.20/10";
-              ipv6 = "fd7a:115c:a1e0::cd3a:a114/48";
-              subdomains = {
-                A = subs;
-                AAAA = subs;
-              };
-            };
-            easytier = {
-              inherit regHost;
-              ipv4 = "10.0.0.2/24";
-              ipv6 = "fdfe:dcba:9877::2/64";
-              subdomains = {
-                A = subs;
-                AAAA = subs;
-              };
-            };
-            wire.name = "enp46s0";
-          };
         Proteus-Desktop =
           let
             subdomains =

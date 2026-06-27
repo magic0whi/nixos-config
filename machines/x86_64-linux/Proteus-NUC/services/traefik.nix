@@ -4,6 +4,17 @@
   ...
 }:
 {
+  vars.hostAddrs.${config.networking.hostName} =
+    let
+      subdomains = {
+        A = [ "traefik-nuc" ];
+        AAAA = [ "traefik-nuc" ];
+      };
+    in
+    {
+      tailscale = { inherit subdomains; };
+      easytier = { inherit subdomains; };
+    };
   services.traefik = {
     dynamicConfigOptions.http = {
       routers = {

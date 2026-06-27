@@ -7,6 +7,17 @@
   ...
 }:
 {
+  vars.hostAddrs.${config.networking.hostName} =
+    let
+      subdomains = {
+        A = [ "paperless" ];
+        AAAA = [ "paperless" ];
+      };
+    in
+    {
+      tailscale = { inherit subdomains; };
+      easytier = { inherit subdomains; };
+    };
   sops =
     let
       sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
