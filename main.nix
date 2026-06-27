@@ -23,7 +23,7 @@ let
           mylib
           lib
           ;
-        inherit (self) nixosConfigurations;
+        inherit (self) nixosConfigurations darwinConfigurations;
       };
       mylib =
         let

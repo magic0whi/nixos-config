@@ -18,7 +18,7 @@ let
       # NOTE: CNAME is problematic when specify at NIC level, and it will prevent other hosts share the same subname since
       # it only allows one target, so it's better define A/AAAA directly
     };
-    config = lib.mkIf _nicCfg.config.regHost (
+    config = lib.mkIf (!isGlobal && _nicCfg.config.regHost) (
       lib.mkMerge [
         (lib.mkIf (_nicCfg.config.ipv4 != null) { A = [ hostname ]; })
         (lib.mkIf (_nicCfg.config.ipv6 != null) { AAAA = [ hostname ]; })
