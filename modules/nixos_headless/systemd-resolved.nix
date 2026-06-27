@@ -38,7 +38,7 @@
 
       dns =
         let
-          ns_host_nics = config.vars.hostAddrs.${ns_hostname};
+          ns_host_nics = const.networking.allHostAddrs.${ns_hostname};
         in
         if config.services.easytier.enable then
           with ns_host_nics.easytier;

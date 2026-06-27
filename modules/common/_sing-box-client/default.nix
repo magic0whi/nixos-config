@@ -145,7 +145,7 @@ lib.mkMerge (
               "fdfe:dcba:9877::2/64"
             ]
             # I have split DNS listen on 172.17.0.1 when docker is enabled
-            ++ lib.optional config.virtualisation.docker.enable "172.17.0.1/32";
+            ++ lib.optional (config.virtualisation.docker.enable or false) "172.17.0.1/32";
           })
           # FakeIP-only mode
           (lib.mkIf isServer {

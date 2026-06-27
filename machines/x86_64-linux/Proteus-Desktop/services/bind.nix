@@ -188,7 +188,7 @@ in
             depth: nic_name:
             let
               name = "${
-                lib.last (dns.lib.mkIPv4ReverseRecord' depth const.networking.allHostAddrs.${hostname}.${nic_name}.ipv4NoCidr)
+                lib.last (dns.lib.mkIPv4ReverseRecord' depth config.vars.hostAddrs.${hostname}.${nic_name}.ipv4NoCidr)
               }.in-addr.arpa";
             in
             shared_zone_cfg

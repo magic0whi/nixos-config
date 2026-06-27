@@ -32,7 +32,7 @@
                 if config.services.easytier.enable then nics.easytier.ipv4NoCidr or fallback else nics.tailscale.ipv4NoCidr or fallback
               }
               Port 22
-          '') config.vars.hostAddrs
+          '') const.networking.allHostAddrs
         ))
       ];
       # Define the host key for remote builders so that Nix can verify all the remote builders.
@@ -40,7 +40,7 @@
       knownHosts = lib.mapAttrs (
         hostname: publicKey:
         let
-          nics = config.vars.hostAddrs.${hostname} or { };
+          nics = const.networking.allHostAddrs.${hostname} or { };
         in
         {
           # Hostname and its IPv4 & IPv6
