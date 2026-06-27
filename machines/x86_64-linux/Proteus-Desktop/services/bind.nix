@@ -238,7 +238,7 @@ in
           rule = builtins.concatStringsSep " " [
             "HostSNI(`${const.domain}`)"
             "|| HostSNI(`ns1.${const.domain}`)"
-            "|| HostSNI(`proteus-nuc.${const.tailnet}`)"
+            "|| HostSNI(`${hostname}.${const.tailnet}`)"
           ];
           entryPoints = [ "dot" ];
           service = "dot";
