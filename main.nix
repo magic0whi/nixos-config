@@ -2,10 +2,10 @@
   lib,
   self,
   inputs,
+  mylib,
   ...
 }:
 let
-  mylib = import ./libs lib;
   ## BEGIN Functions
   # The args given to machines
   gen_machine_args =

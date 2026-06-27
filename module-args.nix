@@ -1,5 +1,6 @@
-{ inputs, ... }:
+{ inputs, lib, ... }:
 {
+  _module.args.mylib = import ./libs lib;
   perSystem =
     { system, ... }:
     {
