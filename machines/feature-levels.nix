@@ -17,7 +17,7 @@
       ];
       baseOverlays = [ inputs.prince213-nix-packages.overlays.default ];
       seat = map mylib.relativeToRoot [
-        "modules/variables/sing-box-subscribe.nix"
+        "${common}/sing-box-subscribe.nix"
         "${common}/sing-box-client.nix"
         "${common}/fonts.nix"
         "${common}/packages.nix"
