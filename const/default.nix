@@ -1,6 +1,7 @@
-{
+args@{
   pkgs,
   mylib,
+  ...
 }:
 {
   username = "proteus";
@@ -82,5 +83,5 @@
 
   domain = "proteus.eu.org";
   tailnet = "tailba6c3f.ts.net";
-  networking = import ./networking.nix;
+  networking = import ./networking.nix args;
 }

@@ -1,6 +1,6 @@
 {
   lib,
-  self,
+  nixosConfigurations,
   mylib,
   ...
 }:
@@ -39,15 +39,33 @@
       Proteus-NixOS-4 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGvVGDKkAWK2gSnNB+dS8ie2WN5yzeH3/FQAiIXRZ1i8 root@Proteus-NixOS-4";
       Proteus-NixOS-5 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBwHWbs4PsCW9Ji6Z4GepwjrXxhrD1DWGPdtNk9LdXwZ root@Proteus-NixOS-5";
     };
-  allHostAddrs = lib.mapAttrs (name: host: host.config.vars.hostAddrs.${name} or { }) self.nixosConfigurations;
+  # allHostAddrs = lib.mapAttrsToList (name: host: {
+  #   ${name} = host.config.vars.hostAddrs.${name} or { };
+  # }) nixosConfigurations;
+  debug = (
+    import (mylib.relativeToRoot "modules/variables/host-addrs.nix") {
+      config = { };
+      inherit lib;
+    }
+  );
 
-  # allHostAddrs = lib.evalModules {
-  #   modules = [
-  #     import
-  #     (mylib.relativeToRoot "modules/variables/host-addrs.nix")
-  #     config = lib.mapAttrs
-  #     (name: host: host.config.vars.hostAddrs.${name} or { })
-  #     self.nixosConfigurations
-  #   ];
-  # };
+  allHostAddrs =
+    (lib.evalModules {
+      modules = [
+        (
+          { config, lib, ... }:
+          import (mylib.relativeToRoot "modules/variables/host-addrs.nix") {
+            inherit config lib;
+            isGlobal = true;
+          }
+        )
+        {
+          config.vars.hostAddrs = lib.mkMerge (
+            lib.mapAttrsToList (name: host: {
+              ${name} = host.config.vars.hostAddrs.${name} or { };
+            }) nixosConfigurations
+          );
+        }
+      ];
+    }).config.vars.hostAddrs;
 }

@@ -7,6 +7,7 @@
   ...
 }:
 let
+  hostname = config.networking.hostName;
   inherit (dns.util.${pkgs.stdenv.system}) writeZone;
   shared_head_cfg = {
     useOrigin = true;
@@ -105,7 +106,7 @@ in
   };
   services.bind =
     let
-      nics = config.vars.hostAddrs.${config.networking.hostName};
+      nics = config.vars.hostAddrs.${hostname};
     in
     {
       enable = true;
@@ -169,7 +170,7 @@ in
             depth: nic_name:
             let
               name = "${
-                lib.last (dns.lib.mkIPv4ReverseRecord' depth config.vars.hostAddrs.Proteus-NUC.${nic_name}.ipv4NoCidr)
+                lib.last (dns.lib.mkIPv4ReverseRecord' depth const.networking.allHostAddrs.${hostname}.${nic_name}.ipv4NoCidr)
               }.in-addr.arpa";
             in
             shared_zone_cfg
@@ -177,14 +178,14 @@ in
               inherit name;
               file =
                 # dns.lib.toString
-                writeZone name (shared_head_cfg // { subdomains = mkIPv4ReverseRecords depth nic_name config.vars.hostAddrs; });
+                writeZone name (shared_head_cfg // { subdomains = mkIPv4ReverseRecords depth nic_name const.networking.allHostAddrs; });
             };
 
           mk_ipv6_reverse_zone =
             depth: nic_name:
             let
               name = "${
-                lib.last (dns.lib.mkIPv6ReverseRecord' depth config.vars.hostAddrs.Proteus-NUC.${nic_name}.ipv6NoCidr)
+                lib.last (dns.lib.mkIPv6ReverseRecord' depth config.vars.hostAddrs.${hostname}.${nic_name}.ipv6NoCidr)
               }.ip6.arpa";
             in
             shared_zone_cfg
@@ -192,13 +193,13 @@ in
               inherit name;
               file =
                 # dns.lib.toString
-                writeZone name (shared_head_cfg // { subdomains = mkIPv6ReverseRecords depth nic_name config.vars.hostAddrs; });
+                writeZone name (shared_head_cfg // { subdomains = mkIPv6ReverseRecords depth nic_name const.networking.allHostAddrs; });
             };
         in
         {
           ${const.domain} = shared_zone_cfg // {
             file = writeZone const.domain (
-              shared_head_cfg // { subdomains = lib.mkMerge (mkSubdomainRecords config.vars.hostAddrs); }
+              shared_head_cfg // { subdomains = lib.mkMerge (mkSubdomainRecords const.networking.allHostAddrs); }
             );
           };
           reverse_v4_et = mk_ipv4_reverse_zone 1 "tailscale";
@@ -218,7 +219,7 @@ in
             "("
             "Host(`${const.domain}`)"
             " || Host(`ns1.${const.domain}`)"
-            " || Host(`${config.networking.hostName}.${const.tailnet}`)"
+            " || Host(`${hostname}.${const.tailnet}`)"
             ")"
             " && Path(`/dns-query`)"
           ];

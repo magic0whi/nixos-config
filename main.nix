@@ -17,7 +17,14 @@ let
     // {
       inherit lib system;
 
-      const = import ./const { inherit pkgs mylib; };
+      const = import ./const {
+        inherit
+          pkgs
+          mylib
+          lib
+          ;
+        inherit (self) nixosConfigurations;
+      };
       mylib =
         let
           mylib_pkg_funcs = mylib.mkForPkgs pkgs;

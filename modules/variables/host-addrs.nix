@@ -1,6 +1,8 @@
 # Custom options as global variables
-{ config, lib, ... }:
+# TODO: add an assert to prevent host from add other host's config
+args@{ config, lib, ... }:
 let
+  isGlobal = args.isGlobal or false;
   subdomainsCfg = hostname: _nicCfg: {
     options = {
       A = lib.mkOption {
@@ -42,7 +44,7 @@ let
         };
         ipv4NoCidr = lib.mkOption {
           type = with lib.types; nullOr str;
-          readOnly = true;
+          readOnly = !isGlobal;
           default = if config.ipv4 != null then builtins.head (lib.strings.splitString "/" config.ipv4) else null;
         };
 
@@ -53,7 +55,7 @@ let
         };
         ipv6NoCidr = lib.mkOption {
           type = with lib.types; nullOr str;
-          readOnly = true;
+          readOnly = !isGlobal;
           default = if config.ipv6 != null then builtins.head (lib.strings.splitString "/" config.ipv6) else null;
         };
 
