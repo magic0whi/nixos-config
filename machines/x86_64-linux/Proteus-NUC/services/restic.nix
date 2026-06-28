@@ -8,17 +8,38 @@
   machineConfigs,
   const,
   mylib,
+  lib,
   ...
 }:
 let
   machine_cfg_s3 = machineConfigs.${const.networking.findFirstHostBySubdomain "s3"}.config;
+  hostname = config.networking.hostName;
 in
 {
+  services.prometheus.exporters.restic = {
+    enable = true;
+    repository = "s3:s3.${const.domain}/backups/${hostname}";
+    passwordFile = config.sops.secrets.restic_password.path;
+    user = config.sops.secrets.restic_password.owner;
+  };
+  services.traefik.dynamicConfigOptions.http = {
+    routers.prometheus-exporter-restic = {
+      rule = "Host(`restic-${hostname}.exporter.${const.domain}`)";
+      entryPoints = [ "websecure" ];
+      middlewares = [ "authelia-auth" ];
+      service = "prometheus-exporter-restic";
+      tls = { };
+    };
+    services.prometheus-exporter-restic.loadBalancer.servers = lib.singleton {
+      url = "http://127.0.0.1:${toString config.services.prometheus.exporters.restic.port}";
+    };
+  };
+
   sops =
     let
-      sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
-      restartUnits = [ "restic-backups-${config.networking.hostName}.service" ];
-      owner = config.services.restic.backups.${config.networking.hostName}.user;
+      sopsFile = "${const.secretsDir}/${hostname}.sops.yaml";
+      restartUnits = [ "restic-backups-${hostname}.service" ];
+      owner = config.services.restic.backups.${hostname}.user;
     in
     {
       # Restic repository encryption password

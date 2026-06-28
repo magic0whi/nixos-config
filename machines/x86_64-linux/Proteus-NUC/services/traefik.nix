@@ -34,6 +34,7 @@ in
         syncthing = {
           rule = "Host(`${hostname}.syncthing.${const.domain}`)";
           entryPoints = [ "websecure" ];
+          # TODO, security: all services accounts in LDAP allows access to authelia-auth
           middlewares = [ "authelia-auth" ];
           service = "syncthing-dashboard";
           tls = { };
