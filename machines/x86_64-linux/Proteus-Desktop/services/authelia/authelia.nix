@@ -164,6 +164,11 @@ in
         # claims_policies = { };
 
         # https://www.authelia.com/configuration/identity-providers/openid-connect/clients/
+        # TIP to generate client_secret:
+        # `nix run nixpkgs#authelia -- crypto rand --length 64 --charset alphanumeric`
+        # `nix run nixpkgs#authelia -- crypto hash generate pbkdf2 --variant sha512 --password "$(systemd-ask-password)"`
+        # To verify the PBKDF2 digest, run
+        # `nix run nixpkgs#authelia -- crypto hash validate --password "$(systemd-ask-password)" '$pbkdf2-sha512$310000$...'`
         # clients = [ ]; # Splited to standalone nix files
       };
     };
