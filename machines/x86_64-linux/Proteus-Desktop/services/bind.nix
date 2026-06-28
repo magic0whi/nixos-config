@@ -56,7 +56,7 @@ let
     subs:
     map (sub: if sub == "@" then "${const.domain}." else "${sub}.${const.domain}.")
       # Reverse records doesn't support wildcard subnames
-      (lib.filter (sub: !lib.hasInfix "*" sub) subs);
+      (builtins.filter (sub: !lib.hasInfix "*" sub) subs);
 
   # Rewrite of the old gen_reverse_v4_records in https://github.com/NixOS/nixpkgs/pull/522745
   mkIPv4ReverseRecords =

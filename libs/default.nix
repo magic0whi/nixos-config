@@ -10,11 +10,11 @@ in
   mkSbRules =
     forDns: out: rules:
     (map (rule: (if forDns then { server = out; } else { outbound = out; }) // rule) (
-      if forDns then lib.filter dns_rule_filter rules else rules
+      if forDns then builtins.filter dns_rule_filter rules else rules
     ));
   mkSbRules' =
     forDns: defCfg: rules:
-    (map (rule: defCfg // rule) (if forDns then lib.filter dns_rule_filter rules else rules));
+    (map (rule: defCfg // rule) (if forDns then builtins.filter dns_rule_filter rules else rules));
 
   # Use path relative to the root of the project
   relativeToRoot = lib.path.append ../.;
