@@ -112,13 +112,13 @@ in
     description = "hosts with addresses and subdomains";
   };
 
-  config.vars.hostAddrs = {
-    # ============================================
-    # Homelab's Physical Machines (TODO: Try KubeVirt)
-    # ============================================
+  # config.vars.hostAddrs = {
+  #   # ============================================
+  #   # Homelab's Physical Machines (TODO: Try KubeVirt)
+  #   # ============================================
 
-    # ============================================
-    # Other VMs and Physical Machines
-    # ============================================
-  };
+  #   # ============================================
+  #   # Other VMs and Physical Machines
+  #   # ============================================
+  # };
 }

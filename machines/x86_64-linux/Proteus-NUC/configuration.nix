@@ -2,11 +2,6 @@
 {
   vars.hostAddrs.${config.networking.hostName} =
     let
-      subs = [
-        "sb-nuc"
-        "syncthing-nuc"
-        # "sftpgo"
-      ];
       regHost = true;
     in
     {
@@ -14,19 +9,11 @@
         inherit regHost;
         ipv4 = "100.64.161.20/10";
         ipv6 = "fd7a:115c:a1e0::cd3a:a114/48";
-        subdomains = {
-          A = subs;
-          AAAA = subs;
-        };
       };
       easytier = {
         inherit regHost;
         ipv4 = "10.0.0.2/24";
         ipv6 = "fdfe:dcba:9877::2/64";
-        subdomains = {
-          A = subs;
-          AAAA = subs;
-        };
       };
       wire.name = "enp46s0";
     };
