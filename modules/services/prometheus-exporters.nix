@@ -20,13 +20,6 @@ in
         "systemd"
         "netdev"
       ];
-      # TODO
-      # restic = {
-      #   enable = true;
-      #   # Restic exporter requires either a repository or repositoryFile to be set [file:2]
-      #   repository = "s3:https://s3.example.com/bucket";
-      #   # passwordFile = "/path/to/restic/password";
-      # };
     }
   );
 

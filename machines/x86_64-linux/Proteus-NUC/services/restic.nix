@@ -99,9 +99,9 @@ in
       };
     in
     {
-      ${config.networking.hostName} = shared // {
+      ${hostname} = shared // {
         # Repository location on Proteus-Desktop
-        repository = "s3:s3.${const.domain}/backups/${config.networking.hostName}";
+        repository = "s3:s3.${const.domain}/backups/${hostname}";
         # Paths to backup
         paths = [
           config.services.paperless.exporter.directory # Paperless
@@ -110,8 +110,8 @@ in
           # "/var/lib/tailscale"
         ];
       };
-      "${config.networking.hostName}_immich" = shared // {
-        repository = "s3:s3.${const.domain}/backups/${config.networking.hostName}_immich";
+      "${hostname}_immich" = shared // {
+        repository = "s3:s3.${const.domain}/backups/${hostname}_immich";
         paths = [ config.services.immich.mediaLocation ];
         pruneOpts = [ "--keep-last 1" ];
         exclude = shared.exclude ++ [
