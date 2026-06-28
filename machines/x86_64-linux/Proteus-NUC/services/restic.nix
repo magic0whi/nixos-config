@@ -16,9 +16,20 @@ let
   hostname = config.networking.hostName;
 in
 {
+  vars.hostAddrs.${hostname} =
+    let
+      subdomains = {
+        A = [ "restic-${hostname}.exporter" ];
+        AAAA = [ "restic-${hostname}.exporter" ];
+      };
+    in
+    {
+      tailscale = { inherit subdomains; };
+      easytier = { inherit subdomains; };
+    };
   services.prometheus.exporters.restic = {
     enable = true;
-    repository = "s3:s3.${const.domain}/backups/${hostname}";
+    inherit (config.services.restic.backups.${hostname}) repository;
     passwordFile = config.sops.secrets.restic_password.path;
     user = config.sops.secrets.restic_password.owner;
   };
