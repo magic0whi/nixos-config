@@ -65,6 +65,7 @@
   services.gpg-agent = {
     enable = true;
     pinentry.package = lib.mkDefault pkgs.pinentry-curses;
+    # NOTE: On darwin, don't bootout the 'system/com.openssh.ssh-agent', as it seizes the '$SSH_AUTH_SOCK'
     enableSshSupport = true;
     defaultCacheTtl = 4 * 60 * 60; # 4 hours
     sshKeys = const.gpgKeygrip; # Run 'gpg --export-ssh-key gpg-key!' to export public key
