@@ -28,7 +28,7 @@
           sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
           inherit restartUnits;
         };
-        grafana_db_password = {
+        grafana_ldap_password = {
           sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
           inherit restartUnits;
         };
@@ -40,7 +40,7 @@
       templates."grafana.env" = {
         content = mylib.toEnv {
           GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET = config.sops.placeholder.grafana_oauth_client_secret;
-          GRAFANA_DB_PASSWORD = config.sops.placeholder.grafana_db_password;
+          GRAFANA_LDAP_PASSWORD = config.sops.placeholder.grafana_ldap_password;
           GRAFANA_SECRET_KEY = config.sops.placeholder.grafana_secret_key;
         };
         inherit restartUnits;
@@ -67,7 +67,7 @@
         type = "postgres";
         host = "/run/postgresql";
         user = "grafana";
-        password = "$__env{GRAFANA_DB_PASSWORD}";
+        password = "$__env{GRAFANA_LDAP_PASSWORD}";
       };
       security.secret_key = "$__env{GRAFANA_SECRET_KEY}";
       auth.oauth_auto_login = true;
@@ -127,7 +127,7 @@
             url = "https://prometheus.${const.domain}";
             basicAuth = true;
             basicAuthUser = "grafana";
-            secureJsonData.basicAuthPassword = "$__env{GRAFANA_DB_PASSWORD}";
+            secureJsonData.basicAuthPassword = "$__env{GRAFANA_LDAP_PASSWORD}";
             jsonData = {
               httpMethod = "POST";
               manageAlerts = true;
@@ -163,7 +163,7 @@
             type = "postgres";
             url = "postgresql.${const.domain}:5432";
             user = "grafana";
-            secureJsonData.password = "$__env{GRAFANA_DB_PASSWORD}";
+            secureJsonData.password = "$__env{GRAFANA_LDAP_PASSWORD}";
             jsonData = {
               database = "playground";
               sslmode = "verify-full"; # require/verify-ca/verify-full
