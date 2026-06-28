@@ -1,6 +1,6 @@
 # Custom options as global variables
 # TODO: add an assert to prevent host from add other host's config
-args@{ lib, ... }:
+args@{ config, lib, ... }:
 let
   isGlobal = args.isGlobal or false;
   subdomainsCfg = hostname: _nicCfg: {
@@ -112,6 +112,21 @@ in
     description = "hosts with addresses and subdomains";
   };
 
+  # NOTE: assertions is a nixpkgs option and does not exist on custom modules
+  config = lib.optionalAttrs (!isGlobal) (
+    let
+      hostname = config.networking.hostName;
+    in
+    {
+      assertions = lib.singleton {
+        assertion = builtins.all (_hostname: _hostname == hostname) (builtins.attrNames config.vars.hostAddrs);
+        message = ''
+          Host '${hostname}' is not allowed to configure vars.hostAddrs for other hosts.
+          Found configurations for: ${builtins.concatStringsSep ", " (builtins.attrNames config.vars.hostAddrs)}
+        '';
+      };
+    }
+  );
   # config.vars.hostAddrs = {
   #   # ============================================
   #   # Homelab's Physical Machines (TODO: Try KubeVirt)
