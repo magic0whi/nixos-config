@@ -16,40 +16,10 @@ let
   hostname = config.networking.hostName;
 in
 {
-  vars.hostAddrs.${hostname} =
-    let
-      subdomains = {
-        A = [ "restic-${hostname}.exporter" ];
-        AAAA = [ "restic-${hostname}.exporter" ];
-      };
-    in
-    {
-      tailscale = { inherit subdomains; };
-      easytier = { inherit subdomains; };
-    };
-  services.prometheus.exporters.restic = {
-    enable = true;
-    inherit (config.services.restic.backups.${hostname}) repository;
-    passwordFile = config.sops.secrets.restic_password.path;
-    user = config.sops.secrets.restic_password.owner;
-  };
-  services.traefik.dynamicConfigOptions.http = {
-    routers.prometheus-exporter-restic = {
-      rule = "Host(`restic-${hostname}.exporter.${const.domain}`)";
-      entryPoints = [ "websecure" ];
-      middlewares = [ "authelia-auth" ];
-      service = "prometheus-exporter-restic";
-      tls = { };
-    };
-    services.prometheus-exporter-restic.loadBalancer.servers = lib.singleton {
-      url = "http://127.0.0.1:${toString config.services.prometheus.exporters.restic.port}";
-    };
-  };
-
   sops =
     let
       sopsFile = "${const.secretsDir}/${hostname}.sops.yaml";
-      restartUnits = [ "restic-backups-${hostname}.service" ];
+      restartUnits = [ "prometheus-restic-exporter.service" ];
       owner = config.services.restic.backups.${hostname}.user;
     in
     {
@@ -69,6 +39,38 @@ in
         };
       };
     };
+
+  vars.hostAddrs.${hostname} =
+    let
+      subdomains = {
+        A = [ "restic-${hostname}.exporter" ];
+        AAAA = [ "restic-${hostname}.exporter" ];
+      };
+    in
+    {
+      tailscale = { inherit subdomains; };
+      easytier = { inherit subdomains; };
+    };
+  services.prometheus.exporters.restic = {
+    enable = true;
+    inherit (config.services.restic.backups.${hostname}) repository;
+    environmentFile = config.sops.templates."restic.env".path;
+    passwordFile = config.sops.secrets.restic_password.path;
+    user = config.sops.secrets.restic_password.owner;
+  };
+  services.traefik.dynamicConfigOptions.http = {
+    routers.prometheus-exporter-restic = {
+      rule = "Host(`restic-${hostname}.exporter.${const.domain}`)";
+      entryPoints = [ "websecure" ];
+      middlewares = [ "authelia-auth" ];
+      service = "prometheus-exporter-restic";
+      tls = { };
+    };
+    services.prometheus-exporter-restic.loadBalancer.servers = lib.singleton {
+      url = "http://127.0.0.1:${toString config.services.prometheus.exporters.restic.port}";
+    };
+  };
+
   services.restic.backups =
     let
       shared = {
