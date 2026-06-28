@@ -6,9 +6,8 @@
   ...
 }:
 {
-  sops.secrets.prometheus_ldap_password = {
+  sops.secrets.prometheus_password = {
     sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
-    key = "grafana_ldap_password";
     owner = "prometheus";
   };
   vars.hostAddrs.${config.networking.hostName} =
@@ -47,8 +46,8 @@
             );
           };
           basic_auth = {
-            username = "grafana";
-            password_file = config.sops.secrets.prometheus_ldap_password.path;
+            username = "prometheus";
+            password_file = config.sops.secrets.prometheus_password.path;
           };
         };
       in

@@ -21,27 +21,21 @@
   sops =
     let
       restartUnits = [ "grafana.service" ];
+      sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
     in
     {
       secrets = {
-        grafana_oauth_client_secret = {
-          sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
-          inherit restartUnits;
-        };
-        grafana_ldap_password = {
-          sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
-          inherit restartUnits;
-        };
-        grafana_secret_key = {
-          sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
-          inherit restartUnits;
-        };
+        grafana_oauth_client_secret = { inherit restartUnits sopsFile; };
+        grafana_db_password = { inherit restartUnits sopsFile; };
+        grafana_secret_key = { inherit restartUnits sopsFile; };
+        prometheus_password = { inherit restartUnits sopsFile; };
       };
       templates."grafana.env" = {
         content = mylib.toEnv {
           GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET = config.sops.placeholder.grafana_oauth_client_secret;
-          GRAFANA_LDAP_PASSWORD = config.sops.placeholder.grafana_ldap_password;
+          GRAFANA_DB_PASSWORD = config.sops.placeholder.grafana_db_password;
           GRAFANA_SECRET_KEY = config.sops.placeholder.grafana_secret_key;
+          PROMETHEUS_PASSWORD = config.sops.placeholder.prometheus_password;
         };
         inherit restartUnits;
       };
@@ -67,7 +61,7 @@
         type = "postgres";
         host = "/run/postgresql";
         user = "grafana";
-        password = "$__env{GRAFANA_LDAP_PASSWORD}";
+        password = "$__env{GRAFANA_DB_PASSWORD}";
       };
       security.secret_key = "$__env{GRAFANA_SECRET_KEY}";
       auth.oauth_auto_login = true;
@@ -126,8 +120,8 @@
             access = "proxy"; # proxy (request through grafana server) or direct (through users' browser).
             url = "https://prometheus.${const.domain}";
             basicAuth = true;
-            basicAuthUser = "grafana";
-            secureJsonData.basicAuthPassword = "$__env{GRAFANA_LDAP_PASSWORD}";
+            basicAuthUser = "prometheus";
+            secureJsonData.basicAuthPassword = "$__env{PROMETHEUS_PASSWORD}";
             jsonData = {
               httpMethod = "POST";
               manageAlerts = true;
@@ -142,7 +136,7 @@
               # but might be helpful for instances that have inconsistent results for recent data.
               incrementalQueryOverlapWindow = "10m";
             };
-            # editable = true;
+            # editable = true; # For debug
           }
           # Grafana's alerting rules is not recommended to use, we use Prometheus alertmanager instead.
           # TODO
@@ -163,7 +157,7 @@
             type = "postgres";
             url = "postgresql.${const.domain}:5432";
             user = "grafana";
-            secureJsonData.password = "$__env{GRAFANA_LDAP_PASSWORD}";
+            secureJsonData.password = "$__env{GRAFANA_DB_PASSWORD}";
             jsonData = {
               database = "playground";
               sslmode = "verify-full"; # require/verify-ca/verify-full

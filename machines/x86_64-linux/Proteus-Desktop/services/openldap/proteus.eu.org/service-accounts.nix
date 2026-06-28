@@ -142,6 +142,18 @@ in
   o: Proteus Homelab
   cn: Metric Service
   sn: Service
-  description: Dedicated LDAP account for authenticating database access for Grafana and prometheus access
+  description: Dedicated LDAP account for authenticating database user
   userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$JQgfWUpO29+6dRxSw4ubiQ$rOHob39QO18/4PIxhmvHOpMOo1bBdDrMMgB7NP7NvLY
+
+  dn: uid=prometheus,ou=ServiceAccounts,${baseDN}
+  objectClass: top
+  objectClass: person
+  objectClass: organizationalPerson
+  objectClass: inetOrgPerson
+  uid: prometheus
+  o: Proteus Homelab
+  cn: Metric Service
+  sn: Service
+  description: Dedicated LDAP account for Prometheus Basic Auth
+  userPassword: {PBKDF2-SHA512}10000$JpJRRCT43wqR.HZ.qmJwSg$7gig7HwjF7kZoIlTSX7YpC6QeDlkzZenNu1g332B9SFeZK77uzoezop7hi.o0F0yPVSLQAofadREbkkBusFPRA
 ''

@@ -52,7 +52,10 @@ in
         children = {
           "cn=module".attrs = {
             objectClass = "olcModuleList";
-            olcModuleLoad = [ "argon2" ];
+            olcModuleLoad = [
+              "argon2"
+              "pw-pbkdf2"
+            ];
           };
           "cn=schema".includes = with pkgs; [
             "${openldap}/etc/schema/core.ldif"

@@ -67,7 +67,7 @@ in
     };
     # https://github.com/authelia/authelia/blob/8a7b642dd78f29c76d126b6f53806472b2a360bd/config.template.yml
     settings = {
-      log.level = "error";
+      log.level = "warn"; # Default: info
       theme = "auto";
       default_2fa_method = "totp";
       server = {
@@ -135,16 +135,16 @@ in
           };
       };
       access_control = {
+        # NOTE: Orders does matter
         rules = [
-          # Orders does matter
           {
-            domain = "syncthing.${const.domain}";
             policy = "bypass";
+            domain = "syncthing.${const.domain}";
             resources = [ "^/rest/noauth/.*$" ];
           }
           {
-            domain = "*.${const.domain}";
             policy = "one_factor";
+            domain = "*.${const.domain}";
           }
         ];
         default_policy = "deny";
