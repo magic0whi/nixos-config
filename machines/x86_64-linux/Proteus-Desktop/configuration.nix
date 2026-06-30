@@ -33,10 +33,6 @@
         inherit subdomains;
       };
       wire.name = "enp4s0";
-      wireless = {
-        name = "wlp0s20u9";
-        ipv4 = "192.168.12.1/24";
-      };
     };
   ## BEGIN hardware.nix
   boot.initrd.availableKernelModules = lib.optional config.boot.initrd.systemd.network.enable "r8169";
@@ -54,7 +50,8 @@
         const
         pkgs
         ;
-      isServer = true;
+      # Disable FakeIP-only mode as I run hostapd on this machine
+      # isServer = true;
     }
   );
   ## END sing-box-client.nix

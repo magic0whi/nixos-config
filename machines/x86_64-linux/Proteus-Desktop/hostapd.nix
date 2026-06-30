@@ -5,9 +5,15 @@
   ...
 }:
 let
-  nics = config.vars.hostAddrs.${config.networking.hostName};
+  hostname = config.networking.hostName;
+  nics = config.vars.hostAddrs.${hostname};
 in
 {
+  vars.hostAddrs.${hostname}.wireless = {
+    name = "wlp0s20u9";
+    ipv4 = "192.168.12.1/24";
+  };
+
   boot.extraModulePackages = [ config.boot.kernelPackages.rtl8812au ];
   boot.kernelModules = [ "8812au" ];
   boot.requiredKernelModules = [ "rtl8812au" ];
@@ -63,26 +69,11 @@ in
       prefixLength = lib.toInt (lib.last (lib.splitString "/" nics.wireless.ipv4));
     }
   ];
-  networking.nftables.tables = lib.mkIf config.services.sing-box.enable {
-    hostapd_bypass = {
-      family = "inet";
-      content = with (builtins.head config.networking.interfaces.${nics.wireless.name}.ipv4.addresses); ''
-        chain prerouting {
-          type filter hook prerouting priority dstnat - 5; policy accept;
-
-          # 1. Do NOT bypass FakeIP traffic. Let sing-box handle it.
-          ip daddr 198.18.0.0/15 return
-
-          # 2. Bypass everything else from hostapd managed iface
-          # ip saddr ${address}/${toString prefixLength} ct mark set 0x00002024
-        }
-      '';
-    };
-  };
-  networking.firewall.extraInputRules =
-    with (builtins.head config.networking.interfaces.${nics.wireless.name}.ipv4.addresses); ''
-      ip saddr ${address}/${toString prefixLength} accept comment "Allow hostapd clients to reach auto_redirect ports"
-    '';
+  networking.firewall.extraInputRules = ''
+    ip saddr ${
+      config.vars.hostAddrs.${hostname}.wireless.ipv4
+    } accept comment "Allow hostapd clients to reach auto_redirect ports"
+  '';
   services.dnsmasq = {
     enable = true;
     settings = {
@@ -90,7 +81,13 @@ in
       # it to only bind there, this prevents conflicts with systemd-resolved
       interface = nics.wireless.name;
       bind-interfaces = true;
-      dhcp-range = [ "192.168.12.10,192.168.12.240,12h" ];
+      dhcp-range =
+        let
+          prefix = builtins.concatStringsSep "." (
+            lib.take 3 (lib.splitString "." config.vars.hostAddrs.Proteus-Desktop.wireless.ipv4)
+          );
+        in
+        [ "${prefix}.10,${prefix}.240,12h" ];
       # Tell DHCP clients to use 223.5.5.5 as their DNS server so sing-box can hijack
       dhcp-option = [ "option:dns-server,223.5.5.5" ];
     };
