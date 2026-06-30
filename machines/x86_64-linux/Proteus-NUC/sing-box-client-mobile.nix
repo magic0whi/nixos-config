@@ -53,13 +53,15 @@ in
       # TIP: After provision you can manually process with sing-box-subscribe
       systemd.services.sing-box.serviceConfig.ExecStartPre = [
         # Generate alter config.json for mobile devices
+        # NOTE: sing-box will treat all the *.json in the working directory as splitted config
         "+-${
           let
             utils = import "${pkgs.path}/nixos/lib/utils.nix" { inherit config lib pkgs; };
           in
           pkgs.writeShellScript "gen-mobile-config" ''
             set -euo pipefail
-            ${utils.genJqSecretsReplacementSnippet cfg.mobile "/run/sing-box/mobile.json"}
+            mkdir -p /run/sing-box/modile
+            ${utils.genJqSecretsReplacementSnippet cfg.mobile "/run/sing-box/mobile/mobile.json"}
             chown --reference=/run/sing-box /run/sing-box/mobile.json
           ''
         }"
@@ -70,7 +72,8 @@ in
           in
           pkgs.writeShellScript "gen-root-mobile-config" ''
             set -euo pipefail
-            ${utils.genJqSecretsReplacementSnippet cfg.root "/run/sing-box/root.json"}
+            mkdir -p /run/sing-box/modile
+            ${utils.genJqSecretsReplacementSnippet cfg.root "/run/sing-box/mobile/root.json"}
             chown --reference=/run/sing-box /run/sing-box/root.json
           ''
         }"
