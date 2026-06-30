@@ -60,7 +60,7 @@ in
           in
           pkgs.writeShellScript "gen-mobile-config" ''
             set -euo pipefail
-            mkdir -p /run/sing-box/modile
+            mkdir -p /run/sing-box/mobile
             ${utils.genJqSecretsReplacementSnippet cfg.mobile "/run/sing-box/mobile/mobile.json"}
             chown --reference=/run/sing-box /run/sing-box/mobile.json
           ''
@@ -72,7 +72,7 @@ in
           in
           pkgs.writeShellScript "gen-root-mobile-config" ''
             set -euo pipefail
-            mkdir -p /run/sing-box/modile
+            mkdir -p /run/sing-box/mobile
             ${utils.genJqSecretsReplacementSnippet cfg.root "/run/sing-box/mobile/root.json"}
             chown --reference=/run/sing-box /run/sing-box/root.json
           ''
