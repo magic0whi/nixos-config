@@ -6,8 +6,12 @@
   pkgs,
   ...
 }:
+let
+  hostanem = config.networking.hostName;
+in
 {
-  vars.hostAddrs.${config.networking.hostName} =
+  ## BEGIN network.nix
+  vars.hostAddrs.${hostanem} =
     let
       regHost = true;
       subdomains =
@@ -32,8 +36,22 @@
         ipv6 = "fdfe:dcba:9877::3/64";
         inherit subdomains;
       };
-      wire.name = "enp4s0";
+      wire = {
+        name = "enp4s0";
+        ipv4 = "192.168.10.20/24";
+      };
     };
+  systemd.network.networks."10-wire" = {
+    inherit (config.vars.hostAddrs.${hostanem}.wire) name;
+    address = [ "192.168.10.20/24" ];
+    gateway = [ "192.168.10.1" ];
+    DHCP = "no";
+    networkConfig.IPv6AcceptRA = true;
+  };
+  networking.firewall.extraInputRules = ''
+    ip saddr 192.168.10.114 accept comment "Allow LAN AP clients to reach auto_redirect ports"
+  '';
+  ## END network.nix
   ## BEGIN hardware.nix
   boot.initrd.availableKernelModules = lib.optional config.boot.initrd.systemd.network.enable "r8169";
   # hybrid have VAProfileVP9Profile0 support

@@ -10,7 +10,7 @@ _: {
         };
       in
       {
-        "10-enp46s0" = {
+        "10-wire" = {
           # To get the ID path: `sudo udevadm info -q property -p /sys/class/net/enp46s0 | grep ID_PATH=`
           matchConfig.Path = "pci-0000:2e:00.0";
           # sudo nix run nixpkgs#ethtool -- -k enp46s0
@@ -20,7 +20,7 @@ _: {
             NTupleFilter = true; # ntuple-filters
           };
         };
-        "10-wlo1" = {
+        "10-wireless" = {
           matchConfig.Path = "pci-0000:00:14.3";
           linkConfig = default_link_cfg // {
             GenericReceiveOffloadList = false; # rx-gro-list, conflict with rx-udp-gro-forwarding
@@ -29,7 +29,7 @@ _: {
           };
         };
       };
-    networks."10-enp46s0-disable-ipv6" = {
+    networks."10-wire-disable-ipv6" = {
       name = "enp46s0";
       DHCP = "yes";
       # networkConfig = {
@@ -38,7 +38,7 @@ _: {
       #   LinkLocalAddressing = false;
       # };
     };
-    networks."10-wlo1" = {
+    networks."10-wireless" = {
       name = "wlo1";
       DHCP = "yes";
       networkConfig.IgnoreCarrierLoss = "3s";
