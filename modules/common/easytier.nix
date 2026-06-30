@@ -25,7 +25,8 @@
           in
           {
             "easytier_network_secret" = { inherit sopsFile; };
-            "easytier_peer_0" = { inherit sopsFile; };
+            "easytier_peer_2" = { inherit sopsFile; };
+            "easytier_peer_3" = { inherit sopsFile; };
             "easytier_peer_4" = { inherit sopsFile; };
             "easytier_peer_5" = { inherit sopsFile; };
           };
@@ -34,7 +35,8 @@
             ET_NETWORK_SECRET = config.sops.placeholder.easytier_network_secret;
             # ET_PEERS uses comma delimiter
             ET_PEERS = builtins.concatStringsSep "," [
-              "udp://${config.sops.placeholder.easytier_peer_0}"
+              "udp://${config.sops.placeholder.easytier_peer_2}"
+              "udp://${config.sops.placeholder.easytier_peer_3}"
               "udp://${config.sops.placeholder.easytier_peer_4}"
               "udp://${config.sops.placeholder.easytier_peer_5}"
             ];

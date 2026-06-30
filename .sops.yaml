@@ -8,10 +8,10 @@ keys:
   - &Proteus-Desktop age1yv5rv2s3pgc0pxy03c560lz746s9r2qp3exzqq5m3equ5yjtsexscja2r9
   - &Proteus-NixOS-0 age125zqqjhess357kqc556n8zy7da6tq9hxnn85yzynuhdxlxljhveqcv7gjh
   - &Proteus-NixOS-1 age1ez48xcmyfrl9y6ueuvhfc9drutj0r228cfs43t9uvphuyv4v6ygsy7gp4l
-  - &Proteus-NixOS-2 age100tjlvhw66afqa2qkzywsywgg9hrwn2h3yuucxuvqprmnp0739vqtxlfl3
-  - &Proteus-NixOS-3 age10u3w4a973l83fv8t7ndx9nzyuj993m6vrjxvf6xw9lvxm9rkwgdst862j7
-  - &Proteus-NixOS-4 age1n0n20r3cal54arpwhq5g2n7ds5gc4ju9vl065a09nnp0qfsq4uvqu6j0wz
-  - &Proteus-NixOS-5 age1t4vxw6s8sw64uk7g927gvwrj48uaakgaj54w0ke5hs87t20e8eys30nfvm
+  - &Proteus-NixOS-2 age1xsge7vg6qnschk94pzymd5dk4q2ymcl5xx55aeeg8y78n0dja4fsdnz4wp
+  - &Proteus-NixOS-3 age1slgumaq7nsda23q8rmml96fr56462gsjx5pcvp954y0zf92hksdsgtp6e6
+  - &Proteus-NixOS-4 age1ktvdkyckex6pzprkxfutgeqhdygxfw6fl75fcntd8wzqpf8mgpuq7mk4l8
+  - &Proteus-NixOS-5 age1yp5ep6qsw6k3sp9lzr890f4zqfjdeg3k2jqrmdr70vumen9kr4ashjyks6
 # TIP: To rotate a encrypted file with new recipients
 # updatekeys secrets/syncthing_proteus-nuc.priv.pem.age
 # TIP:Use recovery key if lost access to secret keys

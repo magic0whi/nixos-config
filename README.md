@@ -98,8 +98,7 @@ Or use `nixos-anywhere` for unattended installation (example using `Proteus-NixO
 
 ```bash
 IP=11.4.51.4
-nix run nixpkgs#nixos-anywhere -- -f .#Proteus-NixOS-0 \
-  --phases kexec proteus@$IP \
+nix run nixpkgs#nixos-anywhere -- --phases kexec proteus@$IP \
   --kexec https://gh-proxy.org/https://github.com/nix-community/nixos-images/releases/download/nixos-25.05/nixos-kexec-installer-noninteractive-x86_64-linux.tar.gz
 nix run nixpkgs#nixos-anywhere -- -f .#Proteus-NixOS-0 --phases disko --disko-mode format root@$IP
 nix run nixpkgs#nixos-anywhere -- -f .#Proteus-NixOS-0 --phases disko --disko-mode mount root@$IP
@@ -107,11 +106,13 @@ nix run nixpkgs#nixos-anywhere -- -f .#Proteus-NixOS-0 --phases install root@$IP
 # Check everything ok, then move critical files to `/mnt/persistent`, see above
 # Finally reboot
 nix run nixpkgs#nixos-anywhere -- -f .#Proteus-NixOS-0 --phases reboot root@$IP
+# After reboot, enroll the tpm key
+systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=0+7 /dev/disk/by-partlabel/disk-main-root
 ```
 
 _(Note: `<IP>` shall corresponds to `Proteus-NixOS-0` registered in [var/networking](./var/networking.nix))_
 
-_If meet error when formatting, try `sgdisk --zap-all /dev/<disk>`, `sudo wipefs -a /dev/disk/by-partlabel/xxx`_
+_If meet error when formatting, try `sgdisk --zap-all /dev/<disk>`; For luks wipe the fs header `sudo wipefs -a /dev/disk/by-partlabel/xxx`_
 
 ## Usage
 
