@@ -1,22 +1,26 @@
 {
   config,
   const,
+  lib,
   pkgs,
   ...
 }:
 {
-  sops.secrets = {
-    "project-0.secret.json" = {
-      sopsFile = "${const.secretsDir}/gcloud_project-0.secret.json.sops";
-      format = "binary";
-      path = "${config.xdg.configHome}/gcloud/project-0.secret.json";
-    };
-    "project-1.secret.json" = {
-      sopsFile = "${const.secretsDir}/gcloud_project-1.secret.json.sops";
-      format = "binary";
-      path = "${config.xdg.configHome}/gcloud/project-1.secret.json";
-    };
-  };
+  sops.secrets = lib.mkMerge (
+    map
+      (num: {
+        "project-${num}.secret.json" = {
+          sopsFile = "${const.secretsDir}/gcloud_project-${num}.secret.json.sops";
+          format = "binary";
+          path = "${config.xdg.configHome}/gcloud/project-${num}.secret.json";
+        };
+      })
+      [
+        "0"
+        "1"
+        "2"
+      ]
+  );
   home.packages = with pkgs; [
     google-cloud-sdk # gcloud
     terraform

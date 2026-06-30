@@ -84,6 +84,8 @@ creation_rules:
     key_groups: [pgp: [*openpgp]]
   - path_regex: secrets/gcloud_project-1\.secret\.json\.sops$
     key_groups: [pgp: [*openpgp]]
+  - path_regex: secrets/gcloud_project-2\.secret\.json\.sops$
+    key_groups: [pgp: [*openpgp]]
   ## END Proteus-NUC (HM)
   ## BEGIN Proteus-MBP14M4P (HM)
   # Encrypt in-place since sops matches inputs files for `path_regex`
