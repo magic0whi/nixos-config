@@ -180,9 +180,7 @@ in
     staticConfigOptions.entryPoints.websecure.forwardedHeaders.trustedIPs =
       let
         # Host services that requires OIDC
-        # NOTE: I may improve it to add and use findAllHostBySumdomain if there is high availability requirements, but
-        # for now just KISS to prevent over engineering
-        allowed_hosts = lib.unique (map (sub: const.networking.findFirstHostBySubdomain sub) const.networking.oauthServices);
+        allowed_hosts = lib.unique (lib.concatMap const.networking.findAllHostContains const.networking.oauthServices);
       in
       lib.concatMap (
         hostname:

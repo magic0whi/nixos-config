@@ -24,7 +24,11 @@ let
             overlays = with features; common.baseOverlays;
             modules =
               (with features; common.base ++ common.services ++ nixos.base)
-              ++ map mylib.relativeToRoot [ "modules/nixos_headless/traffic-quota.nix" ]
+              ++ map mylib.relativeToRoot [
+                "modules/nixos_headless/traffic-quota.nix"
+                "modules/services/traefik.nix"
+                "modules/services/prometheus-exporters.nix"
+              ]
               ++ [ ./_common ];
             hmModules = features.hm.common.base;
           }

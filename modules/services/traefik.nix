@@ -75,14 +75,12 @@
               "Remote-Name"
             ];
           };
-          routers = {
-            traefik-dashboard = {
-              # rule = "Host(`example.${const.domain}`)";
-              entryPoints = [ "websecure" ];
-              middlewares = [ "authelia-auth" ]; # `authelia-auth` Protect the dashboard
-              service = "api@internal";
-              tls = { }; # enables TLS using the default cert
-            };
+          routers.traefik-dashboard = {
+            # rule = "Host(`example.${const.domain}`)";
+            entryPoints = [ "websecure" ];
+            middlewares = [ "authelia-auth" ]; # `authelia-auth` Protect the dashboard
+            service = "api@internal";
+            tls = { }; # enables TLS using the default cert
           };
         };
       };

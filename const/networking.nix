@@ -26,20 +26,37 @@ let
         (
           { config, ... }:
           {
-            options.utils.findFirstHostBySubdomain = lib.mkOption {
-              type = with lib.types; functionTo (nullOr str);
-              default =
-                sub:
-                lib.findFirst (
-                  hostname:
-                  lib.any (nic: builtins.elem sub nic.subdomains.A || builtins.elem sub nic.subdomains.AAAA) (
-                    builtins.attrValues config.vars.hostAddrs.${hostname}
-                  )
-                ) null (builtins.attrNames config.vars.hostAddrs);
-              description = ''
-                Function that returns the first hostname containing the specified subdomain, or null if not found.
-              '';
-              readOnly = true;
+            options.utils = {
+              findFirstHostBySubdomain = lib.mkOption {
+                type = with lib.types; functionTo (nullOr str);
+                default =
+                  sub:
+                  lib.findFirst (
+                    hostname:
+                    lib.any (nic: builtins.elem sub nic.subdomains.A || builtins.elem sub nic.subdomains.AAAA) (
+                      builtins.attrValues config.vars.hostAddrs.${hostname}
+                    )
+                  ) null (builtins.attrNames config.vars.hostAddrs);
+                description = ''
+                  Function that returns the first hostname containing the specified subdomain, or null if not found.
+                '';
+                readOnly = true;
+              };
+              findAllHostContains = lib.mkOption {
+                type = with lib.types; functionTo (nullOr (listOf str));
+                default =
+                  sub:
+                  builtins.filter (
+                    hostname:
+                    lib.any (
+                      nic: lib.any (a: lib.hasInfix sub a) nic.subdomains.A || lib.any (aaaa: lib.hasInfix sub aaaa) nic.subdomains.AAAA
+                    ) (builtins.attrValues config.vars.hostAddrs.${hostname})
+                  ) (builtins.attrNames config.vars.hostAddrs);
+                description = ''
+                  Function that returns the all the hostname containing the specified keyword in subdomains.
+                '';
+                readOnly = true;
+              };
             };
           }
         )
@@ -57,6 +74,9 @@ in
     "paperless"
     "papra"
     "plane"
+
+    # find all contains
+    "exporter"
   ];
   caddyPort = 8080;
 
@@ -83,5 +103,5 @@ in
     };
 
   allHostAddrs = custom_module.vars.hostAddrs;
-  inherit (custom_module.utils) findFirstHostBySubdomain;
+  inherit (custom_module.utils) findFirstHostBySubdomain findAllHostContains;
 }
