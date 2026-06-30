@@ -6,6 +6,12 @@
   ...
 }:
 {
+  home.shellAliases = {
+    gitdf = "env GIT_EXTERNAL_DIFF=difft git diff";
+    gitdc = "env GIT_EXTERNAL_DIFF=difft git diff --cached";
+    gitnbdf = "git --no-pager diff --color=always | bat";
+    gitnbdc = "git --no-pager diff --cached --color=always | bat";
+  };
   # programs.gh.enable = true; # GitHub CLI tool
 
   # `programs.git` will generate the config file: `~/.config/git/config` to make Git use this config file,

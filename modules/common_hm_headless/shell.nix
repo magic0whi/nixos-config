@@ -46,11 +46,9 @@
       cpr = "rsync --archive -hh --partial --info=stats1,progress2 --modify-window=1";
       mvr = "rsync --archive -hh --partial --info=stats1,progress2 --modify-window=1 --remove-source-files";
       diff = "diff --text --expand-tabs --unified --new-file --recursive --color=auto";
-      gitdf = "env GIT_EXTERNAL_DIFF=difft git diff";
-      gitdc = "env GIT_EXTERNAL_DIFF=difft git diff --cached";
       # For `git filter-branch --help | bat -l man`, use
-      # `MANWIDTH=999 git filter-branch --help | bat -lman` instead to prevent
-      # git from baking ugly line breaks
+      # `MANWIDTH=999 git filter-branch --help | bat -lman` instead to prevent git from baking
+      # ugly line breaks
       man = builtins.concatStringsSep " " [
         "MANPAGER=\"less -R --use-color -Dd+r -Du+b\"" # Set boldface -> red color, underline -> blue color
         "MANROFFOPT=\"-P-c\"" # Enables groff's "continuous" (non-paginated) output mode
