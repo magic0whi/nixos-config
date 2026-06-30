@@ -50,7 +50,7 @@ in
       cfg = config.services.sing-box.generateMobileConfig;
     in
     lib.mkIf cfg.enable {
-      # TODO sing-box-subscribe
+      # TIP: After provision you can manually process with sing-box-subscribe
       systemd.services.sing-box.serviceConfig.ExecStartPre = [
         # Generate alter config.json for mobile devices
         "+-${
@@ -59,8 +59,8 @@ in
           in
           pkgs.writeShellScript "gen-mobile-config" ''
             set -euo pipefail
-            ${utils.genJqSecretsReplacementSnippet cfg.mobile "/run/secrets/mobile.json"}
-            chown --reference=/run/sing-box /run/secrets/mobile.json
+            ${utils.genJqSecretsReplacementSnippet cfg.mobile "/run/sing-box/mobile.json"}
+            chown --reference=/run/sing-box /run/sing-box/mobile.json
           ''
         }"
         # Generate alter config.json for rooted mobile devices
@@ -70,8 +70,8 @@ in
           in
           pkgs.writeShellScript "gen-root-mobile-config" ''
             set -euo pipefail
-            ${utils.genJqSecretsReplacementSnippet cfg.root "/run/secrets/root.json"}
-            chown --reference=/run/sing-box /run/secrets/root.json
+            ${utils.genJqSecretsReplacementSnippet cfg.root "/run/sing-box/root.json"}
+            chown --reference=/run/sing-box /run/sing-box/root.json
           ''
         }"
       ];
