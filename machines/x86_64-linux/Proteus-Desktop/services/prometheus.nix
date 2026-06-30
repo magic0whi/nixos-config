@@ -39,11 +39,19 @@
           job_name = exporter_name;
           scheme = "https";
           static_configs = lib.singleton {
-            targets = map (hostname: "${exporter_name}-${hostname}.exporter.${const.domain}") (
-              builtins.filter (
-                hostname: machineConfigs.${hostname}.config.services.prometheus.exporters.${exporter_name}.enable or false
-              ) (builtins.attrNames machineConfigs)
-            );
+            targets =
+              map
+                (
+                  hostname:
+                  "${exporter_name}-${hostname}.exporter.${const.domain}${
+                    machineConfigs.${hostname}.config.services.traefik.staticConfigOptions.entryPoints.websecure.address
+                  }"
+                )
+                (
+                  builtins.filter (
+                    hostname: machineConfigs.${hostname}.config.services.prometheus.exporters.${exporter_name}.enable or false
+                  ) (builtins.attrNames machineConfigs)
+                );
           };
           basic_auth = {
             username = "prometheus";
