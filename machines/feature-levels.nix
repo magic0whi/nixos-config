@@ -41,7 +41,7 @@
           sops-nix.nixosModules.sops
         ])
         ++ map mylib.relativeToRoot [
-          # "${headless}/easytier.nix"
+          "${headless}/easytier.nix"
           "${headless}/firewall-common.nix"
           "${headless}/impermanence.nix"
           "${headless}/misc.nix"

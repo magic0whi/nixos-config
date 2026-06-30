@@ -72,10 +72,7 @@ in
       null;
 
   genDeployNode_unwrapped = deployLib: nics: nixosCfg: {
-    hostname =
-      # TODO temporary disable EasyTier
-      # nics.easytier.ipv4NoCidr or
-      nics.tailscale.ipv4NoCidr or nixosCfg.config.networking.hostName;
+    hostname = nics.easytier.ipv4NoCidr or nics.tailscale.ipv4NoCidr or nixosCfg.config.networking.hostName;
     sshUser = "root";
     interactiveSudo = false; # I use the root user to ssh deploy
     profiles.system = {
