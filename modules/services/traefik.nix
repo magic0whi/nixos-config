@@ -4,7 +4,26 @@
   const,
   ...
 }:
+let
+  hostname = config.networking.hostName;
+in
 {
+  vars.hostAddrs.${config.networking.hostName} =
+    let
+      subdomains =
+        let
+          subs = [ "${hostname}.traefik" ];
+        in
+        {
+          A = subs;
+          AAAA = subs;
+        };
+    in
+    {
+      tailscale = { inherit subdomains; };
+      easytier = { inherit subdomains; };
+    };
+
   networking.firewall = {
     allowedTCPPorts = [
       80
@@ -37,7 +56,7 @@
           };
         };
         websecure = {
-          address = ":443";
+          address = lib.mkDefault ":443";
           http3 = { }; # QUIC
           # Prevent large video uploads from timing out and throwing Error 499. Ref:
           # https://web.archive.org/web/20260217103328/https://docs.immich.app/administration/reverse-proxy/#traefik-proxy-example-config
@@ -76,7 +95,7 @@
             ];
           };
           routers.traefik-dashboard = {
-            # rule = "Host(`example.${const.domain}`)";
+            rule = "Host(`${hostname}.traefik.${const.domain}`)";
             entryPoints = [ "websecure" ];
             middlewares = [ "authelia-auth" ]; # `authelia-auth` Protect the dashboard
             service = "api@internal";

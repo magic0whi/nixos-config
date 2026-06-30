@@ -6,7 +6,14 @@
   ...
 }:
 {
-  networking.firewall.allowedTCPPorts = [ 443 ];
+  networking.firewall = {
+    allowedTCPPorts = [
+      443
+      8443
+    ];
+    allowedUDPPorts = [ 8443 ]; # QUIC
+  };
+
   sops.secrets =
     let
       sopsFile = "${const.secretsDir}/common.sops.yaml";
@@ -31,32 +38,28 @@
       #   type = "tls";
       #   server = "8.8.8.8";
       # };
-      inbounds = [
-        {
-          type = "anytls";
-          listen = "::";
-          listen_port = 443;
-          users = [
-            {
-              name = "proteus";
-              password._secret = config.sops.secrets.sb_nodes_anytls_password.path;
-            }
-          ];
-          tls = {
+      inbounds = lib.singleton {
+        type = "anytls";
+        listen = "::";
+        listen_port = 443;
+        users = lib.singleton {
+          name = "proteus";
+          password._secret = config.sops.secrets.sb_nodes_anytls_password.path;
+        };
+        tls = {
+          enabled = true;
+          server_name._secret = config.sops.secrets.sb_nodes_server_name.path;
+          reality = {
             enabled = true;
-            server_name._secret = config.sops.secrets.sb_nodes_server_name.path;
-            reality = {
-              enabled = true;
-              handshake = {
-                server._secret = config.sops.secrets.sb_nodes_server_name.path;
-                server_port = 443;
-              };
-              private_key._secret = config.sops.secrets.sb_nodes_reality_priv_key.path;
-              short_id._secret = config.sops.secrets.sb_nodes_reality_short_id.path;
+            handshake = {
+              server._secret = config.sops.secrets.sb_nodes_server_name.path;
+              server_port = 443;
             };
+            private_key._secret = config.sops.secrets.sb_nodes_reality_priv_key.path;
+            short_id._secret = config.sops.secrets.sb_nodes_reality_short_id.path;
           };
-        }
-      ];
+        };
+      };
       outbounds = lib.singleton {
         tag = "Direct";
         type = "direct";
@@ -110,5 +113,12 @@
           ];
       };
     };
+  };
+
+  # NOTE: tried tcp passthrough, sing-box don't support proxy protocol so it don't know the real source IP from traefik
+  # also tried dynamicConfigFile, will ignore all the existing settings under dynamicConfigOptions
+  services.traefik = lib.mkIf config.services.traefik.enable {
+    # staticConfigOptions.log.level = "DEBUG";
+    staticConfigOptions.entryPoints.websecure.address = ":8443";
   };
 }

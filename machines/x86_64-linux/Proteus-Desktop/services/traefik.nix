@@ -12,10 +12,7 @@ in
     let
       subdomains =
         let
-          subs = [
-            "${hostname}.traefik"
-            "${hostname}.sb"
-          ];
+          subs = [ "${hostname}.sb" ];
         in
         {
           A = subs;
@@ -29,7 +26,6 @@ in
   services.traefik = {
     dynamicConfigOptions.http = {
       routers = {
-        traefik-dashboard.rule = "Host(`${hostname}.traefik.${const.domain}`)";
         qinglong = {
           rule = "Host(`ql.${const.domain}`)";
           entryPoints = [ "websecure" ];

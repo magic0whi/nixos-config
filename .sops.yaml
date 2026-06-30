@@ -35,12 +35,17 @@ creation_rules:
           - *Proteus-NixOS-5
   - path_regex: secrets/proteus_server\.priv\.pem\.sops$
     key_groups:
-      [
-        {
-          pgp: [*openpgp],
-          age: [*Proteus-NUC, *Proteus-MBP14M4P, *Proteus-Desktop],
-        },
-      ]
+      - pgp: [*openpgp]
+        age:
+          - *Proteus-NUC
+          - *Proteus-MBP14M4P
+          - *Proteus-Desktop
+          - *Proteus-NixOS-0
+          - *Proteus-NixOS-1
+          - *Proteus-NixOS-2
+          - *Proteus-NixOS-3
+          - *Proteus-NixOS-4
+          - *Proteus-NixOS-5
   - path_regex: secrets/sb_test\.json\.sops$
     key_groups: [{ pgp: [*openpgp], age: [*Proteus-NUC, *Proteus-MBP14M4P] }]
   ## END Common

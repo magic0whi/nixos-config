@@ -13,7 +13,6 @@ in
       subdomains =
         let
           subs = [
-            "${hostname}.traefik"
             "${hostname}.syncthing"
             "${hostname}.sb"
           ];
@@ -30,7 +29,6 @@ in
   services.traefik = {
     dynamicConfigOptions.http = {
       routers = {
-        traefik-dashboard.rule = "Host(`${hostname}.traefik.${const.domain}`)";
         syncthing = {
           rule = "Host(`${hostname}.syncthing.${const.domain}`)";
           entryPoints = [ "websecure" ];
