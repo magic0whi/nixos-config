@@ -8,6 +8,7 @@ let
         "coinbase.com"
         "bybit.eu"
         "braze.eu"
+        "tink.com" # Easy bank transfer
       ];
     }
     {
