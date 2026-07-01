@@ -166,25 +166,25 @@
                 ];
               };
           build = {
-            # executable = "latexmk";
-            # args = [
-            #   "-cd"
-            #   "-pdflua"
-            #   "-halt-on-error"
-            #   "-interaction=nonstopmode"
-            #   "-synctex=1"
-            #   "%f"
-            # ];
-            executable = "tectonic";
+            executable = "latexmk";
             args = [
-              "-X" # Use experimental V2 interface
-              "compile"
+              "-cd"
+              "-pdflua"
+              "-halt-on-error"
+              "-interaction=nonstopmode"
+              "-synctex=1"
               "%f"
-              "--synctex"
-              "--keep-logs"
-              "--keep-intermediates"
-              "--outdir=output"
             ];
+            # executable = "tectonic";
+            # args = [
+            #   "-X" # Use experimental V2 interface
+            #   "compile"
+            #   "%f"
+            #   "--synctex"
+            #   "--keep-logs"
+            #   "--keep-intermediates"
+            #   "--outdir=output"
+            # ];
             onSave = true;
             forwardSearchAfter = true;
           };
