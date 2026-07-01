@@ -130,7 +130,6 @@
           };
         };
         texlab.config.texlab = {
-          auxDirectory = "output";
           # formatterLineLength = 120;
           # latexFormatter = "tex-fmt"; # Use formatter on texlab causes lose cursor position
           # Lint
@@ -173,8 +172,12 @@
               "-halt-on-error"
               "-interaction=nonstopmode"
               "-synctex=1"
+              "-outdir=${config.programs.helix.languages.language-server.texlab.config.texlab.build.auxDirectory}"
               "%f"
             ];
+            auxDirectory = "output";
+            logDirectory = "output";
+            pdfDirectory = "output";
             # executable = "tectonic";
             # args = [
             #   "-X" # Use experimental V2 interface
