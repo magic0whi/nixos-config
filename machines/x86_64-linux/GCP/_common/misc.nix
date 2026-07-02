@@ -1,4 +1,9 @@
-{ const, lib, ... }:
+{
+  config,
+  const,
+  lib,
+  ...
+}:
 {
   services.trafficQuota.enable = true;
   # To test, run `nix run .#nixosConfigurations.<name>.config.system.build.vmWithDisk`
@@ -21,4 +26,19 @@
   #   };
   # };
   # networking.useDHCP = false; # cloud-init
+  ## BEGIN ddclient.nix
+  sops.secrets.ddclient_namecheap_password = {
+    sopsFile = "${const.secretsDir}/common.sops.yaml";
+    restartUnits = [ "ddclient" ];
+  };
+  services.ddclient = {
+    enable = true;
+    protocol = "namecheap";
+    server = "dynamicdns.park-your-domain.com";
+    username = "proteus11451.online";
+    domains = [ config.networking.hostName ];
+    passwordFile = config.sops.secrets.ddclient_namecheap_password.path;
+    usev6 = ""; # disable IPv6 since Namecheap DDNS does not support AAAA records
+  };
+  ## END ddclient.nix
 }
