@@ -34,7 +34,8 @@ let
       tag = "UnitedStates";
       type = "selector";
       outbounds = [
-        # "Proteus-NixOS-0"
+        "Proteus-NixOS-0"
+        "Proteus-NixOS-1"
         "{all}"
       ];
       filter = [

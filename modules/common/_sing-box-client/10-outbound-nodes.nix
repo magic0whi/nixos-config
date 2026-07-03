@@ -31,6 +31,8 @@ let
             server._secret = config.sops.secrets."easytier_peer_${num}".path;
           })
           [
+            "0"
+            "1"
             "2"
             "3"
             "4"
