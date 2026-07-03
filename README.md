@@ -98,7 +98,7 @@ Or use `nixos-anywhere` for unattended installation (example using `Proteus-NixO
 
 ```bash
 IP=11.4.51.4
-nix run nixpkgs#nixos-anywhere -- --phases kexec proteus@$IP \
+nix run nixpkgs#nixos-anywhere -- -f .#Proteus-NixOS-0 --phases kexec proteus@$IP \
   --kexec https://gh-proxy.org/https://github.com/nix-community/nixos-images/releases/download/nixos-25.05/nixos-kexec-installer-noninteractive-x86_64-linux.tar.gz
 nix run nixpkgs#nixos-anywhere -- -f .#Proteus-NixOS-0 --phases disko --disko-mode format root@$IP
 nix run nixpkgs#nixos-anywhere -- -f .#Proteus-NixOS-0 --phases disko --disko-mode mount root@$IP

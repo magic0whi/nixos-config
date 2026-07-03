@@ -52,7 +52,7 @@
 
       seat = {
         tui = map mylib.relativeToRoot [
-          "modules/nixos_headless/sing-box-subscribe.nix"
+          "${headless}/sing-box-subscribe.nix"
           "${headless}/firewall-client.nix"
           "${headless}/fhs.nix"
           "${headless}/fonts.nix"
@@ -126,13 +126,14 @@
           ]
           ++ map mylib.relativeToRoot [
             # "${headless}/debug.nix"
-            "${headless}/syncthing.nix"
             "${headless}/dev-env.nix"
             "${headless}/file_sharing.nix"
             "${headless}/git.nix"
             "${headless}/gpg.nix"
             "${headless}/nix.nix"
             "${headless}/packages.nix"
+            "${headless}/ssh.nix"
+            "${headless}/syncthing.nix"
             "${headless}/zellij.nix"
 
             "${gui}/mpv.nix"
