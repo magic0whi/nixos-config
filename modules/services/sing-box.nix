@@ -64,6 +64,10 @@
         tag = "Direct";
         type = "direct";
       };
+      http_clients = lib.singleton {
+        tag = "Default";
+        detour = "Direct";
+      };
       route = {
         rules = [
           {
@@ -90,7 +94,7 @@
           let
             inherit (const.sb.ruleSetCfg) urlPrefix;
             defaultCfg = const.sb.ruleSetCfg.defaultCfg // {
-              download_detour = "Direct";
+              http_client = "Direct";
             };
           in
           map (rule_set: defaultCfg // rule_set) [

@@ -184,6 +184,10 @@ lib.mkMerge (
           }
         )
       ];
+      http_clients = lib.singleton {
+        tag = "Default";
+        detour = "Default";
+      };
       route = {
         auto_detect_interface = lib.mkDefault true;
         default_domain_resolver = "Bootstrap";

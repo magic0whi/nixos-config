@@ -77,7 +77,7 @@ args@{
     defaultCfg = {
       type = "remote";
       format = "binary";
-      download_detour = "Default"; # Auto works poor
+      http_client = "Default"; # Auto works poor
     };
   };
 
