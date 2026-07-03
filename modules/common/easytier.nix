@@ -8,41 +8,55 @@
 }:
 {
   sops =
-    lib.mapAttrsRecursiveCond (attrs: !(attrs ? sopsFile || attrs ? content))
-      (
-        _: secret:
-        lib.mkMerge [
-          secret
-          (lib.optionalAttrs (!pkgs.stdenv.isDarwin) {
-            restartUnits = map (name: "easytier-${name}.service") (builtins.attrNames config.services.easytier.instances);
-          })
-        ]
-      )
-      {
-        secrets =
-          let
-            sopsFile = "${const.secretsDir}/common.sops.yaml";
-          in
-          {
-            "easytier_network_secret" = { inherit sopsFile; };
-            "easytier_peer_2" = { inherit sopsFile; };
-            "easytier_peer_3" = { inherit sopsFile; };
-            "easytier_peer_4" = { inherit sopsFile; };
-            "easytier_peer_5" = { inherit sopsFile; };
-          };
-        templates."easytier.env" = {
+    let
+      mkRestartUnits = lib.optionalAttrs (!pkgs.stdenv.isDarwin) {
+        restartUnits = map (name: "easytier-${name}.service") (builtins.attrNames config.services.easytier.instances);
+      };
+      nodes = [
+        0
+        1
+        2
+        3
+        4
+        5
+      ];
+    in
+    {
+      secrets =
+        let
+          sopsFile = "${const.secretsDir}/common.sops.yaml";
+        in
+        lib.mkMerge (
+          # Iterate mkMerge list
+          map
+            # add restartUnits optionally for each attrsets in the outer mkMerge list
+            (builtins.mapAttrs (
+              _: secret:
+              lib.mkMerge [
+                secret
+                mkRestartUnits
+              ]
+            ))
+            (
+              map (secret: secret) (
+                lib.singleton { easytier_network_secret = { inherit sopsFile; }; }
+                ++ (map (i: { "easytier_peer_${toString i}" = { inherit sopsFile; }; }) nodes)
+              )
+            )
+        );
+      templates."easytier.env" = lib.mkMerge [
+        mkRestartUnits
+        {
           content = mylib.toEnv {
             ET_NETWORK_SECRET = config.sops.placeholder.easytier_network_secret;
             # ET_PEERS uses comma delimiter
-            ET_PEERS = builtins.concatStringsSep "," [
-              "udp://${config.sops.placeholder.easytier_peer_2}"
-              "udp://${config.sops.placeholder.easytier_peer_3}"
-              "udp://${config.sops.placeholder.easytier_peer_4}"
-              "udp://${config.sops.placeholder.easytier_peer_5}"
-            ];
+            ET_PEERS = builtins.concatStringsSep "," (
+              map (i: "udp://${config.sops.placeholder."easytier_peer_${toString i}"}") nodes
+            );
           };
-        };
-      };
+        }
+      ];
+    };
   services.easytier = {
     enable = true;
     allowSystemForward = true;
