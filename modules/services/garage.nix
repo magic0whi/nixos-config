@@ -24,9 +24,6 @@ in
     let
       subdomains =
         let
-          # TODO: use *.<hostname>.s3.example.com
-          # 1. treewide change
-          # 2. re-issue server certificate
           subs = [
             "${hostname}.s3"
             "*.${hostname}.s3"
@@ -83,12 +80,12 @@ in
       # s3_api (3900) is for common access
       s3_api = {
         api_bind_addr = "127.0.0.1:3900";
-        root_domain = "${hostname}.s3.${const.domain}";
+        root_domain = ".${lib.toLower hostname}.s3.${const.domain}";
       };
       # s3_web (3902) is for bucket-as-website
       s3_web = {
         bind_addr = "127.0.0.1:3902";
-        root_domain = "${hostname}.s3-pub.${const.domain}";
+        root_domain = ".${lib.toLower hostname}.s3-pub.${const.domain}";
       };
       # admin (3903) is for webui access
       admin.api_bind_addr = "127.0.0.1:3903";
@@ -124,7 +121,8 @@ in
       s3 = {
         rule = lib.concatStringsSep " || " [
           "Host(`${hostname}.s3.${const.domain}`)"
-          ''HostRegexp(`^[^.]+\.${hostname}\.s3\.${lib.escapeRegex const.domain}$`)''
+          # (?i) make the regex case-insensitive
+          ''HostRegexp(`(?i)^[^.]+\.${lib.toLower hostname}\.s3\.${lib.escapeRegex const.domain}$`)''
         ];
         entryPoints = [ "websecure" ];
         service = "s3";
@@ -133,7 +131,7 @@ in
       s3-pub = {
         rule = lib.concatStringsSep " || " [
           "Host(`${hostname}.s3-pub.${const.domain}`)"
-          ''HostRegexp(`^[^.]+\.${hostname}\.s3-pub\.${lib.escapeRegex const.domain}$`)''
+          ''HostRegexp(`(?i)^[^.]+\.${lib.toLower hostname}\.s3-pub\.${lib.escapeRegex const.domain}$`)''
         ];
         entryPoints = [ "websecure" ];
         service = "s3-pub";

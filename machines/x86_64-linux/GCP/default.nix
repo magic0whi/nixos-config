@@ -28,6 +28,7 @@ let
                 "modules/nixos_headless/traffic-quota.nix"
                 "modules/services/traefik.nix"
                 "modules/services/prometheus-exporters.nix"
+                "modules/services/garage.nix"
               ]
               ++ [ ./_common ];
             hmModules = features.hm.common.base;

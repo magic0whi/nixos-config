@@ -1,18 +1,12 @@
+{ config, const, ... }:
 {
-  config,
-  const,
-  ...
-}:
-{
-  sops =
+  sops.secrets =
     let
       sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
     in
     {
-      secrets = {
-        garage_rpc_secret = { inherit sopsFile; };
-        garage_admin_token = { inherit sopsFile; };
-      };
+      garage_rpc_secret = { inherit sopsFile; };
+      garage_admin_token = { inherit sopsFile; };
     };
 
   # systemd.tmpfiles.settings."10-garage-create-dir" = {
@@ -36,6 +30,7 @@
       ReadWritePaths = [ "${const.storagePath}/garage/snapshots" ];
     };
   };
+
   services.garage.settings = {
     # metadata_dir = "${const.storagePath}/garage/meta"; # Garage recommends placing metadata on SSD
     metadata_snapshots_dir = "${const.storagePath}/garage/snapshots";
