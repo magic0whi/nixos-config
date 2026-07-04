@@ -25,26 +25,15 @@ in
     };
   services.traefik = {
     dynamicConfigOptions.http = {
-      routers = {
-        qinglong = {
-          rule = "Host(`ql.${const.domain}`)";
-          entryPoints = [ "websecure" ];
-          service = "qinglong";
-          tls = { };
-        };
-        sb-dashboard = {
-          rule = "Host(`${hostname}.sb.${const.domain}`)";
-          entryPoints = [ "websecure" ];
-          middlewares = [ "authelia-auth" ];
-          service = "sb-dashboard";
-          tls = { };
-        };
+      routers.sb-dashboard = {
+        rule = "Host(`${hostname}.sb.${const.domain}`)";
+        entryPoints = [ "websecure" ];
+        middlewares = [ "authelia-auth" ];
+        service = "sb-dashboard";
+        tls = { };
       };
-      services = {
-        qinglong.loadBalancer.servers = [ { url = "http://127.0.0.1:5700"; } ];
-        sb-dashboard.loadBalancer.servers = lib.singleton {
-          url = "http://${config.services.sing-box.settings.experimental.clash_api.external_controller or "127.0.0.1:9091"}";
-        };
+      services.sb-dashboard.loadBalancer.servers = lib.singleton {
+        url = "http://${config.services.sing-box.settings.experimental.clash_api.external_controller or "127.0.0.1:9091"}";
       };
     };
   };

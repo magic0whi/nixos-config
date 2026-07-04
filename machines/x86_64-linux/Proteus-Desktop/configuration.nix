@@ -14,27 +14,17 @@ in
   vars.hostAddrs.${hostanem} =
     let
       regHost = true;
-      subdomains =
-        let
-          sub = [ "ql" ];
-        in
-        {
-          A = sub;
-          AAAA = sub;
-        };
     in
     {
       tailscale = {
         inherit regHost;
         ipv4 = "100.89.227.22/10";
         ipv6 = "fd7a:115c:a1e0::1a01:e318/48";
-        subdomains = subdomains;
       };
       easytier = {
         inherit regHost;
         ipv4 = "10.0.0.3/24";
         ipv6 = "fdfe:dcba:9877::3/64";
-        inherit subdomains;
       };
       wire = {
         name = "enp4s0";
