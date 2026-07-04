@@ -3,7 +3,7 @@ args@{
   mylib,
   ...
 }:
-{
+rec {
   username = "proteus";
   userFullName = "Proteus Qian";
   email = "sudaku233@outlook.com";
@@ -79,6 +79,12 @@ args@{
       format = "binary";
       http_client = "Default"; # Auto works poor
     };
+  };
+
+  nixCache = rec {
+    hostname = "Proteus-Desktop";
+    url = "https://nix-cache.${hostname}.s3-pub.${domain}";
+    publicKey = "${hostname}.s3.${domain}-1:IxrRwk4uC5ittHeG9menkuajABnrX9cboEWwZz/m4+E=";
   };
 
   domain = "proteus.eu.org";

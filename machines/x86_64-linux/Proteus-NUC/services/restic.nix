@@ -12,7 +12,8 @@
   ...
 }:
 let
-  machine_cfg_s3 = machineConfigs.${const.networking.findFirstHostBySubdomain "s3"}.config;
+  hostname_s3 = "Proteus-Desktop";
+  machine_cfg_s3 = machineConfigs.${hostname_s3}.config;
   hostname = config.networking.hostName;
 in
 {
@@ -113,8 +114,7 @@ in
     in
     {
       ${hostname} = shared // {
-        # Repository location on Proteus-Desktop
-        repository = "s3:s3.${const.domain}/backups/${hostname}";
+        repository = "s3:${hostname_s3}.s3.${const.domain}/backups/${hostname}";
         # Paths to backup
         paths = [
           config.services.paperless.exporter.directory # Paperless
@@ -124,7 +124,7 @@ in
         ];
       };
       "${hostname}_immich" = shared // {
-        repository = "s3:s3.${const.domain}/backups/${hostname}_immich";
+        repository = "s3:${hostname_s3}.s3.${const.domain}/backups/${hostname}_immich";
         paths = [ config.services.immich.mediaLocation ];
         pruneOpts = [ "--keep-last 1" ];
         exclude = shared.exclude ++ [

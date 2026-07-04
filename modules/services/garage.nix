@@ -16,7 +16,35 @@
   pkgs,
   ...
 }:
+let
+  hostname = config.networking.hostName;
+in
 {
+  vars.hostAddrs.${hostname} =
+    let
+      subdomains =
+        let
+          # TODO: use *.<hostname>.s3.example.com
+          # 1. treewide change
+          # 2. re-issue server certificate
+          subs = [
+            "${hostname}.s3"
+            "*.${hostname}.s3"
+            "${hostname}.s3-pub"
+            "*.${hostname}.s3-pub"
+            "${hostname}.garage"
+          ];
+        in
+        {
+          A = subs;
+          AAAA = subs;
+        };
+    in
+    {
+      tailscale = { inherit subdomains; };
+      easytier = { inherit subdomains; };
+    };
+
   sops =
     let
       restartUnits = [ "garage.service" ];
@@ -50,13 +78,18 @@
     settings = {
       metadata_auto_snapshot_interval = "6h";
       disable_scrub = true; # ZFS/Btrfs will take this job
-      data_dir = "${const.storagePath}/garage/data";
       rpc_bind_addr = "127.0.0.1:3901";
       rpc_public_addr = "127.0.0.1:3901";
       # s3_api (3900) is for common access
-      s3_api.api_bind_addr = "127.0.0.1:3900";
+      s3_api = {
+        api_bind_addr = "127.0.0.1:3900";
+        root_domain = "${hostname}.s3.${const.domain}";
+      };
       # s3_web (3902) is for bucket-as-website
-      s3_web.bind_addr = "127.0.0.1:3902";
+      s3_web = {
+        bind_addr = "127.0.0.1:3902";
+        root_domain = "${hostname}.s3-pub.${const.domain}";
+      };
       # admin (3903) is for webui access
       admin.api_bind_addr = "127.0.0.1:3903";
       replication_factor = 1;
@@ -89,16 +122,25 @@
   services.traefik.dynamicConfigOptions.http = {
     routers = {
       s3 = {
+        rule = lib.concatStringsSep " || " [
+          "Host(`${hostname}.s3.${const.domain}`)"
+          ''HostRegexp(`^[^.]+\.${hostname}\.s3\.${lib.escapeRegex const.domain}$`)''
+        ];
         entryPoints = [ "websecure" ];
         service = "s3";
         tls = { };
       };
       s3-pub = {
+        rule = lib.concatStringsSep " || " [
+          "Host(`${hostname}.s3-pub.${const.domain}`)"
+          ''HostRegexp(`^[^.]+\.${hostname}\.s3-pub\.${lib.escapeRegex const.domain}$`)''
+        ];
         entryPoints = [ "websecure" ];
         service = "s3-pub";
         tls = { };
       };
       garage-webui = {
+        rule = "Host(`${hostname}.garage.${const.domain}`)";
         entryPoints = [ "websecure" ];
         middlewares = [ "authelia-auth" ];
         service = "garage-webui";

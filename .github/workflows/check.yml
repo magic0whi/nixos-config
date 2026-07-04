@@ -32,8 +32,8 @@ jobs:
         with:
           github_access_token: ${{ secrets.ACCESS_TOKEN_GITHUB }}
           lix_conf: |
-            extra-substituters = https://nix-cache.s3-pub.proteus.eu.org/
-            extra-trusted-public-keys = s3.proteus.eu.org-1:IxrRwk4uC5ittHeG9menkuajABnrX9cboEWwZz/m4+E=
+            extra-substituters = https://nix-cache.Proteus-Desktop.s3-pub.proteus.eu.org/
+            extra-trusted-public-keys = Proteus-Desktop.s3.proteus.eu.org-1:IxrRwk4uC5ittHeG9menkuajABnrX9cboEWwZz/m4+E=
 
       - name: Magic Nix Cache
         if: github.server_url == 'https://github.com'

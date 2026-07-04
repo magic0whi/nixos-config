@@ -1,16 +1,15 @@
 {
   config,
-  machineConfigs,
   const,
   mylib,
   ...
 }:
 let
   cfg = config.services.niks3;
-  machine_cfg_s3 = machineConfigs.${const.networking.findFirstHostBySubdomain "s3"}.config;
+  hostname = config.networking.hostName;
 in
 {
-  vars.hostAddrs.${config.networking.hostName} =
+  vars.hostAddrs.${hostname} =
     let
       subdomains = {
         A = [ "niks3" ];
@@ -29,7 +28,7 @@ in
     {
       secrets = {
         niks3_db_password = {
-          sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
+          sopsFile = "${const.secretsDir}/${hostname}.sops.yaml";
           inherit restartUnits;
         };
         aws_access_key = {
@@ -41,7 +40,7 @@ in
           owner = cfg.user;
         };
         niks3_api_token = {
-          sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
+          sopsFile = "${const.secretsDir}/${hostname}.sops.yaml";
           owner = cfg.user;
           inherit restartUnits;
         };
@@ -68,9 +67,9 @@ in
 
     database.connectionString = "$CONN_URL";
     s3 = {
-      endpoint = "s3.${const.domain}";
+      endpoint = "${hostname}.s3.${const.domain}";
       bucket = "nix-cache";
-      region = machine_cfg_s3.services.garage.settings.s3_api.s3_region;
+      region = config.services.garage.settings.s3_api.s3_region;
       useSSL = true;
       accessKeyFile = config.sops.secrets.aws_access_key.path;
       secretKeyFile = config.sops.secrets.aws_secret_key.path;

@@ -5,7 +5,7 @@
   ...
 }:
 {
-  xdg.configFile."nix/public.key".source = "${const.secretsDir}/nix_public.key";
+  xdg.configFile."nix/public.key".text = const.nixCache.publicKey;
   sops = {
     secrets = {
       github_access_tokens.sopsFile = "${const.secretsDir}/common_hm.sops.yaml";

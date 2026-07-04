@@ -53,16 +53,17 @@
             true;
         # The substituter will be appended to the default substituters when fetching packages.
         extra-substituters = [
-          "https://nix-cache.s3-pub.${const.domain}"
+          const.nixCache.url
           "https://hyprland.cachix.org"
           "https://noctalia.cachix.org"
         ];
         extra-trusted-public-keys = [
-          "s3.${const.domain}-1:IxrRwk4uC5ittHeG9menkuajABnrX9cboEWwZz/m4+E="
+          const.nixCache.publicKey
           "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
           "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
         ];
       }
+
     ];
   };
 }
