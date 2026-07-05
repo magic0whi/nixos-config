@@ -103,18 +103,6 @@
     };
   };
 
-  # As of 2026-05-01, paperless.nix still hardcoded group to be same with uesr
-  systemd.tmpfiles.settings =
-    let
-      cfg = config.services.paperless.exporter;
-    in
-    lib.mkIf cfg.enable {
-      "10-paperless-exporter-change-group".${cfg.directory}.z = {
-        mode = "2750";
-        group = "storage";
-      };
-    };
-
   systemd.services =
     let
       cfg = config.services.paperless.exporter;
@@ -125,7 +113,9 @@
         # spawns python to export the PDFs to a temporary folder, then renames it to `cfg.exporter.directory` ). If this
         # is Type=simple (the default), systemd will run ExecStartPost instantly, before the PDFs are generated, causing
         # them to be owned by paperless:paperless.
+        Group = "storage";
         Type = "oneshot";
+        # As of 2026-05-01, paperless-export don't allow group to access
         ExecStartPost = [ "+${pkgs.coreutils}/bin/chmod -R g+r ${cfg.directory}" ];
       };
     };
