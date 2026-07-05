@@ -70,7 +70,7 @@ let
 
           "${nixosHmGui}/fcitx5.nix"
           "${nixosHmGui}/gtk_and_qt.nix"
-          "${nixosHmGui}/hyprland"
+          "${nixosHmGui}/niri"
           "${nixosHmGui}/xdg.nix"
         ];
     }

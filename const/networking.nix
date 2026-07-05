@@ -97,7 +97,7 @@ in
       Proteus-NixOS-0 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILPzkXcoNKVwa5D6am4Bj5FVG+J/5NmsinoH53jrMRyk root@Proteus-NixOS-0";
       Proteus-NixOS-1 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII80bJtMayIRRUVSkiGOXYLteLvklt87+kMymtdGf5uG root@Proteus-NixOS-1";
       Proteus-NixOS-2 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBYHi5EXmmmJ+mRbkXM1qmVVv6FYbSG6OGH6rW43nesr root@Proteus-NixOS-2";
-      Proteus-NixOS-3 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINgSO5tjWr70NuEdERaBzmlRrNrTm6doANPohrarfYb0 root@Proteus-NixOS-3";
+      Proteus-NixOS-3 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHVIYeCYLxcDtTh2AlwLYhCVPE5FT5onV5GkBvDv3i07 root@Proteus-NixOS-3";
       Proteus-NixOS-4 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGz6g8PDGhRYZBPMRyA6yvQCg9EQQl7RpOXcBCIVomBR root@Proteus-NixOS-4";
       Proteus-NixOS-5 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKvuXbtrJj9rwmg7addReGIDP/MgK6h5vtLjsykb/RCg root@Proteus-NixOS-5";
     };
