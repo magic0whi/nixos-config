@@ -1,8 +1,8 @@
 # TIP: Manually setup a Nix binary cache server
 # 1. Get node id: `sudo garage node id`
 # 2. Input rpc secret: `export GARAGE_RPC_SECRET=$(systemd-ask-password)`
-# 3. Initialize single-node layout: `-h <full-node-id>@127.0.0.1:3901 layout assign -z cn-east1-a -c 200G <node-ids>`
-# 4. Commit layout: `garage -h <full-node-id>@127.0.0.1:3901 layout apply --version 1`
+# 3. Initialize single-node layout: `-h $ID@127.0.0.1:3901 layout assign $ID -z us-east-1 -c 200G -t <hostname>`
+# 4. Commit layout: `garage -h $ID@127.0.0.1:3901 layout apply --version 1`
 # 5. Create the bucket: `garage -h <full-node-id>@127.0.0.1:3901 bucket create nix-cache`
 # 6. Create the access key: `garage -h <full-node-id>@127.0.0.1:3901 key create nixbuilder`
 # 7. Allow the key to access the bucket:
@@ -18,6 +18,7 @@
 }:
 let
   hostname = config.networking.hostName;
+  garage_settings = config.services.garage.settings;
 in
 {
   vars.hostAddrs.${hostname} =
@@ -62,7 +63,11 @@ in
       };
       templates."garage-webui.env" = {
         restartUnits = [ "garage-webui.service" ];
-        content = mylib.toEnv { API_ADMIN_KEY = config.sops.placeholder.garage_admin_token; };
+        content = mylib.toEnv {
+          # garage-webui default use rpc_public_addr to access admin API
+          API_BASE_URL = "http://${garage_settings.admin.api_bind_addr}";
+          API_ADMIN_KEY = config.sops.placeholder.garage_admin_token;
+        };
       };
     };
 
@@ -75,8 +80,7 @@ in
     settings = {
       metadata_auto_snapshot_interval = "6h";
       disable_scrub = true; # ZFS/Btrfs will take this job
-      rpc_bind_addr = "127.0.0.1:3901";
-      rpc_public_addr = "127.0.0.1:3901";
+      rpc_bind_addr = lib.mkDefault "127.0.0.1:3901";
       # s3_api (3900) is for common access
       s3_api = {
         api_bind_addr = "127.0.0.1:3900";
@@ -89,7 +93,7 @@ in
       };
       # admin (3903) is for webui access
       admin.api_bind_addr = "127.0.0.1:3903";
-      replication_factor = 1;
+      replication_factor = lib.mkDefault 1;
       compression_level = 0; # A value of 0 will let zstd choose a default value (currently 3)
     };
   };
@@ -107,7 +111,7 @@ in
     wantedBy = [ "multi-user.target" ];
     environment = {
       PORT = "3999"; # the type check only allow string
-      CONFIG_PATH = "${(pkgs.formats.toml { }).generate "config.toml" config.services.garage.settings}";
+      CONFIG_PATH = "${(pkgs.formats.toml { }).generate "config.toml" garage_settings}";
     };
     serviceConfig = {
       ExecStart = lib.getExe pkgs.garage-webui;
@@ -147,20 +151,19 @@ in
     };
     services =
       let
-        cfg = config.services.garage.settings;
         healthCheck = {
-          port = toString (mylib.getUriPort cfg.admin.api_bind_addr);
+          port = toString (mylib.getUriPort garage_settings.admin.api_bind_addr);
           path = "/health";
         };
       in
       {
         s3.loadBalancer = {
-          servers = [ { url = "http://${cfg.s3_api.api_bind_addr}"; } ]; # Default :3900
+          servers = [ { url = "http://${garage_settings.s3_api.api_bind_addr}"; } ]; # Default :3900
           # Probe the admin port
           inherit healthCheck;
         };
         s3-pub.loadBalancer = {
-          servers = [ { url = "http://${cfg.s3_web.bind_addr}"; } ]; # Default :3902
+          servers = [ { url = "http://${garage_settings.s3_web.bind_addr}"; } ]; # Default :3902
           # Probe the admin port
           inherit healthCheck;
         };
