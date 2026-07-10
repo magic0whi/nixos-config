@@ -8,15 +8,12 @@
 }:
 let
   out = "Google";
-  non_dns_rules = [ { rule_set = [ "geoip-google" ]; } ];
-  rules = [
-    {
-      rule_set = [
-        "geosite-google"
-        "geosite-youtube"
-      ];
-    }
-  ];
+  rules = lib.singleton {
+    rule_set = [
+      "geosite-google"
+      "geosite-youtube"
+    ];
+  };
 in
 {
   dns = {
@@ -60,7 +57,7 @@ in
         mkSbRules = mylib.mkSbRules false;
       in
       [
-        (lib.mkBefore (mkSbRules out non_dns_rules))
+        (lib.mkBefore (mkSbRules out [ { rule_set = [ "geoip-google" ]; } ]))
         (mkSbRules out rules)
       ]
     );

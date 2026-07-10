@@ -6,15 +6,6 @@
 }:
 let
   out = "Direct";
-  non_dns_rules = [
-    {
-      process_name = [
-        "easytier-core"
-        "easytier-cli"
-      ];
-    }
-    { ip_cidr = [ "10.0.0.0/24" ]; }
-  ];
   rules = [
     {
       domain_suffix = [
@@ -41,7 +32,17 @@ in
         mkSbRules = mylib.mkSbRules false;
       in
       [
-        (lib.mkBefore (mkSbRules out non_dns_rules))
+        (lib.mkBefore (
+          mkSbRules out [
+            {
+              process_name = [
+                "easytier-core"
+                "easytier-cli"
+              ];
+            }
+            { ip_cidr = [ "10.0.0.0/24" ]; }
+          ]
+        ))
         (lib.mkOrder 875 (
           lib.singleton {
             outbound = "Direct";

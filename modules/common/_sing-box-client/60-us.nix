@@ -6,14 +6,6 @@
 }:
 let
   out = "UnitedStates";
-  non_dns_rules = lib.singleton {
-    rule_set = [
-      "asn-ibkr-as9096"
-      "asn-ibkr-as9468"
-      "asn-ibkr-as27163"
-      "asn-ibkr-as40711"
-    ];
-  };
   rules = [
     {
       domain_suffix = [
@@ -62,7 +54,18 @@ in
         mkSbRules = mylib.mkSbRules false;
       in
       [
-        (lib.mkBefore (mkSbRules out non_dns_rules))
+        (lib.mkBefore (
+          mkSbRules out (
+            lib.singleton {
+              rule_set = [
+                "asn-ibkr-as9096"
+                "asn-ibkr-as9468"
+                "asn-ibkr-as27163"
+                "asn-ibkr-as40711"
+              ];
+            }
+          )
+        ))
         (mkSbRules out rules)
       ]
     );

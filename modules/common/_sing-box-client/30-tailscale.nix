@@ -10,18 +10,6 @@
 }:
 let
   out = "Tailscale";
-  non_dns_rules = {
-    out = "Direct";
-    rules = [
-      { process_path_regex = [ ".*tailscaled.*" ]; }
-      {
-        ip_cidr = [
-          "100.64.0.0/10"
-          "fd7a:115c:a1e0::/48"
-        ];
-      }
-    ];
-  };
   super_rules =
     lib.optional isMobile {
       inherit out;
@@ -38,7 +26,7 @@ let
       out = "Direct";
       rules = lib.singleton { rule_set = "geosite-tailscale"; }; # NOTE: geosite-tailscale has "ts.net"
     };
-  my_domains.rules = lib.optional (isDarwin || isMobile) { domain_suffix = const.domain; };
+  my_domain_rules = lib.optional (isDarwin || isMobile) { domain_suffix = const.domain; };
 in
 lib.mkMerge [
   # I use tailscaled on darwin and linux, so tailscale endpoint only required on mobile devices
@@ -73,7 +61,7 @@ lib.mkMerge [
           mkSbRules = mylib.mkSbRules true;
         in
         lib.mkBefore (
-          builtins.concatMap (rules: mkSbRules rules.out rules.rules) super_rules ++ mkSbRules "myNs" my_domains.rules
+          builtins.concatMap (rules: mkSbRules rules.out rules.rules) super_rules ++ mkSbRules "myNs" my_domain_rules
         );
     };
     route = {
@@ -89,8 +77,18 @@ lib.mkMerge [
           mkSbRules = mylib.mkSbRules false;
         in
         [
-          (lib.mkBefore (mkSbRules non_dns_rules.out non_dns_rules.rules))
-          (builtins.concatMap (rules: mkSbRules rules.out rules.rules) super_rules ++ mkSbRules out my_domains.rules)
+          (lib.mkBefore (
+            mkSbRules "Direct" [
+              { process_path_regex = [ ".*tailscaled.*" ]; }
+              {
+                ip_cidr = [
+                  "100.64.0.0/10"
+                  "fd7a:115c:a1e0::/48"
+                ];
+              }
+            ]
+          ))
+          (builtins.concatMap (rules: mkSbRules rules.out rules.rules) super_rules ++ mkSbRules out my_domain_rules)
         ]
       );
     };

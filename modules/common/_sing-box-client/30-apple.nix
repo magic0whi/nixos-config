@@ -8,7 +8,6 @@
 }:
 let
   out = "Apple";
-  non_dns_rules = [ { rule_set = [ "geoip-apple" ]; } ];
   rules = [ { rule_set = [ "geosite-apple" ]; } ];
 in
 {
@@ -49,7 +48,7 @@ in
         mkSbRules = mylib.mkSbRules false;
       in
       [
-        (lib.mkBefore (mkSbRules out non_dns_rules))
+        (lib.mkBefore (mkSbRules out [ { rule_set = [ "geoip-apple" ]; } ]))
         (mkSbRules out rules)
       ]
     );

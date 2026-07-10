@@ -8,7 +8,6 @@
 }:
 let
   out = "Meta";
-  non_dns_rules = [ { rule_set = [ "geoip-facebook" ]; } ];
   rules = [ { rule_set = [ "geosite-meta" ]; } ];
 in
 {
@@ -49,7 +48,7 @@ in
         mkSbRules = mylib.mkSbRules false;
       in
       [
-        (lib.mkBefore (mkSbRules out non_dns_rules))
+        (lib.mkBefore (mkSbRules out [ { rule_set = [ "geoip-facebook" ]; } ]))
         (mkSbRules out rules)
       ]
     );
