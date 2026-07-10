@@ -128,7 +128,6 @@
           # Cloud Providers
           ++ lib.optional (builtins.elem pkgs.google-cloud-sdk hm_cfg.home.packages) ".config/gcloud"
           ++ lib.optional (builtins.elem pkgs.terraform hm_cfg.home.packages) ".config/terraform.d"
-          ++ lib.optional (builtins.elem pkgs.keepassxc hm_cfg.home.packages) "KeePassXC"
           ++ lib.optional (builtins.elem pkgs.ldtk hm_cfg.home.packages) ".config/LDtk";
           # files = [".wakatime.cfg"];
         };

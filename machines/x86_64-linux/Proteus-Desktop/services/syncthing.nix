@@ -42,9 +42,8 @@ in
       Documents.path = "${const.storagePath}/share/Documents";
       Games.path = "${const.storagePath}/share/Games";
       KeePassXC.path = "${const.storagePath}/share/KeePassXC";
-      Music.path = "${const.storagePath}/share/Music";
       Pictures.path = "${const.storagePath}/share/Pictures";
-      Works.path = "${const.storagePath}/share/Works";
+      Projects.path = "${const.storagePath}/share/Projects";
       nix-darwin.path = "${const.storagePath}/nix-darwin";
     };
   };

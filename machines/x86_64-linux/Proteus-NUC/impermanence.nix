@@ -15,9 +15,7 @@
 
   environment.persistence."/persistent".directories = [ "/srv" ];
   environment.persistence."/persistent".users.${const.username}.directories = [
-    "Games"
-    "Secrets"
-    "Works"
+    "Proteus"
 
     # IM
     # ".config/QQ"

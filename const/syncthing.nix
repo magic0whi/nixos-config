@@ -8,6 +8,7 @@ args@{
 let
   osConfig = args.osConfig or { };
   hostname = osConfig.networking.hostName or config.networking.hostName;
+  isNixOSModule = osConfig == { };
 
   device = {
     # Filter out self
@@ -28,7 +29,7 @@ let
 in
 {
   sops.secrets."${hostname}_syncthing.priv.pem" = lib.mkMerge [
-    (lib.optionalAttrs (osConfig == { }) { restartUnits = [ "syncthing.service" ]; })
+    (lib.optionalAttrs isNixOSModule { restartUnits = [ "syncthing.service" ]; })
     {
       sopsFile = "${const.secretsDir}/${hostname}_syncthing.priv.pem.sops";
       format = "binary"; # Required when loading raw files instead of yaml/json structures
@@ -38,7 +39,7 @@ in
     }
   ];
   services.syncthing = lib.mkMerge [
-    (lib.optionalAttrs (osConfig == { }) {
+    (lib.optionalAttrs isNixOSModule {
       openDefaultPorts = true;
       group = "storage"; # Not work for a LDAP group
     })
@@ -55,42 +56,38 @@ in
             desktops = builtins.attrNames device.desktops;
             servers = builtins.attrNames device.servers;
 
-            inherit (config.home) homeDirectory;
+            prefix = "${config.home.homeDirectory}/Proteus";
           in
           lib.mkMerge [
-            (lib.optionalAttrs (osConfig != { }) {
+            (lib.optionalAttrs (!isNixOSModule) {
               Secrets = {
-                path = lib.mkDefault "${homeDirectory}/Secrets";
+                path = lib.mkDefault "${prefix}/Secrets";
                 devices = desktops;
               };
             })
             {
               Documents = {
-                path = lib.mkDefault config.xdg.userDirs.documents;
+                path = lib.mkDefault "${prefix}/Documents";
                 devices = all;
               };
               Games = {
-                path = lib.mkDefault "${homeDirectory}/Games";
+                path = lib.mkDefault "${prefix}/Games";
                 devices = desktops;
               };
               KeePassXC = {
-                path = lib.mkDefault "${homeDirectory}/KeePassXC";
-                devices = all;
-              };
-              Music = {
-                path = lib.mkDefault config.xdg.userDirs.music;
+                path = lib.mkDefault "${prefix}/KeePassXC";
                 devices = all;
               };
               Pictures = {
-                path = lib.mkDefault config.xdg.userDirs.pictures;
+                path = lib.mkDefault "${prefix}/Pictures";
                 devices = all;
               };
-              Works = {
-                path = lib.mkDefault "${homeDirectory}/Works";
+              Projects = {
+                path = lib.mkDefault "${prefix}/Projects";
                 devices = desktops ++ servers;
               };
               nix-darwin = {
-                path = lib.mkDefault "${homeDirectory}/Works-References/nix-darwin";
+                path = lib.mkDefault "${prefix}/Projects-Ref/nix-darwin";
                 devices = desktops;
               };
             }
