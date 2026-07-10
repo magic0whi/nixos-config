@@ -210,6 +210,11 @@ lib.mkMerge (
           }
 
           {
+            clash_mode = "direct";
+            outbound = "Direct";
+          }
+
+          {
             action = "hijack-dns";
             mode = "or";
             rules = [
@@ -222,10 +227,6 @@ lib.mkMerge (
           {
             clash_mode = "global";
             outbound = "Default";
-          }
-          {
-            clash_mode = "direct";
-            outbound = "Direct";
           }
         ];
       };
