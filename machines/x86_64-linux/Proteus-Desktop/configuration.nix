@@ -7,11 +7,11 @@
   ...
 }:
 let
-  hostanem = config.networking.hostName;
+  hostname = config.networking.hostName;
 in
 {
   ## BEGIN network.nix
-  vars.hostAddrs.${hostanem} =
+  vars.hostAddrs.${hostname} =
     let
       regHost = true;
     in
@@ -28,18 +28,18 @@ in
       };
       wire = {
         name = "enp4s0";
-        ipv4 = "192.168.10.20/24";
+        ipv4 = builtins.head config.systemd.network.networks."10-wire".address;
       };
     };
   systemd.network.networks."10-wire" = {
-    inherit (config.vars.hostAddrs.${hostanem}.wire) name;
-    address = [ "192.168.10.20/24" ];
-    gateway = [ "192.168.10.1" ];
+    inherit (config.vars.hostAddrs.${hostname}.wire) name;
+    address = [ "192.168.1.20/24" ];
+    gateway = [ "192.168.1.1" ];
     DHCP = "no";
     networkConfig.IPv6AcceptRA = true;
   };
   networking.firewall.extraInputRules = ''
-    ip saddr 192.168.10.114 accept comment "Allow LAN AP clients to reach auto_redirect ports"
+    ip saddr 192.168.1.21 accept comment "Allow LAN AP clients to reach auto_redirect ports"
   '';
   ## END network.nix
   ## BEGIN hardware.nix
