@@ -10,12 +10,13 @@ let
   hostname = osConfig.networking.hostName or config.networking.hostName;
   isNixOSModule = osConfig == { };
 
-  device = {
+  device = rec {
     # Filter out self
-    desktops = lib.filterAttrs (n: _: n != hostname) {
+    _desktops = {
       Proteus-MBP14M4P.id = "UF2KT6R-ISVDLBM-UJW3JKP-YZJTOES-7K55HS2-IGPE5MQ-OO4D6HK-LZRSLAE";
       Proteus-NUC.id = "3P2RWV6-RQMHBFS-L3Z5JTF-O6HOR66-7INJZNM-XW3WUSG-XCIB454-UITNPAF";
     };
+    desktops = lib.filterAttrs (n: _: n != hostname) _desktops;
     servers = lib.filterAttrs (n: _: n != hostname) {
       Proteus-Desktop.id = "DFKVKXA-MHOUCDP-2DXEZGE-VUGGQXP-MRQCOZL-BOOBXAV-4IDSU26-B3GOUAF";
     };
@@ -59,9 +60,15 @@ in
             prefix = "${config.home.homeDirectory}/Proteus";
           in
           lib.mkMerge [
-            (lib.optionalAttrs (!isNixOSModule) {
+            (lib.mkIf (!isNixOSModule) {
               Secrets = {
                 path = lib.mkDefault "${prefix}/Secrets";
+                devices = desktops;
+              };
+            })
+            (lib.mkIf (builtins.elem hostname (builtins.attrNames device._desktops)) {
+              Projects-Ref = {
+                path = lib.mkDefault "${prefix}/Projects-Ref/";
                 devices = desktops;
               };
             })
@@ -85,10 +92,6 @@ in
               Projects = {
                 path = lib.mkDefault "${prefix}/Projects";
                 devices = desktops ++ servers;
-              };
-              nix-darwin = {
-                path = lib.mkDefault "${prefix}/Projects-Ref/nix-darwin";
-                devices = desktops;
               };
             }
           ];

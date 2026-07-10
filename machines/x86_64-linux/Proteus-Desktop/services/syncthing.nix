@@ -48,7 +48,6 @@ in
         KeePassXC.path = "${prefix}/KeePassXC";
         Pictures.path = "${prefix}/Pictures";
         Projects.path = "${prefix}/Projects";
-        nix-darwin.path = "${prefix}/nix-darwin";
       };
   };
 }
