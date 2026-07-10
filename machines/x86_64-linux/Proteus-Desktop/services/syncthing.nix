@@ -38,13 +38,17 @@ in
 
   systemd.services.syncthing.unitConfig.RequiresMountsFor = [ const.storagePath ];
   services.syncthing = {
-    settings.folders = {
-      Documents.path = "${const.storagePath}/share/Documents";
-      Games.path = "${const.storagePath}/share/Games";
-      KeePassXC.path = "${const.storagePath}/share/KeePassXC";
-      Pictures.path = "${const.storagePath}/share/Pictures";
-      Projects.path = "${const.storagePath}/share/Projects";
-      nix-darwin.path = "${const.storagePath}/nix-darwin";
-    };
+    settings.folders =
+      let
+        prefix = "${const.storagePath}/share";
+      in
+      {
+        Documents.path = "${prefix}/Documents";
+        Games.path = "${prefix}/Games";
+        KeePassXC.path = "${prefix}/KeePassXC";
+        Pictures.path = "${prefix}/Pictures";
+        Projects.path = "${prefix}/Projects";
+        nix-darwin.path = "${prefix}/nix-darwin";
+      };
   };
 }
