@@ -36,6 +36,7 @@ let
           "modules/services/traefik.nix"
           "modules/services/prometheus-exporters.nix"
           "modules/services/garage.nix"
+          "modules/services/darknet.nix"
         ]);
       hmModules =
         features.hm.common.base

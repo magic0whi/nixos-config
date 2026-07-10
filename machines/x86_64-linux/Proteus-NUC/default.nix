@@ -38,6 +38,7 @@ let
           "modules/services/traefik.nix"
           "modules/services/docker.nix"
           "modules/services/prometheus-exporters.nix"
+          "modules/services/darknet.nix"
         ];
 
       hmModules = (with features.hm.common; base ++ seat) ++ features.hm.nixos;

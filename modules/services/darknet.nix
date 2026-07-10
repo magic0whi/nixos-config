@@ -8,9 +8,9 @@
   services.tor = {
     enable = true;
     client.enable = true;
-    # openFirewall = true;
+    openFirewall = true;
     settings = {
-      # ExitNodes = "{GB}";
+      # ExitNodes = "{CN}";
       ExitPolicy = [ "accept *:*" ];
       AvoidDiskWrites = 1;
       HardwareAccel = 1;
@@ -24,9 +24,7 @@
   };
   ## START i2pd.nix
   # Ref: https://i2pd.readthedocs.io/en/latest/user-guide/configuration/
-  networking.firewall.allowedTCPPorts = with config.services.i2pd; [
-    port
-  ];
+  networking.firewall.allowedTCPPorts = with config.services.i2pd; [ port ];
   services.i2pd = {
     enable = true;
     enableIPv6 = true;
