@@ -1,20 +1,20 @@
 lib:
 let
-  dns_rule_filter = rule: !(rule ? ip_cidr || rule ? network || rule ? port);
+  ip_rule_filter = rule: !(rule ? ip_cidr || rule ? network || rule ? port);
 in
 {
   ## BEGIN pkgs agnostic functions
-  # Don't put ip related rules along with other things as it will filter the whole rule
-  # NOTE in 1.14, there is a new feature evaluate, which allows query DNS result and use the result  to do IP matches
+  # NOTE: Don't put ip related rules along with other things as it will filter the whole rule
+  # NOTE: in 1.14, there is a new feature evaluate, which allows query DNS result and use the result to do IP matches
   # later
   mkSbRules =
-    forDns: out: rules:
-    (map (rule: (if forDns then { server = out; } else { outbound = out; }) // rule) (
-      if forDns then builtins.filter dns_rule_filter rules else rules
-    ));
+    filterIPRule: out: rules:
+    map (rule: (if filterIPRule then { server = out; } else { outbound = out; }) // rule) (
+      if filterIPRule then builtins.filter ip_rule_filter rules else rules
+    );
   mkSbRules' =
-    forDns: defCfg: rules:
-    (map (rule: defCfg // rule) (if forDns then builtins.filter dns_rule_filter rules else rules));
+    filterIPRule: defCfg: rules:
+    map (rule: defCfg // rule) (if filterIPRule then builtins.filter ip_rule_filter rules else rules);
 
   # Use path relative to the root of the project
   relativeToRoot = lib.path.append ../.;

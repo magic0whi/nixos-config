@@ -4,9 +4,7 @@
   ...
 }:
 let
-  defCfg = {
-    action = "reject";
-  };
+  defCfg.action = "reject";
   non_dns_rules = lib.singleton {
     process_name = [
       "xmrig"

@@ -8,28 +8,26 @@
 }:
 let
   out = "Direct";
-  non_dns_rules = [
-    (
-      if isDarwin then
-        {
-          type = "logical";
-          mode = "and";
-          rules = [
-            { rule_set = [ "geoip-cn" ]; }
-            {
-              invert = true;
-              ip_cidr = builtins.head config.networking.dns;
-            }
-          ];
-        }
-      else
-        { rule_set = [ "geoip-cn" ]; }
-    )
-  ];
+
   rules = [ { rule_set = [ "geosite-cn" ]; } ];
 in
 {
-  dns.rules = lib.mkOrder 2000 (mylib.mkSbRules true out rules);
+  dns.rules = lib.mkMerge [
+    (lib.mkOrder 2000 (
+      mylib.mkSbRules true out rules
+      ++ [
+        {
+          action = "evaluate";
+          server = out;
+        }
+        {
+          match_response = true;
+          rule_set = "geoip-cn";
+          action = "respond";
+        }
+      ]
+    ))
+  ];
   route = {
     rule_set =
       let
@@ -50,7 +48,27 @@ in
         mkSbRules = mylib.mkSbRules false;
       in
       [
-        (lib.mkBefore (mkSbRules out non_dns_rules))
+        (lib.mkBefore (
+          mkSbRules out [
+            (
+              # Bypass CN IPs but exclude DNS IP so sing-box can still hijack DNS request on macOS
+              if isDarwin then
+                {
+                  type = "logical";
+                  mode = "and";
+                  rules = [
+                    { rule_set = [ "geoip-cn" ]; }
+                    {
+                      invert = true;
+                      ip_cidr = builtins.head config.networking.dns;
+                    }
+                  ];
+                }
+              else
+                { rule_set = [ "geoip-cn" ]; }
+            )
+          ]
+        ))
         (lib.mkOrder 2000 (mkSbRules out rules))
       ]
     );
