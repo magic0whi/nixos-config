@@ -164,33 +164,37 @@
                   "%p"
                 ];
               };
-          build = {
-            executable = "latexmk";
-            args = [
-              "-cd"
-              "-pdflua"
-              "-halt-on-error"
-              "-interaction=nonstopmode"
-              "-synctex=1"
-              "-outdir=${config.programs.helix.languages.language-server.texlab.config.texlab.build.auxDirectory}"
-              "%f"
-            ];
-            auxDirectory = "output";
-            logDirectory = "output";
-            pdfDirectory = "output";
-            # executable = "tectonic";
-            # args = [
-            #   "-X" # Use experimental V2 interface
-            #   "compile"
-            #   "%f"
-            #   "--synctex"
-            #   "--keep-logs"
-            #   "--keep-intermediates"
-            #   "--outdir=output"
-            # ];
-            onSave = true;
-            forwardSearchAfter = true;
-          };
+          build =
+            let
+              output_dir = "output";
+            in
+            {
+              executable = "latexmk";
+              args = [
+                "-cd"
+                "-pdflua"
+                "-halt-on-error"
+                "-interaction=nonstopmode"
+                "-synctex=1"
+                "-outdir=${output_dir}"
+                "%f"
+              ];
+              auxDirectory = output_dir;
+              logDirectory = output_dir;
+              pdfDirectory = output_dir;
+              # executable = "tectonic";
+              # args = [
+              #   "-X" # Use experimental V2 interface
+              #   "compile"
+              #   "%f"
+              #   "--synctex"
+              #   "--keep-logs"
+              #   "--keep-intermediates"
+              #   "--outdir=output"
+              # ];
+              onSave = true;
+              forwardSearchAfter = true;
+            };
         };
       };
     };

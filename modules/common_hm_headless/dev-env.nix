@@ -31,6 +31,11 @@
     modifyLineBreaks:
       textWrapOptions:
         columns: 120
+    # Format the witharrows environment
+    lookForAlignDelims:
+      DispWithArrows: 1
+      DispWithArrows*: 1
+
   '';
   ## END latex.nix
   ## BEGIN pip.nix
