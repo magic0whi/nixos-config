@@ -105,9 +105,9 @@ in
         checkOpts = [ "--with-cache" ]; # Reuse existing cache
         # Run backup + prune + check weekly (Sundays at 3 AM)
         timerConfig = {
-          OnCalendar = "*-*-* 03:00:00";
+          OnCalendar = lib.mkDefault "*-*-* 03:00:00";
           # RandomizedDelaySec = "30m"; # Jitter
-          Persistent = true; # Run immediately if system was off at scheduled time
+          Persistent = lib.mkDefault true; # Run immediately if system was off at scheduled time
         };
         # Performance tuning
         extraBackupArgs = [ "--limit-upload ${toString (50 * 1024)}" ];
@@ -144,6 +144,11 @@ in
           repository = "s3:${hostname_s3_gcp}.s3.${const.domain}:8443/backups/${hostname}";
           environmentFile = config.sops.templates."restic_gcp.env".path;
           extraOptions = [ "s3.region=${machine_cfg_s3_gcp.services.garage.settings.s3_api.s3_region}" ];
+          timerConfig = {
+            OnCalendar = "Mon *-*-* 03:00:00";
+            # RandomizedDelaySec = "30m"; # Jitter
+            Persistent = false; # Run immediately if system was off at scheduled time
+          };
           # Paths to backup
           paths = [
             config.services.paperless.exporter.directory # Paperless
