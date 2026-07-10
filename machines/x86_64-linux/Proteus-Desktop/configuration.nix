@@ -60,6 +60,7 @@ in
         ;
       # Disable FakeIP-only mode as I run hostapd on this machine
       # isServer = true;
+      isRouter = true;
     }
   );
   ## END sing-box-client.nix

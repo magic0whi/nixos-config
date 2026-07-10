@@ -8,6 +8,7 @@ args@{
   isLinux ? pkgs.stdenv.isLinux,
   isMobile ? false,
   isServer ? false,
+  isRouter ? false,
   ...
 }:
 let
@@ -56,8 +57,8 @@ lib.mkMerge (
           {
             tag = "FakeIP";
             type = "fakeip";
-            inet4_range = "198.18.0.0/15";
-            inet6_range = "fc00::/18";
+            inet4_range = if isRouter then "198.20.0.0/15" else "198.18.0.0/15";
+            inet6_range = if isRouter then "fc00:4000::/18" else "fc00::/18";
           }
           {
             tag = "Bootstrap";
@@ -234,7 +235,21 @@ lib.mkMerge (
   ]
   # Separate complex config to modular parts
   # NOTE: `args` only has arguments from what this files being imported
-  ++ map (file: import file ({ inherit isDarwin isLinux isMobile; } // args // const.sb // shared_cfg)) (
-    mylib.scanPath ./.
-  )
+  ++ map (
+    file:
+    import file (
+      {
+        inherit
+          isDarwin
+          isLinux
+          isMobile
+          isServer
+          isRouter
+          ;
+      }
+      // args
+      // const.sb
+      // shared_cfg
+    )
+  ) (mylib.scanPath ./.)
 )
