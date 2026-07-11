@@ -39,7 +39,6 @@
   '';
   ## END latex.nix
   ## BEGIN pip.nix
-  # TODO use generator
   # Use mirror for pip install
   xdg.configFile."pip/pip.conf".text = lib.generators.toINI { } {
     global = {
