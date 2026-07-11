@@ -7,8 +7,8 @@
     {
       tailscale = {
         inherit regHost;
-        ipv4 = "100.125.175.115";
-        ipv6 = "fd7a:115c:a1e0::73a:af74";
+        ipv4 = "100.127.175.84";
+        ipv6 = "fd7a:115c:a1e0::9d3a:af55";
       };
       easytier = {
         inherit regHost;
@@ -16,7 +16,7 @@
         ipv6 = "fdfe:dcba:9877::7";
       };
     };
-  time.timeZone = "Europe/London";
+  time.timeZone = "Asia/Tokyo";
   # BEGIN disko-config.nix
   disko.devices.disk.main.device = "/dev/disk/by-id/scsi-0Google_PersistentDisk_proteus-nixos-3";
   # END disko-config.nix
