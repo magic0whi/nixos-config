@@ -6,20 +6,25 @@
 }:
 let
   hostname = config.networking.hostName;
-  exporter_list = [ "systemd" ];
+  exporter_list = [
+    "systemd"
+    "node"
+  ];
 in
 {
   services.prometheus.exporters = lib.mkMerge (
-    (map (exporter_name: { ${exporter_name}.enable = true; }) exporter_list)
+    (map (exporter_name: {
+      ${exporter_name} = {
+        enable = true;
+        listenAddress = "127.0.0.1";
+      };
+    }) exporter_list)
     ++ lib.singleton {
       # https://github.com/prometheus/node_exporter#collectors
-      node = {
-        enable = true;
-        enabledCollectors = [
-          "systemd"
-          "netdev"
-        ];
-      };
+      node.enabledCollectors = [
+        "systemd"
+        "netdev"
+      ];
     }
   );
 
