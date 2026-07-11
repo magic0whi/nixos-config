@@ -3,6 +3,7 @@ args@{
   config,
   lib,
   const,
+  pkgs,
   ...
 }:
 let
@@ -72,14 +73,16 @@ in
                 devices = desktops;
               };
             })
+            (lib.mkIf (!pkgs.stdenv.isDarwin) {
+              Games = {
+                path = lib.mkDefault "${prefix}/Games";
+                devices = desktops ++ servers;
+              };
+            })
             {
               Documents = {
                 path = lib.mkDefault "${prefix}/Documents";
                 devices = all;
-              };
-              Games = {
-                path = lib.mkDefault "${prefix}/Games";
-                devices = desktops;
               };
               KeePassXC = {
                 path = lib.mkDefault "${prefix}/KeePassXC";
