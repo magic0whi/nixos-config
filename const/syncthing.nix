@@ -13,8 +13,8 @@ let
 
   device = rec {
     # Filter out self
-    _desktops = {
-      Proteus-MBP14M4P.id = "UF2KT6R-ISVDLBM-UJW3JKP-YZJTOES-7K55HS2-IGPE5MQ-OO4D6HK-LZRSLAE";
+    darwins.Proteus-MBP14M4P.id = "UF2KT6R-ISVDLBM-UJW3JKP-YZJTOES-7K55HS2-IGPE5MQ-OO4D6HK-LZRSLAE";
+    _desktops = darwins // {
       Proteus-NUC.id = "3P2RWV6-RQMHBFS-L3Z5JTF-O6HOR66-7INJZNM-XW3WUSG-XCIB454-UITNPAF";
     };
     desktops = lib.filterAttrs (n: _: n != hostname) _desktops;
@@ -76,7 +76,7 @@ in
             (lib.mkIf (!pkgs.stdenv.isDarwin) {
               Games = {
                 path = lib.mkDefault "${prefix}/Games";
-                devices = desktops ++ servers;
+                devices = lib.subtractLists (builtins.attrNames device.darwins) desktops ++ servers;
               };
             })
             {
