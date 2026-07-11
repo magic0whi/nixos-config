@@ -80,7 +80,7 @@ in
   ];
   caddyPort = 8080;
 
-  soaSerial = 2026070402;
+  soaSerial = 2026070403;
   knownHosts =
     let
       github = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl";

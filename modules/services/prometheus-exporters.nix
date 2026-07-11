@@ -6,20 +6,20 @@
 }:
 let
   hostname = config.networking.hostName;
-  exporter_list = [
-    "node"
-    "systemd"
-  ];
+  exporter_list = [ "systemd" ];
 in
 {
   services.prometheus.exporters = lib.mkMerge (
     (map (exporter_name: { ${exporter_name}.enable = true; }) exporter_list)
     ++ lib.singleton {
       # https://github.com/prometheus/node_exporter#collectors
-      node.enabledCollectors = [
-        "systemd"
-        "netdev"
-      ];
+      node = {
+        enable = true;
+        enabledCollectors = [
+          "systemd"
+          "netdev"
+        ];
+      };
     }
   );
 
