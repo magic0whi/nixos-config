@@ -25,11 +25,7 @@
   ...
 }:
 let
-  machine_cfg = {
-    authelia = machineConfigs.${const.networking.findFirstHostBySubdomain "auth"}.config;
-    paperless = machineConfigs.${const.networking.findFirstHostBySubdomain "paperless"}.config;
-    immich = machineConfigs.${const.networking.findFirstHostBySubdomain "immich"}.config;
-  };
+  machine_cfg.authelia = machineConfigs.${const.networking.findFirstHostBySubdomain "auth"}.config;
 in
 {
   vars.hostAddrs.${config.networking.hostName} =
@@ -117,11 +113,12 @@ in
     ensureDatabases = [
       "playground" # TODO: For learning
       "atuin"
-      machine_cfg.paperless.services.paperless.user
+      "paperless"
       machine_cfg.authelia.services.authelia.instances.main.user
       # (builtins.trace machine_config.authelia machine_config.authelia.services.authelia.instances.main.user)
       "nextcloud"
       "grafana"
+      "homebox"
     ];
     ensureUsers = [
       {
@@ -137,7 +134,7 @@ in
         ensureDBOwnership = true;
       }
       {
-        name = machine_cfg.paperless.services.paperless.user;
+        name = "paperless";
         ensureDBOwnership = true;
       }
       {
@@ -150,6 +147,10 @@ in
       }
       {
         name = "grafana";
+        ensureDBOwnership = true;
+      }
+      {
+        name = "homebox";
         ensureDBOwnership = true;
       }
     ];

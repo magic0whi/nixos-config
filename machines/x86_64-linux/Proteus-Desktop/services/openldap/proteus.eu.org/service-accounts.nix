@@ -7,14 +7,7 @@
   ...
 }:
 let
-  machine_config = {
-    authelia = machineConfigs.${const.networking.findFirstHostBySubdomain "auth"}.config;
-    forgejo = machineConfigs.${const.networking.findFirstHostBySubdomain "git"}.config;
-    immich = machineConfigs.${const.networking.findFirstHostBySubdomain "immich"}.config;
-    paperless = machineConfigs.${const.networking.findFirstHostBySubdomain "paperless"}.config;
-    postgresql = machineConfigs.${const.networking.findFirstHostBySubdomain "postgresql"}.config;
-    niks3 = machineConfigs.${const.networking.findFirstHostBySubdomain "niks3"}.config;
-  };
+  machine_config.authelia = machineConfigs.${const.networking.findFirstHostBySubdomain "auth"}.config;
 in
 ''
   dn: ou=ServiceAccounts,${baseDN}
@@ -37,36 +30,36 @@ in
   description: Dedicated LDAP account for authenticating database user
   userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$2/qpzCZL/QW5fczhx60Bwg$64zn/anj0LiNqsupuKnr5UA7B+Ejm3H+JL29NgSqwVs
 
-  dn: uid=${machine_config.postgresql.systemd.services.postgresql.serviceConfig.User},ou=ServiceAccounts,${baseDN}
+  dn: uid=postgres,ou=ServiceAccounts,${baseDN}
   objectClass: top
   objectClass: person
   objectClass: organizationalPerson
   objectClass: inetOrgPerson
-  uid: ${machine_config.postgresql.systemd.services.postgresql.serviceConfig.User}
+  uid: postgres
   o: Proteus Homelab
   cn: PostgreSQL Database Auth Service
   sn: Service
   description: Dedicated LDAP account for authenticating database user
   userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$gAW72T0XdGEPASN6Lw93pw$IoCTZ5kgwFaGAAt92SBp36hglEn/oU3BvY4et8xRY68
 
-  dn: uid=${machine_config.immich.services.immich.user},ou=ServiceAccounts,${baseDN}
+  dn: uid=immich,ou=ServiceAccounts,${baseDN}
   objectClass: top
   objectClass: person
   objectClass: organizationalPerson
   objectClass: inetOrgPerson
-  uid: ${machine_config.immich.services.immich.user}
+  uid: immich
   o: Proteus Homelab
   cn: Immich Database Auth Service
   sn: Service
   description: Dedicated LDAP account for authenticating database user
   userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$OEpAKFVxRbsfk8djqOY2yg$scRgt8huwIp6bmRTbKxHdf5YzDqbc+sv5O6FdnF59+s
 
-  dn: uid=${machine_config.paperless.services.paperless.user},ou=ServiceAccounts,${baseDN}
+  dn: uid=paperless,ou=ServiceAccounts,${baseDN}
   objectClass: top
   objectClass: person
   objectClass: organizationalPerson
   objectClass: inetOrgPerson
-  uid: ${machine_config.paperless.services.paperless.user}
+  uid: paperless
   o: Proteus Homelab
   sn: Service
   cn: Paperless Database Auth Service
@@ -109,24 +102,24 @@ in
   description: Dedicated LDAP account for SSSD to query the directory
   userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$I71nfOU2bdoCUvbHZ6lcaA$uCcQtwCSNYzjnx8KlyaU6nb0zDZQHiL2Cf9IGLskr8M
 
-  dn: uid=${machine_config.forgejo.services.forgejo.user},ou=ServiceAccounts,${baseDN}
+  dn: uid=forgejo,ou=ServiceAccounts,${baseDN}
   objectClass: top
   objectClass: person
   objectClass: organizationalPerson
   objectClass: inetOrgPerson
-  uid: ${machine_config.forgejo.services.forgejo.user}
+  uid: forgejo
   o: Proteus Homelab
   sn: Service
   cn: Forgejo Database Auth Service
   description: Dedicated LDAP account for authenticating database user
   userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$Lk6YxoylMGkd2YaTXwYl2g$D/13/TdjrjezdOg3zhEgeI6UJvH9BMZb/xjNPcg17BE
 
-  dn: uid=${machine_config.niks3.services.niks3.user},ou=ServiceAccounts,${baseDN}
+  dn: uid=niks3,ou=ServiceAccounts,${baseDN}
   objectClass: top
   objectClass: person
   objectClass: organizationalPerson
   objectClass: inetOrgPerson
-  uid: ${machine_config.niks3.services.niks3.user}
+  uid: niks3
   o: Proteus Homelab
   sn: Service
   cn: Niks3 Database Auth Service
@@ -156,4 +149,16 @@ in
   sn: Service
   description: Dedicated LDAP account for Prometheus Basic Auth
   userPassword: {PBKDF2-SHA512}10000$JpJRRCT43wqR.HZ.qmJwSg$7gig7HwjF7kZoIlTSX7YpC6QeDlkzZenNu1g332B9SFeZK77uzoezop7hi.o0F0yPVSLQAofadREbkkBusFPRA
+
+  dn: uid=homebox,ou=ServiceAccounts,${baseDN}
+  objectClass: top
+  objectClass: person
+  objectClass: organizationalPerson
+  objectClass: inetOrgPerson
+  uid: homebox
+  o: Proteus Homelab
+  cn: HomeBox Service
+  sn: Service
+  description: Dedicated LDAP account for authenticating database user
+  userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$7fLGsnCsOSYaTvXmyPXx/A$ubur7NKWnRltGJOXs4GpFEgUuvkoy6kJpv/wEyHwdfI
 ''
