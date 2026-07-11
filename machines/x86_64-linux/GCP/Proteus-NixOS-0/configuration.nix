@@ -8,7 +8,7 @@
       tailscale = {
         inherit regHost;
         ipv4 = "100.68.75.16";
-        ipv6 = "fd7a:115c:a1e0::683a:ad55";
+        ipv6 = "fd7a:115c:a1e0::a13a:4b11";
       };
       easytier = {
         inherit regHost;
