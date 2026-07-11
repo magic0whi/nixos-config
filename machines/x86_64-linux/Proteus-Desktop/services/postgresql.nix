@@ -25,7 +25,6 @@
   ...
 }:
 let
-  backup_location = "${const.storagePath}/psql";
   machine_cfg = {
     authelia = machineConfigs.${const.networking.findFirstHostBySubdomain "auth"}.config;
     paperless = machineConfigs.${const.networking.findFirstHostBySubdomain "paperless"}.config;
@@ -160,7 +159,7 @@ in
     startAt = const.backupTimes.postgresql;
     # databases = ["docspell"];
     # location = "/srv/Backups/psql";
-    location = backup_location;
+    location = "${const.storagePath}/Backups/psql";
     compression = "zstd";
     compressionLevel = 3;
   };

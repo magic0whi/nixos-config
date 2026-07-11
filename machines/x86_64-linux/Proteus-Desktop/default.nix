@@ -37,6 +37,7 @@ let
           "modules/services/prometheus-exporters.nix"
           "modules/services/garage.nix"
           "modules/services/darknet.nix"
+          "modules/services/restic.nix"
         ]);
       hmModules =
         features.hm.common.base

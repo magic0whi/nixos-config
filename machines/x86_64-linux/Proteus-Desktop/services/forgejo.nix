@@ -37,6 +37,7 @@
     };
   services.forgejo = {
     enable = true;
+    group = "storage";
     database = {
       type = "postgres";
       # socket = "/run/postgresql"; # The module will prefer UNIX Domain Socket if this is not null
@@ -68,6 +69,7 @@
     };
     dump = {
       enable = true;
+      backupDir = "${const.storagePath}/Backups/forgejo";
       interval = const.backupTimes.forgejo;
       type = "tar.zst";
     };

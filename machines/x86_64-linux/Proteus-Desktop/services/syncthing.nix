@@ -1,7 +1,6 @@
 {
   config,
   const,
-  mylib,
   ...
 }:
 let
@@ -34,7 +33,7 @@ in
     };
   };
 
-  imports = [ (mylib.relativeToRoot "const/syncthing.nix") ];
+  imports = [ const.syncthing ];
 
   systemd.services.syncthing.unitConfig.RequiresMountsFor = [ const.storagePath ];
   services.syncthing = {

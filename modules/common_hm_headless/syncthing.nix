@@ -1,4 +1,4 @@
-{ mylib, ... }:
+{ const, ... }:
 {
-  imports = [ (mylib.relativeToRoot "const/syncthing.nix") ];
+  imports = [ const.syncthing ];
 }

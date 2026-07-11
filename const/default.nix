@@ -1,4 +1,5 @@
 args@{
+  lib,
   pkgs,
   mylib,
   ...
@@ -54,9 +55,10 @@ rec {
   storage2Path = "/mnt/storage/data2";
 
   backupTimes = {
-    forgejo = "02:00:00";
-    paperless = "02:15:00";
-    postgresql = "02:20:00";
+    forgejo = "02:00";
+    paperless = "02:15";
+    postgresql = "02:20";
+    restic = "03:00";
   };
 
   workspaces = [
@@ -90,4 +92,8 @@ rec {
   domain = "proteus.eu.org";
   tailnet = "tailba6c3f.ts.net";
   networking = import ./networking.nix args;
+
+  syncthing = ./syncthing.nix; # Usage: imports = [ const.syncthing ];
+
+  mkResticBackupsCfg = import ./restic.nix lib username backupTimes.restic;
 }
