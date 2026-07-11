@@ -74,71 +74,72 @@
       type = "tar.zst";
     };
   };
-  systemd.services = lib.mkMerge [
+
+  systemd.services.forgejo-dump.serviceConfig.ExecStartPost = [
+    "+${pkgs.coreutils}/bin/chmod -R g+r ${config.services.forgejo.dump.backupDir}"
+  ];
+
+  systemd.services.forgejo = lib.mkMerge [
     # Wait for LDAP Online
     {
-      forgejo = {
-        wants = [ "network-online.target" ];
-        after = [ "network-online.target" ];
-        preStart = lib.mkBefore ''
-          set -euo pipefail
+      wants = [ "network-online.target" ];
+      after = [ "network-online.target" ];
+      preStart = lib.mkBefore ''
+        set -euo pipefail
 
-          echo "Waiting for LDAP (ldap.${const.domain}) to be ready..."
-          while ! ${lib.getExe pkgs.netcat} -z ldap.proteus.eu.org 636; do
-            sleep 2
-          done
-          echo "LDAP is online, proceeding with Forgejo startup."
-        '';
-      };
+        echo "Waiting for LDAP (ldap.${const.domain}) to be ready..."
+        while ! ${lib.getExe pkgs.netcat} -z ldap.proteus.eu.org 636; do
+          sleep 2
+        done
+        echo "LDAP is online, proceeding with Forgejo startup."
+      '';
     }
     # Add OIDC
     {
-      forgejo = {
-        preStart = ''
-          set -euo pipefail
+      preStart = ''
+        set -euo pipefail
 
-          mkdir -p ${config.services.forgejo.stateDir}/custom/public/assets/img/auth/
-          cp -f ${pkgs.authelia.src}/docs/static/images/branding/logo.png ${config.services.forgejo.stateDir}/custom/public/assets/img/auth/authelia.png
-        '';
-        postStart = ''
-          set -euo pipefail
+        mkdir -p ${config.services.forgejo.stateDir}/custom/public/assets/img/auth/
+        cp -f ${pkgs.authelia.src}/docs/static/images/branding/logo.png ${config.services.forgejo.stateDir}/custom/public/assets/img/auth/authelia.png
+      '';
+      postStart = ''
+        set -euo pipefail
 
-          # Wait for Forgejo to be fully ready to accept CLI commands
-          while [ "$(${lib.getExe pkgs.curl} -sSf https://git.${const.domain}/api/healthz | ${lib.getExe pkgs.jq} -r '.status')" != "pass" ]; do
-            sleep 1
-          done
+        # Wait for Forgejo to be fully ready to accept CLI commands
+        while [ "$(${lib.getExe pkgs.curl} -sSf https://git.${const.domain}/api/healthz | ${lib.getExe pkgs.jq} -r '.status')" != "pass" ]; do
+          sleep 1
+        done
 
-          # Read the secret from your age file
-          OIDC_SECRET=$(cat ${config.sops.secrets.forgejo_authelia_secret.path})
+        # Read the secret from your age file
+        OIDC_SECRET=$(cat ${config.sops.secrets.forgejo_authelia_secret.path})
 
-          # The environment variables (FORGEJO_WORK_DIR, etc.) are already injected by systemd.
-          # `forgejo` is injected in `systemd.services.forgejo.path`
-          FORGEJO_CLI="forgejo --config ${config.services.forgejo.stateDir}/custom/conf/app.ini admin auth"
+        # The environment variables (FORGEJO_WORK_DIR, etc.) are already injected by systemd.
+        # `forgejo` is injected in `systemd.services.forgejo.path`
+        FORGEJO_CLI="forgejo --config ${config.services.forgejo.stateDir}/custom/conf/app.ini admin auth"
 
-          # Check if the Authelia auth source already exists
-          if ! $FORGEJO_CLI list | grep -q "Authelia"; then
-            echo "Adding Authelia OIDC provider..."
-            $FORGEJO_CLI add-oauth \
-              --name Authelia \
-              --provider openidConnect \
-              --key "forgejo" \
-              --secret "$OIDC_SECRET" \
-              --auto-discover-url "https://auth.${const.domain}/.well-known/openid-configuration" \
-              --icon-url "/assets/img/auth/authelia.png"
-          else
-            echo "Updating existing Authelia OIDC provider..."
-            AUTHELIA_ID=$($FORGEJO_CLI list | ${lib.getExe pkgs.gawk} '/Authelia/ {print $1;}')
-            $FORGEJO_CLI update-oauth \
-              --name Authelia \
-              --id $AUTHELIA_ID \
-              --provider openidConnect \
-              --key "forgejo" \
-              --secret "$OIDC_SECRET" \
-              --auto-discover-url "https://auth.${const.domain}/.well-known/openid-configuration" \
-              --icon-url "/assets/img/auth/authelia.png"
-          fi
-        '';
-      };
+        # Check if the Authelia auth source already exists
+        if ! $FORGEJO_CLI list | grep -q "Authelia"; then
+          echo "Adding Authelia OIDC provider..."
+          $FORGEJO_CLI add-oauth \
+            --name Authelia \
+            --provider openidConnect \
+            --key "forgejo" \
+            --secret "$OIDC_SECRET" \
+            --auto-discover-url "https://auth.${const.domain}/.well-known/openid-configuration" \
+            --icon-url "/assets/img/auth/authelia.png"
+        else
+          echo "Updating existing Authelia OIDC provider..."
+          AUTHELIA_ID=$($FORGEJO_CLI list | ${lib.getExe pkgs.gawk} '/Authelia/ {print $1;}')
+          $FORGEJO_CLI update-oauth \
+            --name Authelia \
+            --id $AUTHELIA_ID \
+            --provider openidConnect \
+            --key "forgejo" \
+            --secret "$OIDC_SECRET" \
+            --auto-discover-url "https://auth.${const.domain}/.well-known/openid-configuration" \
+            --icon-url "/assets/img/auth/authelia.png"
+        fi
+      '';
     }
   ];
 
