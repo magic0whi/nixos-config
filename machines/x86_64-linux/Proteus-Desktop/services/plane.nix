@@ -290,7 +290,7 @@ in
       extraOptions = [ "--network=plane" ];
     };
 
-    # TODO: use host's postgresql
+    # TODO: use host's postgresql, need merge db
     plane-db = {
       image = "postgres:15.7-alpine";
       cmd = [

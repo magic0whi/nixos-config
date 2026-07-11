@@ -5,8 +5,12 @@
   pkgs,
   ...
 }:
+let
+  hostname = config.networking.hostName;
+  hostname_psql = const.networking.findFirstHostBySubdomain "psql";
+in
 {
-  vars.hostAddrs.${config.networking.hostName} =
+  vars.hostAddrs.${hostname} =
     let
       subdomains = {
         A = [ "git" ];
@@ -19,7 +23,7 @@
     };
   sops =
     let
-      sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
+      sopsFile = "${const.secretsDir}/${hostname}.sops.yaml";
     in
     {
       secrets = {
@@ -40,9 +44,10 @@
     group = "storage";
     database = {
       type = "postgres";
-      # socket = "/run/postgresql"; # The module will prefer UNIX Domain Socket if this is not null
-      createDatabase = false; # Must be disabled if using remote DB
-      host = "postgresql.${const.domain}";
+      createDatabase = false; # Default: true. Must be disabled if using remote DB
+      # The module will prefer UNIX Domain Socket if this is not null
+      socket = if hostname == hostname_psql then "/run/postgresql" else null;
+      host = "psql.${const.domain}";
       passwordFile = config.sops.secrets.forgejo_db_password.path;
     };
     lfs.enable = true;

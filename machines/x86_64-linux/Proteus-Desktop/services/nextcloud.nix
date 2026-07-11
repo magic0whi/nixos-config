@@ -6,6 +6,9 @@
   ...
 }:
 let
+  hostname = config.networking.hostName;
+  hostname_psql = const.networking.findFirstHostBySubdomain "psql";
+
   nextcloud_port = 8081;
   restartUnits = [
     "nextcloud-setup.service"
@@ -16,7 +19,7 @@ let
   ];
 in
 {
-  vars.hostAddrs.${config.networking.hostName} =
+  vars.hostAddrs.${hostname} =
     let
       subdomains = {
         A = [ "nextcloud" ];
@@ -29,7 +32,7 @@ in
     };
   sops.secrets =
     let
-      sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
+      sopsFile = "${const.secretsDir}/${hostname}.sops.yaml";
     in
     {
       nextcloud_db_password = { inherit sopsFile restartUnits; };
@@ -117,7 +120,7 @@ in
 
     config = {
       dbtype = "pgsql";
-      dbhost = "postgresql.${const.domain}";
+      dbhost = if hostname == hostname_psql then "/run/postgresql" else "psql.${const.domain}";
       dbpassFile = config.sops.secrets.nextcloud_db_password.path;
       adminpassFile = config.sops.secrets.nextcloud_admin_password.path;
     };

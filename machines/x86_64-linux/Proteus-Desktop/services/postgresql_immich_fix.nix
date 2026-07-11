@@ -63,7 +63,7 @@ in
     in
     [
       ''
-        ${lib.getExe' config.services.postgresql.package "psql"} -d "${machine_config.immich.services.immich.database.name}" -f "${sqlFile}"
+        ${config.services.postgresql.package}/bin/psql -d "${machine_config.immich.services.immich.database.name}" -f "${sqlFile}"
       ''
     ];
 }

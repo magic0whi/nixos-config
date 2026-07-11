@@ -5,8 +5,8 @@
   ...
 }:
 let
-  cfg = config.services.niks3;
   hostname = config.networking.hostName;
+  hostname_psql = const.networking.findFirstHostBySubdomain "psql";
 in
 {
   vars.hostAddrs.${hostname} =
@@ -33,28 +33,36 @@ in
         };
         aws_access_key = {
           inherit sopsFile restartUnits;
-          owner = cfg.user;
+          owner = "niks3";
         };
         aws_secret_key = {
           inherit sopsFile restartUnits;
-          owner = cfg.user;
+          owner = "niks3";
         };
         niks3_api_token = {
           sopsFile = "${const.secretsDir}/${hostname}.sops.yaml";
-          owner = cfg.user;
+          owner = "niks3";
           inherit restartUnits;
         };
         "nix_secret.key" = {
           sopsFile = "${const.secretsDir}/nix_secret.key.sops";
           format = "binary";
-          owner = cfg.user;
+          owner = "niks3";
           inherit restartUnits;
         };
       };
       templates."niks3.env" = {
-        content = mylib.toEnv {
-          CONN_URL = "postgres://${cfg.user}:${config.sops.placeholder.niks3_db_password}@postgresql.${const.domain}/${cfg.user}?sslmode=require";
-        };
+        # Unix socket if psql is on the same machines
+        content = mylib.toEnv (
+          if hostname == hostname_psql then
+            {
+              CONN_URL = "postgres://niks3:${config.sops.placeholder.niks3_db_password}@/niks3";
+            }
+          else
+            {
+              CONN_URL = "postgres://niks3:${config.sops.placeholder.niks3_db_password}@psql.${const.domain}/niks3?sslmode=require";
+            }
+        );
         inherit restartUnits;
       };
     };

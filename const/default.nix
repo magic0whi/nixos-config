@@ -57,7 +57,7 @@ rec {
   backupTimes = {
     forgejo = "02:00";
     paperless = "02:15";
-    postgresql = "02:20";
+    psql = "02:20";
     restic = "03:00";
   };
 

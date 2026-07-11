@@ -6,8 +6,12 @@
   lib,
   ...
 }:
+let
+  hostname = config.networking.hostName;
+  hostname_psql = const.networking.findFirstHostBySubdomain "psql";
+in
 {
-  vars.hostAddrs.${config.networking.hostName} =
+  vars.hostAddrs.${hostname} =
     let
       subdomains = {
         A = [ "grafana" ];
@@ -21,7 +25,7 @@
   sops =
     let
       restartUnits = [ "grafana.service" ];
-      sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
+      sopsFile = "${const.secretsDir}/${hostname}.sops.yaml";
     in
     {
       secrets = {
@@ -151,29 +155,40 @@
           #   };
           #   editable = false;
           # }
-          {
-            # https://grafana.com/docs/grafana/latest/datasources/postgres/configure/
-            name = "postgres-playground";
-            type = "postgres";
-            url = "postgresql.${const.domain}:5432";
-            user = "grafana";
-            secureJsonData.password = "$__env{GRAFANA_DB_PASSWORD}";
-            jsonData = {
-              database = "playground";
-              sslmode = "verify-full"; # require/verify-ca/verify-full
-              maxOpenConns = 50; # default 100
-              maxIdleConns = 250; # default 100
-              # maxIdleConnsAuto = true; # default true
-              # connMaxLifetime = 4 * 60 * 60; # In seconds, default 14400 (4 hrs)
-              timeInterval = "1m"; # Grafana recommends aligning this setting with the data write frequency.
-              timescaledb = false; # A time-series database built as a PostgreSQL extensio
-              postgresVersion = 1710; # 17.10
-              # tls
-              tlsConfigurationMethod = "file-path";
-              sslRootCertFile = "${const.secretsDir}/proteus_ca.pub.pem";
-            };
-            # editable = true;
-          }
+          (lib.mkMerge [
+            {
+              # https://grafana.com/docs/grafana/latest/datasources/postgres/configure/
+              name = "postgres-playground";
+              type = "postgres";
+              user = "grafana";
+              secureJsonData.password = "$__env{GRAFANA_DB_PASSWORD}";
+              jsonData = {
+                database = "playground";
+                maxOpenConns = 50; # default 100
+                maxIdleConns = 250; # default 100
+                # maxIdleConnsAuto = true; # default true
+                # connMaxLifetime = 4 * 60 * 60; # In seconds, default 14400 (4 hrs)
+                timeInterval = "1m"; # Grafana recommends aligning this setting with the data write frequency.
+                timescaledb = false; # A time-series database built as a PostgreSQL extensio
+                postgresVersion = 1710; # 17.10
+              };
+              # editable = true;
+            }
+            (
+              if hostname != hostname_psql then
+                { url = "/run/postgresql"; }
+              else
+                {
+                  url = "psql.${const.domain}:5432";
+                  jsonData = {
+                    sslmode = "verify-full"; # require/verify-ca/verify-full
+                    # tls
+                    tlsConfigurationMethod = "file-path";
+                    sslRootCertFile = "${const.secretsDir}/proteus_ca.pub.pem";
+                  };
+                }
+            )
+          ])
           {
             name = "infinity-dataviewer";
             type = "yesoreyeram-infinity-datasource";

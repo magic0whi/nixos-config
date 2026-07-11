@@ -8,10 +8,13 @@
   ...
 }:
 let
-  machine_config.psql = machineConfigs.${const.networking.findFirstHostBySubdomain "postgresql"}.config;
+  hostname = config.networking.hostName;
+
+  hostname_psql = const.networking.findFirstHostBySubdomain "psql";
+  machine_config_psql = machineConfigs.${hostname_psql}.config;
 in
 {
-  vars.hostAddrs.${config.networking.hostName} =
+  vars.hostAddrs.${hostname} =
     let
       subdomains = {
         A = [ "homebox" ];
@@ -26,7 +29,7 @@ in
   sops =
     let
       restartUnits = [ "homebox.service" ];
-      sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
+      sopsFile = "${const.secretsDir}/${hostname}.sops.yaml";
     in
     {
       secrets = {
@@ -45,11 +48,13 @@ in
     EnvironmentFile = config.sops.templates."homebox.env".path;
     ExecStartPre = lib.mkBefore [
       (pkgs.writeShellScript "wait-for-postgres" ''
-        while ! ${machine_config.psql.services.postgresql.package}/bin/pg_isready -h postgresql.${const.domain} -p 5432; do
+        set -euo pipefail
+
+        while ! ${machine_config_psql.services.postgresql.package}/bin/pg_isready -h "psql.${const.domain}" -p 5432; do
           echo "Waiting for PostgreSQL to become available..."
           sleep 2
         done
-        echo "PostgreSQL is ready! Starting Homebox."
+        echo "PostgreSQL is ready! Starting HomeBox."
       '')
     ];
   };
@@ -62,8 +67,8 @@ in
       HBOX_WEB_PORT = "7745";
 
       HBOX_DATABASE_DRIVER = "postgres";
-      # HBOX_DATABASE_HOST = "/run/postgresql";
-      HBOX_DATABASE_HOST = "postgresql.${const.domain}";
+      # Unix socket if psql is on the same machines
+      HBOX_DATABASE_HOST = if hostname == hostname_psql then "/run/postgresql" else "psql.${const.domain}";
       HBOX_DATABASE_USERNAME = "homebox";
       HBOX_DATABASE_DATABASE = "homebox";
       HBOX_DATABASE_PORT = toString config.services.postgresql.settings.port;

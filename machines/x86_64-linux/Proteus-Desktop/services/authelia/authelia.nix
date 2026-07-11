@@ -6,10 +6,13 @@
   ...
 }:
 let
+  hostname = config.networking.hostName;
+  hostname_psql = const.networking.findFirstHostBySubdomain "psql";
+
   restartUnits = map (name: "authelia-${name}.service") (builtins.attrNames config.services.authelia.instances);
 in
 {
-  vars.hostAddrs.${config.networking.hostName} =
+  vars.hostAddrs.${hostname} =
     let
       subdomains = {
         A = [ "auth" ];
@@ -22,7 +25,7 @@ in
     };
   sops.secrets =
     let
-      sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
+      sopsFile = "${const.secretsDir}/${hostname}.sops.yaml";
       owner = config.services.authelia.instances.main.user;
     in
     {
@@ -93,9 +96,12 @@ in
       ];
       session.redis.host = config.services.redis.servers.authelia.unixSocket;
       storage.postgres = {
-        # Unix socket
-        # address = "unix:///run/postgresql/.s.PGSQL.${toString config.services.postgresql.settings.port}";
-        address = "tcp://postgresql.${const.domain}:${toString config.services.postgresql.settings.port}";
+        # Unix socket if psql is on the same machines
+        address =
+          if hostname == hostname_psql then
+            "unix:///run/postgresql/.s.PGSQL.${toString config.services.postgresql.settings.port}"
+          else
+            "tcp://psql.${const.domain}:${toString config.services.postgresql.settings.port}";
         # tls.minimum_version = "TLS1.3";
         database = config.services.authelia.instances.main.user;
         schema = "public";
@@ -183,12 +189,12 @@ in
         allowed_hosts = lib.unique (lib.concatMap const.networking.findAllHostContains const.networking.oauthServices);
       in
       lib.concatMap (
-        hostname:
-        (with const.networking.allHostAddrs.${hostname}.easytier; [
+        _hostname:
+        (with const.networking.allHostAddrs.${_hostname}.easytier; [
           ipv4NoCidr
           ipv6NoCidr
         ])
-        ++ (with const.networking.allHostAddrs.${hostname}.tailscale; [
+        ++ (with const.networking.allHostAddrs.${_hostname}.tailscale; [
           ipv4NoCidr
           ipv6NoCidr
         ])

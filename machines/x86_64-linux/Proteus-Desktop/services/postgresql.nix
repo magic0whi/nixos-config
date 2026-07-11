@@ -1,11 +1,11 @@
 ## TIP: To restore a clean backup:
-# 1. psql "host=postgresql.proteus.eu.org port=5432 user=postgres dbname=postgres sslmode=require" -t -A -c "
+# 1. psql "host=psql.proteus.eu.org port=5432 user=postgres dbname=postgres sslmode=require" -t -A -c "
 #   SELECT 'DROP DATABASE IF EXISTS ' || quote_ident(datname) || ';'
 #   FROM pg_database
 #   WHERE NOT datistemplate AND datname NOT IN ('postgres', 'template1');
 #   "
 #   Manually drop then
-# 2. psql "host=postgresql.proteus.eu.org port=5432 user=postgres dbname=postgres sslmode=require" -c "
+# 2. psql "host=psql.proteus.eu.org port=5432 user=postgres dbname=postgres sslmode=require" -c "
 #   DO \$\$
 #   DECLARE
 #       role record;
@@ -14,7 +14,7 @@
 #           EXECUTE 'DROP ROLE IF EXISTS ' || quote_ident(role.rolname);
 #       END LOOP;
 #   END \$\$;"
-# 3. zstd -d -c /srv/Backups/psql/all.prev.sql.zstd | psql "host=postgresql.proteus.eu.org port=5432 user=postgres dbname=postgres sslmode=require" 2> restore_errors.log
+# 3. zstd -d -c /srv/Backups/psql/all.prev.sql.zstd | psql "host=psql.proteus.eu.org port=5432 user=postgres dbname=postgres sslmode=require" 2> restore_errors.log
 {
   config,
   lib,
@@ -25,14 +25,14 @@
   ...
 }:
 let
-  machine_cfg.authelia = machineConfigs.${const.networking.findFirstHostBySubdomain "auth"}.config;
+  machine_cfg_authelia = machineConfigs.${const.networking.findFirstHostBySubdomain "auth"}.config;
 in
 {
   vars.hostAddrs.${config.networking.hostName} =
     let
       subdomains = {
-        A = [ "postgresql" ];
-        AAAA = [ "postgresql" ];
+        A = [ "psql" ];
+        AAAA = [ "psql" ];
       };
     in
     {
@@ -48,13 +48,13 @@ in
       ];
     in
     {
-      "postgresql_server.priv.pem" = {
+      "psql_server.priv.pem" = {
         inherit restartUnits;
         sopsFile = "${const.secretsDir}/proteus_server.priv.pem.sops";
         format = "binary";
         owner = config.systemd.services.postgresql.serviceConfig.User;
       };
-      postgres_ldap_bind_pw = {
+      psql_ldap_bind_pw = {
         inherit restartUnits;
         sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
       };
@@ -70,7 +70,7 @@ in
           ldap_opts = builtins.concatStringsSep " " [
             ''ldapurl="ldaps://ldap.${const.domain}/${base_dn}?uid?sub"''
             ''ldapbinddn="uid=${config.systemd.services.postgresql.serviceConfig.User},ou=ServiceAccounts,${base_dn}"''
-            ''ldapbindpasswd="${config.sops.placeholder.postgres_ldap_bind_pw}"''
+            ''ldapbindpasswd="${config.sops.placeholder.psql_ldap_bind_pw}"''
           ];
         in
         ''
@@ -105,7 +105,7 @@ in
       ssl = true;
       ssl_min_protocol_version = "TLSv1.3";
       ssl_cert_file = "${const.secretsDir}/proteus_server.pub.pem";
-      ssl_key_file = config.sops.secrets."postgresql_server.priv.pem".path;
+      ssl_key_file = config.sops.secrets."psql_server.priv.pem".path;
       hba_file = lib.mkForce config.sops.templates."pg_hba_auth.conf".path;
     };
     # NOTE: DO NOT USE `services.postgresql.authentication`, because I use SOPS-templateed
@@ -114,7 +114,7 @@ in
       "playground" # TODO: For learning
       "atuin"
       "paperless"
-      machine_cfg.authelia.services.authelia.instances.main.user
+      machine_cfg_authelia.services.authelia.instances.main.user
       # (builtins.trace machine_config.authelia machine_config.authelia.services.authelia.instances.main.user)
       "nextcloud"
       "grafana"
@@ -138,7 +138,7 @@ in
         ensureDBOwnership = true;
       }
       {
-        name = machine_cfg.authelia.services.authelia.instances.main.user;
+        name = machine_cfg_authelia.services.authelia.instances.main.user;
         ensureDBOwnership = true;
       }
       {
@@ -157,7 +157,7 @@ in
   };
   services.postgresqlBackup = {
     enable = true;
-    startAt = const.backupTimes.postgresql;
+    startAt = const.backupTimes.psql;
     # databases = ["docspell"];
     # location = "/srv/Backups/psql";
     location = "${const.storagePath}/Backups/psql";

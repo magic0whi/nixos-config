@@ -5,8 +5,14 @@
   mylib,
   ...
 }:
+let
+  hostname = config.networking.hostName;
+  hostname_psql = const.networking.findFirstHostBySubdomain "psql";
+
+  use_unix_socket = hostname == hostname_psql;
+in
 {
-  vars.hostAddrs.${config.networking.hostName} =
+  vars.hostAddrs.${hostname} =
     let
       subdomains = {
         A = [ "immich" ];
@@ -20,7 +26,7 @@
 
   sops =
     let
-      sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
+      sopsFile = "${const.secretsDir}/${hostname}.sops.yaml";
       restartUnits = [
         "immich-machine-learning.service"
         "immich-server.service"
@@ -36,11 +42,13 @@
       };
       templates."immich.env" = {
         inherit restartUnits;
-        content = mylib.toEnv { DB_PASSWORD = config.sops.placeholder.immich_db_password; };
         # NOTE: Immich don't use env DB_PASSWORD when using unix socket to connect the DB
-        # content = mylib.toEnv {
-        #   DB_URL = "postgresql://${config.services.immich.database.user}:${config.sops.placeholder.immich_db_password}@/${config.services.immich.database.user}";
-        # };
+        content = mylib.toEnv (
+          if use_unix_socket then
+            { DB_URL = "postgresql://immich:${config.sops.placeholder.immich_db_password}@/immich"; }
+          else
+            { DB_PASSWORD = config.sops.placeholder.immich_db_password; }
+        );
       };
     };
   systemd.tmpfiles.settings.immich.${config.services.immich.mediaLocation}.e.mode = lib.mkForce "0750";
@@ -48,7 +56,8 @@
     enable = true;
     group = "storage";
     host = "127.0.0.1";
-    database.host = "postgresql.${const.domain}"; # Default: "/run/postgresql", Unix socket
+    # Unix socket if psql is on the same machines
+    database.host = if use_unix_socket then "/run/postgresql" else "psql.${const.domain}";
     secretsFile = config.sops.templates."immich.env".path;
     mediaLocation = "/srv/immich";
     # Ref: https://immich.proteus.eu.org/admin/system-settings?isOpen=authentication -> Export as JSON

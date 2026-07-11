@@ -6,8 +6,12 @@
   mylib,
   ...
 }:
+let
+  hostname = config.networking.hostName;
+  hostname_psql = const.networking.findFirstHostBySubdomain "psql";
+in
 {
-  vars.hostAddrs.${config.networking.hostName} =
+  vars.hostAddrs.${hostname} =
     let
       subdomains = {
         A = [ "paperless" ];
@@ -20,7 +24,7 @@
     };
   sops =
     let
-      sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
+      sopsFile = "${const.secretsDir}/${hostname}.sops.yaml";
       restartUnits = [
         "paperless-scheduler.service"
         "paperless-task-queue.service"
@@ -62,8 +66,8 @@
     enable = true;
     settings = {
       PAPERLESS_DBENGINE = "postgresql";
-      # PAPERLESS_DBHOST = "/run/postgresql"; # Unix socket
-      PAPERLESS_DBHOST = "postgresql.${const.domain}";
+      # Unix socket if psql is on the same machines
+      PAPERLESS_DBHOST = if hostname == hostname_psql then "/run/postgresql" else "psql.${const.domain}";
       PAPERLESS_DBSSLMODE = "require";
       PAPERLESS_DBNAME = config.services.paperless.user;
       PAPERLESS_DBUSER = config.services.paperless.user;
