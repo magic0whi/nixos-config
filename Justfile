@@ -152,8 +152,13 @@ reset-launchpad:
 # Remote deployment via deploy-rs
 [group('homelab')]
 [linux]
-deploy name:
-    deploy --skip-checks .#{{ name }} -- --verbose --show-trace
+deploy +names:
+    #!/usr/bin/env bash
+    targets=""
+    for name in {{ names }}; do
+        targets="$targets .#$name"
+    done
+    deploy --skip-checks --targets $targets -- --verbose --show-trace
 
 # Local switch
 [group('homelab')]
