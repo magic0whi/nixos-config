@@ -4,11 +4,14 @@
   config,
   mylib,
   lib,
+  machineConfigs,
   ...
 }:
 let
   hostname = config.networking.hostName;
   hostname_psql = const.networking.findFirstHostBySubdomain "psql";
+
+  machine_config_psql = machineConfigs.${hostname_psql}.config;
 in
 {
   vars.hostAddrs.${hostname} =
@@ -170,7 +173,13 @@ in
                 # connMaxLifetime = 4 * 60 * 60; # In seconds, default 14400 (4 hrs)
                 timeInterval = "1m"; # Grafana recommends aligning this setting with the data write frequency.
                 timescaledb = false; # A time-series database built as a PostgreSQL extensio
-                postgresVersion = 1710; # 17.10
+                postgresVersion =
+                  let
+                    psqlVer = machine_config_psql.services.postgresql.package.version;
+                    major = builtins.trace (lib.versions.major psqlVer) "17";
+                    minor = builtins.trace (lib.fixedWidthString 2 "0" (lib.versions.minor psqlVer)) "10";
+                  in
+                  lib.toInt "${major}${minor}"; # Current postgresql version 17.10
               };
               # editable = true;
             }
