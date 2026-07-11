@@ -57,7 +57,7 @@ lib.mkMerge (
           {
             tag = "FakeIP";
             type = "fakeip";
-            inet4_range = if isRouter then "198.20.0.0/15" else "198.18.0.0/15";
+            inet4_range = if isRouter then "10.2.0.0/15" else "198.18.0.0/15";
             inet6_range = if isRouter then "fc00:4000::/18" else "fc00::/18";
           }
           {
