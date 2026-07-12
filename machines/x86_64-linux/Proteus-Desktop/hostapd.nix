@@ -76,11 +76,17 @@ in
   '';
   services.dnsmasq = {
     enable = true;
+    resolveLocalQueries = false; # Don't run on `127.0.0.1`
+    # Ref: https://man.archlinux.org/man/dnsmasq.8.en
     settings = {
       # We can keep systemd-resolved listening on 127.0.0.53:53 and keep dnsmasq solely on the wlan interface by telling
       # it to only bind there, this prevents conflicts with systemd-resolved
-      interface = nics.wireless.name;
+      interface = nics.wireless.name; # Only listen on the specified NIC
+      # dnsmasq binds the wildcard address even when it is listening on only some interfaces. This option forces dnsmasq
+      # to really bind only the interfaces it is listening on.
       bind-interfaces = true;
+      except-interface = "lo"; # Dnsmasq automatically adds the loopback NIC when the --interface option is use
+
       dhcp-range =
         let
           prefix = builtins.concatStringsSep "." (
