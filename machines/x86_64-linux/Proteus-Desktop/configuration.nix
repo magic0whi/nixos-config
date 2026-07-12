@@ -64,6 +64,12 @@ in
       isRouter = true;
     }
   );
+  # Ref: https://wiki.archlinux.org/title/Sysctl#Change_TCP_keepalive_parameters
+  boot.kernel.sysctl = {
+    "net.ipv4.tcp_keepalive_time" = 60; # Default: 7200s (2 hrs). Start probing after 60 seconds of idle
+    "net.ipv4.tcp_keepalive_intvl" = 10; # Default: 75s Probe every 10 seconds
+    "net.ipv4.tcp_keepalive_probes" = 6; # Default: 9. Drop connection after 6 failed probes
+  };
   ## END sing-box-client.nix
   ## BEGIN zfs.nix
   networking.hostId = "953b2f69"; # ZFS requires this
