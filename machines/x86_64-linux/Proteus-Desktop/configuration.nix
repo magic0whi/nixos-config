@@ -46,6 +46,7 @@ in
   boot.initrd.availableKernelModules = lib.optional config.boot.initrd.systemd.network.enable "r8169";
   # hybrid have VAProfileVP9Profile0 support
   hardware.graphics.extraPackages = [ (pkgs.intel-vaapi-driver.override { enableHybridCodec = true; }) ];
+  environment.systemPackages = [ pkgs.smartmontools ];
   ## END hardware.nix
   ## BEGIN sing-box-client.nix
   # lib.mkForce to prevent merge
