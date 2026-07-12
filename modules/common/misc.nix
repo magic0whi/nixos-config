@@ -28,6 +28,8 @@
   users = lib.mkMerge [
     {
       groups.storage.gid = 1001;
+      # NOTE: fixes /etc/udev/rules.d/60-openocd.rules: Failed to resolve group 'plugdev', ignoring: Unknown group
+      groups.plugdev = { };
       # root user are heavily used for remote NixOS deployment
       users = {
         root = {

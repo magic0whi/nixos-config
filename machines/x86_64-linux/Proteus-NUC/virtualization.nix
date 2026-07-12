@@ -97,9 +97,9 @@ in
     spiceUSBRedirection.enable = true;
     # lxd.enable = true;
     libvirtd =
-      let
-        domain_name = "win11";
-      in
+      # let
+      #   domain_name = "win11";
+      # in
       {
         enable = true;
         qemu.swtpm.enable = true;
@@ -181,45 +181,59 @@ in
         #       ;;
         #   esac
         # '';
-        hooks.qemu."10-igpu-sriov.sh" = pkgs.writeShellScript "10-igpu-sriov.sh" ''
-          set -euo pipefail
-
-          VM="$1"
-          OP="$2"
-          SUBOP="$3"
-
-          [ "$VM" = "${domain_name}" ] || exit 0 # Apply to this specific VM
-
-          SRIOV_PATH="/sys/bus/pci/devices/${const.igpu_pci_ids}/sriov_numvfs"
-
-          # Check if the sysfs path exists before trying to read/write
-          if [ ! -f "$SRIOV_PATH" ]; then
-            echo "SR-IOV path $SRIOV_PATH not found" >&2
-            exit 0
-          fi
-
-          CURRENT_VFS=$(cat "$SRIOV_PATH")
-
-          case "$OP $SUBOP" in
-            "prepare begin")
-              NEW_VFS=$((CURRENT_VFS + 1))
-              # Note: Depending on your iGPU driver, the Linux kernel might throw
-              # "Device or resource busy" if you try to change sriov_numvfs
-              # without setting it to 0 first. If your driver supports dynamic
-              # scaling, this works natively.
-              echo "$NEW_VFS" > "$SRIOV_PATH"
-              ;;
-            "release end")
-              NEW_VFS=$((CURRENT_VFS - 1))
-              # Safeguard to prevent negative values
-              if [ "$NEW_VFS" -lt 0 ]; then
-                NEW_VFS=0
-              fi
-              echo "$NEW_VFS" > "$SRIOV_PATH"
-              ;;
-          esac
-        '';
       };
+  };
+
+  systemd.tmpfiles.settings =
+    let
+      netbootxyz-x86_64 = (import pkgs.path { system = "x86_64-linux"; }).netbootxyz-efi;
+      netbootxyz-aarch64 = (import pkgs.path { system = "aarch64-linux"; }).netbootxyz-efi;
+      prefix = "/var/lib/tftpboot";
+    in
+    {
+      # Intel GPU cannot setup SR-IOV when in use
+      "01-igpu-sriov"."/sys/bus/pci/devices/${const.igpu_pci_ids}/sriov_numvfs".w.argument = "7";
+      "01-tftpboot".${prefix}.d.mode = "0755";
+      "02-tftpboot-netbootxyz-x86_64"."${prefix}/netbootxyz-x86_64.efi"."L+".argument = toString netbootxyz-x86_64;
+      "02-tftpboot-netbootxyz-aarch64"."${prefix}/netbootxyz-aarch64.efi"."L+".argument = toString netbootxyz-aarch64;
+    };
+
+  environment.etc."libvirt/default-netbootxyz.xml".text = ''
+    <network xmlns:dnsmasq='http://libvirt.org/schemas/network/dnsmasq/1.0'>
+      <name>default</name>
+      <forward mode='nat'/>
+      <bridge name='virbr0' stp='on' delay='0'/>
+      <ip address='192.168.122.1' netmask='255.255.255.0'>
+        <tftp root='/var/lib/tftpboot'/>
+        <dhcp>
+          <range start='192.168.122.2' end='192.168.122.254'/>
+        </dhcp>
+      </ip>
+      <dnsmasq:options>
+        <!-- Ref: https://wiki.archlinux.org/title/Dnsmasq#PXE_server -->
+        <dnsmasq:option value='dhcp-match=set:efi-x86_64,option:client-arch,7'/>
+        <dnsmasq:option value='dhcp-match=set:efi-x86_64,option:client-arch,9'/>
+        <dnsmasq:option value='dhcp-match=set:efi-aarch64,option:client-arch,11'/>
+
+        <dnsmasq:option value='dhcp-boot=tag:efi-x86_64,netbootxyz-x86_64.efi'/>
+        <dnsmasq:option value='dhcp-boot=tag:efi-aarch64,netbootxyz-aarch64.efi'/>
+      </dnsmasq:options>
+    </network>
+  '';
+  systemd.services.libvirt-network = {
+    wantedBy = [ "multi-user.target" ];
+    after = [ "libvirtd.service" ];
+    requires = [ "libvirtd.service" ];
+    path = [ pkgs.libvirt ];
+    serviceConfig.Type = "oneshot";
+    # Ref: https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/7/html/virtualization_deployment_and_administration_guide/chap-network_booting_with_libvirt
+    script = ''
+      virsh net-destroy default || true
+      virsh net-undefine default || true
+      virsh net-define /etc/libvirt/default-netbootxyz.xml
+      virsh net-start default
+      virsh net-autostart default
+    '';
   };
   environment.systemPackages = with pkgs; [
     # This script is used to install the arm translation layer for waydroid
