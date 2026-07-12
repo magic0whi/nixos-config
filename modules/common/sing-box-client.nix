@@ -7,6 +7,7 @@
   ...
 }:
 {
+  # TODO auto restart when network change
   sops.secrets =
     let
       sopsFile = "${const.secretsDir}/common.sops.yaml";

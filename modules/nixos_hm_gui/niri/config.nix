@@ -6,6 +6,13 @@
 }:
 {
   wayland.windowManager.niri.extraConfig =
+    let
+      # Hyprland spring "easy". Damping ratio `$\zeta = \frac{c}{2 \sqrt{m k}}$`, where $\zeta$ is damping-ratio, $c$ is damping coefficient, $m$ is mass, $k$ is stiffness
+      # Duration $t\approx\frac{-\ln(\epsilon)}{\zeta\sqrt{k/m}}$, approx 410 ms
+      spring = "damping-ratio=0.937 stiffness=323 epsilon=0.0001";
+      # https://www.cssportal.com/css-cubic-bezier-generator/?x1=0.5&y1=0.5&x2=0.75&y2=1
+      bezier.almost_linear = ''"cubic-bezier" 0.5 0.5 0.75 1.0'';
+    in
     # Reorder workspaces
     ''
       // =========================== spawn-at-startup.kdl =================================
@@ -71,8 +78,27 @@
       screenshot-path null // Disable saving screenshots to disk.
 
       // https://niri-wm.github.io/niri/Configuration%3A-Animations.html
-      // TODO
-      // animations { }
+      animations {
+        // windowsIn
+        window-open { spring ${spring}; }
+
+        // windowsOut
+        window-close {
+          duration-ms 149
+          curve "linear"
+        }
+
+        // workspaces
+        workspace-switch {
+          duration-ms 194;
+          curve ${bezier.almost_linear}
+        }
+
+        // windows
+        horizontal-view-movement { spring ${spring}; }
+        window-movement { spring ${spring}; }
+        window-resize { spring ${spring}; }
+      }
       // ==================================================================================
     '';
 }

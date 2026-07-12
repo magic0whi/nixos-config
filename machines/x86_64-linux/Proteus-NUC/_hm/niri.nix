@@ -1,4 +1,9 @@
-{ lib, const, ... }:
+{
+  lib,
+  const,
+  config,
+  ...
+}:
 let
   ws_outputs = [
     "eDP-1"
@@ -17,7 +22,7 @@ in
   wayland.windowManager.niri.extraConfig = ''
     // =============================== hardware.kdl =======================================
     include "./hardware.kdl"
-    // run `niri msg outputs` to find outputs
+    // TIP: run `niri msg outputs` to find outputs
     output "DP-3" {
       scale 1.25
       mode "3440x1440@164.999"
@@ -39,5 +44,7 @@ in
     // ==================================================================================
   '';
   # Workaround: KDL don't allow duplicate node
-  xdg.configFile."niri/hardware.kdl".text = ''debug { render-drm-device "/dev/dri/${const.dgpu_sym_name}"; }'';
+  xdg.configFile."niri/hardware.kdl".text = ''debug { render-drm-device "/dev/dri/${
+    if config.hardware.nvidia.sync then const.dgpu_sym_name else const.igpu_sym_name
+  }"; }'';
 }
