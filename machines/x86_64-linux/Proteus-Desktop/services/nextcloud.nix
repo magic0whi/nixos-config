@@ -194,6 +194,9 @@ in
     }
   ];
 
+  users.users.nextcloud.extraGroups = [ "storage" ];
+  services.phpfpm.pools.nextcloud.group = lib.mkForce "storage";
+
   services.traefik.dynamicConfigOptions.http = {
     # Strict-Transport-Security
     middlewares.nextcloud-hsts.headers = {

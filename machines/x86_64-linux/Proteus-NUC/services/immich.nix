@@ -51,7 +51,10 @@ in
         );
       };
     };
+
+  # Upstream's `0700` give no permission for group
   systemd.tmpfiles.settings.immich.${config.services.immich.mediaLocation}.e.mode = lib.mkForce "0750";
+
   services.immich = {
     enable = true;
     group = "storage";

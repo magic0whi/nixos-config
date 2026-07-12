@@ -24,7 +24,11 @@ in
     sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
     restartUnits = [ "aria2.service" ];
   };
-  users.users.${const.username}.extraGroups = [ "aria2" ];
+
+  systemd.tmpfiles.settings."10-aria2-change-group".${config.services.aria2.settings.dir}.z.group = "storage";
+
+  systemd.services.aria2.serviceConfig.Group = lib.mkForce "storage";
+
   services.aria2 = {
     enable = true;
     rpcSecretFile = config.sops.secrets.aria2_rpc_secret.path;
