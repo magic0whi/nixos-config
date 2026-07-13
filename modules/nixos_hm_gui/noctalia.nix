@@ -64,6 +64,7 @@
             {
               "id" = "MediaMini";
               showAlbumArt = false;
+              maxWidth = 500;
             }
           ];
           center = [
