@@ -114,7 +114,7 @@
       };
     };
     niri-nix = {
-      url = "https://codeberg.org/magic0whi/niri-nix/archive/ae316e8caaeeb720355d8f3f409ff7d325ebfbab.tar.gz";
+      url = "https://codeberg.org/bananad3v/niri-nix/archive/841861b39dc0c4fe36ed2a92289b899fd4d956f2.tar.gz";
       # url = "path:/home/proteus/Works-References/niri-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
