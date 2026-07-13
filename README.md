@@ -2,13 +2,9 @@
 
 Personal NixOS and nix-darwin system configurations.
 
-| Hostname             | Type          | Architecture   | Storage     |
-| -------------------- | ------------- | -------------- | ----------- |
-| Proteus-Desktop      | Workstation   | x86_64-linux   | ZFS on LUKS |
-| Proteus-NUC          | Home Server   | x86_64-linux   | ZFS on LUKS |
-| Proteus-MBP14M4P     | Laptop        | aarch64-darwin | APFS        |
-| Proteus-NixOS-{0..5} | VPS Instances | x86_64-linux   | Btrfs       |
-| Proteus-VF2          | SBC           | riscv64-linux  | BTRFS       |
+## Notice: Something that makes this nixos-config a little different
+
+- To implement a global option that shares between machines. e.g., for [`modules/variables/host-addrs.nix`](./modules/variables/host-addrs.nix), the implementation [`const/networking.nix`](./const/networking.nix) utilize `lib.evalModules` to merge all options `config.vars.hostAddrs.*` under `nixosConfigurations.*` (and `darwinConfigurations.*`)
 
 ## Installation
 

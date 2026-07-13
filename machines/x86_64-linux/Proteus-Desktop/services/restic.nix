@@ -33,7 +33,7 @@ in
 
   services.restic.backups.main =
     let
-      hostname_s3_main = "Proteus-NixOS-5";
+      hostname_s3_main = "Proteus-NixOS-1";
       machine_cfg_s3_main = machineConfigs.${hostname_s3_main}.config;
     in
     {
