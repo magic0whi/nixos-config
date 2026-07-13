@@ -4,7 +4,7 @@ Personal NixOS and nix-darwin system configurations.
 
 ## Notice: Something that makes this nixos-config a little different
 
-- To implement a global option that shares between machines. e.g., for [`modules/variables/host-addrs.nix`](./modules/variables/host-addrs.nix), the implementation [`const/networking.nix`](./const/networking.nix) utilize `lib.evalModules` to merge all options `config.vars.hostAddrs.*` under `nixosConfigurations.*` (and `darwinConfigurations.*`)
+- In order to make NS subdomain declaration molecular. I need a global option that shares across machines. e.g., for [`modules/variables/host-addrs.nix`](./modules/variables/host-addrs.nix), the implementation [`const/networking.nix`](./const/networking.nix) utilize `lib.evalModules` to merge all options `config.vars.hostAddrs.*` under `nixosConfigurations.*` (and `darwinConfigurations.*`)
 
 ## Installation
 
