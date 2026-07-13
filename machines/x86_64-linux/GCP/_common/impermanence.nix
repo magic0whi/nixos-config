@@ -12,29 +12,33 @@
     before = [ "sysroot.mount" ];
     unitConfig.DefaultDependencies = "no";
     serviceConfig.Type = "oneshot";
-    script = ''
-      export PATH=/bin:/sbin:/usr/bin:/usr/sbin:$PATH
-      set -euo pipefail
+    script =
+      let
+        # NOTE: the root subvolume name should match the one in disko-config.nix
+        root_subvol = "@root";
+      in
+      ''
+        set -euo pipefail
 
-      mkdir /btrfs_tmp
-      mount ${config.fileSystems."/".device} /btrfs_tmp
+        mkdir /btrfs_tmp
+        mount ${config.fileSystems."/".device} /btrfs_tmp
 
-      # Ensure /sysroot is not mounted before we delete the subvolume
-      if mountpoint -q /sysroot 2>/dev/null; then
-        echo "Warning: /sysroot is already mounted, unmounting it to avoid conflicts..."
-        umount /sysroot || true
-      fi
+        # Ensure /sysroot is not mounted before we delete the subvolume
+        if mountpoint -q /sysroot 2>/dev/null; then
+          echo "Warning: /sysroot is already mounted, unmounting it to avoid conflicts..."
+          umount /sysroot || true
+        fi
 
-      if [[ -d /btrfs_tmp/rootfs ]]; then
-        echo "Removing existing root subvolume and all descendants recursively..."
-        btrfs subvolume delete -R /btrfs_tmp/rootfs
-      fi
+        if [[ -d /btrfs_tmp/${root_subvol} ]]; then
+          echo "Removing existing root subvolume and all descendants recursively..."
+          btrfs subvolume delete -R /btrfs_tmp/${root_subvol}
+        fi
 
-      echo "Creating new pristine root subvolume..."
-      btrfs subvolume create /btrfs_tmp/rootfs
+        echo "Creating new pristine root subvolume..."
+        btrfs subvolume create /btrfs_tmp/${root_subvol}
 
-      umount /btrfs_tmp
-      rmdir /btrfs_tmp
-    '';
+        umount /btrfs_tmp
+        rmdir /btrfs_tmp
+      '';
   };
 }
