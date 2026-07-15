@@ -83,120 +83,123 @@
         outer.top = 3;
         outer.right = 3;
       };
-      mode.main.binding = {
-        # Run terminal
-        alt-q = "exec-and-forget osascript -lJavaScript ${config.xdg.configHome}/aerospace/ghostty-actions.js 3";
-        alt-shift-q = "exec-and-forget osascript -lJavaScript ${config.xdg.configHome}/aerospace/ghostty-actions.js 2";
-        ctrl-alt-q = "exec-and-forget osascript -lJavaScript ${config.xdg.configHome}/aerospace/ghostty-actions.js 1";
-        # Run Finder
-        alt-e = "exec-and-forget osascript -lJavaScript ${config.xdg.configHome}/aerospace/finder-actions.js 2";
-        alt-shift-e = "exec-and-forget osascript -lJavaScript ${config.xdg.configHome}/aerospace/finder-actions.js 1";
+      mode =
+        let
+          mod = "cmd";
+        in
+        {
+          main.binding = {
+            # Run terminal
+            "${mod}-q" = "exec-and-forget osascript -lJavaScript ${config.xdg.configHome}/aerospace/ghostty-actions.js 3";
+            "${mod}-shift-q" = "exec-and-forget osascript -lJavaScript ${config.xdg.configHome}/aerospace/ghostty-actions.js 2";
+            "${mod}-alt-q" = "exec-and-forget osascript -lJavaScript ${config.xdg.configHome}/aerospace/ghostty-actions.js 1";
 
-        alt-w = "close";
+            # Run Finder
+            "${mod}-alt-e" = "exec-and-forget osascript -lJavaScript ${config.xdg.configHome}/aerospace/finder-actions.js 2";
+            "${mod}-shift-e" = "exec-and-forget osascript -lJavaScript ${config.xdg.configHome}/aerospace/finder-actions.js 1";
 
-        # Ref: https://nikitabobko.github.io/AeroSpace/commands#layout
-        alt-slash = "layout tiles horizontal vertical";
-        alt-quote = "layout accordion horizontal vertical";
+            "${mod}-alt-w" = "close";
 
-        # Move focus, see: https://nikitabobko.github.io/AeroSpace/commands#focus
-        alt-h = "focus left";
-        alt-j = "focus down";
-        alt-k = "focus up";
-        alt-l = "focus right";
-        alt-tab = "workspace-back-and-forth";
-        alt-n = "workspace --wrap-around next";
-        alt-p = "workspace --wrap-around prev";
+            # Ref: https://nikitabobko.github.io/AeroSpace/commands#layout
+            "${mod}-slash" = "layout tiles horizontal vertical";
+            "${mod}-quote" = "layout accordion horizontal vertical";
 
-        # Move windows, see: https://nikitabobko.github.io/AeroSpace/commands#move
-        alt-shift-h = "move left";
-        alt-shift-j = "move down";
-        alt-shift-k = "move up";
-        alt-shift-l = "move right";
+            # Move focus, see: https://nikitabobko.github.io/AeroSpace/commands#focus
+            "${mod}-h" = "focus left";
+            "${mod}-j" = "focus down";
+            "${mod}-k" = "focus up";
+            "${mod}-l" = "focus right";
+            "${mod}-tab" = "workspace-back-and-forth";
+            "${mod}-alt-n" = "workspace --wrap-around next"; # Conflict with KeePassXC's cmd-n
+            "${mod}-alt-p" = "workspace --wrap-around prev";
 
-        # Resize windows, See: https://nikitabobko.github.io/AeroSpace/commands#resize
-        alt-ctrl-minus = "resize smart -50";
-        alt-ctrl-equal = "resize smart +50";
-        alt-shift-r = "mode resize";
+            # Move windows, see: https://nikitabobko.github.io/AeroSpace/commands#move
+            "${mod}-shift-h" = "move left";
+            "${mod}-shift-j" = "move down";
+            "${mod}-shift-k" = "move up";
+            "${mod}-shift-l" = "move right";
 
-        # Switch workpaces, see: https://nikitabobko.github.io/AeroSpace/commands#workspace
-        alt-1 = "workspace 1";
-        alt-2 = "workspace 2";
-        alt-3 = "workspace 3";
-        alt-4 = "workspace 4";
-        alt-5 = "workspace 5";
-        alt-6 = "workspace 6";
-        alt-7 = "workspace 7";
-        alt-8 = "workspace 8";
-        alt-9 = "workspace 9";
-        alt-0 = "workspace 0";
+            # Resize windows, See: https://nikitabobko.github.io/AeroSpace/commands#resize
+            "${mod}-alt-minus" = "resize smart -50";
+            "${mod}-alt-equal" = "resize smart +50";
+            "${mod}-shift-r" = "mode resize";
 
-        # Move active window to a workspace
-        alt-shift-1 = "move-node-to-workspace 1";
-        alt-shift-2 = "move-node-to-workspace 2";
-        alt-shift-3 = "move-node-to-workspace 3";
-        alt-shift-4 = "move-node-to-workspace 4";
-        alt-shift-5 = "move-node-to-workspace 5";
-        alt-shift-6 = "move-node-to-workspace 6";
-        alt-shift-7 = "move-node-to-workspace 7";
-        alt-shift-8 = "move-node-to-workspace 8";
-        alt-shift-9 = "move-node-to-workspace 9";
-        alt-shift-0 = "move-node-to-workspace 0";
+            # Switch workpaces, see: https://nikitabobko.github.io/AeroSpace/commands#workspace
+            "${mod}-1" = "workspace 1";
+            "${mod}-2" = "workspace 2";
+            "${mod}-3" = "workspace 3";
+            "${mod}-4" = "workspace 4";
+            "${mod}-5" = "workspace 5";
+            "${mod}-6" = "workspace 6";
+            "${mod}-7" = "workspace 7";
+            "${mod}-8" = "workspace 8";
+            "${mod}-9" = "workspace 9";
+            "${mod}-0" = "workspace 0";
 
-        alt-shift-semicolon = "mode service"; # Ref: https://nikitabobko.github.io/AeroSpace/commands#mode
-      };
-      # Ref: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
-      # "service" binding mode
-      mode.service.binding = {
-        esc = [
-          "reload-config"
-          "mode main"
-        ];
-        f = [
-          "layout floating tiling"
-          "mode main"
-        ]; # Toggle between floating and tiling layout
-        r = [
-          "flatten-workspace-tree"
-          "mode main"
-        ]; # reset layout
-        backspace = [
-          "close-all-windows-but-current"
-          "mode main"
-        ];
+            # Move active window to a workspace
+            "${mod}-shift-1" = "move-node-to-workspace 1";
+            "${mod}-shift-2" = "move-node-to-workspace 2";
+            "${mod}-shift-3" = "move-node-to-workspace 3";
+            "${mod}-shift-4" = "move-node-to-workspace 4";
+            "${mod}-shift-5" = "move-node-to-workspace 5";
+            "${mod}-shift-6" = "move-node-to-workspace 6";
+            "${mod}-shift-7" = "move-node-to-workspace 7";
+            "${mod}-shift-8" = "move-node-to-workspace 8";
+            "${mod}-shift-9" = "move-node-to-workspace 9";
+            "${mod}-shift-0" = "move-node-to-workspace 0";
 
-        alt-shift-h = [
-          "join-with left"
-          "mode main"
-        ];
-        alt-shift-j = [
-          "join-with down"
-          "mode main"
-        ];
-        alt-shift-k = [
-          "join-with up"
-          "mode main"
-        ];
-        alt-shift-l = [
-          "join-with right"
-          "mode main"
-        ];
+            "${mod}-shift-semicolon" = "mode service"; # Ref: https://nikitabobko.github.io/AeroSpace/commands#mode
+          };
+          # Ref: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
+          service.binding = {
+            esc = [
+              "reload-config"
+              "mode main"
+            ];
 
-        down = "volume down";
-        up = "volume up";
-        shift-down = [
-          "volume set 0"
-          "mode main"
-        ];
-      };
-      # "resize" binding mode
-      mode.resize.binding = {
-        h = "resize width -50";
-        j = "resize height +50";
-        k = "resize height -50";
-        l = "resize width +50";
-        enter = "mode main";
-        esc = "mode main";
-      };
+            # Toggle between floating and tiling layout
+            f = [
+              "layout floating tiling"
+              "mode main"
+            ];
+
+            # reset layout
+            r = [
+              "flatten-workspace-tree"
+              "mode main"
+            ];
+
+            backspace = [
+              "close-all-windows-but-current"
+              "mode main"
+            ];
+
+            "${mod}-shift-h" = [
+              "join-with left"
+              "mode main"
+            ];
+            "${mod}-shift-j" = [
+              "join-with down"
+              "mode main"
+            ];
+            "${mod}-shift-k" = [
+              "join-with up"
+              "mode main"
+            ];
+            "${mod}-shift-l" = [
+              "join-with right"
+              "mode main"
+            ];
+          };
+          resize.binding = {
+            h = "resize width -50";
+            j = "resize height +50";
+            k = "resize height -50";
+            l = "resize width +50";
+            enter = "mode main";
+            esc = "mode main";
+          };
+        };
       workspace-to-monitor-force-assignment = {
         "1" = [ "Built-in Retina Display" ];
         "2" = [ "Built-in Retina Display" ];
