@@ -2,11 +2,13 @@
   const,
   config,
   mylib,
+  lib,
   ...
 }:
 let
   app_release = "stable";
-  plane_path = "${const.storagePath}/plane";
+  mount_path = const.storagePath;
+  path_prefix = "${mount_path}/plane";
 
   backend_volumes = [
     "${./plane_gitea_authelia.py}:/code/plane/authentication/provider/oauth/gitea.py"
@@ -14,6 +16,22 @@ let
   ];
 
   pgdata = "/var/lib/postgresql/data";
+
+  restart_units = with config.virtualisation.oci-containers.containers; {
+    plane-web = "${plane-web.serviceName}.service";
+    plane-space = "${plane-space.serviceName}.service";
+    plane-admin = "${plane-admin.serviceName}.service";
+    plane-live = "${plane-live.serviceName}.service";
+    plane-api = "${plane-api.serviceName}.service";
+    plane-worker = "${plane-worker.serviceName}.service";
+    plane-beat-worker = "${plane-beat-worker.serviceName}.service";
+    plane-migrator = "${plane-migrator.serviceName}.service";
+    plane-db = "${plane-db.serviceName}.service";
+    plane-redis = "${plane-redis.serviceName}.service";
+    plane-mq = "${plane-mq.serviceName}.service";
+    plane-minio = "${plane-minio.serviceName}.service";
+    plane-proxy = "${plane-proxy.serviceName}.service";
+  };
 in
 {
   vars.hostAddrs.${config.networking.hostName} =
@@ -27,25 +45,10 @@ in
       tailscale = { inherit subdomains; };
       easytier = { inherit subdomains; };
     };
+
   sops =
     let
       sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
-
-      restart_units = with config.virtualisation.oci-containers.containers; {
-        plane-web = "${plane-web.serviceName}.service";
-        plane-space = "${plane-space.serviceName}.service";
-        plane-admin = "${plane-admin.serviceName}.service";
-        plane-live = "${plane-live.serviceName}.service";
-        plane-api = "${plane-api.serviceName}.service";
-        plane-worker = "${plane-worker.serviceName}.service";
-        plane-beat-worker = "${plane-beat-worker.serviceName}.service";
-        plane-migrator = "${plane-migrator.serviceName}.service";
-        plane-db = "${plane-db.serviceName}.service";
-        plane-redis = "${plane-redis.serviceName}.service";
-        plane-mq = "${plane-mq.serviceName}.service";
-        plane-minio = "${plane-minio.serviceName}.service";
-        plane-proxy = "${plane-proxy.serviceName}.service";
-      };
 
       backend_units = with restart_units; [
         plane-api
@@ -229,7 +232,7 @@ in
         templates."plane-redis.env".path
         templates."plane-proxy.env".path
       ];
-      volumes = [ "${plane_path}/logs_api:/code/plane/logs" ] ++ backend_volumes;
+      volumes = [ "${path_prefix}/logs_api:/code/plane/logs" ] ++ backend_volumes;
       dependsOn = [
         "plane-db"
         "plane-redis"
@@ -246,7 +249,7 @@ in
         templates."plane-redis.env".path
         templates."plane-proxy.env".path
       ];
-      volumes = [ "${plane_path}/logs_worker:/code/plane/logs" ] ++ backend_volumes;
+      volumes = [ "${path_prefix}/logs_worker:/code/plane/logs" ] ++ backend_volumes;
       dependsOn = [
         "plane-api"
         "plane-db"
@@ -264,7 +267,7 @@ in
         templates."plane-redis.env".path
         templates."plane-proxy.env".path
       ];
-      volumes = [ "${plane_path}/logs_beat-worker:/code/plane/logs" ] ++ backend_volumes;
+      volumes = [ "${path_prefix}/logs_beat-worker:/code/plane/logs" ] ++ backend_volumes;
       dependsOn = [
         "plane-api"
         "plane-db"
@@ -282,7 +285,7 @@ in
         templates."plane-redis.env".path
         templates."plane-proxy.env".path
       ];
-      volumes = [ "${plane_path}/logs_migrator:/code/plane/logs" ] ++ backend_volumes;
+      volumes = [ "${path_prefix}/logs_migrator:/code/plane/logs" ] ++ backend_volumes;
       dependsOn = [
         "plane-db"
         "plane-redis"
@@ -299,20 +302,20 @@ in
         "max_connections=1000"
       ];
       environmentFiles = [ config.sops.templates."plane-db.env".path ];
-      volumes = [ "${plane_path}/pgdata:${pgdata}" ];
+      volumes = [ "${path_prefix}/pgdata:${pgdata}" ];
       extraOptions = [ "--network=plane" ];
     };
 
     plane-redis = {
       image = "valkey/valkey:7.2.11-alpine";
-      volumes = [ "${plane_path}/redisdata:/data" ];
+      volumes = [ "${path_prefix}/redisdata:/data" ];
       extraOptions = [ "--network=plane" ];
     };
 
     plane-mq = {
       image = "rabbitmq:3.13.6-management-alpine";
       environmentFiles = [ config.sops.templates."plane-mq.env".path ];
-      volumes = [ "${plane_path}/rabbitmq_data:/var/lib/rabbitmq" ];
+      volumes = [ "${path_prefix}/rabbitmq_data:/var/lib/rabbitmq" ];
       extraOptions = [ "--network=plane" ];
     };
 
@@ -327,7 +330,7 @@ in
         ":9090"
       ];
       environmentFiles = [ config.sops.templates."plane-minio.env".path ];
-      volumes = [ "${plane_path}/uploads:/export" ];
+      volumes = [ "${path_prefix}/uploads:/export" ];
       extraOptions = [ "--network=plane" ];
     };
 
@@ -340,8 +343,8 @@ in
       environmentFiles = [ config.sops.templates."plane-proxy.env".path ];
       ports = [ "127.0.0.1:8082:80" ];
       volumes = [
-        "${plane_path}/proxy_config:/config"
-        "${plane_path}/proxy_data:/data"
+        "${path_prefix}/proxy_config:/config"
+        "${path_prefix}/proxy_data:/data"
       ];
       dependsOn = [
         "plane-web"
@@ -354,21 +357,28 @@ in
     };
   };
 
-  systemd.services.docker-network-plane = {
-    path = [ config.virtualisation.docker.package ];
-    wantedBy = [ "multi-user.target" ];
-    after = [
-      "docker.service"
-      "docker.socket"
-    ];
-    # Adding script to handle "network already exists" safely
-    script = "docker network inspect plane >/dev/null 2>&1 || docker network create plane";
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = "yes";
-      ExecStop = "${config.virtualisation.docker.package}/bin/docker network rm plane";
-    };
-  };
+  systemd.services = lib.mkMerge (
+    lib.singleton {
+      docker-network-plane = {
+        path = [ config.virtualisation.docker.package ];
+        wantedBy = [ "multi-user.target" ];
+        after = [
+          "docker.service"
+          "docker.socket"
+        ];
+        # Adding script to handle "network already exists" safely
+        script = "docker network inspect plane >/dev/null 2>&1 || docker network create plane";
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = "yes";
+          ExecStop = "${config.virtualisation.docker.package}/bin/docker network rm plane";
+        };
+      };
+    }
+    ++ map (s: { ${lib.removeSuffix ".service" s}.unitConfig.RequiresMountsFor = mount_path; }) (
+      lib.mapAttrsToList (_: v: v) restart_units
+    )
+  );
 
   services.traefik.dynamicConfigOptions.http = {
     routers.plane = {

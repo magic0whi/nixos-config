@@ -5,7 +5,7 @@
   ...
 }:
 let
-  path_prefix = const.storage2Path;
+  mount_path = const.storage2Path;
 in
 {
   vars.hostAddrs.${config.networking.hostName} =
@@ -19,7 +19,7 @@ in
       tailscale = { inherit subdomains; };
       easytier = { inherit subdomains; };
     };
-  systemd.services.aria2.unitConfig.RequiresMountsFor = [ path_prefix ];
+  systemd.services.aria2.unitConfig.RequiresMountsFor = [ mount_path ];
   sops.secrets.aria2_rpc_secret = {
     sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
     restartUnits = [ "aria2.service" ];
@@ -33,15 +33,15 @@ in
     enable = true;
     rpcSecretFile = config.sops.secrets.aria2_rpc_secret.path;
     settings = {
-      dir = "${path_prefix}/aria2";
+      dir = "${mount_path}/aria2";
       disk-cache = "2048M";
       file-allocation = "falloc";
       continue = true;
       always-resume = false;
       max-resume-failure-tries = 1;
       remote-time = true; # Keep file timestamp from remote
-      input-file = "${path_prefix}/aria2/aria2.session";
-      save-session = "${path_prefix}/aria2/aria2.session";
+      input-file = "${mount_path}/aria2/aria2.session";
+      save-session = "${mount_path}/aria2/aria2.session";
       save-session-interval = 1;
       auto-save-interval = 30;
       force-save = true; # Keep .aria even downloaded.
@@ -79,8 +79,8 @@ in
       enable-dht = true;
       enable-dht6 = true;
       # bt-external-ip= # This is critical to use DHT in a private network.
-      dht-file-path = "${path_prefix}/aria2/dht.dat";
-      dht-file-path6 = "${path_prefix}/aria2/dht6.dat";
+      dht-file-path = "${mount_path}/aria2/dht.dat";
+      dht-file-path6 = "${mount_path}/aria2/dht6.dat";
       dht-entry-point = "dht.transmissionbt.com:6881";
       dht-entry-point6 = "dht.transmissionbt.com:6881";
       bt-enable-lpd = true; # Local Peer Discovery

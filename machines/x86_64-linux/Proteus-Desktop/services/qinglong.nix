@@ -1,3 +1,5 @@
+# TIP: # For `ql` command , run `docker exec -it qinglong /ql/shell/update.sh`
+
 {
   mylib,
   lib,
