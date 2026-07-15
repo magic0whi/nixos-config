@@ -85,98 +85,103 @@ in
           restartUnits = backend_units;
         };
       };
-      templates = {
-        "plane-app.env" = {
-          restartUnits = backend_units;
-          content = mylib.toEnv {
-            # For default values, Ref:
-            # https://github.com/makeplane/plane/blob/1e8f3630c7697129b61eb57f2453f0bf09224920/apps/api/plane/settings/common.py
-            WEB_URL = "https://plane.${const.domain}";
-            CORS_ALLOWED_ORIGINS = "https://plane.${const.domain}";
-            REQUESTS_CA_BUNDLE = "/usr/local/share/ca-certificates/proteus_ca.crt";
-            NODE_EXTRA_CA_CERTS = "/usr/local/share/ca-certificates/proteus_ca.crt";
-            # DEBUG = 1;
-            GUNICORN_WORKERS = 5;
+      templates =
+        let
+          AWS_S3_BUCKET_NAME = "uploads";
+          AWS_ACCESS_KEY_ID = "access-key";
+        in
+        {
+          "plane-app.env" = {
+            restartUnits = backend_units;
+            content = mylib.toEnv {
+              # For default values, Ref:
+              # https://github.com/makeplane/plane/blob/1e8f3630c7697129b61eb57f2453f0bf09224920/apps/api/plane/settings/common.py
+              WEB_URL = "https://plane.${const.domain}";
+              CORS_ALLOWED_ORIGINS = "https://plane.${const.domain}";
+              REQUESTS_CA_BUNDLE = "/usr/local/share/ca-certificates/proteus_ca.crt";
+              NODE_EXTRA_CA_CERTS = "/usr/local/share/ca-certificates/proteus_ca.crt";
+              # DEBUG = 1;
+              GUNICORN_WORKERS = 5;
 
-            # DB & Auth Secrets
-            # Secret Key (Primary cryptographic key for the main backend application)
-            SECRET_KEY = config.sops.placeholder.plane_secret_key;
-            DATABASE_URL = "postgresql://plane:${config.sops.placeholder.plane_postgres_password}@plane-db/plane";
-            AMQP_URL = "amqp://plane:${config.sops.placeholder.plane_rabbitmq_password}@plane-mq:5672/plane";
+              # DB & Auth Secrets
+              # Secret Key (Primary cryptographic key for the main backend application)
+              SECRET_KEY = config.sops.placeholder.plane_secret_key;
+              DATABASE_URL = "postgresql://plane:${config.sops.placeholder.plane_postgres_password}@plane-db/plane";
+              AMQP_URL = "amqp://plane:${config.sops.placeholder.plane_rabbitmq_password}@plane-mq:5672/plane";
 
-            # Live server environment variables (Shared auth key for real-time WebSocket architecture)
-            LIVE_SERVER_SECRET_KEY = config.sops.placeholder.plane_live_server_secret_key;
+              # Live server environment variables (Shared auth key for real-time WebSocket architecture)
+              LIVE_SERVER_SECRET_KEY = config.sops.placeholder.plane_live_server_secret_key;
 
-            # Authelia SSO
-            IS_GITEA_ENABLED = 1;
-            GITEA_HOST = "https://auth.${const.domain}";
-            GITEA_CLIENT_ID = "plane";
-            GITEA_CLIENT_SECRET = config.sops.placeholder.plane_gitea_client_secret;
-            ENABLE_GITEA_SYNC = 1;
+              # Authelia SSO
+              IS_GITEA_ENABLED = 1;
+              GITEA_HOST = "https://auth.${const.domain}";
+              GITEA_CLIENT_ID = "plane";
+              GITEA_CLIENT_SECRET = config.sops.placeholder.plane_gitea_client_secret;
+              ENABLE_GITEA_SYNC = 1;
 
-            # S3 Configuration
-            USE_MINIO = 1;
-            MINIO_ENDPOINT_SSL = 0;
-            # AWS_ACCESS_KEY_ID
-            AWS_ACCESS_KEY_ID = "access-key";
-            AWS_SECRET_ACCESS_KEY = config.sops.placeholder.plane_aws_secret_access_key;
-            AWS_S3_ENDPOINT_URL = "http://plane-minio:9000";
+              # S3 Configuration
+              USE_MINIO = 1;
+              MINIO_ENDPOINT_SSL = 0;
+              inherit AWS_S3_BUCKET_NAME;
+              inherit AWS_ACCESS_KEY_ID;
+              AWS_SECRET_ACCESS_KEY = config.sops.placeholder.plane_aws_secret_access_key;
+              AWS_S3_ENDPOINT_URL = "http://plane-minio:9000";
+            };
           };
-        };
-        "plane-minio.env" = {
-          restartUnits = [ restart_units.plane-minio ];
-          content = mylib.toEnv {
-            MINIO_ROOT_USER = "access-key";
-            MINIO_ROOT_PASSWORD = config.sops.placeholder.plane_aws_secret_access_key;
+          "plane-minio.env" = {
+            restartUnits = [ restart_units.plane-minio ];
+            content = mylib.toEnv {
+              MINIO_ROOT_USER = AWS_ACCESS_KEY_ID;
+              MINIO_ROOT_PASSWORD = config.sops.placeholder.plane_aws_secret_access_key;
+            };
           };
-        };
-        "plane-proxy.env" = {
-          restartUnits = [ restart_units.plane-proxy ] ++ backend_units;
-          content = mylib.toEnv {
-            APP_DOMAIN = "plane.${const.domain}";
-            FILE_SIZE_LIMIT = 5242880;
-            BUCKET_NAME = "uploads";
-            SITE_ADDRESS = ":80";
+          "plane-proxy.env" = {
+            restartUnits = [ restart_units.plane-proxy ] ++ backend_units;
+            content = mylib.toEnv {
+              APP_DOMAIN = "plane.${const.domain}";
+              FILE_SIZE_LIMIT = 5242880;
+              BUCKET_NAME = AWS_S3_BUCKET_NAME;
+              SITE_ADDRESS = ":80";
+            };
           };
-        };
-        "plane-db.env" = {
-          restartUnits = [ restart_units.plane-db ] ++ backend_units;
-          content = mylib.toEnv {
-            POSTGRES_USER = "plane";
-            # NOTE: Changing POSTGRES_PASSWORD here or in secrets.env after the database
-            # is already initialized will NOT update the existing database user's
-            # password. You must manually run an SQL command:
-            # docker exec -e PGPASSWORD=<old_pw> <container_name> psql -U plane -d plane -c "ALTER USER plane WITH PASSWORD '<new_pw>';"
-            POSTGRES_PASSWORD = config.sops.placeholder.plane_postgres_password;
-            POSTGRES_DB = "plane";
-            PGDATA = pgdata;
+          "plane-db.env" = {
+            restartUnits = [ restart_units.plane-db ] ++ backend_units;
+            content = mylib.toEnv {
+              POSTGRES_USER = "plane";
+              # NOTE: Changing POSTGRES_PASSWORD here or in secrets.env after the database
+              # is already initialized will NOT update the existing database user's
+              # password. You must manually run an SQL command:
+              # docker exec -e PGPASSWORD=<old_pw> <container_name> psql -U plane -d plane -c "ALTER USER plane WITH PASSWORD '<new_pw>';"
+              POSTGRES_PASSWORD = config.sops.placeholder.plane_postgres_password;
+              POSTGRES_DB = "plane";
+              PGDATA = pgdata;
+            };
           };
-        };
-        "plane-redis.env" = {
-          restartUnits = [
-            restart_units.plane-redis
-            restart_units.plane-live
-          ]
-          ++ backend_units;
-          content = mylib.toEnv { REDIS_URL = "redis://plane-redis:6379/"; };
-        };
-        "plane-mq.env" = {
-          restartUnits = [ restart_units.plane-mq ];
-          content = mylib.toEnv {
-            RABBITMQ_DEFAULT_USER = "plane";
-            RABBITMQ_DEFAULT_PASS = config.sops.placeholder.plane_rabbitmq_password;
-            RABBITMQ_DEFAULT_VHOST = "plane";
+          "plane-redis.env" = {
+            restartUnits = [
+              restart_units.plane-redis
+              restart_units.plane-live
+            ]
+            ++ backend_units;
+            content = mylib.toEnv { REDIS_URL = "redis://plane-redis:6379/"; };
           };
-        };
+          "plane-mq.env" = {
+            restartUnits = [ restart_units.plane-mq ];
+            content = mylib.toEnv {
+              RABBITMQ_DEFAULT_USER = "plane";
+              RABBITMQ_DEFAULT_PASS = config.sops.placeholder.plane_rabbitmq_password;
+              RABBITMQ_DEFAULT_VHOST = "plane";
+            };
+          };
 
-        "plane-live.env" = {
-          restartUnits = [ restart_units.plane-live ];
-          content = mylib.toEnv {
-            API_BASE_URL = "http://plane-api:8000";
-            LIVE_SERVER_SECRET_KEY = config.sops.placeholder.plane_live_server_secret_key;
+          "plane-live.env" = {
+            restartUnits = [ restart_units.plane-live ];
+            content = mylib.toEnv {
+              API_BASE_URL = "http://plane-api:8000";
+              LIVE_SERVER_SECRET_KEY = config.sops.placeholder.plane_live_server_secret_key;
+            };
           };
         };
-      };
     };
 
   virtualisation.oci-containers.containers = {
