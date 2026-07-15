@@ -117,6 +117,8 @@ in
             # S3 Configuration
             USE_MINIO = 1;
             MINIO_ENDPOINT_SSL = 0;
+            # AWS_ACCESS_KEY_ID
+            AWS_ACCESS_KEY_ID = "access-key";
             AWS_SECRET_ACCESS_KEY = config.sops.placeholder.plane_aws_secret_access_key;
             AWS_S3_ENDPOINT_URL = "http://plane-minio:9000";
           };
