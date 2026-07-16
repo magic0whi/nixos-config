@@ -28,8 +28,7 @@ in
       mode "3440x1440@164.999"
       // Outputs are sized in logical pixels. for 2560x1440 with scale 1.25, the effective width is 2560/1.25=2048
       position x=2048 y=0
-      // TODO fix edid, default edid causes flash
-      // variable-refresh-rate
+      variable-refresh-rate
     }
     output "eDP-1" {
       scale 1.25
