@@ -14,6 +14,7 @@ let
         "public.easytier.cn"
       ];
     }
+    { port_range = "10010-10013"; }
     { rule_set = "geosite-category-stun"; }
   ];
 in

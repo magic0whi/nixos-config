@@ -44,17 +44,20 @@ let
 
         "chiphq.net"
 
-        # CEx
+        ## CEx
         "backpack.exchange"
         "backpack.workers.dev"
 
         "neverless.com"
 
-        # Brokerage
+        "uphold.com"
+
+        ## Brokerages
+        # Freetrade
         "freetrade.io"
         "freetrade.app"
 
-        # Transfer
+        # Remittance Tools
         "remitly.com"
         "remitly.io"
         "remitly-3pjs.com"

@@ -7,8 +7,9 @@ let
         "bonify.de"
         "coinbase.com"
         "bybit.eu"
-        "braze.eu"
+        "braze.eu" # Tememetry
         "tink.com" # Easy bank transfer
+        "bunq.com"
       ];
     }
     {
