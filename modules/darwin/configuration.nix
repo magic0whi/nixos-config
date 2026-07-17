@@ -6,6 +6,7 @@
 { config, ... }:
 {
   system = {
+    # https://macos-defaults.com/
     defaults = {
       ## NOTE: https://github.com/nix-darwin/nix-darwin/issues/1207#issuecomment-2510402916
       # Customize settings that not supported by nix-darwin directly
