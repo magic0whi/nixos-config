@@ -35,7 +35,7 @@
   services = lib.mkMerge [
     {
       sing-box.subscribe = {
-        enable = true;
+        # enable = true;
         settings = {
           subscribes = lib.singleton {
             User-Agent = "ClashMetaForAndroid/2.11.20.Meta";

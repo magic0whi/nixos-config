@@ -24,7 +24,7 @@ let
       ++ (map (outbound: outbound.tag)
         (import ./10-regions.nix {
           dnsServerCfg = null;
-          lib = null;
+          inherit lib pkgs config;
         }).outbounds
       );
     };
@@ -111,7 +111,7 @@ lib.mkMerge (
       experimental = {
         cache_file = {
           enabled = true;
-          store_fakeip = true;
+          store_fakeip = !isRouter;
           store_dns = true;
         };
         clash_api = {

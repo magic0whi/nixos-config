@@ -61,7 +61,7 @@ in
         # interval = "10m"; # default 3m
         # tolerance = 50; # default 50 ms
         # url = "http://www.gstatic.com/generate_204"; # default https://www.gstatic.com/generate_204
-        outbounds = map (node: node.tag) nodes ++ [ "{all}" ];
+        outbounds = map (node: node.tag) nodes ++ lib.optional config.services.sing-box.subscribe.enable "{all}";
       }
     ))
     (lib.mkAfter nodes)
