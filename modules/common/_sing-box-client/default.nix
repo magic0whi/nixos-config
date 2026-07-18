@@ -53,32 +53,34 @@ lib.mkMerge (
       };
       dns = {
         final = "Default";
-        servers = lib.mkOrder 250 [
-          {
+        servers = lib.mkOrder 250 (
+          lib.optional (!isRouter) {
             tag = "FakeIP";
             type = "fakeip";
-            inet4_range = if isRouter then "10.4.0.0/14" else "198.18.0.0/15";
-            inet6_range = if isRouter then "fc00:4000::/18" else "fc00::/18";
+            inet4_range = "198.18.0.0/15";
+            inet6_range = "fc00::/18";
           }
-          {
-            tag = "Bootstrap";
-            type = "udp";
-            server = "223.5.5.5";
-          }
-          {
-            tag = "Direct";
-            type = "tls";
-            server = "dns.alidns.com";
-            domain_resolver = "Bootstrap";
-          }
-          (
-            shared_cfg.dnsServerCfg.default
-            // {
-              tag = "Default";
-              detour = "Default";
+          ++ [
+            {
+              tag = "Bootstrap";
+              type = "udp";
+              server = "223.5.5.5";
             }
-          )
-        ];
+            {
+              tag = "Direct";
+              type = "tls";
+              server = "dns.alidns.com";
+              domain_resolver = "Bootstrap";
+            }
+            (
+              shared_cfg.dnsServerCfg.default
+              // {
+                tag = "Default";
+                detour = "Default";
+              }
+            )
+          ]
+        );
         # The default rule uses the following matching logic:
         # (domain || domain_suffix || domain_keyword || domain_regex || geosite) &&
         # (port || port_range) &&
@@ -86,9 +88,9 @@ lib.mkMerge (
         # (source_port || source_port_range) &&
         # other fields
         # Ref: https://sing-box.sagernet.org/configuration/dns/rule/#default-fields
-        rules = lib.mkMerge [
-          # FaleIP; Clash mode
-          (lib.mkOrder 750 [
+        # FaleIP; Clash mode
+        rules = lib.mkOrder 750 (
+          [
             # Let global & direct mode get RealIP
             {
               server = "Default";
@@ -98,15 +100,15 @@ lib.mkMerge (
               server = "Direct";
               clash_mode = "direct";
             }
-            {
-              server = "FakeIP";
-              query_type = [
-                "A"
-                "AAAA"
-              ];
-            }
-          ])
-        ];
+          ]
+          ++ lib.optional (!isRouter) {
+            server = "FakeIP";
+            query_type = [
+              "A"
+              "AAAA"
+            ];
+          }
+        );
       };
       experimental = {
         cache_file = {

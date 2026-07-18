@@ -12,22 +12,20 @@ let
   rules = [ { rule_set = [ "geosite-cn" ]; } ];
 in
 {
-  dns.rules = lib.mkMerge [
-    (lib.mkOrder 2000 (
-      mylib.mkSbRules true out rules
-      ++ [
-        {
-          action = "evaluate";
-          server = out;
-        }
-        {
-          match_response = true;
-          rule_set = "geoip-cn";
-          action = "respond";
-        }
-      ]
-    ))
-  ];
+  dns.rules = lib.mkOrder 2000 (
+    mylib.mkSbRules true out rules
+    ++ [
+      {
+        action = "evaluate";
+        server = out;
+      }
+      {
+        match_response = true;
+        rule_set = "geoip-cn";
+        action = "respond";
+      }
+    ]
+  );
   route = {
     rule_set =
       let
