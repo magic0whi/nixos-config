@@ -90,7 +90,15 @@
               id = "Brightness";
               displayMode = "alwaysShow";
             }
-            { id = "Tray"; }
+            {
+              id = "Tray";
+              colorizeIcons = false; # Default true. Disable to let applications use their builtin icon color
+              pinned = [
+                "tray-id" # Sunthine
+                "udiskie"
+                "virt-manager"
+              ];
+            }
             {
               id = "ControlCenter";
               useDistroLogo = true;

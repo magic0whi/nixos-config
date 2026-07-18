@@ -1,3 +1,4 @@
+# TIP: `niri msg pick-window`
 { lib, ... }:
 let
   super_rules = [
