@@ -27,13 +27,13 @@ in
       scale 1.25
       mode "3440x1440@164.999"
       // Outputs are sized in logical pixels. for 2560x1440 with scale 1.25, the effective width is 2560/1.25=2048
-      position x=2048 y=0
+      position x=0 y=0
       variable-refresh-rate
     }
     output "eDP-1" {
       scale 1.25
       mode "2560x1440@165.003"
-      position x=0 y=0
+      position x=2752 y=0
       variable-refresh-rate
     }
   ''
