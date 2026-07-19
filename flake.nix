@@ -136,6 +136,10 @@
       # url = "path:/home/proteus/Works-References/dns.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    NixVirt = {
+      url = "github:AshleyYakeley/NixVirt/6d213ab42f72ba41c2eb4e6bdb97581c0642d942";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
   outputs =
     inputs:

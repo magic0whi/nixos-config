@@ -7,6 +7,7 @@
   deploy-rs,
   nixpkgs,
   i915-sriov-dkms,
+  NixVirt,
   ...
 }:
 let
@@ -28,11 +29,14 @@ let
         dgpu_pci_ids = "0000:01:00.0";
       };
       overlays = with features; common.baseOverlays ++ nixos.seat.guiOverlays;
-      specialArgs = { inherit deploy-rs; };
+      specialArgs = { inherit deploy-rs NixVirt; };
       modules =
         (with features.common; base ++ seat ++ extra)
         ++ (with features.nixos; base ++ seat.tui ++ seat.gui ++ extra)
-        ++ [ i915-sriov-dkms.nixosModules.default ]
+        ++ [
+          i915-sriov-dkms.nixosModules.default
+          NixVirt.nixosModules.default
+        ]
         ++ map mylib.relativeToRoot [
           "modules/nixos_headless/iwd.nix"
           "modules/services/traefik.nix"

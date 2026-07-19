@@ -118,40 +118,43 @@ in
       };
       # Create zpool.cache
       postCreateHook = "zpool set bootfs=${zroot}/root ${zroot};" + "zpool set cachefile=/etc/zfs/zpool.cache ${zroot}";
-      datasets = {
-        # ROOT dataset (ephemeral, rolled back to blank on boot)
-        root = {
+      datasets =
+        let
           type = "zfs_fs";
-          mountpoint = "/";
           # `com.sun:auto-snapshot` is used by options `services.zfs.autoSnapshot.*`
           options."com.sun:auto-snapshot" = "false";
-          postCreateHook = "zfs list -t snapshot -H -o name | grep -E '^${zroot}/root@blank$' || zfs snapshot ${zroot}/root@blank";
+        in
+        {
+          # ROOT dataset (ephemeral, rolled back to blank on boot)
+          root = {
+            inherit type options;
+            mountpoint = "/";
+            postCreateHook = "zfs list -t snapshot -H -o name | grep -E '^${zroot}/root@blank$' || zfs snapshot ${zroot}/root@blank";
+          };
+          # TODO add rollback when I ready to move to impermanence on /home
+          home = {
+            inherit type options;
+            mountpoint = "/home";
+          };
+          "home/root" = {
+            inherit type;
+            mountpoint = "/root";
+          };
+          nix = {
+            inherit type options;
+            mountpoint = "/nix";
+          };
+          persistent = {
+            inherit type;
+            mountpoint = "/persistent";
+            options."com.sun:auto-snapshot" = "true";
+            mountOptions = [
+              "defaults"
+              "x-gvfs-trash"
+            ];
+          };
+          vm-images = { inherit type options; };
         };
-        # TODO add rollback when I ready to move to impermanence on /home
-        home = {
-          type = "zfs_fs";
-          mountpoint = "/home";
-          options."com.sun:auto-snapshot" = "false";
-        };
-        "home/root" = {
-          type = "zfs_fs";
-          mountpoint = "/root";
-        };
-        nix = {
-          type = "zfs_fs";
-          mountpoint = "/nix";
-          options."com.sun:auto-snapshot" = "false";
-        };
-        persistent = {
-          type = "zfs_fs";
-          mountpoint = "/persistent";
-          options."com.sun:auto-snapshot" = "true";
-          mountOptions = [
-            "defaults"
-            "x-gvfs-trash"
-          ];
-        };
-      };
     };
   };
 }

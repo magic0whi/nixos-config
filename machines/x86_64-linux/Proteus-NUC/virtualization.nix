@@ -3,6 +3,7 @@
   lib,
   const,
   pkgs,
+  NixVirt,
   ...
 }:
 let
@@ -102,7 +103,7 @@ in
       # in
       {
         enable = true;
-        qemu.swtpm.enable = true;
+        # qemu.swtpm.enable = true; # Already set by `virtualisation.libvirt.swtpm.enable`
         qemu.vhostUserPackages = [ pkgs.virtiofsd ];
         # hooks.qemu."99-hugepages.sh" = pkgs.writeShellScript "99-hugepages.sh" ''
         #   set -euo pipefail
@@ -188,7 +189,7 @@ in
     let
       netbootxyz-x86_64 = (import pkgs.path { system = "x86_64-linux"; }).netbootxyz-efi;
       netbootxyz-aarch64 = (import pkgs.path { system = "aarch64-linux"; }).netbootxyz-efi;
-      prefix = "/var/lib/tftpboot";
+      prefix = "/var/lib/libvirt/tftpboot";
     in
     {
       # Intel GPU cannot setup SR-IOV when in use
@@ -198,43 +199,6 @@ in
       "02-tftpboot-netbootxyz-aarch64"."${prefix}/netbootxyz-aarch64.efi"."L+".argument = toString netbootxyz-aarch64;
     };
 
-  environment.etc."libvirt/default-netbootxyz.xml".text = ''
-    <network xmlns:dnsmasq='http://libvirt.org/schemas/network/dnsmasq/1.0'>
-      <name>default</name>
-      <forward mode='nat'/>
-      <bridge name='virbr0' stp='on' delay='0'/>
-      <ip address='192.168.122.1' netmask='255.255.255.0'>
-        <tftp root='/var/lib/tftpboot'/>
-        <dhcp>
-          <range start='192.168.122.2' end='192.168.122.254'/>
-        </dhcp>
-      </ip>
-      <dnsmasq:options>
-        <!-- Ref: https://wiki.archlinux.org/title/Dnsmasq#PXE_server -->
-        <dnsmasq:option value='dhcp-match=set:efi-x86_64,option:client-arch,7'/>
-        <dnsmasq:option value='dhcp-match=set:efi-x86_64,option:client-arch,9'/>
-        <dnsmasq:option value='dhcp-match=set:efi-aarch64,option:client-arch,11'/>
-
-        <dnsmasq:option value='dhcp-boot=tag:efi-x86_64,netbootxyz-x86_64.efi'/>
-        <dnsmasq:option value='dhcp-boot=tag:efi-aarch64,netbootxyz-aarch64.efi'/>
-      </dnsmasq:options>
-    </network>
-  '';
-  systemd.services.libvirt-network = {
-    wantedBy = [ "multi-user.target" ];
-    after = [ "libvirtd.service" ];
-    requires = [ "libvirtd.service" ];
-    path = [ pkgs.libvirt ];
-    serviceConfig.Type = "oneshot";
-    # Ref: https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/7/html/virtualization_deployment_and_administration_guide/chap-network_booting_with_libvirt
-    script = ''
-      virsh net-destroy default || true
-      virsh net-undefine default || true
-      virsh net-define /etc/libvirt/default-netbootxyz.xml
-      virsh net-start default
-      virsh net-autostart default
-    '';
-  };
   environment.systemPackages = with pkgs; [
     # This script is used to install the arm translation layer for waydroid
     # so that we can install arm apks on x86_64 waydroid
@@ -260,5 +224,100 @@ in
     #   ......
     # qemu
   ];
+  ## NixVirt
+  virtualisation.libvirt = {
+    enable = true;
+    swtpm.enable = true;
+    connections."qemu:///system" = {
+      # Network with PXE netbootxyz
+      networks = lib.singleton {
+        active = true;
+        # https://github.com/AshleyYakeley/NixVirt/blob/6d213ab42f72ba41c2eb4e6bdb97581c0642d942/generate-xml/network.nix
+        definition =
+          let
+            inherit (NixVirt.lib.network) writeXML;
+            # inherit (NixVirt.lib.network.templates) bridge;
+          in
+          writeXML {
+            name = "default";
+            uuid = "37176a39-9e69-4b64-a3b8-a83dc51f2f2c";
+            forward.mode = "nat";
+            bridge = {
+              name = "virbr0";
+              stp = true;
+              delay = 0;
+            };
+            ip = {
+              address = "192.168.122.1";
+              netmask = "255.255.255.0";
+              tftp.root = "/var/lib/libvirt/tftpboot";
+              dhcp.range = {
+                start = "192.168.122.2";
+                end = "192.168.122.254";
+              };
+            };
+            # Ref: https://wiki.archlinux.org/title/Dnsmasq#PXE_server
+            "dnsmasq:options"."dnsmasq:option" = [
+              { value = "dhcp-match=set:efi-x86_64,option:client-arch,7"; }
+              { value = "dhcp-match=set:efi-x86_64,option:client-arch,9"; }
+              { value = "dhcp-match=set:efi-aarch64,option:client-arch,11"; }
+
+              { value = "dhcp-boot=tag:efi-x86_64,netbootxyz-x86_64.efi"; }
+              { value = "dhcp-boot=tag:efi-aarch64,netbootxyz-aarch64.efi"; }
+            ];
+          };
+      };
+      # https://github.com/AshleyYakeley/NixVirt/blob/6d213ab42f72ba41c2eb4e6bdb97581c0642d942/generate-xml/pool.nix
+      pools =
+        let
+          inherit (NixVirt.lib.pool) writeXML;
+          # inherit (NixVirt.lib.network.templates) bridge;
+        in
+        [
+          {
+            active = true;
+            definition = writeXML {
+              name = "default";
+              type = "dir";
+              uuid = "4a36aa09-a6eb-44e2-8a3d-d68d571122dc";
+              target = {
+                path = "/var/lib/libvirt/images";
+                permissions = {
+                  mode.octal = "0711";
+                  owner.uid = 0;
+                  group.gid = 0;
+                };
+              };
+            };
+          }
+          {
+            active = true;
+            definition = writeXML {
+              name = "nvram";
+              type = "dir";
+              uuid = "c84a1df4-596b-442c-9810-f2ca876ced52";
+              target = {
+                path = "/var/lib/libvirt/qemu/nvram";
+                permissions = {
+                  mode.octal = "0755";
+                  owner.uid = 0;
+                  group.gid = 0;
+                };
+              };
+            };
+          }
+          {
+            active = true;
+            definition = writeXML {
+              name = "zfs_images";
+              type = "zfs";
+              uuid = "f1e2db83-d5d0-462d-88f5-6c24a011598e";
+              source.name = "zroot/vm-images";
+              target.path = "/var/lib/libvirt/qemu/nvram";
+            };
+          }
+        ];
+    };
+  };
   ## END libvirtd.nix
 }
