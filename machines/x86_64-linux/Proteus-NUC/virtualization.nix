@@ -8,6 +8,36 @@
 }:
 let
   libvirt_cidr = "192.168.122.0/24";
+
+  # Libvirt network with PXE netbootxyz
+  net_cfg = {
+    name = "default";
+    uuid = "37176a39-9e69-4b64-a3b8-a83dc51f2f2c";
+    forward.mode = "nat";
+    bridge = {
+      name = "virbr0";
+      stp = true;
+      delay = 0;
+    };
+    ip = {
+      address = "192.168.122.1";
+      netmask = "255.255.255.0";
+      tftp.root = "/var/lib/libvirt/tftpboot";
+      dhcp.range = {
+        start = "192.168.122.2";
+        end = "192.168.122.254";
+      };
+    };
+    # Ref: https://wiki.archlinux.org/title/Dnsmasq#PXE_server
+    "dnsmasq:options"."dnsmasq:option" = [
+      { value = "dhcp-match=set:efi-x86_64,option:client-arch,7"; }
+      { value = "dhcp-match=set:efi-x86_64,option:client-arch,9"; }
+      { value = "dhcp-match=set:efi-aarch64,option:client-arch,11"; }
+
+      { value = "dhcp-boot=tag:efi-x86_64,netbootxyz-x86_64.efi"; }
+      { value = "dhcp-boot=tag:efi-aarch64,netbootxyz-aarch64.efi"; }
+    ];
+  };
 in
 {
   # virtualisation.waydroid.enable = true; # Usage: https://wiki.nixos.org/wiki/Waydroid
@@ -183,13 +213,80 @@ in
         #   esac
         # '';
       };
+    ## NixVirt
+    libvirt = {
+      enable = true;
+      swtpm.enable = true;
+      connections."qemu:///system" = {
+        networks = lib.singleton {
+          active = true;
+          # https://github.com/AshleyYakeley/NixVirt/blob/6d213ab42f72ba41c2eb4e6bdb97581c0642d942/generate-xml/network.nix
+          definition =
+            let
+              inherit (NixVirt.lib.network) writeXML;
+              # inherit (NixVirt.lib.network.templates) bridge;
+            in
+            writeXML net_cfg;
+        };
+        # https://github.com/AshleyYakeley/NixVirt/blob/6d213ab42f72ba41c2eb4e6bdb97581c0642d942/generate-xml/pool.nix
+        pools =
+          let
+            inherit (NixVirt.lib.pool) writeXML;
+            # inherit (NixVirt.lib.network.templates) bridge;
+          in
+          [
+            {
+              active = true;
+              definition = writeXML {
+                name = "default";
+                type = "dir";
+                uuid = "4a36aa09-a6eb-44e2-8a3d-d68d571122dc";
+                target = {
+                  path = "/var/lib/libvirt/images";
+                  permissions = {
+                    mode.octal = "0711";
+                    owner.uid = 0;
+                    group.gid = 0;
+                  };
+                };
+              };
+            }
+            {
+              active = true;
+              definition = writeXML {
+                name = "nvram";
+                type = "dir";
+                uuid = "c84a1df4-596b-442c-9810-f2ca876ced52";
+                target = {
+                  path = "/var/lib/libvirt/qemu/nvram";
+                  permissions = {
+                    mode.octal = "0755";
+                    owner.uid = 0;
+                    group.gid = 0;
+                  };
+                };
+              };
+            }
+            {
+              active = true;
+              definition = writeXML {
+                name = "zfs_images";
+                type = "zfs";
+                uuid = "f1e2db83-d5d0-462d-88f5-6c24a011598e";
+                source.name = "zroot/vm-images";
+                target.path = "/var/lib/libvirt/qemu/nvram";
+              };
+            }
+          ];
+      };
+    };
   };
 
   systemd.tmpfiles.settings =
     let
       netbootxyz-x86_64 = (import pkgs.path { system = "x86_64-linux"; }).netbootxyz-efi;
       netbootxyz-aarch64 = (import pkgs.path { system = "aarch64-linux"; }).netbootxyz-efi;
-      prefix = "/var/lib/libvirt/tftpboot";
+      prefix = net_cfg.ip.tftp.root;
     in
     {
       # Intel GPU cannot setup SR-IOV when in use
@@ -224,100 +321,5 @@ in
     #   ......
     # qemu
   ];
-  ## NixVirt
-  virtualisation.libvirt = {
-    enable = true;
-    swtpm.enable = true;
-    connections."qemu:///system" = {
-      # Network with PXE netbootxyz
-      networks = lib.singleton {
-        active = true;
-        # https://github.com/AshleyYakeley/NixVirt/blob/6d213ab42f72ba41c2eb4e6bdb97581c0642d942/generate-xml/network.nix
-        definition =
-          let
-            inherit (NixVirt.lib.network) writeXML;
-            # inherit (NixVirt.lib.network.templates) bridge;
-          in
-          writeXML {
-            name = "default";
-            uuid = "37176a39-9e69-4b64-a3b8-a83dc51f2f2c";
-            forward.mode = "nat";
-            bridge = {
-              name = "virbr0";
-              stp = true;
-              delay = 0;
-            };
-            ip = {
-              address = "192.168.122.1";
-              netmask = "255.255.255.0";
-              tftp.root = "/var/lib/libvirt/tftpboot";
-              dhcp.range = {
-                start = "192.168.122.2";
-                end = "192.168.122.254";
-              };
-            };
-            # Ref: https://wiki.archlinux.org/title/Dnsmasq#PXE_server
-            "dnsmasq:options"."dnsmasq:option" = [
-              { value = "dhcp-match=set:efi-x86_64,option:client-arch,7"; }
-              { value = "dhcp-match=set:efi-x86_64,option:client-arch,9"; }
-              { value = "dhcp-match=set:efi-aarch64,option:client-arch,11"; }
-
-              { value = "dhcp-boot=tag:efi-x86_64,netbootxyz-x86_64.efi"; }
-              { value = "dhcp-boot=tag:efi-aarch64,netbootxyz-aarch64.efi"; }
-            ];
-          };
-      };
-      # https://github.com/AshleyYakeley/NixVirt/blob/6d213ab42f72ba41c2eb4e6bdb97581c0642d942/generate-xml/pool.nix
-      pools =
-        let
-          inherit (NixVirt.lib.pool) writeXML;
-          # inherit (NixVirt.lib.network.templates) bridge;
-        in
-        [
-          {
-            active = true;
-            definition = writeXML {
-              name = "default";
-              type = "dir";
-              uuid = "4a36aa09-a6eb-44e2-8a3d-d68d571122dc";
-              target = {
-                path = "/var/lib/libvirt/images";
-                permissions = {
-                  mode.octal = "0711";
-                  owner.uid = 0;
-                  group.gid = 0;
-                };
-              };
-            };
-          }
-          {
-            active = true;
-            definition = writeXML {
-              name = "nvram";
-              type = "dir";
-              uuid = "c84a1df4-596b-442c-9810-f2ca876ced52";
-              target = {
-                path = "/var/lib/libvirt/qemu/nvram";
-                permissions = {
-                  mode.octal = "0755";
-                  owner.uid = 0;
-                  group.gid = 0;
-                };
-              };
-            };
-          }
-          {
-            active = true;
-            definition = writeXML {
-              name = "zfs_images";
-              type = "zfs";
-              uuid = "f1e2db83-d5d0-462d-88f5-6c24a011598e";
-              source.name = "zroot/vm-images";
-              target.path = "/var/lib/libvirt/qemu/nvram";
-            };
-          }
-        ];
-    };
-  };
   ## END libvirtd.nix
 }
