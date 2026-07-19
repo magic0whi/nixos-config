@@ -71,6 +71,7 @@ in
     ];
     # `brew install --cask`
     casks = [
+      "libreoffice"
       "super-productivity"
       "nextcloud"
       "blender" # 3D modeling, currently in nixpkg it's marked as broken on darwin
