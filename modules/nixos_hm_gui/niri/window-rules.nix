@@ -92,6 +92,14 @@ let
         ''match app-id="thunar"''
       ];
     }
+    # VM - open in workspace 8vm
+    {
+      action = ''open-on-workspace "8vm"'';
+      matches = [
+        ''match app-id="qemu"''
+        ''match app-id=".virt-manager-wrapped"''
+      ];
+    }
     # Other applications - open in workspace 0
     {
       action = ''open-on-workspace "0other"'';

@@ -70,7 +70,7 @@ rec {
     "5music"
     "6file"
     "7design"
-    "8"
+    "8vm"
     "9"
   ];
 

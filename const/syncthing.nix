@@ -84,6 +84,10 @@ in
                 path = lib.mkDefault "${prefix}/Documents";
                 devices = all;
               };
+              Statistics = {
+                path = lib.mkDefault "${prefix}/Statistics";
+                devices = all;
+              };
               KeePassXC = {
                 path = lib.mkDefault "${prefix}/KeePassXC";
                 devices = all;
