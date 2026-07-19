@@ -83,6 +83,8 @@
           {
             accept_dns = true; # Enable Magic DNS
             # tld_dns_zone = const.domain; # Comment-out as it override my custom DNS route
+            # Ref: https://easytier.cn/en/guide/network/host-public-server.html#disable-forwarding
+            relay-network-whitelist = ""; # Disable forwarding for other networks
             relay_all_peer_rpc = true; # Help others hole punching
           }
           (lib.mkIf (!pkgs.stdenv.isDarwin) { dev_name = "et-main"; })
