@@ -58,7 +58,7 @@ in
             desktops = builtins.attrNames device.desktops;
             servers = builtins.attrNames device.servers;
 
-            prefix = "${config.home.homeDirectory}/Proteus";
+            prefix = "${config.home.homeDirectory or throw "Are you forget to add corresponding entires for server"}/Proteus";
           in
           lib.mkMerge [
             (lib.mkIf (!isNixOSModule) {

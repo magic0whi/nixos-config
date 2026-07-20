@@ -43,6 +43,7 @@ in
       in
       {
         Documents.path = "${prefix}/Documents";
+        Statistics.path = "${prefix}/Statistics";
         Games.path = "${prefix}/Games";
         KeePassXC.path = "${prefix}/KeePassXC";
         Pictures.path = "${prefix}/Pictures";
