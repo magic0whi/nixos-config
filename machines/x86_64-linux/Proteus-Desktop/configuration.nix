@@ -49,6 +49,7 @@ in
   environment.systemPackages = [ pkgs.smartmontools ];
   ## END hardware.nix
   ## BEGIN sing-box-client.nix
+  services.resolved.settings.Resolve.DNSStubListenerExtra = [ config.vars.hostAddrs.${hostname}.wire.ipv4NoCidr ]; # for split DNS
   # lib.mkForce to prevent merge
   services.sing-box.settings = lib.mkForce (
     import (mylib.relativeToRoot "modules/common/_sing-box-client") {
@@ -61,7 +62,7 @@ in
         ;
       # Disable FakeIP-only mode as I run hostapd on this machine
       # isServer = true;
-      isRouter = true;
+      # isRouter = true;
     }
   );
   # Ref: https://wiki.archlinux.org/title/Sysctl#Change_TCP_keepalive_parameters
