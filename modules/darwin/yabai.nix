@@ -8,7 +8,6 @@
   services.yabai = {
     enable = true;
     config = {
-      # external_bar = "off:40:0";
       layout = "bsp";
       top_padding = 10;
       bottom_padding = 10;
@@ -32,7 +31,8 @@
       ''
         ${mod} - q : open -na Ghostty
         # Quick terminal
-        ${mod} - ` : osascript -lJavaScript ${
+        # TODO \` don't work
+        # ${mod} - \` : osascript -lJavaScript ${
           config.home-manager.users.${const.username}.xdg.configHome
         }/aerospace/ghostty-actions.js 2
         ${mod} - e : open ~
@@ -42,6 +42,7 @@
         ${mod} + shift - f : yabai -m window --toggle zoom-fullscreen
 
         # Toggle Floating
+        # 4:4:1:1:2:2 means cut screen into 4x4 grid, starting at coordinate (1,1), size 2x2
         ${mod} + alt - f : yabai -m window --toggle float --grid 4:4:1:1:2:2
 
         ${mod} - h : yabai -m window --focus west
