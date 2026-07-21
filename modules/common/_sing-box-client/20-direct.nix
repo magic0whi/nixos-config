@@ -13,8 +13,8 @@ let
   out = "Direct";
   direct_process.rules = [
     # Libvirt
-    # NOTE: `mylib.mkSbRules` don't support lib.mkIf attributes yet
-    (lib.optionalAttrs (config.virtualisation.libvirtd.enable && isLinux && (!isMobile)) {
+    # NOTE: `mylib.mkSbRules` doesn't support lib.mkIf attributes yet
+    (lib.optionalAttrs (isLinux && (!isMobile) && config.virtualisation.libvirtd.enable) {
       source_ip_cidr = [ const.networking.libvirtNetCidr ];
     })
     # Tor & I2P

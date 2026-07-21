@@ -144,10 +144,15 @@ lib.mkMerge (
               "100.64.0.0/10"
               "fd7a:115c:a1e0::/48"
               # I have custom NS setup, so I still need to specify here to prevent sing-box hijack my NS queries
-              config.vars.hostAddrs.${config.networking.hostName}.wire.ipv4
               "10.0.0.0/24"
               "fdfe:dcba:9877::/64"
             ]
+            ++ (
+              let
+                hostAddrs = config.vars.hostAddrs.${config.networking.hostName};
+              in
+              lib.optional (hostAddrs ? wire) hostAddrs.wire.ipv4
+            )
             # I have split DNS listen on 172.17.0.1 when docker is enabled
             ++ lib.optional (config.virtualisation.docker.enable or false) "172.17.0.1/32";
           })
