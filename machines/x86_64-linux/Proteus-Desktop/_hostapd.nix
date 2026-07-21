@@ -89,9 +89,11 @@ in
 
       dhcp-range =
         let
-          prefix = builtins.concatStringsSep "." (
-            lib.take 3 (lib.splitString "." config.vars.hostAddrs.Proteus-Desktop.wireless.ipv4)
-          );
+          prefix = lib.pipe config.vars.hostAddrs.Proteus-Desktop.wireless.ipv4 [
+            (lib.splitString ".")
+            (lib.take 3)
+            (builtins.concatStringsSep ".")
+          ];
         in
         [ "${prefix}.10,${prefix}.240,12h" ];
       # Tell DHCP clients to use 223.5.5.5 as their DNS server so sing-box can hijack

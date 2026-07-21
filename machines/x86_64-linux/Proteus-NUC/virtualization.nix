@@ -7,37 +7,45 @@
   ...
 }:
 let
-  libvirt_cidr = "192.168.122.0/24";
+  net_cidr = "192.168.122.0/24";
 
   # Libvirt network with PXE netbootxyz
-  net_cfg = {
-    name = "default";
-    uuid = "37176a39-9e69-4b64-a3b8-a83dc51f2f2c";
-    forward.mode = "nat";
-    bridge = {
-      name = "virbr0";
-      stp = true;
-      delay = 0;
-    };
-    ip = {
-      address = "192.168.122.1";
-      netmask = "255.255.255.0";
-      tftp.root = "/var/lib/libvirt/tftpboot";
-      dhcp.range = {
-        start = "192.168.122.2";
-        end = "192.168.122.254";
+  net_cfg =
+    let
+      prefix = lib.pipe net_cidr [
+        (lib.splitString ".")
+        (lib.take 3)
+        (builtins.concatStringsSep ".")
+      ];
+    in
+    {
+      name = "default";
+      uuid = "37176a39-9e69-4b64-a3b8-a83dc51f2f2c";
+      forward.mode = "nat";
+      bridge = {
+        name = "virbr0";
+        stp = true;
+        delay = 0;
       };
-    };
-    # Ref: https://wiki.archlinux.org/title/Dnsmasq#PXE_server
-    "dnsmasq:options"."dnsmasq:option" = [
-      { value = "dhcp-match=set:efi-x86_64,option:client-arch,7"; }
-      { value = "dhcp-match=set:efi-x86_64,option:client-arch,9"; }
-      { value = "dhcp-match=set:efi-aarch64,option:client-arch,11"; }
+      ip = {
+        address = "${prefix}.1";
+        netmask = "255.255.255.0";
+        tftp.root = "/var/lib/libvirt/tftpboot";
+        dhcp.range = {
+          start = "${prefix}.2";
+          end = "${prefix}.254";
+        };
+      };
+      # Ref: https://wiki.archlinux.org/title/Dnsmasq#PXE_server
+      "dnsmasq:options"."dnsmasq:option" = [
+        { value = "dhcp-match=set:efi-x86_64,option:client-arch,7"; }
+        { value = "dhcp-match=set:efi-x86_64,option:client-arch,9"; }
+        { value = "dhcp-match=set:efi-aarch64,option:client-arch,11"; }
 
-      { value = "dhcp-boot=tag:efi-x86_64,netbootxyz-x86_64.efi"; }
-      { value = "dhcp-boot=tag:efi-aarch64,netbootxyz-aarch64.efi"; }
-    ];
-  };
+        { value = "dhcp-boot=tag:efi-x86_64,netbootxyz-x86_64.efi"; }
+        { value = "dhcp-boot=tag:efi-aarch64,netbootxyz-aarch64.efi"; }
+      ];
+    };
 in
 {
   # virtualisation.waydroid.enable = true; # Usage: https://wiki.nixos.org/wiki/Waydroid
@@ -61,7 +69,7 @@ in
   ## BEGIN libvirtd.nix
   users.users.${const.username}.extraGroups = [ "libvirtd" ];
   networking.firewall.extraInputRules = lib.mkIf config.services.sing-box.enable ''
-    ip saddr ${libvirt_cidr} accept comment "Allow Libvirt to reach auto_redirect ports"
+    ip saddr ${net_cidr} accept comment "Allow Libvirt to reach auto_redirect ports"
   '';
   systemd.network = lib.mkIf (!config.services.sing-box.enable) {
     netdevs."20-macvtap0" = {
