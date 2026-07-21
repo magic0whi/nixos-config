@@ -7,12 +7,10 @@
   ...
 }:
 let
-  net_cidr = "192.168.122.0/24";
-
   # Libvirt network with PXE netbootxyz
   net_cfg =
     let
-      prefix = lib.pipe net_cidr [
+      prefix = lib.pipe const.networking.libvirtNetCidr [
         (lib.splitString ".")
         (lib.take 3)
         (builtins.concatStringsSep ".")
@@ -69,7 +67,7 @@ in
   ## BEGIN libvirtd.nix
   users.users.${const.username}.extraGroups = [ "libvirtd" ];
   networking.firewall.extraInputRules = lib.mkIf config.services.sing-box.enable ''
-    ip saddr ${net_cidr} accept comment "Allow Libvirt to reach auto_redirect ports"
+    ip saddr ${const.networking.libvirtNetCidr} accept comment "Allow Libvirt to reach auto_redirect ports"
   '';
   systemd.network = lib.mkIf (!config.services.sing-box.enable) {
     netdevs."20-macvtap0" = {

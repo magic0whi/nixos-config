@@ -20,10 +20,10 @@
         ]
       )
       {
-        # "sb_test.json" = {
-        #   sopsFile = "${const.secretsDir}/sb_test.json.sops";
-        #   format = "binary";
-        # };
+        "sb_test.json" = {
+          sopsFile = "${const.secretsDir}/sb_test.json.sops";
+          format = "binary";
+        };
         sb_nodes_anytls_password = { inherit sopsFile; };
         sb_nodes_reality_short_id = { inherit sopsFile; };
         sb_nodes_reality_pub_key = { inherit sopsFile; };
@@ -63,20 +63,20 @@
         enable = true;
         package = pkgs.sing-box-beta;
         # Full config.json encryption, to ease the debugging
-        # settings = {
-        #   _secret = config.sops.secrets."sb_test.json".path;
-        #   quote = false;
-        # };
-
-        settings = import ./_sing-box-client {
-          inherit
-            config
-            lib
-            mylib
-            const
-            pkgs
-            ;
+        settings = {
+          _secret = config.sops.secrets."sb_test.json".path;
+          quote = false;
         };
+
+        # settings = import ./_sing-box-client {
+        #   inherit
+        #     config
+        #     lib
+        #     mylib
+        #     const
+        #     pkgs
+        #     ;
+        # };
       };
     }
     (lib.optionalAttrs (!pkgs.stdenv.isDarwin) {

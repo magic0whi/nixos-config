@@ -104,4 +104,6 @@ in
 
   allHostAddrs = custom_module.vars.hostAddrs;
   inherit (custom_module.utils) findFirstHostBySubdomain findAllHostContains;
+
+  libvirtNetCidr = "192.168.122.0/24";
 }

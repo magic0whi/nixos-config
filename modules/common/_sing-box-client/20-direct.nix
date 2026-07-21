@@ -1,13 +1,22 @@
 # Shoud put before FakeIP; Clash Mode
 {
+  config,
+  const,
   lib,
   mylib,
   ruleSetCfg,
+  isLinux,
+  isMobile,
   ...
 }:
 let
   out = "Direct";
   direct_process.rules = [
+    # Libvirt
+    # NOTE: `mylib.mkSbRules` don't support lib.mkIf attributes yet
+    (lib.optionalAttrs (config.virtualisation.libvirtd.enable && isLinux && (!isMobile)) {
+      source_ip_cidr = [ const.networking.libvirtNetCidr ];
+    })
     # Tor & I2P
     {
       process_name = [
