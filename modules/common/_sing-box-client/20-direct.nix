@@ -12,11 +12,6 @@
 let
   out = "Direct";
   direct_process.rules = [
-    # Libvirt
-    # NOTE: `mylib.mkSbRules` doesn't support lib.mkIf attributes yet
-    (lib.optionalAttrs (isLinux && (!isMobile) && config.virtualisation.libvirtd.enable) {
-      source_ip_cidr = [ const.networking.libvirtNetCidr ];
-    })
     # Tor & I2P
     {
       process_name = [
@@ -42,7 +37,11 @@ let
       ];
     }
     { process_path_regex = [ ".*localsend.*" ]; }
-  ];
+  ]
+  # Libvirt
+  ++ lib.optional (isLinux && (!isMobile) && config.virtualisation.libvirtd.enable) {
+    source_ip_cidr = [ const.networking.libvirtNetCidr ];
+  };
   rules = [
     { domain_suffix = [ "syncthing.net" ]; }
     {

@@ -12,6 +12,8 @@ args@{
   ...
 }:
 let
+  # domestic_dns = "dns.alidns.com";
+  domestic_dns = "dot.pub";
   shared_cfg = {
     selectorCfg = {
       type = "selector";
@@ -34,7 +36,7 @@ let
         type = "tls";
       };
       direct = {
-        server = "dns.alidns.com";
+        server = domestic_dns;
         type = "tls";
         domain_resolver = "Bootstrap";
       };
@@ -69,7 +71,7 @@ lib.mkMerge (
             {
               tag = "Direct";
               type = "tls";
-              server = "dns.alidns.com";
+              server = "dot.pub";
               domain_resolver = "Bootstrap";
             }
             (
@@ -151,7 +153,7 @@ lib.mkMerge (
               let
                 hostAddrs = config.vars.hostAddrs.${config.networking.hostName};
               in
-              lib.optional (hostAddrs ? wire) hostAddrs.wire.ipv4
+              lib.optional (hostAddrs ? wire && hostAddrs.wire.ipv4 != null) hostAddrs.wire.ipv4
             )
             # I have split DNS listen on 172.17.0.1 when docker is enabled
             ++ lib.optional (config.virtualisation.docker.enable or false) "172.17.0.1/32";
