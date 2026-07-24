@@ -196,7 +196,7 @@ nodes:
 [group('homelab')]
 [linux]
 proteus-desktop:
-    deploy --skip-checks .#Proteus-Desktop -- --verbose --show-trace
+    deploy --skip-checks --auto-rollback false --magic-rollback false .#Proteus-Desktop -- --verbose --show-trace
 
 ############################################################################
 #
