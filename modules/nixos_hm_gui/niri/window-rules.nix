@@ -37,7 +37,7 @@ let
     {
       action = ''
         open-on-workspace "1terminal"
-        open-maximized true
+        // open-maximized true
         background-effect { blur true; }
       '';
       matches = [
