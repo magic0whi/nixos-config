@@ -71,15 +71,28 @@ in
     else
       null;
 
-  genDeployNode_unwrapped = deployLib: nics: nixosCfg: {
-    hostname = nics.easytier.ipv4NoCidr or nics.tailscale.ipv4NoCidr or nixosCfg.config.networking.hostName;
-    sshUser = "root";
-    interactiveSudo = false; # I use the root user to ssh deploy
-    profiles.system = {
-      path = deployLib.${nixosCfg.pkgs.stdenv.hostPlatform.system}.activate.nixos nixosCfg;
-      user = "root";
+  genDeployNode_unwrapped =
+    deployLib:
+    {
+      nics,
+      nixosCfg,
+      isDarwin ? false,
+    }:
+    {
+      hostname = nics.easytier.ipv4NoCidr or nics.tailscale.ipv4NoCidr or nixosCfg.config.networking.hostName;
+      sshUser = "root";
+      interactiveSudo = false; # I use the root user to ssh deploy
+      profiles.system = {
+        path =
+          deployLib.${nixosCfg.pkgs.stdenv.hostPlatform.system}.activate.${if isDarwin then "nixos" else "darwin"}
+            nixosCfg;
+        # if isDarwin then
+        #   deployLib.${nixosCfg.pkgs.stdenv.hostPlatform.system}.activate.nixos nixosCfg
+        # else
+        #   deployLib.${nixosCfg.pkgs.stdenv.hostPlatform.system}.activate.darwin nixosCfg;
+        user = "root";
+      };
     };
-  };
 
   mkCaddyVHost = rootPath: {
     listenAddresses = [

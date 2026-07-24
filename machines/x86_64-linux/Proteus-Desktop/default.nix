@@ -12,7 +12,7 @@
 }:
 let
   name = baseNameOf ./.;
-  nixos_cfg = nixpkgs.lib.nixosSystem (
+  nixosCfg = nixpkgs.lib.nixosSystem (
     mylib.genOsConfiguration {
       inherit
         name
@@ -48,6 +48,9 @@ let
 in
 {
   _DEBUG = { inherit name; };
-  nixos_configurations.${name} = nixos_cfg;
-  deploy_nodes.${name} = mylib.genDeployNode nixos_cfg.config.vars.hostAddrs.${name} nixos_cfg;
+  nixos_configurations.${name} = nixosCfg;
+  deploy_nodes.${name} = mylib.genDeployNode {
+    nics = nixosCfg.config.vars.hostAddrs.${name};
+    inherit nixosCfg;
+  };
 }

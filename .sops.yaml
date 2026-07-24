@@ -47,7 +47,9 @@ creation_rules:
           - *Proteus-NixOS-4
           - *Proteus-NixOS-5
   - path_regex: secrets/sb_test\.json\.sops$
-    key_groups: [{ pgp: [*openpgp], age: [*Proteus-NUC, *Proteus-MBP14M4P] }]
+    key_groups:
+      - pgp: [*openpgp]
+        age: [*Proteus-NUC, *Proteus-Desktop, *Proteus-MBP14M4P]
   ## END Common
   ## BEGIN GCP Compute Engines
   - path_regex: secrets/gcp\.sops\.yaml$

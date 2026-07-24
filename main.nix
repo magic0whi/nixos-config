@@ -71,7 +71,7 @@ in
           machine_blacklist = [ "Proteus-VF2" ];
         in
         lib.filterAttrs (name: _: !builtins.elem name machine_blacklist) (
-          lib.mergeAttrsList (map (i: i.deploy_nodes or { }) nixos_machines_values)
+          lib.mergeAttrsList (map (i: i.deploy_nodes or { }) (nixos_machines_values ++ darwin_machines_values))
         );
     };
   };

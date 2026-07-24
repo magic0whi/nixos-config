@@ -42,6 +42,10 @@ in
   inherit nixos_configurations;
   packages = builtins.mapAttrs (_: nixos_cfg: nixos_cfg.config.system.build.diskoImages) nixos_configurations;
   deploy_nodes = builtins.mapAttrs (
-    name: nixos_cfg: mylib.genDeployNode nixos_cfg.config.vars.hostAddrs.${name} nixos_cfg
+    name: nixosCfg:
+    mylib.genDeployNode {
+      nics = nixosCfg.config.vars.hostAddrs.${name};
+      inherit nixosCfg;
+    }
   ) nixos_configurations;
 }

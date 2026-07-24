@@ -28,7 +28,7 @@ let
     # "modules/nixos_headless/systemd-resolved.nix"
     # "modules/nixos_headless/traffic-quota.nix"
   ];
-  nixos_cfg = nixpkgs.lib.nixosSystem (
+  nixosCfg = nixpkgs.lib.nixosSystem (
     mylib.genOsConfiguration {
       inherit
         name
@@ -100,8 +100,11 @@ in
       modules
       ;
   };
-  nixos_configurations.${name} = nixos_cfg;
+  nixos_configurations.${name} = nixosCfg;
   # packages.${name} = nixos_sd_image.config.system.build.images.sd-card; # Generate iso image
   packages.${name} = nixos_sd_image.config.system.build.sdImage;
-  deploy_nodes.${name} = mylib.genDeployNode nixos_cfg.config.vars.hostAddrs.${name} nixos_cfg;
+  deploy_nodes.${name} = mylib.genDeployNode {
+    nics = nixosCfg.config.vars.hostAddrs.${name};
+    inherit nixosCfg;
+  };
 }
