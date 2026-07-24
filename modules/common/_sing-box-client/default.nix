@@ -141,6 +141,8 @@ lib.mkMerge (
           (lib.mkIf (!isMobile) {
             # sing-box will automatically bypass local NIC addresses to nftables with @inet4_local_address_set and
             # @inet6_local_address_set address set. NOTE: automatically added rules don't bypass DNS hijack
+            # Also note: these only exclude the target IP CIDR, if you add libvirt's net, DNS queries sent from VMs
+            # would still be hijacked by sing-box
             route_exclude_address = [
               # Tailscale has CIDR set to /32 /128, so I need to bypass correct CIDR maually
               "100.64.0.0/10"
@@ -149,6 +151,7 @@ lib.mkMerge (
               "10.0.0.0/24"
               "fdfe:dcba:9877::/64"
             ]
+            # Don't hijack DNS query to local NS
             ++ (
               let
                 hostAddrs = config.vars.hostAddrs.${config.networking.hostName};
