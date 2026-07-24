@@ -7,30 +7,43 @@
   ...
 }:
 {
-  sops.secrets =
-    let
-      sopsFile = "${const.secretsDir}/common.sops.yaml";
-    in
-    builtins.mapAttrs
-      (
-        _: secret:
-        lib.mkMerge [
-          secret
-          ((lib.optionalAttrs (!pkgs.stdenv.isDarwin)) { restartUnits = [ "sing-box.service" ]; })
-        ]
-      )
-      {
-        "sb_test.json" = {
-          sopsFile = "${const.secretsDir}/sb_test.json.sops";
-          format = "binary";
-        };
-        sb_nodes_anytls_password = { inherit sopsFile; };
-        sb_nodes_reality_short_id = { inherit sopsFile; };
-        sb_nodes_reality_pub_key = { inherit sopsFile; };
-        sb_nodes_server_name = { inherit sopsFile; };
-        sb_ts_auth_key = { inherit sopsFile; };
-        sb_subscribe_url = { inherit sopsFile; };
-      };
+  sops.secrets = lib.mkMerge (
+    lib.singleton (
+      let
+        sopsFile = "${const.secretsDir}/common.sops.yaml";
+      in
+      builtins.mapAttrs
+        (
+          _: secret:
+          lib.mkMerge [
+            secret
+            ((lib.optionalAttrs (!pkgs.stdenv.isDarwin)) { restartUnits = [ "sing-box.service" ]; })
+          ]
+        )
+        {
+          "sb_test.json" = {
+            sopsFile = "${const.secretsDir}/sb_test.json.sops";
+            format = "binary";
+          };
+          sb_nodes_anytls_password = { inherit sopsFile; };
+          sb_nodes_reality_short_id = { inherit sopsFile; };
+          sb_nodes_reality_pub_key = { inherit sopsFile; };
+          sb_nodes_server_name = { inherit sopsFile; };
+          sb_ts_auth_key = { inherit sopsFile; };
+          sb_subscribe_url = { inherit sopsFile; };
+        }
+    )
+    ++ (lib.optionals (!pkgs.stdenv.isDarwin) (
+      map (num: { "easytier_peer_${num}".restartUnits = [ "sing-box.service" ]; }) [
+        "0"
+        "1"
+        "2"
+        "3"
+        "4"
+        "5"
+      ]
+    ))
+  );
 
   services = lib.mkMerge [
     {

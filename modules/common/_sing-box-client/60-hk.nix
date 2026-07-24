@@ -7,6 +7,7 @@ let
       rule_set = [
         "geosite-hketgroup"
         "geosite-line"
+        "geosite-citic!cn"
       ];
     }
   ];
@@ -26,6 +27,10 @@ in
         {
           tag = "geosite-line";
           url = "${urlPrefix}/geo/geosite/line.srs";
+        }
+        {
+          tag = "geosite-citic!cn";
+          url = "${urlPrefix}/geo/geosite/citic@!cn.srs";
         }
       ];
     rules = mylib.mkSbRules false out rules;
