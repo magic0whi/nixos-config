@@ -27,18 +27,34 @@
   # };
   # networking.useDHCP = false; # cloud-init
   ## BEGIN ddclient.nix
-  sops.secrets.ddclient_namecheap_password = {
-    sopsFile = "${const.secretsDir}/common.sops.yaml";
-    restartUnits = [ "ddclient" ];
-  };
+  sops.secrets =
+    let
+      sharedCfg = {
+        sopsFile = "${const.secretsDir}/common.sops.yaml";
+        restartUnits = [ "ddclient.service" ];
+      };
+    in
+    {
+      ddclient_namecheap_password = sharedCfg;
+      ddclient_cloudflare_password = sharedCfg;
+    };
   services.ddclient = {
     enable = true;
-    protocol = "namecheap";
-    server = "dynamicdns.park-your-domain.com";
-    username = "proteus11451.online";
-    domains = [ config.networking.hostName ];
-    passwordFile = config.sops.secrets.ddclient_namecheap_password.path;
+    # Ref: https://ddclient.net/protocols.html
+    # protocol = "namecheap";
+    # server = "dynamicdns.park-your-domain.com";
+    # username = "proteus11451.online";
+    # domains = [ config.networking.hostName ];
+    # passwordFile = config.sops.secrets.ddclient_namecheap_password.path;
     usev6 = ""; # disable IPv6 since Namecheap DDNS does not support AAAA records
+
+    # Cloudflare setup
+    protocol = "cloudflare";
+    zone = "proteus11451.online";
+    username = "token";
+    # Profile -> API Tokens -> Create Token -> API token templates (Edit zone DNS)
+    passwordFile = config.sops.secrets.ddclient_cloudflare_password.path;
+    domains = [ "${lib.toLower config.networking.hostName}.proteus11451.online" ]; # Requires FQDN
   };
   ## END ddclient.nix
 }
