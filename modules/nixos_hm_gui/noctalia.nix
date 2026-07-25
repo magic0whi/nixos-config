@@ -184,6 +184,7 @@
       };
       nightLight = {
         enabled = true;
+        nightTemp = 2700;
         # manualSunrise = "06:30";
         # manualSunset = "18:30";
       };
