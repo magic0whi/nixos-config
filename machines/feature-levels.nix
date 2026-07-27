@@ -123,6 +123,7 @@
             sops-nix.homeModules.sops
             noctalia.homeModules.default
             niri-nix.homeModules.default
+            nixvim.homeModules.nixvim
           ]
           ++ map mylib.relativeToRoot [
             # "${headless}/debug.nix"
@@ -135,6 +136,7 @@
             "${headless}/ssh.nix"
             "${headless}/syncthing.nix"
             "${headless}/zellij.nix"
+            "${headless}/nvim"
 
             "${gui}/mpv.nix"
             "${gui}/misc.nix"

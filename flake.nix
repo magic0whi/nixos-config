@@ -41,10 +41,7 @@
     # Pinned as of 2026-06-05 18:14
     deploy-rs = {
       url = "github:magic0whi/deploy-rs/heitor-lassarote";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-compat.follows = "lanzaboote/pre-commit/flake-compat";
-      };
+      inputs.nixpkgs.follows = "nixpkgs";
     };
     # Pinned as of 2026-06-05 18:14
     nix-darwin = {
@@ -98,13 +95,15 @@
       inputs = {
         nixpkgs.follows = "nixpkgs";
         lix.follows = "lix";
-        flake-utils.inputs.systems.follows = "deploy-rs/utils/systems";
       };
     };
     # https://github.com/noctalia-dev/noctalia-qs/commits/master/
     noctalia-qs = {
       url = "github:noctalia-dev/noctalia-qs/d52844d40a697e47fea7bc0f1ec68aae9108ddf2";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        treefmt-nix.follows = "treefmt-nix";
+      };
     };
     noctalia = {
       url = "github:noctalia-dev/noctalia/v4.7.7";
@@ -128,7 +127,6 @@
         nixpkgs.follows = "nixpkgs";
         flake-parts.follows = "flake-parts";
         treefmt-nix.follows = "treefmt-nix";
-        systems.follows = "deploy-rs/utils/systems";
       };
     };
     dns = {
@@ -139,6 +137,17 @@
     NixVirt = {
       url = "github:AshleyYakeley/NixVirt/6d213ab42f72ba41c2eb4e6bdb97581c0642d942";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+    nixvim = {
+      url = "github:nix-community/nixvim/48409beb41e8e28b64e8160ca82d8a93fb628963";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    Neve = {
+      url = "github:redyf/Neve";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        nixvim.follows = "nixvim";
+      };
     };
   };
   outputs =

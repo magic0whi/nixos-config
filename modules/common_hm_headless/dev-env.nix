@@ -1,12 +1,5 @@
 { lib, pkgs, ... }:
 {
-  ## BEGIN neovim.nix
-  programs.neovim = {
-    enable = true;
-    viAlias = true;
-    vimAlias = true;
-  };
-  ## END neovim.nix
   ## BEGIN direnv.nix
   programs.direnv = {
     enable = true;
