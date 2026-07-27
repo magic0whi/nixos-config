@@ -100,7 +100,7 @@
       listchars = "eol:↲,tab:|->,lead:·,space: ,trail:•,extends:→,precedes:←,nbsp:␣";
 
       # More space in the neovim command line for displaying messages
-      cmdheight = 2;
+      # cmdheight = 2;
 
       # We don't need to see things like INSERT anymore
       showmode = false;
