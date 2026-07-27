@@ -23,7 +23,13 @@
       else
         pkgs.vscode;
     # Let vscode sync and update its configuration & extensions across devices, using github account
-    profiles.default.userSettings = { };
+    profiles.default.userSettings = {
+      "editor.wordWrap" = "on";
+      "editor.rulers" = [
+        80
+        120
+      ];
+    };
   };
   # programs.joplin-desktop.enable = true; # Note taking app, https://joplinapp.org/help/
   ## END vscode.nix
