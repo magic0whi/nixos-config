@@ -8,7 +8,7 @@
   nixpkgs,
   i915-sriov-dkms,
   NixVirt,
-  Neve,
+  nixvim,
   ...
 }:
 let
@@ -30,7 +30,7 @@ let
         dgpu_pci_ids = "0000:01:00.0";
       };
       overlays = with features; common.baseOverlays ++ nixos.seat.guiOverlays;
-      specialArgs = { inherit deploy-rs NixVirt Neve; };
+      specialArgs = { inherit deploy-rs NixVirt nixvim; };
       modules =
         (with features.common; base ++ seat ++ extra)
         ++ (with features.nixos; base ++ seat.tui ++ seat.gui ++ extra)

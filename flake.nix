@@ -140,14 +140,7 @@
     };
     nixvim = {
       url = "github:nix-community/nixvim/48409beb41e8e28b64e8160ca82d8a93fb628963";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    Neve = {
-      url = "github:redyf/Neve";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        nixvim.follows = "nixvim";
-      };
+      # inputs.nixpkgs.follows = "nixpkgs"; # nixvim recommend against using follows
     };
   };
   outputs =
