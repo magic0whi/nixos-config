@@ -5,6 +5,7 @@
   features,
   nix-darwin,
   deploy-rs,
+  nixvim,
   # system,
   ...
 }:
@@ -20,7 +21,7 @@ let
         ;
       overlays = with features; common.baseOverlays;
       machinePath = ./.;
-      specialArgs = { inherit deploy-rs; };
+      specialArgs = { inherit deploy-rs nixvim; };
       modules = (with features.common; base ++ seat ++ extra) ++ features.darwin;
       hmModules = (with features.hm.common; base ++ seat) ++ features.hm.darwin;
     }

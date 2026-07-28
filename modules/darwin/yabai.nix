@@ -29,13 +29,19 @@
         mod = "cmd";
       in
       ''
-        ${mod} - q : open -na Ghostty
+        ${mod} - q : osascript -lJavaScript ${
+          config.home-manager.users.${const.username}.xdg.configHome
+        }/aerospace/ghostty-actions.js 3
         # Quick terminal
-        # TODO \` don't work
-        # ${mod} - \` : osascript -lJavaScript ${
+        ${mod} - 0x32 : osascript -lJavaScript ${
           config.home-manager.users.${const.username}.xdg.configHome
         }/aerospace/ghostty-actions.js 2
-        ${mod} - e : open ~
+        # The ~ operator tells the hotkey is unbound
+        # NOTE `open ~` means launch file manager at ~/
+        ${mod} - e [
+          "KeePassXC" ~
+          * : open ~
+        ]
         ${mod} - space : open -a Raycast
 
         ${mod} + shift - w : yabai -m window --close
