@@ -127,7 +127,10 @@
     # A command-line fuzzy finder. Interactively filter its input using fuzzy searching, not limit to filenames.
     fzf = {
       enable = true;
-      defaultOptions = [ "-m" ];
+      defaultOptions = [
+        "--multi"
+        ''--bind=\"ctrl-a:select-all\"''
+      ];
       defaultCommand = "rg --files"; # Using `ripgrep` in `fzf`
     };
     # zoxide is a smarter cd command, inspired by z and autojump.
