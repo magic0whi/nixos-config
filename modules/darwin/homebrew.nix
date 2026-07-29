@@ -84,7 +84,7 @@ in
 
       # Misc
       # "tencent-lemon" # macOS cleaner
-      "neteasemusic" # music
+      # "neteasemusic" # music
       # "mihomo-party" # transparent proxy tool
       "obs"
       # "ibkr"
