@@ -15,7 +15,10 @@
         "${common}/shell.nix"
         "${common}/tailscale.nix"
       ];
-      baseOverlays = [ inputs.prince213-nix-packages.overlays.default ];
+      baseOverlays = with inputs; [
+        prince213-nix-packages.overlays.default
+        helix.overlays.default
+      ];
       seat = map mylib.relativeToRoot [
         "${common}/sing-box-subscribe.nix"
         "${common}/sing-box-client.nix"

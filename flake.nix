@@ -142,6 +142,10 @@
       url = "github:nix-community/nixvim/48409beb41e8e28b64e8160ca82d8a93fb628963";
       # inputs.nixpkgs.follows = "nixpkgs"; # nixvim recommend against using follows
     };
+    helix = {
+      url = "github:helix-editor/helix/079a789e8cb08ead67f19e1971a1b7438b37354b";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
   outputs =
     inputs:
