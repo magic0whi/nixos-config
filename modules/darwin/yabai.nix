@@ -73,7 +73,11 @@
 
         # Focus Workspace
         ${mod} - tab : yabai -m space --focus recent
-        ${mod} - n : yabai -m space --focus next
+        ${mod} - n [
+          "KeePassXC" ~
+          * : yabai -m space --focus next
+        ]
+
         ${mod} - p : yabai -m space --focus prev
 
         ${lib.concatLines (
@@ -92,7 +96,10 @@
 
         ## Resizing
         # Balance out layout
-        ${mod} - b : yabai -m space --balance
+        ${mod} - b [
+          "KeePassXC" ~
+          * : yabai -m space --balance
+        ]
         ${mod} + alt - h : yabai -m window --resize left:-20:0  || yabai -m window --resize right:-20:0
         ${mod} + alt - j : yabai -m window --resize bottom:0:20 || yabai -m window --resize top:0:20
         ${mod} + alt - k : yabai -m window --resize top:0:-20   || yabai -m window --resize bottom:0:-20
