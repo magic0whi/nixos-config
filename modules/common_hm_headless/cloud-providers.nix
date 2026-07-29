@@ -30,7 +30,7 @@
   # Add plugin terraform-provider-google for `terraformer`
   home.file =
     let
-      arch = "linux_amd64";
+      arch = "${pkgs.go.GOOS}_${pkgs.go.GOARCH}";
       version = "7.31.0";
       provider = pkgs.terraform-providers.hashicorp_google.overrideAttrs (_: {
         inherit version;

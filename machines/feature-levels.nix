@@ -140,6 +140,7 @@
             "${headless}/syncthing.nix"
             "${headless}/zellij.nix"
             "${headless}/nvim"
+            "${headless}/cloud-providers.nix"
 
             "${gui}/mpv.nix"
             "${gui}/misc.nix"
