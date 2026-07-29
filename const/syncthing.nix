@@ -14,6 +14,7 @@ let
   device = rec {
     # Filter out self
     darwins.Proteus-MBP14M4P.id = "UF2KT6R-ISVDLBM-UJW3JKP-YZJTOES-7K55HS2-IGPE5MQ-OO4D6HK-LZRSLAE";
+    # Before filter
     _desktops = darwins // {
       Proteus-NUC.id = "3P2RWV6-RQMHBFS-L3Z5JTF-O6HOR66-7INJZNM-XW3WUSG-XCIB454-UITNPAF";
     };
@@ -70,6 +71,10 @@ in
             (lib.mkIf (builtins.elem hostname (builtins.attrNames device._desktops)) {
               Projects-Ref = {
                 path = lib.mkDefault "${prefix}/Projects-Ref/";
+                devices = desktops;
+              };
+              Re2026Jul26 = {
+                path = lib.mkDefault "${prefix}/Re2026Jul26/";
                 devices = desktops;
               };
             })
