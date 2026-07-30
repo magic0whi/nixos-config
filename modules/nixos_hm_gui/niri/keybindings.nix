@@ -97,7 +97,7 @@ in
       XF86Search hotkey-overlay-title="Open Menu" { spawn ${noctalia_prefix} "launcher" "toggle"; }
 
       // Window management
-      F12 repeat=false { toggle-overview; }
+      F11 repeat=false { toggle-overview; }
       Mod+W repeat=false { close-window; }
       Mod+F { maximize-column; }
       Mod+Shift+F hotkey-overlay-title="Fullscreen Column" { fullscreen-window; }
