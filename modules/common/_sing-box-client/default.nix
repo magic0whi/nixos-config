@@ -21,6 +21,7 @@ let
         "Direct"
         "Default"
         "Auto"
+        "Block"
       ]
       # Regions
       ++ (map (outbound: outbound.tag)
@@ -189,6 +190,10 @@ lib.mkMerge (
         {
           tag = "Direct";
           type = "direct";
+        }
+        {
+          tag = "Block";
+          type = "block";
         }
         (
           (shared_cfg.selectorCfg // { outbounds = lib.remove "Default" shared_cfg.selectorCfg.outbounds; })

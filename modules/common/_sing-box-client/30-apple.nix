@@ -9,25 +9,52 @@
 let
   out = "Apple";
   rules = [ { rule_set = [ "geosite-apple" ]; } ];
+  out2 = "AppleUpdate";
+  rules2 = [ { rule_set = [ "geosite-apple-update" ]; } ];
 in
 {
   dns = {
-    servers = lib.singleton (
-      dnsServerCfg.default
+    servers = [
+      (
+        dnsServerCfg.default
+        // {
+          tag = out;
+          detour = out;
+        }
+      )
+      (
+        dnsServerCfg.direct
+        // {
+          tag = out2;
+          detour = out2;
+        }
+      )
+    ];
+    rules =
+      let
+        mkSbRules = mylib.mkSbRules true;
+      in
+      lib.mkMerge [
+        (mkSbRules out2 rules2)
+        (mkSbRules out rules)
+      ];
+  };
+  outbounds = [
+    (
+      selectorCfg
       // {
         tag = out;
-        detour = out;
+        default = "Direct";
       }
-    );
-    rules = mylib.mkSbRules true out rules;
-  };
-  outbounds = lib.singleton (
-    selectorCfg
-    // {
-      tag = out;
-      default = "Direct";
-    }
-  );
+    )
+    (
+      selectorCfg
+      // {
+        tag = out2;
+        default = "Block";
+      }
+    )
+  ];
   route = {
     rule_set =
       let
@@ -42,6 +69,10 @@ in
           tag = "geosite-apple";
           url = "${urlPrefix}/geo/geosite/apple.srs";
         }
+        {
+          tag = "geosite-apple-update";
+          url = "${urlPrefix}/geo/geosite/apple-update.srs";
+        }
       ];
     rules = lib.mkMerge (
       let
@@ -49,6 +80,7 @@ in
       in
       [
         (lib.mkBefore (mkSbRules out [ { rule_set = [ "geoip-apple" ]; } ]))
+        (lib.mkOrder 800 (mkSbRules out2 rules2))
         (mkSbRules out rules)
       ]
     );
