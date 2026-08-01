@@ -5,6 +5,8 @@
   ...
 }:
 {
+  # Fix: show desktop interrupts Yabai's focus command
+  system.defaults.WindowManager.EnableStandardClickToShowDesktop = false;
   services.yabai = {
     enable = true;
     config = {
@@ -69,7 +71,10 @@
         ${mod} + shift - l : yabai -m window --warp east
 
         ${mod} + shift - n : yabai -m window --space next; yabai -m space --focus next
-        ${mod} + shift - p : yabai -m window --space prev; yabai -m space --focus prev
+        ${mod} + shift - p [
+          "Code" ~
+          * : yabai -m window --space prev; yabai -m space --focus prev
+        ]
 
         # Focus Workspace
         ${mod} - tab : yabai -m space --focus recent

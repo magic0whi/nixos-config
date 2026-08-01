@@ -81,7 +81,9 @@
             "${mod}-shift-0" = "move-node-to-workspace 0";
 
             "${mod}-shift-semicolon" = "mode service"; # Ref: https://nikitabobko.github.io/AeroSpace/commands#mode
+            "${mod}-shift-p" = "mode passthrough";
           };
+          passthrough.binding.esc = [ "mode main" ];
           # Ref: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
           service.binding = {
             esc = [
@@ -132,12 +134,23 @@
             esc = "mode main";
           };
         };
-      workspace-to-monitor-force-assignment = {
-        "1" = [ "Built-in Retina Display" ];
-        "2" = [ "Built-in Retina Display" ];
-        "3" = [ "Built-in Retina Display" ];
-        "4" = [ "Built-in Retina Display" ];
-      };
+      workspace-to-monitor-force-assignment =
+        let
+          internal = "Built-in Retina Display";
+          external = "RTK UHD HDR";
+        in
+        {
+          "1" = [ internal ];
+          "2" = [ internal ];
+          "3" = [ internal ];
+          "4" = [ internal ];
+          "5" = [ internal ];
+          "6" = [ external ];
+          "7" = [ external ];
+          "8" = [ external ];
+          "9" = [ external ];
+          "0" = [ external ];
+        };
       on-window-detected = [
         {
           "if".app-id = "io.mpv";
