@@ -109,6 +109,14 @@ in
     }
   ];
 
+  # NOTE: use datadir on another storage device would causes override.config.php being GCed
+  # Ref: https://github.com/NixOS/nixpkgs/issues/356973#issuecomment-3086117184
+  fileSystems."/var/lib/nextcloud" = {
+    device = "${const.storagePath}/nextcloud";
+    options = [ "bind" ];
+    fsType = "auto";
+  };
+
   services.nextcloud = {
     enable = true;
     # package = pkgs.nextcloud33;
@@ -116,7 +124,10 @@ in
     # https = true;
 
     # home = "/srv/nextcloud";
-    datadir = "${const.storagePath}/nextcloud";
+
+    # NOTE: use datadir on another storage device would causes override.config.php being GCed
+    # Ref: https://github.com/NixOS/nixpkgs/issues/356973#issuecomment-3086117184
+    # datadir = "${const.storagePath}/nextcloud";
 
     config = {
       dbtype = "pgsql";
