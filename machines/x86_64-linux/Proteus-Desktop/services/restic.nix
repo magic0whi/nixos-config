@@ -41,7 +41,7 @@ in
       repository = "s3:${hostname_s3_main}.s3.${const.domain}:8443/backups/${hostname}";
       extraOptions = [ "s3.region=${machine_cfg_s3_main.services.garage.settings.s3_api.s3_region}" ];
       timerConfig = {
-        OnCalendar = "Mon 03:00";
+        OnCalendar = "*-*-02 03:00";
         # RandomizedDelaySec = "30m"; # Jitter
         Persistent = false; # Run immediately if system was off at scheduled time
       };
