@@ -69,52 +69,52 @@ in
       AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE = config.sops.secrets."authelia_ldap_password".path;
     };
     # https://github.com/authelia/authelia/blob/8a7b642dd78f29c76d126b6f53806472b2a360bd/config.template.yml
-    settings = {
-      log.level = "warn"; # Default: info
-      theme = "auto";
-      default_2fa_method = "totp";
-      server = {
-        address = "tcp://127.0.0.1:9092"; # Use the new server.address syntax required by the module
-        timeouts = {
-          read = "120s";
-          write = "120s";
+    settings =
+      let
+        base_dn = "dc=" + builtins.replaceStrings [ "." ] [ ",dc=" ] const.domain;
+      in
+      {
+        log.level = "warn"; # Default: info
+        theme = "auto";
+        default_2fa_method = "totp";
+        server = {
+          address = "tcp://127.0.0.1:9092"; # Use the new server.address syntax required by the module
+          timeouts = {
+            read = "120s";
+            write = "120s";
+          };
         };
-      };
-      # Default: https://www.authelia.com/reference/guides/proxy-authorization/#default-endpoints
-      # Config Ref: https://www.authelia.com/configuration/miscellaneous/server-endpoints-authz/#schemes
-      # endpoints.authz.forward-auth = { };
-      session.cookies = [
-        {
-          # This allows the login cookie to work across all your subdomains
-          inherit (const) domain;
-          authelia_url = "https://auth.${const.domain}";
-          same_site = "lax";
-          inactivity = "5 minutes";
-          expiration = "1 hour";
-          remember_me = "1 month";
-        }
-      ];
-      session.redis.host = config.services.redis.servers.authelia.unixSocket;
-      storage.postgres = {
-        # Unix socket if psql is on the same machines
-        address =
-          if hostname == hostname_psql then
-            "unix:///run/postgresql/.s.PGSQL.${toString config.services.postgresql.settings.port}"
-          else
-            "tcp://psql.${const.domain}:${toString config.services.postgresql.settings.port}";
-        # tls.minimum_version = "TLS1.3";
-        database = config.services.authelia.instances.main.user;
-        schema = "public";
-        username = config.services.authelia.instances.main.user;
-        # Password is injected via environment variable
-      };
-      notifier.filesystem.filename = "/var/lib/authelia-main/emails.txt"; # TODO use real email
-      authentication_backend = {
-        ldap =
-          let
-            base_dn = "dc=" + builtins.replaceStrings [ "." ] [ ",dc=" ] const.domain;
-          in
+        # Default: https://www.authelia.com/reference/guides/proxy-authorization/#default-endpoints
+        # Config Ref: https://www.authelia.com/configuration/miscellaneous/server-endpoints-authz/#schemes
+        # endpoints.authz.forward-auth = { };
+        session.cookies = [
           {
+            # This allows the login cookie to work across all your subdomains
+            inherit (const) domain;
+            authelia_url = "https://auth.${const.domain}";
+            same_site = "lax";
+            inactivity = "5 minutes";
+            expiration = "1 hour";
+            remember_me = "1 month";
+          }
+        ];
+        session.redis.host = config.services.redis.servers.authelia.unixSocket;
+        storage.postgres = {
+          # Unix socket if psql is on the same machines
+          address =
+            if hostname == hostname_psql then
+              "unix:///run/postgresql/.s.PGSQL.${toString config.services.postgresql.settings.port}"
+            else
+              "tcp://psql.${const.domain}:${toString config.services.postgresql.settings.port}";
+          # tls.minimum_version = "TLS1.3";
+          database = config.services.authelia.instances.main.user;
+          schema = "public";
+          username = config.services.authelia.instances.main.user;
+          # Password is injected via environment variable
+        };
+        notifier.filesystem.filename = "/var/lib/authelia-main/emails.txt"; # TODO use real email
+        authentication_backend = {
+          ldap = {
             implementation = "custom";
             address = "ldaps://ldap.${const.domain}:636";
             # password = "password"; # Password is injected via environment variable
@@ -139,45 +139,46 @@ in
               # extra.homeDirectory ={name = "home_directory"; value_type = "string";};
             };
           };
-      };
-      access_control = {
-        # NOTE: Orders does matter
-        rules = [
-          {
-            policy = "bypass";
-            domain = "syncthing.${const.domain}";
-            resources = [ "^/rest/noauth/.*$" ];
-          }
-          {
-            policy = "one_factor";
-            domain = "*.${const.domain}";
-          }
-        ];
-        default_policy = "deny";
-      };
-      identity_providers.oidc = {
-        cors = {
-          endpoints = [
-            "authorization"
-            "token"
-            "revocation"
-            "introspection"
-            "userinfo"
-          ];
         };
-        # Map the custom claim policy, ref:
-        # https://www.authelia.com/integration/openid-connect/openid-connect-1.0-claims/#custom-claims
-        # claims_policies = { };
+        access_control = {
+          # NOTE: Orders does matter
+          rules = [
+            {
+              policy = "bypass";
+              domain = "syncthing.${const.domain}";
+              resources = [ "^/rest/noauth/.*$" ];
+            }
+            {
+              policy = "one_factor";
+              domain = "*.${const.domain}";
+              subject = [ [ "group:admins" ] ];
+            }
+          ];
+          default_policy = "deny";
+        };
+        identity_providers.oidc = {
+          cors = {
+            endpoints = [
+              "authorization"
+              "token"
+              "revocation"
+              "introspection"
+              "userinfo"
+            ];
+          };
+          # Map the custom claim policy, ref:
+          # https://www.authelia.com/integration/openid-connect/openid-connect-1.0-claims/#custom-claims
+          # claims_policies = { };
 
-        # https://www.authelia.com/configuration/identity-providers/openid-connect/clients/
-        # TIP: to generate client_secret:
-        # `nix run nixpkgs#authelia -- crypto rand --length 64 --charset alphanumeric`
-        # `nix run nixpkgs#authelia -- crypto hash generate pbkdf2 --variant sha512 --password "$(systemd-ask-password)"`
-        # To verify the PBKDF2 digest, run
-        # `nix run nixpkgs#authelia -- crypto hash validate --password "$(systemd-ask-password)" '$pbkdf2-sha512$310000$...'`
-        # clients = [ ]; # Splited to standalone nix files
+          # https://www.authelia.com/configuration/identity-providers/openid-connect/clients/
+          # TIP: to generate client_secret:
+          # `nix run nixpkgs#authelia -- crypto rand --length 64 --charset alphanumeric`
+          # `nix run nixpkgs#authelia -- crypto hash generate pbkdf2 --variant sha512 --password "$(systemd-ask-password)"`
+          # To verify the PBKDF2 digest, run
+          # `nix run nixpkgs#authelia -- crypto hash validate --password "$(systemd-ask-password)" '$pbkdf2-sha512$310000$...'`
+          # clients = [ ]; # Splited to standalone nix files
+        };
       };
-    };
   };
 
   services.traefik = {
