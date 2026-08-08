@@ -146,6 +146,14 @@
       url = "github:helix-editor/helix/079a789e8cb08ead67f19e1971a1b7438b37354b";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    dev-flake = {
+      url = "github:magic0whi/dev_flake";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        treefmt-nix.follows = "treefmt-nix";
+        flake-parts.follows = "flake-parts";
+      };
+    };
   };
   outputs =
     inputs:

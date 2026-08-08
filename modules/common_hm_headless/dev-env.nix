@@ -1,4 +1,9 @@
-{ lib, pkgs, ... }:
+{
+  lib,
+  pkgs,
+  dev-flake,
+  ...
+}:
 {
   ## BEGIN direnv.nix
   programs.direnv = {
@@ -51,6 +56,7 @@
       taplo # TOML LSP
       kdlfmt
     ])
+    ++ (with dev-flake.devShells.${pkgs.stdenv.system}.latex; nativeBuildInputs ++ buildInputs)
     # NOTE: Requires bootstrap GHC
     ++ lib.optionals (!pkgs.stdenv.hostPlatform.isRiscV64) [ pkgs.marksman ];
   ## END lsp.nix

@@ -34,8 +34,6 @@
       # insomnia # REST client
       # wireshark # Network analyzer
 
-      nuclear
-
       # Video/audio tools
       # cava # For visualizing audio
     ])
@@ -60,7 +58,12 @@
       with pkgs;
       [
         blender # 3D modeling, currently broken on darwin
-        inkscape # Vector graphics
+
+        # Vector graphics
+        (inkscape-with-extensions.override {
+          inkscapeExtensions = with inkscape-extensions; [ textext ];
+        })
+
         super-productivity
       ]
     );

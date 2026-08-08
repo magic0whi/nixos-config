@@ -80,6 +80,32 @@
         "type": "github"
       }
     },
+    "dev-flake": {
+      "inputs": {
+        "flake-parts": [
+          "flake-parts"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "treefmt-nix": [
+          "treefmt-nix"
+        ]
+      },
+      "locked": {
+        "lastModified": 1783585255,
+        "narHash": "sha256-VDO6Lb20nQ3hYuJzusGy1H8q8AW7BiqabVC+SD+sY4U=",
+        "owner": "magic0whi",
+        "repo": "dev_flake",
+        "rev": "2fa4674ac80e9a62840f7385cb7c7c85007e73a1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "magic0whi",
+        "repo": "dev_flake",
+        "type": "github"
+      }
+    },
     "disko": {
       "inputs": {
         "nixpkgs": [
@@ -909,6 +935,7 @@
         "NixVirt": "NixVirt",
         "catppuccin": "catppuccin",
         "deploy-rs": "deploy-rs",
+        "dev-flake": "dev-flake",
         "disko": "disko",
         "dns": "dns",
         "flake-parts": "flake-parts",

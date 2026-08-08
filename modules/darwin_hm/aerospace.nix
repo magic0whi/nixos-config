@@ -25,6 +25,7 @@
             "${mod}-q" = "exec-and-forget osascript -lJavaScript ${config.xdg.configHome}/aerospace/ghostty-actions.js 3";
             "${mod}-shift-q" = "exec-and-forget osascript -lJavaScript ${config.xdg.configHome}/aerospace/ghostty-actions.js 2";
             "${mod}-alt-q" = "exec-and-forget osascript -lJavaScript ${config.xdg.configHome}/aerospace/ghostty-actions.js 1";
+            "${mod}-e" = "exec-and-forget open ~";
 
             # Run Finder
             "${mod}-alt-e" = "exec-and-forget osascript -lJavaScript ${config.xdg.configHome}/aerospace/finder-actions.js 2";
