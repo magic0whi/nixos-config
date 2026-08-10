@@ -95,21 +95,19 @@
     (lib.optionalAttrs (!pkgs.stdenv.isDarwin) {
       networkd-dispatcher = {
         enable = true;
-        rules = {
-          restart-sing-box = {
-            onState = [ "routable" ];
-            # Ref: https://manpages.debian.org/testing/networkd-dispatcher/networkd-dispatcher.8.en.html
-            script = ''
-              # shellcheck disable=SC2154
-              if [[ $IFACE == "${
-                config.vars.hostAddrs.${config.networking.hostName}.wire.name
-              }" && $AdministrativeState == "configured" ]]; then
-                echo "Restarting Tor ..."
-                systemctl restart tor
-              fi
-              exit 0
-            '';
-          };
+        rules.restart-sing-box = {
+          onState = [ "routable" ];
+          # Ref: https://manpages.debian.org/testing/networkd-dispatcher/networkd-dispatcher.8.en.html
+          script = ''
+            # shellcheck disable=SC2154
+            if [[ $IFACE == "${
+              config.vars.hostAddrs.${config.networking.hostName}.wire.name
+            }" && $AdministrativeState == "configured" ]]; then
+              echo "Restarting sing-box ..."
+              systemctl restart sing-box.service
+            fi
+            exit 0
+          '';
         };
       };
     })
