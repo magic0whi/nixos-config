@@ -25,7 +25,10 @@
         "${common}/fonts.nix"
         "${common}/packages.nix"
       ];
-      extra = map mylib.relativeToRoot [ "${common}/ssh.nix" ];
+      extra = map mylib.relativeToRoot [
+        "${common}/sing-box-client-mobile.nix"
+        "${common}/ssh.nix"
+      ];
       services = map mylib.relativeToRoot [ "modules/services/sing-box.nix" ];
     };
 
@@ -86,6 +89,7 @@
         "${headless}/power-mgmt.nix"
         "${headless}/remote-build.nix"
         "${headless}/secureboot.nix"
+        "${headless}/sing-box-client-mobile.nix"
         "${headless}/zfs.nix"
         "${gui}/peripherals.nix"
         "${gui}/bluetooth.nix"

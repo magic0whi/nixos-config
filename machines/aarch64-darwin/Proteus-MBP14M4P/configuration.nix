@@ -16,6 +16,9 @@
         ipv6 = "fdfe:dcba:9877::4/64";
       };
     };
+
+  services.sing-box.generateMobileConfig.enable = true;
+
   # launchd.daemons.tailscaled.serviceConfig = {
   #   StandardErrorPath = "/Library/Logs/com.tailscale.ipn.stderr.log";
   #   StandardOutPath = "/Library/Logs/com.tailscale.ipn.stdout.log";

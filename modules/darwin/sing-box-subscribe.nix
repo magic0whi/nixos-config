@@ -10,9 +10,6 @@ in
 {
   config = lib.mkIf cfg.enable {
     launchd.daemons.sing-box.script = toString (
-      let
-        cfg = config.services.sing-box.subscribe;
-      in
       pkgs.writeShellScript "sing-box-subscribe" ''
         set -euo pipefail
         PATH="${pkgs.gawk}/bin":$PATH
