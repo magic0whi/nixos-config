@@ -68,6 +68,7 @@
       # openfpgaloader # FPGA programming
 
       # AI Related
+      claude-code
       # python313Packages.huggingface-hub # huggingface-cli
 
       # Misc

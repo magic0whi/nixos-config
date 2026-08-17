@@ -47,10 +47,10 @@ in
     # your apple account have records for them. otherwise Apple Store will refuse to install them. For details, see
     # https://github.com/mas-cli/mas
     # masApps = {
-    #   "Microsoft Excel" = 462058435;
+    #   # "Microsoft Excel" = 462058435;
     #   "Microsoft Outlook" = 985367838;
-    #   "Microsoft PowerPoint" = 462062816;
-    #   "Microsoft Word" = 462054704;
+    #   # "Microsoft PowerPoint" = 462062816;
+    #   # "Microsoft Word" = 462054704;
     #   OneDrive = 823766827;
     #   # QQ = 451108668;
     #   Telegram = 747648890; # Can be managed by home-manager (home-manager's version crash when sending image)
