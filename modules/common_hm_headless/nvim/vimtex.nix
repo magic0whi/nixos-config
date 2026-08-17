@@ -4,8 +4,6 @@
       enable = true;
 
       settings = {
-        view_method = "zathura";
-
         quickfix_enabled = true;
         quickfix_open_on_warning = false;
 
