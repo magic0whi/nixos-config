@@ -135,6 +135,7 @@
           ++ map mylib.relativeToRoot [
             # "${headless}/debug.nix"
             "${headless}/dev-env.nix"
+            "${headless}/claude-code"
             "${headless}/file_sharing.nix"
             "${headless}/git.nix"
             "${headless}/gpg.nix"
