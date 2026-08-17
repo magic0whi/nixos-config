@@ -158,7 +158,18 @@ deploy +names:
     for name in {{ names }}; do
         targets="$targets .#$name"
     done
-    deploy --skip-checks --auto-rollback false --magic-rollback false --targets $targets -- --verbose --show-trace
+    deploy --skip-checks --auto-rollback false --magic-rollback false \
+        --targets $targets -- --verbose --show-trace
+
+[macos]
+deploy +names:
+    #!/usr/bin/env bash
+    targets=""
+    for name in {{ names }}; do
+        targets="$targets .#$name"
+    done
+    deploy --skip-checks --auto-rollback false --magic-rollback false \
+      --remote-build --targets $targets -- --verbose --show-trace
 
 # Local switch
 [group('homelab')]
