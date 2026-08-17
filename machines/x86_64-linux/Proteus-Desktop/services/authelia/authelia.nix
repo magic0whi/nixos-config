@@ -150,6 +150,19 @@ in
             }
             {
               policy = "one_factor";
+              domain = [
+                "prometheus.${const.domain}"
+                "*.exporter.${const.domain}"
+              ];
+              subject = [ [ "user:prometheus" ] ];
+            }
+            {
+              policy = "one_factor";
+              domain_regex = "'^admin-api.*\\.garage\\.${lib.escapeRegex const.domain}$'";
+              resources = [ "^/metrics$" ];
+            }
+            {
+              policy = "one_factor";
               domain = "*.${const.domain}";
               subject = [ [ "group:admins" ] ];
             }
