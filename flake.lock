@@ -66,17 +66,17 @@
         "utils": "utils"
       },
       "locked": {
-        "lastModified": 1780651366,
-        "narHash": "sha256-Fj1Td/CPGBLtttlufkBcABPGX6gq2M/M1LAMHgDg0i8=",
-        "owner": "magic0whi",
+        "lastModified": 1786361680,
+        "narHash": "sha256-IxaZkb9rCGEZ+yGndxKXONeIEcKMzoFUsvLTB5G/caw=",
+        "owner": "serokell",
         "repo": "deploy-rs",
-        "rev": "bb43e402c802e73bfce4b66a34db2c26bf31a127",
+        "rev": "16901271e5b30b591e56f7a84f25f186fb20f3e1",
         "type": "github"
       },
       "original": {
-        "owner": "magic0whi",
-        "ref": "heitor-lassarote",
+        "owner": "serokell",
         "repo": "deploy-rs",
+        "rev": "16901271e5b30b591e56f7a84f25f186fb20f3e1",
         "type": "github"
       }
     },

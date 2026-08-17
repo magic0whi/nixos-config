@@ -40,7 +40,7 @@
     };
     # Pinned as of 2026-06-05 18:14
     deploy-rs = {
-      url = "github:magic0whi/deploy-rs/heitor-lassarote";
+      url = "github:serokell/deploy-rs/16901271e5b30b591e56f7a84f25f186fb20f3e1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # Pinned as of 2026-06-05 18:14
