@@ -1,4 +1,9 @@
-{ config, const, ... }:
+{
+  config,
+  const,
+  lib,
+  ...
+}:
 {
   # DEBUG
   boot.initrd.systemd.emergencyAccess = const.initial_hashed_password;
@@ -14,8 +19,24 @@
     serviceConfig.Type = "oneshot";
     script =
       let
-        # NOTE: the root subvolume name should match the one in disko-config.nix
-        root_subvol = "@root";
+        subvolumes = config.disko.devices.disk.main.content.partitions.root.content.content.subvolumes;
+
+        root_subvol = lib.pipe subvolumes [
+          (lib.filterAttrs (_: sv: sv.mountpoint == "/"))
+          builtins.attrNames
+          builtins.head
+        ];
+
+        # Every other subvolume (/nix, /home, /persistent, ...) is mounted under
+        # the pristine root, so its mount point must already exist inside the
+        # freshly-created (empty) root subvolume.
+        bootMountDirs = lib.pipe subvolumes [
+          builtins.attrValues
+          (map (sv: sv.mountpoint))
+          (builtins.filter (mp: mp != null && mp != "/"))
+          (map (mp: "/btrfs_tmp/${root_subvol}${mp}"))
+          (builtins.concatStringsSep " ")
+        ];
       in
       ''
         set -euo pipefail
@@ -36,6 +57,9 @@
 
         echo "Creating new pristine root subvolume..."
         btrfs subvolume create /btrfs_tmp/${root_subvol}
+
+        echo "Recreating mount points inside the pristine root..."
+        mkdir -p ${bootMountDirs}
 
         umount /btrfs_tmp
         rmdir /btrfs_tmp
