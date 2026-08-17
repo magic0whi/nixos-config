@@ -158,7 +158,7 @@ in
             }
             {
               policy = "one_factor";
-              domain_regex = "'^admin-api.*\\.garage\\.${lib.escapeRegex const.domain}$'";
+              domain_regex = ''^admin-api.*\.garage\.${lib.escapeRegex const.domain}$'';
               resources = [ "^/metrics$" ];
             }
             {

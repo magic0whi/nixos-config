@@ -180,7 +180,7 @@ in
           url = "http://127.0.0.1:${config.systemd.services.garage-webui.environment.PORT}"; # Default :3909
         };
         garage-admin-api.loadBalancer = {
-          servers = [ { url = "http://${garage_settings.admin.api_bind_addr}"; } ];
+          servers = [ { url = "http://${garage_settings.admin.api_bind_addr}"; } ]; # Default :3903
           inherit healthCheck;
         };
       };
