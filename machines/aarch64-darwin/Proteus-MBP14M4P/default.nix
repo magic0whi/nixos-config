@@ -36,6 +36,7 @@ in
   deploy_nodes.${name} = mylib.genDeployNode {
     nics = darwin_system.config.vars.hostAddrs.${name};
     nixosCfg = darwin_system;
+    isDarwin = true;
   };
   # deploy_nodes.${name} = {
   #   ...

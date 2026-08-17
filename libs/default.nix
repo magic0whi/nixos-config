@@ -84,12 +84,8 @@ in
       interactiveSudo = false; # I use the root user to ssh deploy
       profiles.system = {
         path =
-          deployLib.${nixosCfg.pkgs.stdenv.hostPlatform.system}.activate.${if isDarwin then "nixos" else "darwin"}
+          deployLib.${nixosCfg.pkgs.stdenv.hostPlatform.system}.activate.${if isDarwin then "darwin" else "nixos"}
             nixosCfg;
-        # if isDarwin then
-        #   deployLib.${nixosCfg.pkgs.stdenv.hostPlatform.system}.activate.nixos nixosCfg
-        # else
-        #   deployLib.${nixosCfg.pkgs.stdenv.hostPlatform.system}.activate.darwin nixosCfg;
         user = "root";
       };
     };
