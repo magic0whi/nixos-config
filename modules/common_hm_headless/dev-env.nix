@@ -2,6 +2,7 @@
   lib,
   pkgs,
   dev-flake,
+  mylib,
   ...
 }:
 {
@@ -38,7 +39,7 @@
   ## END latex.nix
   ## BEGIN pip.nix
   # Use mirror for pip install
-  xdg.configFile."pip/pip.conf".text = lib.generators.toINI { } {
+  xdg.configFile."pip/pip.conf".text = mylib.toINI {
     global = {
       index-url = "https://mirror.nju.edu.cn/pypi/web/simple";
       format = "columns";
