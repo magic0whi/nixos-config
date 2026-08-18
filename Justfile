@@ -209,6 +209,11 @@ nodes:
 proteus-desktop:
     deploy --skip-checks --auto-rollback false --magic-rollback false .#Proteus-Desktop -- --verbose --show-trace
 
+[macos]
+proteus-desktop:
+    deploy --skip-checks --auto-rollback false --magic-rollback false --remote-build .#Proteus-Desktop -- \
+        --verbose --show-trace
+
 ############################################################################
 #
 # Commands for other Virtual Machines
