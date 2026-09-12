@@ -98,6 +98,12 @@
               "mode main"
             ];
 
+            # Toggle fullscreen (window)
+            shift-f = [
+              "fullscreen"
+              "mode main"
+            ];
+
             # reset layout
             r = [
               "flatten-workspace-tree"
