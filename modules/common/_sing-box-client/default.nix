@@ -14,6 +14,7 @@ args@{
 let
   # domestic_dns = "dns.alidns.com";
   domestic_dns = "dot.pub";
+
   shared_cfg = {
     selectorCfg = {
       type = "selector";
@@ -71,8 +72,8 @@ lib.mkMerge (
             }
             {
               tag = "Direct";
-              type = "tls";
-              server = "dot.pub";
+              type = "https";
+              server = "sm2.doh.pub";
               domain_resolver = "Bootstrap";
             }
             (
@@ -82,6 +83,13 @@ lib.mkMerge (
                 detour = "Default";
               }
             )
+            # {
+            #   tag = "Direct";
+            #   type = "tls";
+            #   server = "dot.pub";
+            #   domain_resolver = "Bootstrap";
+            # }
+            # (shared_cfg.dnsServerCfg.direct // { tag = "Direct"; })
           ]
         );
         # The default rule uses the following matching logic:

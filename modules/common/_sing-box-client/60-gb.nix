@@ -79,7 +79,6 @@ let
         "zimperium.com"
       ];
     }
-    { rule_set = [ "geosite-wise" ]; }
   ];
 in
 {

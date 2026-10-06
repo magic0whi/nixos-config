@@ -62,13 +62,14 @@ let
     }
     {
       rule_set = [
-        "geosite-schwab"
+        "geosite-alibaba@!cn"
         "geosite-boc"
         "geosite-ccb"
         "geosite-icbc"
         "geosite-ifast"
-        "geosite-alibaba@!cn"
+        "geosite-schwab"
         "geosite-tencent"
+        "geosite-wise"
       ];
     }
   ];

@@ -4,7 +4,7 @@ let
 in
 {
   ## BEGIN pkgs agnostic functions
-  # NOTE: Don't put ip related rules along with other things as it will filter the whole rule
+  # NOTE: Don't put IP related rules along with other things as it would filter the whole rule
   # NOTE: in 1.14, there is a new feature evaluate, which allows query DNS result and use the result to do IP matches
   # later
   mkSbRules =
