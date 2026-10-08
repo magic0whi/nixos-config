@@ -53,7 +53,6 @@
       auth_oidc
       xiaomi_miot # Xiaomi Miot Auto (Community)
       # xiaomi_home # Xiaomi Home (Official)
-      midea_ac_lan # TODO: add refrigerator
     ];
     config = {
       default_config = { }; # Implicitly enable `mobile_app`

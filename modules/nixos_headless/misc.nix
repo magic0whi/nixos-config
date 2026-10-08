@@ -62,18 +62,27 @@
     rateLimitInterval = "1min"; # The time window (1 minute) used to calculate the message limit.
     # The maximum number of log lines a single service can generate within the time window before being throttled.
     rateLimitBurst = 500;
-    extraConfig = ''
-      # Keep logs for 1 month max
-      MaxRetentionSec=1month
-      # Limit total disk usage to 1GB
-      SystemMaxUse=1G
-      # Limit individual file size to 64MB to ensure clean rotation
-      SystemMaxFileSize=128M
-      # Ensure at least 15% of disk stays free
-      SystemKeepFree=15%
-      # Prevent logs from eating up /run (RAM) during bursts
-      RuntimeMaxUse=64M
-    '';
+    # extraConfig = ''
+    #   # Keep logs for 1 month max
+    #   MaxRetentionSec=1month
+    #   # Limit total disk usage to 1GB
+    #   SystemMaxUse=1G
+    #   # Limit individual file size to 64MB to ensure clean rotation
+    #   SystemMaxFileSize=128M
+    #   # Ensure at least 15% of disk stays free
+    #   SystemKeepFree=15%
+    #   # Prevent logs from eating up /run (RAM) during bursts
+    #   RuntimeMaxUse=64M
+    # '';
+
+    # NOTE: incoming in the future nixos-unstable branch
+    settings.Journal = {
+      MaxRetentionSec = "1month"; # Keep logs for 1 month max
+      SystemMaxUse = "1G"; # Limit total disk usage to 1GB
+      SystemMaxFileSize = "128M"; # Limit individual file size to ensure clean rotation
+      SystemKeepFree = "15%"; # Ensure at least 15% of disk stays free
+      RuntimeMaxUse = "64M"; # Prevent logs from eating up /run (RAM) during bursts
+    };
   };
   ## END journald.nix
   ## BEGIN tweaks.nix

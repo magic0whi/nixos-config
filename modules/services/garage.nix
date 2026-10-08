@@ -1,3 +1,4 @@
+# TODO 'garage-webui' has been removed as it is unmaintained upstream
 # Ref: https://garagehq.deuxfleurs.fr/documentation/reference-manual/configuration/
 #
 # TIP: Manually setup a Nix binary cache server
@@ -64,14 +65,14 @@ in
           GARAGE_METRICS_TOKEN = config.sops.placeholder.prometheus_bearer_token;
         };
       };
-      templates."garage-webui.env" = {
-        restartUnits = [ "garage-webui.service" ];
-        content = mylib.toEnv {
-          # garage-webui default use rpc_public_addr to access admin API
-          API_BASE_URL = "http://${garage_settings.admin.api_bind_addr}";
-          API_ADMIN_KEY = config.sops.placeholder.garage_admin_token;
-        };
-      };
+      # templates."garage-webui.env" = {
+      #   restartUnits = [ "garage-webui.service" ];
+      #   content = mylib.toEnv {
+      #     # garage-webui default use rpc_public_addr to access admin API
+      #     API_BASE_URL = "http://${garage_settings.admin.api_bind_addr}";
+      #     API_ADMIN_KEY = config.sops.placeholder.garage_admin_token;
+      #   };
+      # };
     };
 
   systemd.services.garage.serviceConfig.EnvironmentFile = config.sops.templates."garage.env".path;
@@ -101,27 +102,27 @@ in
     };
   };
 
-  systemd.services.garage-webui = {
-    description = "Garage Web UI";
-    after = [
-      "network.target"
-      "network-online.target"
-    ];
-    wants = [
-      "network.target"
-      "network-online.target"
-    ];
-    wantedBy = [ "multi-user.target" ];
-    environment = {
-      PORT = "3999"; # the type check only allow string
-      CONFIG_PATH = "${(pkgs.formats.toml { }).generate "config.toml" garage_settings}";
-    };
-    serviceConfig = {
-      ExecStart = lib.getExe pkgs.garage-webui;
-      Restart = "on-failure";
-      EnvironmentFile = config.sops.templates."garage-webui.env".path;
-    };
-  };
+  # systemd.services.garage-webui = {
+  #   description = "Garage Web UI";
+  #   after = [
+  #     "network.target"
+  #     "network-online.target"
+  #   ];
+  #   wants = [
+  #     "network.target"
+  #     "network-online.target"
+  #   ];
+  #   wantedBy = [ "multi-user.target" ];
+  #   environment = {
+  #     PORT = "3999"; # the type check only allow string
+  #     CONFIG_PATH = "${(pkgs.formats.toml { }).generate "config.toml" garage_settings}";
+  #   };
+  #   serviceConfig = {
+  #     ExecStart = lib.getExe pkgs.garage-webui;
+  #     Restart = "on-failure";
+  #     EnvironmentFile = config.sops.templates."garage-webui.env".path;
+  #   };
+  # };
 
   services.traefik.dynamicConfigOptions.http = {
     routers = {
@@ -144,13 +145,13 @@ in
         service = "s3-pub";
         tls = { };
       };
-      garage-webui = {
-        rule = "Host(`${hostname}.garage.${const.domain}`)";
-        entryPoints = [ "websecure" ];
-        middlewares = [ "authelia-auth" ];
-        service = "garage-webui";
-        tls = { };
-      };
+      # garage-webui = {
+      #   rule = "Host(`${hostname}.garage.${const.domain}`)";
+      #   entryPoints = [ "websecure" ];
+      #   middlewares = [ "authelia-auth" ];
+      #   service = "garage-webui";
+      #   tls = { };
+      # };
       # For metrics
       garage-admin-api = {
         rule = "Host(`admin-api-${hostname}.garage.${const.domain}`)";
@@ -176,9 +177,9 @@ in
           servers = [ { url = "http://${garage_settings.s3_web.bind_addr}"; } ]; # Default :3902
           inherit healthCheck;
         };
-        garage-webui.loadBalancer.servers = lib.singleton {
-          url = "http://127.0.0.1:${config.systemd.services.garage-webui.environment.PORT}"; # Default :3909
-        };
+        # garage-webui.loadBalancer.servers = lib.singleton {
+        #   url = "http://127.0.0.1:${config.systemd.services.garage-webui.environment.PORT}"; # Default :3909
+        # };
         garage-admin-api.loadBalancer = {
           servers = [ { url = "http://${garage_settings.admin.api_bind_addr}"; } ]; # Default :3903
           inherit healthCheck;

@@ -1,6 +1,6 @@
 {
   const,
-  pkgs,
+  # pkgs,
   config,
   mylib,
   lib,
@@ -51,7 +51,8 @@ in
   services.grafana = {
     enable = true;
 
-    declarativePlugins = with pkgs.grafanaPlugins; [ yesoreyeram-infinity-datasource ];
+    # NOTE: 2026-10-08: yesoreyeram-infinity-datasource-4.1.0.zip failed with hash mismatch
+    # declarativePlugins = with pkgs.grafanaPlugins; [ yesoreyeram-infinity-datasource ];
 
     # https://grafana.com/docs/grafana/v13.1/setup-grafana/configure-grafana/
     settings = {
@@ -198,11 +199,11 @@ in
                 }
             )
           ])
-          {
-            name = "infinity-dataviewer";
-            type = "yesoreyeram-infinity-datasource";
-            # editable = true;
-          }
+          # {
+          #   name = "infinity-dataviewer";
+          #   type = "yesoreyeram-infinity-datasource";
+          #   # editable = true;
+          # }
         ];
       };
     };

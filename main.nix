@@ -8,7 +8,7 @@
 let
   ## BEGIN Functions
   # The args given to machines
-  gen_machine_args =
+  mk_machine_args =
     system:
     let
       pkgs = inputs.nixpkgs.legacyPackages.${system};
@@ -42,9 +42,7 @@ let
     };
   import_each_system =
     supported_systems:
-    lib.genAttrs supported_systems (
-      system: import ./machines system { inherit lib mylib; } ((gen_machine_args system) // { inherit inputs; })
-    );
+    lib.genAttrs supported_systems (system: import ./machines system { inherit lib mylib; } (mk_machine_args system));
   ## END Functions
 
   ## BEGIN Variables
@@ -85,7 +83,7 @@ in
           nixos_machines
           darwin_machines
           ;
-        args = gen_machine_args system;
+        args = mk_machine_args system;
       };
       packages = nixos_machines.${system}.packages or { };
       # Currently deploy-rs check broken on MacOS/riscv64-linux

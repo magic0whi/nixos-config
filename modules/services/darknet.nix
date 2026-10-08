@@ -24,26 +24,71 @@
   };
   ## START i2pd.nix
   # Ref: https://i2pd.readthedocs.io/en/latest/user-guide/configuration/
-  networking.firewall.allowedTCPPorts = with config.services.i2pd; [ port ];
+  networking.firewall.allowedTCPPorts = [ config.services.i2pd.settings.port ];
   services.i2pd = {
     enable = true;
-    enableIPv6 = true;
-    port = 11451;
-    upnp.enable = true;
-    reseed = {
-      verify = true;
-      proxy = "socks://127.0.0.1:2080";
-      urls = [
-        "https://reseed.i2p-projekt.de/"
-        "https://i2p.mooo.com/netDb/"
-        "https://netdb.i2p2.no/"
-      ];
-    };
-    proto = {
-      http.enable = true; # Web console
-      # httpProxy.enable = true;
-      socksProxy.enable = true;
-      sam.enable = true;
+    # enableIPv6 = true;
+    # port = 11451;
+    # upnp.enable = true;
+    # reseed = {
+    #   verify = true;
+    #   proxy = "socks://127.0.0.1:2080";
+    #   urls = [
+    #     "https://reseed.i2p-projekt.de/"
+    #     "https://i2p.mooo.com/netDb/"
+    #     "https://netdb.i2p2.no/"
+    #   ];
+    # };
+    # proto = {
+    #   http.enable = true; # Web console
+    #   # httpProxy.enable = true;
+    #   socksProxy.enable = true;
+    #   sam.enable = true;
+    # };
+
+    # NOTE: incoming in the future nixos-unstable branch
+    settings = {
+      port = 11451;
+      upnp.enabled = true;
+      ipv6 = true;
+      reseed = {
+        verify = true;
+        urls = [
+          "https://reseed.i2p-projekt.de/"
+          "https://i2p.mooo.com/netDb/"
+          "https://netdb.i2p2.no/"
+        ];
+        proxy = "socks://127.0.0.1:2080";
+      };
+      # Web console
+      http = {
+        enabled = true;
+        address = "127.0.0.1";
+        port = 7070;
+        auth = false;
+        user = "i2pd";
+        pass = "i2pd";
+      };
+      httpproxy = {
+        enabled = false;
+        address = "127.0.0.1";
+        port = 4444;
+        keys = "httpproxy-keys.dat";
+      };
+      socksproxy = {
+        enabled = true;
+        address = "127.0.0.1";
+        port = 4447;
+        keys = "socksproxy-keys.dat";
+        outproxy = "127.0.0.1";
+        outproxyport = 4444;
+        "outproxy.enabled" = false;
+      };
+      sam = {
+        enabled = true;
+        address = "127.0.0.1";
+        port = 7656;
+      };
     };
   };
   ## END i2pd.nix

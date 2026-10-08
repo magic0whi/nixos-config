@@ -6,6 +6,7 @@
 
   niks3,
   nixpkgs,
+  # nixpkgs-old,
   sops-nix,
   dns,
   ...
@@ -21,8 +22,23 @@ let
         const
         ;
       machinePath = ./.;
-      specialArgs = { inherit dns; };
-      overlays = with features; common.baseOverlays;
+      specialArgs = {
+        inherit dns;
+        # pkgs-old = nixpkgs-old.legacyPackages.x86_64-linux;
+      };
+      overlays =
+        (with features; common.baseOverlays)
+        ++ nixpkgs.lib.singleton (
+          _: prev: {
+            # NOTE: This fixes authelia-web-pnpm-deps hash mismach
+            authelia = prev.authelia.override {
+              authelia-web = prev.authelia.web.overrideAttrs (old: {
+                # pnpm_12 12.3.4 -> 12.9.0 changed the pnpm-deps output
+                pnpmDeps = old.pnpmDeps.overrideAttrs { outputHash = "sha256-zIaVEjbh/LIQMqnryrgVm+46GP+9gM91WCMyAqeDnaA="; };
+              });
+            };
+          }
+        );
       modules =
         (with features.common; base ++ seat)
         ++ (with features.nixos; base ++ seat.tui)

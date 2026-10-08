@@ -3,7 +3,8 @@
   inputs = {
     # Pinned as of 2026-06-05 18:10, branch: nixos-unstable
     nixpkgs.url = "github:magic0whi/nixpkgs/nixos-unstable";
-    # nixpkgs.url = "path:/home/proteus/Works-References/nixpkgs";
+    # nixpkgs-old.url = "github:magic0whi/nixpkgs/45e757b72a4cf53734c4a816f02580665ac20454";
+    # nixpkgs.url = "path:/Users/proteus/Proteus/Projects-Ref/nosync/nixpkgs";
     # Pinned as of 2026-04-14 17:55, branch: nixos-unstable
     # nixpkgs-postgresql.url = "github:NixOS/nixpkgs/4c1018dae018162ec878d42fec712642d214fdfa";
     # Pinned as of 2026-06-19 01:35, branch: master
@@ -15,9 +16,9 @@
       # different versions of nixpkgs dependencies.
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Pinned as of 2026-06-05 18:12
+    # Pinned as of 2026-10-07 16:48
     lanzaboote = {
-      url = "github:nix-community/lanzaboote/e780b8e19d405b6906d759d270bbc125d221e81a";
+      url = "github:nix-community/lanzaboote/ba33415d747d8dedd2931af107521634f1f2e8a8";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # Pinned as of 2026-06-05 18:13
@@ -33,14 +34,14 @@
       url = "github:nixpak/nixpak/ad5ac7d24a505db29671edadfe6a8f985aa6e94e";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Pinned as of 2026-06-05 18:13
+    # Pinned as of 2026-10-07 15:07
     sops-nix = {
-      url = "github:Mic92/sops-nix/9ed65852b6257fbeae4355bc24ecfea307ca759a";
+      url = "github:Mic92/sops-nix/dcd241ba97088c22569d1573286e1b9daad340c0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Pinned as of 2026-06-05 18:14
+    # Pinned as of 2026-10-08 08:14
     deploy-rs = {
-      url = "github:serokell/deploy-rs/16901271e5b30b591e56f7a84f25f186fb20f3e1";
+      url = "github:serokell/deploy-rs/45ba3f8c5cb28396fff71671806e2550b464ac86";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # Pinned as of 2026-06-05 18:14
@@ -65,9 +66,9 @@
       url = "github:NixOS/nixos-hardware/4ed851c979641e28597a05086332d75cdc9e395f";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Pinned as of 2026-06-05 18:16
+    # Pinned as of 2026-10-08 08:25
     i915-sriov-dkms = {
-      url = "github:strongtz/i915-sriov-dkms/2421d3ff8c27a967ffc2c6a1d19e0f3790ace5a0";
+      url = "github:strongtz/i915-sriov-dkms/f4cb98f4c28e1f3ac78ca88501a87c86d0c21a88";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # Pinned as of 2026-06-05 18:17
@@ -142,8 +143,10 @@
       url = "github:nix-community/nixvim/48409beb41e8e28b64e8160ca82d8a93fb628963";
       # inputs.nixpkgs.follows = "nixpkgs"; # nixvim recommend against using follows
     };
+    # Pinned as of 2026-10-07
+    # NOTE: https://github.com/helix-editor/helix/issues/16347
     helix = {
-      url = "github:helix-editor/helix/079a789e8cb08ead67f19e1971a1b7438b37354b";
+      url = "github:helix-editor/helix/86d7b61520e4bbc58d1d794dae8708e544969642";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     dev-flake = {
