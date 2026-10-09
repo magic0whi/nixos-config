@@ -23,6 +23,7 @@
       model = "opus";
       effortLevel = "high";
       feedbackSurveyRate = 0;
+      tui = "fullscreen";
       enabledPlugins."marimo-pair@marimo-pair" = true;
       extraKnownMarketplaces.marimo-pair.source = {
         source = "github";
