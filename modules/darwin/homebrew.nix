@@ -81,6 +81,7 @@ in
       "thaw" # Powerful menu bar manager, fork of jordanbaird-ice
       "tor-browser"
       "google-chrome"
+      "deepl"
 
       # Misc
       # "tencent-lemon" # macOS cleaner
