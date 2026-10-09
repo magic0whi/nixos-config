@@ -89,7 +89,12 @@
     })
   ];
 
-  catppuccin.fzf.enable = false; # catppuccin fzf is prone to fail on macOS
+  catppuccin = {
+    fzf.enable = false; # catppuccin fzf is prone to fail on macOS
+    # Here catppuccin-nix/starship utilizes IFD, which causes (remote build) deploy fails on darwin
+    # https://github.com/catppuccin/nix/blob/0c0335a1a6d326adb5a5e116aae0d51c7041b2e5/modules/home-manager/starship.nix#L19
+    starship.enable = false;
+  };
   programs = {
     zsh = {
       enable = true;
@@ -159,6 +164,7 @@
       enable = true;
       settings.sync_address = "https://atuin.${const.domain}";
     };
+
     starship = {
       enable = true;
       settings = {
