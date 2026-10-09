@@ -191,6 +191,7 @@ lib.mkMerge (
             stack = "gvisor";
             auto_route = true;
             # strict_route = true;
+            udp_mapping = "address_dependent"; # separate mapping for each destination address
           }
         ])
       ];

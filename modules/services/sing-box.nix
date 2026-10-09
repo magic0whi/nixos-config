@@ -11,7 +11,10 @@
       443
       8443
     ];
-    allowedUDPPorts = [ 8443 ]; # QUIC
+    allowedUDPPorts = [
+      443
+      8443
+    ]; # QUIC
   };
 
   sops.secrets =
@@ -21,9 +24,8 @@
     in
     {
       sb_nodes_anytls_password = { inherit sopsFile restartUnits; };
-      sb_nodes_reality_priv_key = { inherit sopsFile restartUnits; };
-      sb_nodes_reality_short_id = { inherit sopsFile restartUnits; };
-      sb_nodes_server_name = { inherit sopsFile restartUnits; };
+      # Shared with ddclient (Cloudflare "Edit zone DNS" token), used for ACME DNS-01
+      ddclient_cloudflare_password = { inherit sopsFile restartUnits; };
     };
   services.sing-box = {
     enable = true;
@@ -38,26 +40,31 @@
       #   type = "tls";
       #   server = "8.8.8.8";
       # };
+      certificate_providers = lib.singleton {
+        tag = "ACME";
+        type = "acme";
+        # Per-node domain, since shared wildcard would hit the Let's Encrypt duplicate certificate rate limit (5 per
+        # week) when all nodes request it
+        domain = [ "${config.networking.hostName}.proteus11451.online" ];
+        data_directory = "/var/lib/sing-box/acme"; # StateDirectory, persisted by impermanence
+        inherit (const) email;
+        dns01_challenge = {
+          provider = "cloudflare";
+          api_token._secret = config.sops.secrets.ddclient_cloudflare_password.path;
+        };
+      };
       inbounds = lib.singleton {
-        type = "anytls";
+        type = "naive";
         listen = "::";
         listen_port = 443;
+        # network = "tcp"; # tcp for HTTP/2, udp for QUIC, leave empty for both
         users = lib.singleton {
-          name = "proteus";
+          username = "proteus";
           password._secret = config.sops.secrets.sb_nodes_anytls_password.path;
         };
         tls = {
           enabled = true;
-          server_name._secret = config.sops.secrets.sb_nodes_server_name.path;
-          reality = {
-            enabled = true;
-            handshake = {
-              server._secret = config.sops.secrets.sb_nodes_server_name.path;
-              server_port = 443;
-            };
-            private_key._secret = config.sops.secrets.sb_nodes_reality_priv_key.path;
-            short_id._secret = config.sops.secrets.sb_nodes_reality_short_id.path;
-          };
+          certificate_provider = "ACME";
         };
       };
       outbounds = lib.singleton {

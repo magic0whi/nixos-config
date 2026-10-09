@@ -5,22 +5,17 @@ let
       (
         node:
         {
+          # Shared config across nodes
+          type = "naive";
           server_port = 443;
+          username = "proteus";
           password._secret = config.sops.secrets.sb_nodes_anytls_password.path;
           tls = {
             enabled = true;
-            reality = {
-              enabled = true;
-              public_key._secret = config.sops.secrets.sb_nodes_reality_pub_key.path;
-              short_id._secret = config.sops.secrets.sb_nodes_reality_short_id.path;
-            };
-            server_name._secret = config.sops.secrets.sb_nodes_server_name.path;
-            utls = {
-              enabled = true;
-              fingerprint = "chrome";
-            };
+            server_name = "${node.tag}.proteus11451.online";
           };
-          type = "anytls";
+          quic = true;
+          udp_over_tcp = true;
         }
         // node
       )

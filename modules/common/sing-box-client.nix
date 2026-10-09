@@ -26,9 +26,6 @@
             format = "binary";
           };
           sb_nodes_anytls_password = { inherit sopsFile; };
-          sb_nodes_reality_short_id = { inherit sopsFile; };
-          sb_nodes_reality_pub_key = { inherit sopsFile; };
-          sb_nodes_server_name = { inherit sopsFile; };
           sb_ts_auth_key = { inherit sopsFile; };
           sb_subscribe_url = { inherit sopsFile; };
         }
