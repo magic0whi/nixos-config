@@ -94,6 +94,9 @@ in
       PAPERLESS_SOCIALACCOUNT_AUTO_SIGNUP = true; # Automatically create users on first login
       PAPERLESS_DISABLE_REGULAR_LOGIN = true; # Disable Paperless' login
       PAPERLESS_REDIRECT_LOGIN_TO_SSO = true; # Auto-redirect to Authelia, bypassing the Paperless login screen
+
+      # Paperless-ngx 3.0 allows duplicate documents to be consumed by default except when this setting is enabled
+      PAPERLESS_CONSUMER_DELETE_DUPLICATES = true;
     };
     environmentFile = config.sops.templates."paperless.env".path;
     # dataDir = "/srv/paperless";
