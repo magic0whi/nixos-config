@@ -1,29 +1,41 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   nodes =
     map
       (
         node:
-        {
-          # Shared config across nodes
-          type = "naive";
-          server_port = 443;
-          username = "proteus";
-          password._secret = config.sops.secrets.sb_nodes_anytls_password.path;
-          tls = {
-            enabled = true;
-            server_name = "${node.tag}.proteus11451.online";
+        (lib.evalModules {
+          modules = lib.singleton {
+            options.nodeCfg = lib.mkOption {
+              type = with lib.types; submodule { freeformType = (pkgs.formats.json { }).type; };
+              default = lib.mkMerge [
+                node
+                {
+                  # Shared config across nodes
+                  type = "naive";
+                  server_port = 443;
+                  username = "proteus";
+                  password._secret = config.sops.secrets.sb_nodes_anytls_password.path;
+                  tls.enabled = true;
+                  quic = true;
+                  udp_over_tcp = true;
+                }
+              ];
+            };
           };
-          quic = true;
-          udp_over_tcp = true;
-        }
-        // node
+        }).config.nodeCfg
       )
       (
         map
           (num: {
             tag = "Proteus-NixOS-${num}";
             server._secret = config.sops.secrets."easytier_peer_${num}".path;
+            tls.server_name._secret = config.sops.secrets."easytier_peer_${num}".path;
           })
           [
             "0"
