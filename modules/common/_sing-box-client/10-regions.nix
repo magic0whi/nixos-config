@@ -52,6 +52,7 @@ let
                 outbounds = [
                   "Proteus-NixOS-0"
                   "Proteus-NixOS-1"
+                  "Proteus-NixOS-2"
                 ];
               }
               (lib.mkIf isSubscribeEnabled {
@@ -108,7 +109,7 @@ let
               {
                 tag = "Germany";
                 type = "selector";
-                outbounds = [ "Proteus-NixOS-2" ];
+                outbounds = [ "Block" ];
               }
               (lib.mkIf isSubscribeEnabled {
                 outbounds = [ "{all}" ];
