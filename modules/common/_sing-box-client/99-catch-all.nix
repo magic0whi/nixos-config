@@ -1,5 +1,6 @@
 {
   config,
+  const,
   lib,
   mylib,
   ruleSetCfg,
@@ -7,14 +8,15 @@
   ...
 }:
 let
+  pri = 0.99 * 2000;
   out = "Direct";
 
   rules = [ { rule_set = [ "geosite-cn" ]; } ];
 in
 {
-  dns.rules = lib.mkOrder 2000 (
+  dns.rules = lib.mkOrder pri (
     mylib.mkSbRules true out rules
-    ++ [
+    ++ lib.optionals (config.services.sing-box.settings.dns.final != "Direct") [
       {
         action = "evaluate";
         server = out;
@@ -41,14 +43,14 @@ in
           url = "${urlPrefix}/geo/geosite/cn.srs";
         }
       ];
-    rules = lib.mkMerge (
+    rules =
       let
         mkSbRules = mylib.mkSbRules false;
       in
-      [
-        (lib.mkBefore (
-          mkSbRules out [
-            (
+      lib.mkMerge [
+        (lib.mkOrder (const.sb.routeSniffPri - 1) (
+          mkSbRules out (
+            lib.singleton (
               # Bypass CN IPs but exclude DNS IP so sing-box can still hijack DNS request on macOS
               if isDarwin then
                 {
@@ -65,10 +67,10 @@ in
               else
                 { rule_set = [ "geoip-cn" ]; }
             )
-          ]
+          )
         ))
-        (lib.mkOrder 2000 (mkSbRules out rules))
-      ]
-    );
+
+        (lib.mkOrder pri (mkSbRules out rules))
+      ];
   };
 }

@@ -2,19 +2,13 @@
   dnsServerCfg,
   lib,
   mylib,
+  ruleSetCfg,
   selectorCfg,
   ...
 }:
 let
-  out = "Klarna";
-  rules = lib.singleton {
-    domain_suffix = [
-      "klarna.app"
-      "klarna.com"
-      "klarnacdn.net"
-      "klarnaevt.com"
-    ];
-  };
+  out = "Kraken";
+  rules = lib.singleton { rule_set = "geosite-kraken"; };
 in
 {
   dns = {
@@ -34,5 +28,14 @@ in
       default = "UnitedKingdom";
     }
   );
-  route.rules = mylib.mkSbRules false out rules;
+  route = {
+    rules = mylib.mkSbRules false out rules;
+    rule_set = lib.singleton (
+      ruleSetCfg.defaultCfg
+      // {
+        tag = "geosite-kraken";
+        url = "${ruleSetCfg.urlPrefix}/geo/geosite/kraken.srs";
+      }
+    );
+  };
 }

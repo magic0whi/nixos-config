@@ -58,8 +58,7 @@ in
         pkgs
         ;
       # Disable FakeIP-only mode as I run hostapd on this machine
-      # isServer = true;
-      # isRouter = true;
+      isRouter = true;
     }
   );
   # Ref: https://wiki.archlinux.org/title/Sysctl#Change_TCP_keepalive_parameters

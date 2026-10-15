@@ -5,17 +5,15 @@ let
     {
       domain_suffix = [
         "bonify.de"
-        "coinbase.com"
         "bybit.eu"
-        "braze.eu" # Tememetry
         "tink.com" # Easy bank transfer
         "bunq.com"
       ];
     }
     {
       rule_set = [
-        "geosite-bybit"
         "geosite-n26"
+        "geosite-bybit"
       ];
     }
   ];
@@ -23,6 +21,7 @@ in
 {
   dns.rules = mylib.mkSbRules true out rules;
   route = {
+    rules = mylib.mkSbRules false out rules;
     rule_set =
       let
         inherit (ruleSetCfg) urlPrefix defaultCfg;
@@ -37,6 +36,5 @@ in
           url = "${urlPrefix}/geo/geosite/n26.srs";
         }
       ];
-    rules = mylib.mkSbRules false out rules;
   };
 }

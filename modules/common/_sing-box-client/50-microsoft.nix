@@ -7,13 +7,13 @@
   ...
 }:
 let
-  out = "Oracle";
-  rules = [ { rule_set = [ "geosite-oracle" ]; } ];
+  out = "Microsoft";
+  rules = [ { rule_set = [ "geosite-microsoft" ]; } ];
 in
 {
   dns = {
     servers = lib.singleton (
-      dnsServerCfg.default
+      dnsServerCfg.direct
       // {
         tag = out;
         detour = out;
@@ -29,13 +29,13 @@ in
     }
   );
   route = {
+    rules = mylib.mkSbRules false out rules;
     rule_set = lib.singleton (
       ruleSetCfg.defaultCfg
       // {
-        tag = "geosite-oracle";
-        url = "${ruleSetCfg.urlPrefix}/geo/geosite/oracle.srs";
+        tag = "geosite-microsoft";
+        url = "${ruleSetCfg.urlPrefix}/geo/geosite/microsoft.srs";
       }
     );
-    rules = mylib.mkSbRules false out rules;
   };
 }

@@ -7,13 +7,13 @@
   ...
 }:
 let
-  out = "Stripe";
-  rules = [ { rule_set = "geosite-stripe"; } ];
+  out = "Speedtest";
+  rules = [ { rule_set = "geosite-category-speedtest"; } ];
 in
 {
   dns = {
     servers = lib.singleton (
-      dnsServerCfg.default
+      dnsServerCfg.direct
       // {
         tag = out;
         detour = out;
@@ -25,17 +25,17 @@ in
     selectorCfg
     // {
       tag = out;
-      default = "HongKong";
+      default = "Default";
     }
   );
   route = {
+    rules = mylib.mkSbRules false out rules;
     rule_set = lib.singleton (
       ruleSetCfg.defaultCfg
       // {
-        tag = "geosite-stripe";
-        url = "${ruleSetCfg.urlPrefix}/geo/geosite/stripe.srs";
+        tag = "geosite-category-speedtest";
+        url = "${ruleSetCfg.urlPrefix}/geo/geosite/category-speedtest.srs";
       }
     );
-    rules = mylib.mkSbRules false out rules;
   };
 }

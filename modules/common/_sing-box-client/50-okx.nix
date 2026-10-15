@@ -7,8 +7,11 @@
   ...
 }:
 let
-  out = "Kraken";
-  rules = lib.singleton { rule_set = "geosite-kraken"; };
+  out = "OKX";
+  rules = [
+    { domain_suffix = [ "okcoin.com" ]; }
+    { rule_set = "geosite-okx"; }
+  ];
 in
 {
   dns = {
@@ -25,17 +28,17 @@ in
     selectorCfg
     // {
       tag = out;
-      default = "UnitedKingdom";
+      default = "Default";
     }
   );
   route = {
+    rules = mylib.mkSbRules false out rules;
     rule_set = lib.singleton (
       ruleSetCfg.defaultCfg
       // {
-        tag = "geosite-kraken";
-        url = "${ruleSetCfg.urlPrefix}/geo/geosite/kraken.srs";
+        tag = "geosite-okx";
+        url = "${ruleSetCfg.urlPrefix}/geo/geosite/okx.srs";
       }
     );
-    rules = mylib.mkSbRules false out rules;
   };
 }

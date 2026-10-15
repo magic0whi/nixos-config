@@ -1,4 +1,9 @@
-{ mylib, ruleSetCfg, ... }:
+{
+  lib,
+  mylib,
+  ruleSetCfg,
+  ...
+}:
 let
   out = "UnitedKingdom";
   rules = [
@@ -84,16 +89,16 @@ in
 {
   dns.rules = mylib.mkSbRules true out rules;
   route = {
+    rules = mylib.mkSbRules false out rules;
     rule_set =
       let
         inherit (ruleSetCfg) urlPrefix defaultCfg;
       in
-      map (rule_set: defaultCfg // rule_set) [
-        {
+      map (rule_set: defaultCfg // rule_set) (
+        lib.singleton {
           tag = "geosite-wise";
           url = "${urlPrefix}/geo/geosite/wise.srs";
         }
-      ];
-    rules = mylib.mkSbRules false out rules;
+      );
   };
 }

@@ -1,4 +1,5 @@
 {
+  const,
   lib,
   mylib,
   ruleSetCfg,
@@ -14,12 +15,11 @@ let
         "public.easytier.cn"
       ];
     }
-    { port_range = "11010:11013"; }
     { rule_set = "geosite-category-stun"; }
   ];
 in
 {
-  dns.rules = lib.mkBefore (mylib.mkSbRules true out rules);
+  dns.rules = lib.mkBefore (mylib.mkSbRules true out rules); # Before FakeIP rules
   route = {
     rule_set = lib.singleton (
       ruleSetCfg.defaultCfg
@@ -28,30 +28,31 @@ in
         url = "${ruleSetCfg.urlPrefix}/geo/geosite/category-stun.srs";
       }
     );
-    rules = lib.mkMerge (
+    rules =
       let
         mkSbRules = mylib.mkSbRules false;
       in
-      [
+      lib.mkMerge [
         (lib.mkBefore (
           mkSbRules out [
+            { ip_cidr = [ "10.0.0.0/24" ]; }
+            { port_range = "11010:11013"; }
             {
               process_name = [
                 "easytier-core"
                 "easytier-cli"
               ];
             }
-            { ip_cidr = [ "10.0.0.0/24" ]; }
           ]
+          ++ (mkSbRules out rules)
         ))
-        (lib.mkOrder 875 (
+
+        (lib.mkOrder (const.sb.routeSniffPri + 1) (
           lib.singleton {
-            outbound = "Direct";
+            outbound = out;
             protocol = "stun";
           }
-          ++ mkSbRules out rules
         ))
-      ]
-    );
+      ];
   };
 }

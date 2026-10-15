@@ -7,6 +7,7 @@
   ...
 }:
 let
+  pri = 0.49 * 2000;
   out = "AI";
   rules = [
     { domain = "gspe1-ssl.ls.apple.com"; }
@@ -15,7 +16,7 @@ let
         "geosite-anthropic"
         "geosite-apple-intelligence"
         "geosite-bing"
-        "geosite-github" # Copilot
+        "geosite-github-copilot" # NOTE: must before Microsoft rules
         "geosite-openai"
         "geosite-perplexity"
         "geosite-xai"
@@ -33,7 +34,7 @@ in
         detour = out;
       }
     );
-    rules = lib.mkOrder 875 (mylib.mkSbRules true out rules);
+    rules = lib.mkOrder pri (mylib.mkSbRules true out rules);
   };
   outbounds = lib.singleton (
     selectorCfg
@@ -43,6 +44,7 @@ in
     }
   );
   route = {
+    rules = lib.mkOrder pri (mylib.mkSbRules false out rules);
     rule_set =
       let
         inherit (ruleSetCfg) urlPrefix defaultCfg;
@@ -61,8 +63,8 @@ in
           url = "${urlPrefix}/geo/geosite/bing.srs";
         }
         {
-          tag = "geosite-github";
-          url = "${urlPrefix}/geo/geosite/github.srs";
+          tag = "geosite-github-copilot";
+          url = "${urlPrefix}/geo/geosite/github-copilot.srs";
         }
         {
           tag = "geosite-openai";
@@ -81,6 +83,5 @@ in
           url = "${urlPrefix}/geo/geosite/google-gemini.srs";
         }
       ];
-    rules = lib.mkOrder 850 (mylib.mkSbRules false out rules);
   };
 }

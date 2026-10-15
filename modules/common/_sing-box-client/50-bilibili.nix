@@ -7,13 +7,13 @@
   ...
 }:
 let
-  out = "Meta";
-  rules = [ { rule_set = [ "geosite-meta" ]; } ];
+  out = "Bilibili";
+  rules = [ { rule_set = [ "geosite-bilibili" ]; } ];
 in
 {
   dns = {
     servers = lib.singleton (
-      dnsServerCfg.default
+      dnsServerCfg.direct
       // {
         tag = out;
         detour = out;
@@ -25,7 +25,7 @@ in
     selectorCfg
     // {
       tag = out;
-      default = "Default";
+      default = "Direct";
     }
   );
   route = {
@@ -35,22 +35,21 @@ in
       in
       map (rule_set: defaultCfg // rule_set) [
         {
-          tag = "geoip-facebook";
-          url = "${urlPrefix}/geo/geoip/facebook.srs";
+          tag = "geoip-bilibili";
+          url = "${urlPrefix}/geo-lite/geoip/bilibili.srs";
         }
         {
-          tag = "geosite-meta";
-          url = "${urlPrefix}/geo/geosite/meta.srs";
+          tag = "geosite-bilibili";
+          url = "${urlPrefix}/geo/geosite/bilibili.srs";
         }
       ];
-    rules = lib.mkMerge (
+    rules =
       let
         mkSbRules = mylib.mkSbRules false;
       in
-      [
-        (lib.mkBefore (mkSbRules out [ { rule_set = [ "geoip-facebook" ]; } ]))
+      lib.mkMerge [
+        (lib.mkBefore (mkSbRules out [ { rule_set = [ "geoip-bilibili" ]; } ]))
         (mkSbRules out rules)
-      ]
-    );
+      ];
   };
 }

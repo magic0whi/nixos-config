@@ -8,7 +8,7 @@
 }:
 let
   out = "Game";
-  super_rules = [
+  rules = [
     {
       out = "Direct";
       rules = [ { rule_set = "geosite-category-game-platforms-download"; } ];
@@ -28,16 +28,17 @@ in
         detour = out;
       }
     );
-    rules = builtins.concatMap (rules: mylib.mkSbRules true rules.out rules.rules) super_rules;
+    rules = builtins.concatMap (rules: mylib.mkSbRules true rules.out rules.rules) rules;
   };
   outbounds = lib.singleton (
     selectorCfg
     // {
       tag = out;
-      default = "Direct";
+      default = "Default";
     }
   );
   route = {
+    rules = builtins.concatMap (rules: mylib.mkSbRules false rules.out rules.rules) rules;
     rule_set =
       let
         inherit (ruleSetCfg) urlPrefix defaultCfg;
@@ -52,6 +53,5 @@ in
           url = "${urlPrefix}/geo/geosite/category-game-platforms-download.srs";
         }
       ];
-    rules = builtins.concatMap (rules: mylib.mkSbRules false rules.out rules.rules) super_rules;
   };
 }

@@ -29,6 +29,7 @@ in
     }
   );
   route = {
+    rules = mylib.mkSbRules false out rules;
     rule_set = lib.singleton (
       ruleSetCfg.defaultCfg
       // {
@@ -36,6 +37,5 @@ in
         url = "${ruleSetCfg.urlPrefix}/geo/geosite/pixiv.srs";
       }
     );
-    rules = mylib.mkSbRules false out rules;
   };
 }

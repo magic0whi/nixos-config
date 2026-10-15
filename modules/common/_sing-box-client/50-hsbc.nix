@@ -7,8 +7,17 @@
   ...
 }:
 let
-  out = "Speedtest";
-  rules = [ { rule_set = "geosite-category-speedtest"; } ];
+  out = "HSBC";
+  rules = [
+    {
+      domain_suffix = [
+        "checkfreeweb.com" # HSBC US Bank-to-Bank
+        "firstdata.com" # HSBC US credit card
+      ];
+    }
+
+    { rule_set = "geosite-hsbc"; }
+  ];
 in
 {
   dns = {
@@ -25,17 +34,17 @@ in
     selectorCfg
     // {
       tag = out;
-      default = "Default";
+      default = "Direct";
     }
   );
   route = {
+    rules = mylib.mkSbRules false out rules;
     rule_set = lib.singleton (
       ruleSetCfg.defaultCfg
       // {
-        tag = "geosite-category-speedtest";
-        url = "${ruleSetCfg.urlPrefix}/geo/geosite/category-speedtest.srs";
+        tag = "geosite-hsbc";
+        url = "${ruleSetCfg.urlPrefix}/geo/geosite/hsbc.srs";
       }
     );
-    rules = mylib.mkSbRules false out rules;
   };
 }

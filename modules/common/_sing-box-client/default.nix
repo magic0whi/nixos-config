@@ -13,7 +13,7 @@ args@{
 }:
 let
   # domestic_dns = "dns.alidns.com";
-  domestic_dns = "dot.pub";
+  domestic_dns = "sm2.doh.pub";
 
   shared_cfg = {
     selectorCfg = {
@@ -26,10 +26,10 @@ let
       ]
       # Regions
       ++ (map (outbound: outbound.tag)
-        (import ./10-regions.nix {
+        (import ./11-regions.nix {
           dnsServerCfg = null;
-          inherit lib pkgs config;
-        }).outbounds
+          inherit lib;
+        }).outbounds.content
       );
     };
     dnsServerCfg = {
@@ -39,7 +39,7 @@ let
       };
       direct = {
         server = domestic_dns;
-        type = "tls";
+        type = "https";
         domain_resolver = "Bootstrap";
       };
     };
@@ -56,42 +56,30 @@ lib.mkMerge (
         timestamp = false;
       };
       dns = {
-        final = "Default";
-        servers = lib.mkOrder 250 (
-          lib.optional (!isRouter) {
+        final = if isRouter then "Direct" else "Default";
+        servers = lib.mkOrder (0.1 * 2000) [
+          {
             tag = "FakeIP";
             type = "fakeip";
             inet4_range = "198.18.0.0/15";
             inet6_range = "fc00::/18";
           }
-          ++ [
-            {
-              tag = "Bootstrap";
-              type = "udp";
-              server = "223.5.5.5";
+          {
+            tag = "Bootstrap";
+            type = "udp";
+            server = "223.5.5.5";
+          }
+
+          (shared_cfg.dnsServerCfg.direct // { tag = "Direct"; })
+
+          (
+            shared_cfg.dnsServerCfg.default
+            // {
+              tag = "Default";
+              detour = "Default";
             }
-            {
-              tag = "Direct";
-              type = "https";
-              server = "sm2.doh.pub";
-              domain_resolver = "Bootstrap";
-            }
-            (
-              shared_cfg.dnsServerCfg.default
-              // {
-                tag = "Default";
-                detour = "Default";
-              }
-            )
-            # {
-            #   tag = "Direct";
-            #   type = "tls";
-            #   server = "dot.pub";
-            #   domain_resolver = "Bootstrap";
-            # }
-            # (shared_cfg.dnsServerCfg.direct // { tag = "Direct"; })
-          ]
-        );
+          )
+        ];
         # The default rule uses the following matching logic:
         # (domain || domain_suffix || domain_keyword || domain_regex || geosite) &&
         # (port || port_range) &&
@@ -100,31 +88,29 @@ lib.mkMerge (
         # other fields
         # Ref: https://sing-box.sagernet.org/configuration/dns/rule/#default-fields
         # FaleIP; Clash mode
-        rules = lib.mkOrder 750 (
-          [
-            # Let global & direct mode get RealIP
-            {
-              server = "Default";
-              clash_mode = "global";
-            }
-            {
-              server = "Direct";
-              clash_mode = "direct";
-            }
-          ]
-          ++ lib.optional (!isRouter) {
+        rules = lib.mkOrder const.sb.routeDnsHijackPri [
+          # Set before fakeIP rule to let global & direct mode get RealIP
+          {
+            server = "Default";
+            clash_mode = "global";
+          }
+          {
+            server = "Direct";
+            clash_mode = "direct";
+          }
+          {
             server = "FakeIP";
             query_type = [
               "A"
               "AAAA"
             ];
           }
-        );
+        ];
       };
       experimental = {
         cache_file = {
           enabled = true;
-          store_fakeip = !isRouter;
+          store_fakeip = true;
           store_dns = true;
         };
         clash_api = {
@@ -195,7 +181,7 @@ lib.mkMerge (
           }
         ])
       ];
-      outbounds = lib.mkOrder 250 [
+      outbounds = lib.mkOrder (0.1 * 2000 - 1) [
         {
           tag = "Direct";
           type = "direct";
@@ -219,7 +205,7 @@ lib.mkMerge (
       route = {
         auto_detect_interface = lib.mkDefault true;
         default_domain_resolver = "Bootstrap";
-        final = "Default";
+        final = if isRouter then "Direct" else "Default";
         # The default rule uses the following matching logic:
         # (domain || domain_suffix || domain_keyword || domain_regex || geosite || geoip || ip_cidr || ip_is_private) &&
         # (port || port_range) &&
@@ -227,35 +213,40 @@ lib.mkMerge (
         # (source_port || source_port_range) &&
         # other fields
         # Ref: https://sing-box.sagernet.org/configuration/route/rule/#default-fields
-        rules = lib.mkOrder 750 [
+        #
+        # Most rules depend on protocol sniff and DNS hijack, set priority = (mkBefore - 2)
+        rules = lib.mkMerge [
           # https://sing-box.sagernet.org/configuration/route/sniff/
-          {
-            action = "sniff";
-            inbound = [
-              "Tun"
-              "Mixed"
-            ];
-          }
+          (lib.mkOrder (const.sb.routeSniffPri) (
+            lib.singleton {
+              action = "sniff";
+              inbound = [
+                "Tun"
+                "Mixed"
+              ];
+            }
+          ))
 
-          {
-            clash_mode = "direct";
-            outbound = "Direct";
-          }
-
-          {
-            action = "hijack-dns";
-            mode = "or";
-            rules = [
-              { port = 53; }
-              { protocol = "dns"; }
-            ];
-            type = "logical";
-          }
-
-          {
-            clash_mode = "global";
-            outbound = "Default";
-          }
+          (lib.mkOrder (const.sb.routeDnsHijackPri) [
+            {
+              action = "hijack-dns";
+              type = "logical";
+              mode = "or";
+              rules = [
+                { port = 53; }
+                { protocol = "dns"; }
+              ];
+            }
+            # Put clash mode rule here, so it don't interfere the mobile DNS rule for Tailscale
+            {
+              clash_mode = "direct";
+              outbound = "Direct";
+            }
+            {
+              clash_mode = "global";
+              outbound = "Default";
+            }
+          ])
         ];
       };
     }

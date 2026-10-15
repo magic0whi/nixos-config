@@ -7,11 +7,8 @@
   ...
 }:
 let
-  out = "HSBC";
-  rules = [
-    { domain_suffix = "checkfreeweb.com"; } # HSBC US Bank-to-Bank
-    { rule_set = "geosite-hsbc"; }
-  ];
+  out = "Stripe";
+  rules = [ { rule_set = "geosite-stripe"; } ];
 in
 {
   dns = {
@@ -28,17 +25,17 @@ in
     selectorCfg
     // {
       tag = out;
-      default = "Direct";
+      default = "HongKong";
     }
   );
   route = {
+    rules = mylib.mkSbRules false out rules;
     rule_set = lib.singleton (
       ruleSetCfg.defaultCfg
       // {
-        tag = "geosite-hsbc";
-        url = "${ruleSetCfg.urlPrefix}/geo/geosite/hsbc.srs";
+        tag = "geosite-stripe";
+        url = "${ruleSetCfg.urlPrefix}/geo/geosite/stripe.srs";
       }
     );
-    rules = mylib.mkSbRules false out rules;
   };
 }

@@ -61,7 +61,7 @@ let
 in
 {
   outbounds = lib.mkMerge [
-    (lib.mkBefore (
+    (lib.mkOrder (0.1 * 2000) (
       lib.singleton {
         tag = "Auto";
         type = "urltest";
@@ -71,6 +71,6 @@ in
         outbounds = map (node: node.tag) nodes;
       }
     ))
-    (lib.mkAfter nodes)
+    (lib.mkOrder 0 nodes)
   ];
 }

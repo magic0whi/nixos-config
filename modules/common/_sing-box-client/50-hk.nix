@@ -7,7 +7,6 @@ let
       rule_set = [
         "geosite-hketgroup"
         "geosite-line"
-        "geosite-citic!cn"
       ];
     }
   ];
@@ -15,6 +14,7 @@ in
 {
   dns.rules = mylib.mkSbRules true out rules;
   route = {
+    rules = mylib.mkSbRules false out rules;
     rule_set =
       let
         inherit (ruleSetCfg) urlPrefix defaultCfg;
@@ -28,11 +28,6 @@ in
           tag = "geosite-line";
           url = "${urlPrefix}/geo/geosite/line.srs";
         }
-        {
-          tag = "geosite-citic!cn";
-          url = "${urlPrefix}/geo/geosite/citic@!cn.srs";
-        }
       ];
-    rules = mylib.mkSbRules false out rules;
   };
 }

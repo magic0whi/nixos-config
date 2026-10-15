@@ -2,25 +2,38 @@
   dnsServerCfg,
   lib,
   mylib,
-  ruleSetCfg,
   selectorCfg,
   ...
 }:
 let
-  out = "OKX";
+  out = "VoWiFi";
   rules = [
     {
-      domain_suffix = [
-        "okcoin.com"
-        "okx.ac"
-        "okx.cab"
+      network = "udp";
+      port = [
+        500
+        4500
       ];
     }
-    { rule_set = "geosite-okx"; }
+
+    {
+      network = "tcp";
+      port = 143;
+    }
+
+    {
+      domain_suffix = [
+        "3gppnetwork.org"
+        "jibecloud.net"
+        "ee.co.uk"
+        "hkcsl.com"
+      ];
+    }
   ];
 in
 {
   dns = {
+    # NOTE: The 8.8.8.8 cannot access if use Direct outbound
     servers = lib.singleton (
       dnsServerCfg.default
       // {
@@ -37,14 +50,5 @@ in
       default = "Default";
     }
   );
-  route = {
-    rule_set = lib.singleton (
-      ruleSetCfg.defaultCfg
-      // {
-        tag = "geosite-okx";
-        url = "${ruleSetCfg.urlPrefix}/geo/geosite/okx.srs";
-      }
-    );
-    rules = mylib.mkSbRules false out rules;
-  };
+  route.rules = mylib.mkSbRules false out rules;
 }
