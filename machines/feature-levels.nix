@@ -20,7 +20,6 @@
         helix.overlays.default
       ];
       seat = map mylib.relativeToRoot [
-        "${common}/sing-box-subscribe.nix"
         "${common}/sing-box-client.nix"
         "${common}/fonts.nix"
         "${common}/packages.nix"
@@ -58,7 +57,6 @@
 
       seat = {
         tui = map mylib.relativeToRoot [
-          "${headless}/sing-box-subscribe.nix"
           "${headless}/firewall-client.nix"
           "${headless}/fhs.nix"
           "${headless}/fonts.nix"

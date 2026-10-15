@@ -11,7 +11,6 @@ let
 in
 {
   config = lib.mkIf cfg.enable {
-    # TIP: After provision you can manually process with sing-box-subscribe
     systemd.services.sing-box.serviceConfig.ExecStartPre = [
       # Generate alter config.json for mobile devices
       # NOTE: sing-box will treat all the *.json in the working directory as splitted config

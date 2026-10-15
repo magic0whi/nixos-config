@@ -27,7 +27,6 @@
           };
           sb_nodes_anytls_password = { inherit sopsFile; };
           sb_ts_auth_key = { inherit sopsFile; };
-          sb_subscribe_url = { inherit sopsFile; };
         }
     )
     ++ (lib.optionals (!pkgs.stdenv.hostPlatform.isDarwin) (
@@ -43,31 +42,6 @@
   );
 
   services = lib.mkMerge [
-    {
-      sing-box.subscribe = {
-        # enable = true;
-        settings = {
-          subscribes = lib.singleton {
-            User-Agent = "ClashMetaForAndroid/2.11.20.Meta";
-            emoji = 1;
-            enabled = true;
-            prefix = "";
-            subgroup = "";
-            tag = "tag_1";
-            url._secret = config.sops.secrets."sb_subscribe_url".path;
-          };
-          auto_set_outbounds_dns = {
-            proxy = "";
-            direct = "";
-          };
-          save_config_path = "./config.json";
-          auto_backup = false;
-          exclude_protocol = "ssr";
-          config_template = "";
-          Only-nodes = false;
-        };
-      };
-    }
     {
       sing-box = {
         enable = true;
