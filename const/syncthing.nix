@@ -77,7 +77,7 @@ in
                 devices = desktops;
               };
             })
-            (lib.mkIf (!pkgs.stdenv.isDarwin) {
+            (lib.mkIf (!pkgs.stdenv.hostPlatform.isDarwin) {
               Games = {
                 path = lib.mkDefault "${prefix}/Games";
                 devices = lib.subtractLists (builtins.attrNames device.darwins) desktops ++ servers;

@@ -144,7 +144,7 @@
             onEdit = true;
           };
           forwardSearch =
-            if pkgs.stdenv.isDarwin then
+            if pkgs.stdenv.hostPlatform.isDarwin then
               {
                 # SyncTeX for Darwin/NixOS
                 executable = "sioyek";

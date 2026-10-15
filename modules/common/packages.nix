@@ -36,7 +36,7 @@
       pciutils # lspci
       usbutils # lsusb
     ])
-    ++ lib.optionals (!pkgs.stdenv.isDarwin) (
+    ++ lib.optionals (!pkgs.stdenv.hostPlatform.isDarwin) (
       with pkgs;
       [
         # Misc

@@ -20,7 +20,7 @@
               '';
         }
         # VM tests
-        (lib.mkIf (!pkgs.stdenv.isDarwin) (import ./tests { inherit pkgs; }))
+        (lib.mkIf (!pkgs.stdenv.hostPlatform.isDarwin) (import ./tests { inherit pkgs; }))
       ];
     };
 }

@@ -2,7 +2,7 @@
 {
   ## BEGIN browsers.nix
   # https://github.com/nix-community/home-manager/blob/master/modules/programs/chromium.nix
-  programs.google-chrome = lib.mkIf (!pkgs.stdenv.isDarwin) {
+  programs.google-chrome = lib.mkIf (!pkgs.stdenv.hostPlatform.isDarwin) {
     enable = true;
     # https://wiki.archlinux.org/title/Chromium#Native_Wayland_support
     commandLineArgs = [
@@ -18,7 +18,7 @@
     enable = true;
     # Use gnome-keyring as password store
     package =
-      if (!pkgs.stdenv.isDarwin) then
+      if (!pkgs.stdenv.hostPlatform.isDarwin) then
         pkgs.vscode.override { commandLineArgs = [ "--password-store=gnome-libsecret" ]; }
       else
         pkgs.vscode;

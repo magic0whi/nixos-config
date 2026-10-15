@@ -17,7 +17,7 @@
           _: secret:
           lib.mkMerge [
             secret
-            ((lib.optionalAttrs (!pkgs.stdenv.isDarwin)) { restartUnits = [ "sing-box.service" ]; })
+            ((lib.optionalAttrs (!pkgs.stdenv.hostPlatform.isDarwin)) { restartUnits = [ "sing-box.service" ]; })
           ]
         )
         {
@@ -30,7 +30,7 @@
           sb_subscribe_url = { inherit sopsFile; };
         }
     )
-    ++ (lib.optionals (!pkgs.stdenv.isDarwin) (
+    ++ (lib.optionals (!pkgs.stdenv.hostPlatform.isDarwin) (
       map (num: { "easytier_peer_${num}".restartUnits = [ "sing-box.service" ]; }) [
         "0"
         "1"
@@ -89,7 +89,7 @@
         };
       };
     }
-    (lib.optionalAttrs (!pkgs.stdenv.isDarwin) {
+    (lib.optionalAttrs (!pkgs.stdenv.hostPlatform.isDarwin) {
       networkd-dispatcher = {
         enable = true;
         rules.restart-sing-box = {

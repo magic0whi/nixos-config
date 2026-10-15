@@ -82,7 +82,7 @@
       targzls = "tar -I 'nix run nixpkgs#pigz --' -tvf";
     }
 
-    (lib.mkIf (!pkgs.stdenv.isDarwin) {
+    (lib.mkIf (!pkgs.stdenv.hostPlatform.isDarwin) {
       Ci = "wl-copy";
       Co = "wl-paste";
       Coimg = "Co --type image";
@@ -98,7 +98,7 @@
   programs = {
     zsh = {
       enable = true;
-      autosuggestion = lib.mkIf pkgs.stdenv.isDarwin {
+      autosuggestion = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
         enable = true;
         highlight = "fg=60";
         strategy = [

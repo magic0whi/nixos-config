@@ -6,7 +6,7 @@
   ...
 }:
 {
-  system.stateVersion = if pkgs.stdenv.isDarwin then const.darwinStateVersion else const.nixosStateVersion;
+  system.stateVersion = if pkgs.stdenv.hostPlatform.isDarwin then const.darwinStateVersion else const.nixosStateVersion;
 
   # Add my self-signed CA certificate to the system-wide trust store.
   security.pki.certificateFiles = [ "${const.secretsDir}/proteus_ca.pub.pem" ];
@@ -16,7 +16,7 @@
   ## BEGIN services_ssh.nix
   services.openssh = lib.mkMerge [
     { enable = true; }
-    (lib.optionalAttrs (!pkgs.stdenv.isDarwin) { settings.PasswordAuthentication = lib.mkDefault false; }) # Disable password login
+    (lib.optionalAttrs (!pkgs.stdenv.hostPlatform.isDarwin) { settings.PasswordAuthentication = lib.mkDefault false; }) # Disable password login
   ];
   ## END services_ssh.nix
 
@@ -38,9 +38,9 @@
         };
         ${const.username} = {
           description = const.userFullName;
-          uid = if pkgs.stdenv.isDarwin then 501 else 1000;
+          uid = if pkgs.stdenv.hostPlatform.isDarwin then 501 else 1000;
           # home-manager needs it
-          home = if pkgs.stdenv.isDarwin then "/Users/${const.username}" else "/home/${const.username}";
+          home = if pkgs.stdenv.hostPlatform.isDarwin then "/Users/${const.username}" else "/home/${const.username}";
           # Public Keys that can be used to login to all my PCs, MacBooks, and servers.
           #
           # Since the authority range is pretty large, we must strengthen its security:
@@ -57,7 +57,7 @@
         };
       };
     }
-    (lib.optionalAttrs (!pkgs.stdenv.isDarwin) {
+    (lib.optionalAttrs (!pkgs.stdenv.hostPlatform.isDarwin) {
       defaultUserShell = if config.programs.zsh.enable then pkgs.zsh else "/bin/sh";
       mutableUsers = false; # Don't allow mutate users outside the config
       users.${const.username} = {
@@ -71,7 +71,7 @@
         ];
       };
     })
-    (lib.mkIf pkgs.stdenv.isDarwin {
+    (lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
       users.${const.username} = {
         # nix-darwin doesn't have `users.defaultUserShell`. If this don't work, try
         # `chsh -s /run/current-system/sw/bin/zsh`

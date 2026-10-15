@@ -34,7 +34,7 @@
         bold_italic.family = const.monospace.name;
         italic.family = const.monospace.name;
         normal.family = const.monospace.name;
-        size = if pkgs.stdenv.isDarwin then 14 else 10;
+        size = if pkgs.stdenv.hostPlatform.isDarwin then 14 else 10;
       };
       terminal = {
         # shell = { # Spawn a nushell in login mode via `bash`

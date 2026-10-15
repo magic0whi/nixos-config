@@ -182,7 +182,7 @@ in
             }
           ]
           ++ (lib.optionals ((lib.length hmModules) > 0) [
-            home-manager.${if pkgs.stdenv.isDarwin then "darwinModules" else "nixosModules"}.home-manager
+            home-manager.${if pkgs.stdenv.hostPlatform.isDarwin then "darwinModules" else "nixosModules"}.home-manager
             {
               home-manager.backupFileExtension = "home-manager.backup";
               home-manager.extraSpecialArgs = special_args;

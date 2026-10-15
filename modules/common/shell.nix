@@ -96,7 +96,7 @@
     }
 
     # We cannot use `lib.mkIf` if the options does not exist
-    (lib.optionalAttrs (!pkgs.stdenv.isDarwin) {
+    (lib.optionalAttrs (!pkgs.stdenv.hostPlatform.isDarwin) {
       autosuggestions = {
         enable = true;
         highlightStyle = "fg=60";
@@ -109,7 +109,7 @@
       syntaxHighlighting.enable = true;
     })
 
-    (lib.optionalAttrs pkgs.stdenv.isDarwin { enableSyntaxHighlighting = true; })
+    (lib.optionalAttrs pkgs.stdenv.hostPlatform.isDarwin { enableSyntaxHighlighting = true; })
   ];
   environment.variables = lib.mkIf (config.home-manager.users.${const.username}.programs.helix.defaultEditor or false) {
     EDITOR = "hx";

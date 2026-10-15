@@ -8,11 +8,11 @@
   programs.mpv = {
     enable = true;
     package =
-      if pkgs.stdenv.isDarwin then
+      if pkgs.stdenv.hostPlatform.isDarwin then
         pkgs.mpv-unwrapped # https://github.com/NixOS/nixpkgs/issues/356860
       else
         pkgs.mpv;
-    scripts = lib.optionals (!pkgs.stdenv.isDarwin) [ pkgs.mpvScripts.mpris ];
+    scripts = lib.optionals (!pkgs.stdenv.hostPlatform.isDarwin) [ pkgs.mpvScripts.mpris ];
     defaultProfiles = [
       "common"
       "gpu-hq"

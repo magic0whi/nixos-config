@@ -9,7 +9,7 @@
 {
   sops =
     let
-      mkRestartUnits = lib.optionalAttrs (!pkgs.stdenv.isDarwin) {
+      mkRestartUnits = lib.optionalAttrs (!pkgs.stdenv.hostPlatform.isDarwin) {
         restartUnits = map (name: "easytier-${name}.service") (builtins.attrNames config.services.easytier.instances);
       };
       nodes = [
@@ -87,7 +87,7 @@
             relay-network-whitelist = ""; # Disable forwarding for other networks
             relay_all_peer_rpc = true; # Help others hole punching
           }
-          (lib.mkIf (!pkgs.stdenv.isDarwin) { dev_name = "et-main"; })
+          (lib.mkIf (!pkgs.stdenv.hostPlatform.isDarwin) { dev_name = "et-main"; })
         ];
         stun_servers = [
           "stun.miwifi.com"

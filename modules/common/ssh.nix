@@ -67,7 +67,7 @@
     }
     ## END Common
     ## BEGIN NixOS
-    (lib.optionalAttrs (!pkgs.stdenv.isDarwin) {
+    (lib.optionalAttrs (!pkgs.stdenv.hostPlatform.isDarwin) {
       startAgent = !config.home-manager.users.${const.username}.services.gpg-agent.enableSshSupport;
     })
     ## END NixOS

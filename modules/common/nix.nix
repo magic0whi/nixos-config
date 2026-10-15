@@ -13,7 +13,7 @@
         automatic = true;
         options = "--delete-older-than 7d";
       }
-      (lib.optionalAttrs (!pkgs.stdenv.isDarwin) { dates = "weekly"; })
+      (lib.optionalAttrs (!pkgs.stdenv.hostPlatform.isDarwin) { dates = "weekly"; })
     ];
     channel.enable = false; # Remove nix-channel related tools & configs, use flakes instead
     # Manual optimise storage: nix-store --optimise
@@ -23,7 +23,7 @@
       warn-dirty = false
     '';
     settings = lib.mkMerge [
-      (lib.optionalAttrs (!pkgs.stdenv.isDarwin) { auto-optimise-store = true; }) # Optimise the store after each build
+      (lib.optionalAttrs (!pkgs.stdenv.hostPlatform.isDarwin) { auto-optimise-store = true; }) # Optimise the store after each build
       {
         experimental-features = [
           "nix-command"
@@ -47,7 +47,7 @@
         trusted-public-keys = [ "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=" ];
         builders-use-substitutes = true;
         sandbox =
-          if pkgs.stdenv.isDarwin then
+          if pkgs.stdenv.hostPlatform.isDarwin then
             "relaxed" # KeePassXC
           else
             true;

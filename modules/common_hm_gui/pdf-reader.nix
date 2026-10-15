@@ -1,7 +1,7 @@
 { pkgs, ... }:
 {
   programs =
-    if pkgs.stdenv.isDarwin then
+    if pkgs.stdenv.hostPlatform.isDarwin then
       {
         # macOS
         sioyek = {

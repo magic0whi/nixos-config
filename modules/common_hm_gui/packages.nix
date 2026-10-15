@@ -38,7 +38,7 @@
       # cava # For visualizing audio
     ])
     ++ lib.singleton (
-      if pkgs.stdenv.isDarwin then
+      if pkgs.stdenv.hostPlatform.isDarwin then
         pkgs.anki-bin
       else
         (pkgs.anki-bin.overrideAttrs (prev: {
@@ -54,7 +54,7 @@
           '';
         }))
     )
-    ++ lib.optionals (!pkgs.stdenv.isDarwin) (
+    ++ lib.optionals (!pkgs.stdenv.hostPlatform.isDarwin) (
       with pkgs;
       [
         blender # 3D modeling, currently broken on darwin

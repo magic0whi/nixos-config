@@ -9,7 +9,7 @@
     enable = true;
     # As of Jun 1, 2025, pkgs.ghostty is still marked as broken on MacOS (aarch64-darwin)
     # TIP: Use `pkgs.emptyFile` (or `pkgs.emptyDirectory` or `null` if formers don't work) as a dummy package
-    package = if pkgs.stdenv.isDarwin then pkgs.ghostty-bin else pkgs.ghostty;
+    package = if pkgs.stdenv.hostPlatform.isDarwin then pkgs.ghostty-bin else pkgs.ghostty;
     # https://ghostty.org/docs/config/reference
     settings = lib.mkMerge [
       {
@@ -22,7 +22,7 @@
         scrollback-limit = 20000;
       }
       # Options that only available on macOS
-      (lib.optionalAttrs pkgs.stdenv.isDarwin {
+      (lib.optionalAttrs pkgs.stdenv.hostPlatform.isDarwin {
         macos-option-as-alt = "left";
         background-opacity = 0.93;
         background-blur = true;
