@@ -4,8 +4,9 @@ let
   rules = [
     {
       domain_suffix = [
-        "wenziwanka.com"
+        "linux.do"
         "shuzijumin.com"
+        "wenziwanka.com"
       ];
     }
   ];
