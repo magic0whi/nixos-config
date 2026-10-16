@@ -71,6 +71,7 @@
         tag = "Direct";
         type = "direct";
       };
+      http_clients = lib.singleton { tag = "Default"; };
       route = {
         rules = [
           {
@@ -95,8 +96,7 @@
         ];
         rule_set =
           let
-            inherit (const.sb.ruleSetCfg) urlPrefix;
-            defaultCfg = removeAttrs const.sb.ruleSetCfg.defaultCfg [ "http_client" ];
+            inherit (const.sb.ruleSetCfg) urlPrefix defaultCfg;
           in
           map (rule_set: defaultCfg // rule_set) [
             {
