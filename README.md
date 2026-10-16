@@ -40,11 +40,11 @@ Or use `nixos-anywhere` for unattended installation (example using `Proteus-NixO
 IP=11.4.51.4
 Machine=Proteus-NixOS-0
 nix run nixpkgs#nixos-anywhere -- -f .#$Machine --phases kexec proteus@$IP \
-  --kexec https://gh-proxy.org/https://github.com/nix-community/nixos-images/releases/download/nixos-25.05/nixos-kexec-installer-noninteractive-x86_64-linux.tar.gz
+  --kexec https://github.com/nix-community/nixos-images/releases/download/nixos-25.05/nixos-kexec-installer-noninteractive-x86_64-linux.tar.gz
 nix run nixpkgs#nixos-anywhere -- -f .#$Machine --phases disko --disko-mode format root@$IP
 nix run nixpkgs#nixos-anywhere -- -f .#$Machine --phases disko --disko-mode mount root@$IP
 nix run nixpkgs#nixos-anywhere -- -f .#$Machine --phases install root@$IP
-# Check everything ok, then move critical files to `/mnt/persistent`, see above
+# Check everything ok, then *move critical files to `/mnt/persistent`*, see above
 # Finally reboot
 nix run nixpkgs#nixos-anywhere -- -f .#$Machine --phases reboot root@$IP
 # After reboot, enroll the tpm key
