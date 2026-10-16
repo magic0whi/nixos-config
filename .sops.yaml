@@ -9,7 +9,7 @@ keys:
   - &Proteus-NixOS-0 age125zqqjhess357kqc556n8zy7da6tq9hxnn85yzynuhdxlxljhveqcv7gjh
   - &Proteus-NixOS-1 age14peangqx8cc42grlrffkj9n6dvjqp4zkmdxppsh9d5nx5j96256smhsgdn
   - &Proteus-NixOS-2 age1nssmjhktf7gdxatr2mysnf6t0q5e9aqzp6vnvtlxvqw4pr3y7ewslsqq6z
-  - &Proteus-NixOS-3 age1whvg3n0nd8duv6t6c03ejkh4ntfnn0ch7jnqz4sdcjkxd526jarsean0ke
+  - &Proteus-NixOS-3 age155dv4g43dcvjg8nk6vtz5njeajakd5zxuqszzvg0qp4rtze9v4nqgxsyxz
   - &Proteus-NixOS-4 age1ktvdkyckex6pzprkxfutgeqhdygxfw6fl75fcntd8wzqpf8mgpuq7mk4l8
   - &Proteus-NixOS-5 age1yp5ep6qsw6k3sp9lzr890f4zqfjdeg3k2jqrmdr70vumen9kr4ashjyks6
 # TIP: To rotate a encrypted file with new recipients

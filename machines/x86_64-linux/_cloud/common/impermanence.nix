@@ -19,7 +19,9 @@
     serviceConfig.Type = "oneshot";
     script =
       let
-        subvolumes = config.disko.devices.disk.main.content.partitions.root.content.content.subvolumes;
+        root_part = config.disko.devices.disk.main.content.partitions.root.content;
+        # btrfs may sit directly on the partition or inside a LUKS container
+        subvolumes = (if root_part.type == "luks" then root_part.content else root_part).subvolumes;
 
         root_subvol = lib.pipe subvolumes [
           (lib.filterAttrs (_: sv: sv.mountpoint == "/"))
