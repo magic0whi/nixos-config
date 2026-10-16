@@ -28,22 +28,22 @@ let
     # {
     #   tag = "Taiwan";
     #   type = "selector";
-    #   outbounds = [ ];
+    #   outbounds = [ "Block" ];
     # }
     # {
     #   tag = "Singapore";
     #   type = "selector";
-    #   outbounds = [ ];
+    #   outbounds = [ "Block" ];
     # }
     # {
     #   tag = "Japan";
     #   type = "selector";
-    #   outbounds = [ "Proteus-NixOS-3" ];
+    #   outbounds = [ "Block" ];
     # }
     {
       tag = "Germany";
       type = "selector";
-      outbounds = [ "Block" ];
+      outbounds = [ "Proteus-NixOS-3" ];
     }
     # {
     #   tag = "Others";
