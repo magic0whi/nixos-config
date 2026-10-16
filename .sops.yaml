@@ -8,7 +8,7 @@ keys:
   - &Proteus-Desktop age1yv5rv2s3pgc0pxy03c560lz746s9r2qp3exzqq5m3equ5yjtsexscja2r9
   - &Proteus-NixOS-0 age125zqqjhess357kqc556n8zy7da6tq9hxnn85yzynuhdxlxljhveqcv7gjh
   - &Proteus-NixOS-1 age14peangqx8cc42grlrffkj9n6dvjqp4zkmdxppsh9d5nx5j96256smhsgdn
-  - &Proteus-NixOS-2 age1xsge7vg6qnschk94pzymd5dk4q2ymcl5xx55aeeg8y78n0dja4fsdnz4wp
+  - &Proteus-NixOS-2 age1nssmjhktf7gdxatr2mysnf6t0q5e9aqzp6vnvtlxvqw4pr3y7ewslsqq6z
   - &Proteus-NixOS-3 age1whvg3n0nd8duv6t6c03ejkh4ntfnn0ch7jnqz4sdcjkxd526jarsean0ke
   - &Proteus-NixOS-4 age1ktvdkyckex6pzprkxfutgeqhdygxfw6fl75fcntd8wzqpf8mgpuq7mk4l8
   - &Proteus-NixOS-5 age1yp5ep6qsw6k3sp9lzr890f4zqfjdeg3k2jqrmdr70vumen9kr4ashjyks6
