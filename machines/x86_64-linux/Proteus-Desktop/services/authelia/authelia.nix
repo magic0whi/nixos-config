@@ -191,6 +191,12 @@ in
           # `nix run nixpkgs#authelia -- crypto hash validate --password "$(systemd-ask-password)" '$pbkdf2-sha512$310000$...'`
           # clients = [ ]; # Splited to standalone nix files
         };
+        webauthn = {
+          # Ref: https://www.authelia.com/configuration/second-factor/webauthn
+          enable_passkey_login = true;
+          # let a passkey count as 2FA by itself.
+          experimental_enable_passkey_uv_two_factors = true;
+        };
       };
   };
 
