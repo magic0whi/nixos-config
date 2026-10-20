@@ -6,6 +6,7 @@
   ...
 }:
 let
+  pri = 0.25;
   out = "Direct";
   rules = [
     {
@@ -19,7 +20,7 @@ let
   ];
 in
 {
-  dns.rules = lib.mkBefore (mylib.mkSbRules true out rules); # Before FakeIP rules
+  dns.rules = lib.mkOrder (pri * 2000) (mylib.mkSbRules true out rules); # Before FakeIP rules
   route = {
     rule_set = lib.singleton (
       ruleSetCfg.defaultCfg
@@ -33,7 +34,7 @@ in
         mkSbRules = mylib.mkSbRules false;
       in
       lib.mkMerge [
-        (lib.mkBefore (
+        (lib.mkOrder (pri * 1000) (
           mkSbRules out [
             { ip_cidr = [ "10.0.0.0/24" ]; }
             { port_range = "11010:11013"; }

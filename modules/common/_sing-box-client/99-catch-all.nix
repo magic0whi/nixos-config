@@ -8,13 +8,13 @@
   ...
 }:
 let
-  pri = 0.99 * 2000;
+  pri = 0.99;
   out = "Direct";
 
   rules = [ { rule_set = [ "geosite-cn" ]; } ];
 in
 {
-  dns.rules = lib.mkOrder pri (
+  dns.rules = lib.mkOrder (pri * 2000) (
     mylib.mkSbRules true out rules
     ++ lib.optionals (config.services.sing-box.settings.dns.final != "Direct") [
       {

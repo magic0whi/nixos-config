@@ -1,6 +1,6 @@
 { lib, mylib, ... }:
 let
-  pri = 0.01 * 2000;
+  pri = 0.01;
   defCfg.action = "reject";
   rules = lib.singleton {
     domain_suffix = [
@@ -11,12 +11,12 @@ let
   };
 in
 {
-  dns.rules = lib.mkOrder pri (mylib.mkSbRules' true defCfg rules);
+  dns.rules = lib.mkOrder (pri * 2000) (mylib.mkSbRules' true defCfg rules);
   route.rules =
     let
       mkSbRules' = mylib.mkSbRules' false;
     in
-    lib.mkOrder pri (
+    lib.mkOrder (pri * 1000) (
       mkSbRules' defCfg (
         lib.singleton {
           process_name = [

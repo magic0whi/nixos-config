@@ -10,6 +10,7 @@
   ...
 }:
 let
+  pri = 0.25;
   out = "Direct";
   rules = [
     { domain_suffix = [ "syncthing.net" ]; }
@@ -26,14 +27,14 @@ let
 in
 {
   # Before FakeIP rule so all resolve to RealIP
-  dns.rules = lib.mkBefore (mylib.mkSbRules true out rules);
+  dns.rules = lib.mkOrder (pri * 2000) (mylib.mkSbRules true out rules);
   route = {
     rules =
       let
         mkSbRules = mylib.mkSbRules false;
       in
       lib.mkMerge [
-        (lib.mkBefore (
+        (lib.mkOrder (pri * 1000) (
           mkSbRules out (
             rules
             # BEGIN Processes rules

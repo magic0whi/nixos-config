@@ -8,6 +8,7 @@
   ...
 }:
 let
+  pri = 0.25;
   out = "Tailscale";
   rules = {
     default =
@@ -62,7 +63,7 @@ lib.mkMerge [
         let
           mkSbRules = mylib.mkSbRules true;
         in
-        lib.mkBefore (
+        lib.mkOrder (pri * 2000) (
           builtins.concatMap (_rules: mkSbRules _rules.out _rules.rules) rules.default ++ mkSbRules "myNs" rules.my_domain
         );
     };
@@ -78,7 +79,7 @@ lib.mkMerge [
         let
           mkSbRules = mylib.mkSbRules false;
         in
-        lib.mkBefore (
+        lib.mkOrder (pri * 1000) (
           mkSbRules "Direct" [
             { process_path_regex = [ ".*tailscaled.*" ]; }
             {

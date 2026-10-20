@@ -9,6 +9,7 @@ let
   rules = [
     {
       domain_suffix = [
+        "naixi.net"
         "shuzijumin.com"
         "wenziwanka.com"
       ];
@@ -19,16 +20,27 @@ in
 {
   dns.rules = mylib.mkSbRules true out rules;
   route = {
-    rules = mylib.mkSbRules false out rules;
+    rules =
+      let
+        mkSbRules = mylib.mkSbRules false;
+      in
+      lib.mkMerge [
+        (lib.mkBefore (mkSbRules out [ { rule_set = [ "geoip-telegram" ]; } ]))
+        (mkSbRules out rules)
+      ];
     rule_set =
       let
         inherit (ruleSetCfg) urlPrefix defaultCfg;
       in
-      map (rule_set: defaultCfg // rule_set) (
-        lib.singleton {
+      map (rule_set: defaultCfg // rule_set) [
+        {
           tag = "geosite-gfw";
           url = "${urlPrefix}/geo/geosite/gfw.srs";
         }
-      );
+        {
+          tag = "geoip-telegram";
+          url = "${urlPrefix}/geo/geoip/telegram.srs";
+        }
+      ];
   };
 }
