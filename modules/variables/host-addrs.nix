@@ -1,5 +1,4 @@
 # Custom options as global variables
-# TODO: add an assert to prevent host from add other host's config
 args@{ config, lib, ... }:
 let
   isGlobal = args.isGlobal or false;
