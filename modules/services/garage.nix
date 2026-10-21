@@ -24,27 +24,20 @@ let
   garage_settings = config.services.garage.settings;
 in
 {
-  vars.hostAddrs.${hostname} =
+  vars.hostAddrs.${hostname}.easytier.subdomains =
     let
-      subdomains =
-        let
-          subs = [
-            "${hostname}.s3"
-            "*.${hostname}.s3"
-            "${hostname}.s3-pub"
-            "*.${hostname}.s3-pub"
-            "${hostname}.garage"
-            "admin-api-${hostname}.garage"
-          ];
-        in
-        {
-          A = subs;
-          AAAA = subs;
-        };
+      subs = [
+        "${hostname}.s3"
+        "*.${hostname}.s3"
+        "${hostname}.s3-pub"
+        "*.${hostname}.s3-pub"
+        "${hostname}.garage"
+        "admin-api-${hostname}.garage"
+      ];
     in
     {
-      tailscale = { inherit subdomains; };
-      easytier = { inherit subdomains; };
+      A = subs;
+      AAAA = subs;
     };
 
   sops =

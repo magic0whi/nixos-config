@@ -28,17 +28,10 @@ let
   machine_cfg_authelia = machineConfigs.${const.networking.findFirstHostBySubdomain "auth"}.config;
 in
 {
-  vars.hostAddrs.${config.networking.hostName} =
-    let
-      subdomains = {
-        A = [ "psql" ];
-        AAAA = [ "psql" ];
-      };
-    in
-    {
-      tailscale = { inherit subdomains; };
-      easytier = { inherit subdomains; };
-    };
+  vars.hostAddrs.${config.networking.hostName}.easytier.subdomains = {
+    A = [ "psql" ];
+    AAAA = [ "psql" ];
+  };
   networking.firewall.allowedTCPPorts = [ config.services.postgresql.settings.port ];
   sops.secrets =
     let

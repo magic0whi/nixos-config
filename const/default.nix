@@ -94,7 +94,6 @@ rec {
   };
 
   domain = "proteus.eu.org";
-  tailnet = "tailba6c3f.ts.net";
   networking = import ./networking.nix args;
 
   syncthing = ./syncthing.nix; # Usage: imports = [ const.syncthing ];

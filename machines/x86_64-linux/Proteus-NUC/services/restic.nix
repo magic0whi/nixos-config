@@ -32,6 +32,9 @@ in
 
   services.restic.backups =
     let
+      # Paths to backup
+      paths = [ config.services.paperless.exporter.directory ]; # Paperless
+
       hostname_s3_main = "Proteus-Desktop";
       machine_cfg_s3_main = machineConfigs.${hostname_s3_main}.config;
 
@@ -42,17 +45,14 @@ in
     in
     {
       main = {
+        inherit paths;
         repository = "s3:${hostname_s3_main}.s3.${const.domain}/backups/${hostname}";
         extraOptions = [ "s3.region=${machine_cfg_s3_main.services.garage.settings.s3_api.s3_region}" ];
-        # Paths to backup
-        paths = [
-          config.services.paperless.exporter.directory # Paperless
-          # "/var/lib/tailscale"
-        ];
       };
       gcp = lib.mkMerge [
         shared
         {
+          inherit paths;
           repository = "s3:${hostname_s3_gcp}.s3.${const.domain}:8443/backups/${hostname}";
           environmentFile = config.sops.templates."restic_gcp.env".path;
           extraOptions = [ "s3.region=${machine_cfg_s3_gcp.services.garage.settings.s3_api.s3_region}" ];
@@ -61,11 +61,6 @@ in
             # RandomizedDelaySec = "30m"; # Jitter
             Persistent = false; # Run immediately if system was off at scheduled time
           };
-          # Paths to backup
-          paths = [
-            config.services.paperless.exporter.directory # Paperless
-            # "/var/lib/tailscale"
-          ];
         }
       ];
       immich = lib.mkMerge [

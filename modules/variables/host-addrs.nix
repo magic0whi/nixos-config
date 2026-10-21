@@ -98,9 +98,9 @@ in
           subs = [ "immich" ];
         in
         {
-          tailscale = {
-            ipv4 = "100.64.161.20/10";
-            ipv6 = "fd7a:115c:a1e0::cd3a:a114/48";
+          easytier = {
+            ipv4 = "10.0.0.2/24";
+            ipv6 = "fdfe:dcba:9877::2/64";
             subdomains = {
               A = subs;
               AAAA = subs;

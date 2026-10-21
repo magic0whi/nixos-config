@@ -31,17 +31,10 @@ in
       };
     };
 
-  vars.hostAddrs.${hostname} =
-    let
-      subdomains = {
-        A = [ "restic-${hostname}.exporter" ];
-        AAAA = [ "restic-${hostname}.exporter" ];
-      };
-    in
-    {
-      tailscale = { inherit subdomains; };
-      easytier = { inherit subdomains; };
-    };
+  vars.hostAddrs.${hostname}.easytier.subdomains = {
+    A = [ "restic-${hostname}.exporter" ];
+    AAAA = [ "restic-${hostname}.exporter" ];
+  };
 
   # Currenly only export main backup metrics
   services.prometheus.exporters.restic = {

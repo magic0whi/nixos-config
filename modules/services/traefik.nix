@@ -8,20 +8,13 @@ let
   hostname = config.networking.hostName;
 in
 {
-  vars.hostAddrs.${config.networking.hostName} =
+  vars.hostAddrs.${config.networking.hostName}.easytier.subdomains =
     let
-      subdomains =
-        let
-          subs = [ "${hostname}.traefik" ];
-        in
-        {
-          A = subs;
-          AAAA = subs;
-        };
+      subs = [ "${hostname}.traefik" ];
     in
     {
-      tailscale = { inherit subdomains; };
-      easytier = { inherit subdomains; };
+      A = subs;
+      AAAA = subs;
     };
 
   networking.firewall = {

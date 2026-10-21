@@ -8,17 +8,10 @@
   ...
 }:
 {
-  vars.hostAddrs.${config.networking.hostName} =
-    let
-      subdomains = {
-        A = [ "ql" ];
-        AAAA = [ "ql" ];
-      };
-    in
-    {
-      tailscale = { inherit subdomains; };
-      easytier = { inherit subdomains; };
-    };
+  vars.hostAddrs.${config.networking.hostName}.easytier.subdomains = {
+    A = [ "ql" ];
+    AAAA = [ "ql" ];
+  };
   virtualisation.oci-containers.containers.qinglong = {
     image = "ghcr.io/whyour/qinglong@sha256:752926c705759f51032593b546adef5e7ab7e365784df7bf996a3b4ac68ce4fd";
     # autoStart = false; # equivalent to 'restart: unless-stopped', default true

@@ -12,17 +12,10 @@ let
   restartUnits = map (name: "authelia-${name}.service") (builtins.attrNames config.services.authelia.instances);
 in
 {
-  vars.hostAddrs.${hostname} =
-    let
-      subdomains = {
-        A = [ "auth" ];
-        AAAA = [ "auth" ];
-      };
-    in
-    {
-      tailscale = { inherit subdomains; };
-      easytier = { inherit subdomains; };
-    };
+  vars.hostAddrs.${hostname}.easytier.subdomains = {
+    A = [ "auth" ];
+    AAAA = [ "auth" ];
+  };
   sops.secrets =
     let
       sopsFile = "${const.secretsDir}/${hostname}.sops.yaml";
@@ -209,15 +202,10 @@ in
         allowed_hosts = lib.unique (lib.concatMap const.networking.findAllHostContains const.networking.oauthServices);
       in
       lib.concatMap (
-        _hostname:
-        (with const.networking.allHostAddrs.${_hostname}.easytier; [
+        _hostname: with const.networking.allHostAddrs.${_hostname}.easytier; [
           ipv4NoCidr
           ipv6NoCidr
-        ])
-        ++ (with const.networking.allHostAddrs.${_hostname}.tailscale; [
-          ipv4NoCidr
-          ipv6NoCidr
-        ])
+        ]
       ) allowed_hosts;
     dynamicConfigOptions.http =
       let

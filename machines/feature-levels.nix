@@ -13,7 +13,6 @@
         "${common}/nix.nix"
         "${common}/secrets.nix"
         "${common}/shell.nix"
-        "${common}/tailscale.nix"
       ];
       baseOverlays = with inputs; [
         prince213-nix-packages.overlays.default

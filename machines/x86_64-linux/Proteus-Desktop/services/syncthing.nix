@@ -7,17 +7,10 @@ let
   hostname = config.networking.hostName;
 in
 {
-  vars.hostAddrs.${config.networking.hostName} =
-    let
-      subdomains = {
-        A = [ "${hostname}.syncthing" ];
-        AAAA = [ "${hostname}.syncthing" ];
-      };
-    in
-    {
-      tailscale = { inherit subdomains; };
-      easytier = { inherit subdomains; };
-    };
+  vars.hostAddrs.${config.networking.hostName}.easytier.subdomains = {
+    A = [ "${hostname}.syncthing" ];
+    AAAA = [ "${hostname}.syncthing" ];
+  };
   services.traefik.dynamicConfigOptions.http = {
     routers.syncthing = {
       rule = "Host(`${hostname}.syncthing.${const.domain}`)";

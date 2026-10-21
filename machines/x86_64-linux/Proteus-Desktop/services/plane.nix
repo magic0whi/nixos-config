@@ -34,17 +34,10 @@ let
   };
 in
 {
-  vars.hostAddrs.${config.networking.hostName} =
-    let
-      subdomains = {
-        A = [ "plane" ];
-        AAAA = [ "plane" ];
-      };
-    in
-    {
-      tailscale = { inherit subdomains; };
-      easytier = { inherit subdomains; };
-    };
+  vars.hostAddrs.${config.networking.hostName}.easytier.subdomains = {
+    A = [ "plane" ];
+    AAAA = [ "plane" ];
+  };
 
   sops =
     let

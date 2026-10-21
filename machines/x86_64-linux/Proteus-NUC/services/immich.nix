@@ -12,17 +12,10 @@ let
   use_unix_socket = hostname == hostname_psql;
 in
 {
-  vars.hostAddrs.${hostname} =
-    let
-      subdomains = {
-        A = [ "immich" ];
-        AAAA = [ "immich" ];
-      };
-    in
-    {
-      tailscale = { inherit subdomains; };
-      easytier = { inherit subdomains; };
-    };
+  vars.hostAddrs.${hostname}.easytier.subdomains = {
+    A = [ "immich" ];
+    AAAA = [ "immich" ];
+  };
 
   sops =
     let

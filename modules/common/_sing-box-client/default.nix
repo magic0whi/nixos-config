@@ -139,9 +139,6 @@ lib.mkMerge (
             # Also note: these only exclude the target IP CIDR, if you add libvirt's net, DNS queries sent from VMs
             # would still be hijacked by sing-box
             route_exclude_address = [
-              # Tailscale has CIDR set to /32 /128, so I need to bypass correct CIDR maually
-              "100.64.0.0/10"
-              "fd7a:115c:a1e0::/48"
               # I have custom NS setup, so I still need to specify here to prevent sing-box hijack my NS queries
               "10.0.0.0/24"
               "fdfe:dcba:9877::/64"
@@ -237,7 +234,7 @@ lib.mkMerge (
                 { protocol = "dns"; }
               ];
             }
-            # Put clash mode rule here, so it don't interfere the mobile DNS rule for Tailscale
+            # Put clash mode rule here, so it don't interfere the mobile DNS rule (e.g. Tailscale)
             {
               clash_mode = "direct";
               outbound = "Direct";

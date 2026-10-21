@@ -6,17 +6,10 @@
   ...
 }:
 {
-  vars.hostAddrs.${config.networking.hostName} =
-    let
-      subdomains = {
-        A = [ "papra" ];
-        AAAA = [ "papra" ];
-      };
-    in
-    {
-      tailscale = { inherit subdomains; };
-      easytier = { inherit subdomains; };
-    };
+  vars.hostAddrs.${config.networking.hostName}.easytier.subdomains = {
+    A = [ "papra" ];
+    AAAA = [ "papra" ];
+  };
   sops =
     let
       restartUnits = [ "${config.virtualisation.oci-containers.containers.papra.serviceName}.service" ];

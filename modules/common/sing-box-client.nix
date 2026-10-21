@@ -26,7 +26,6 @@
             format = "binary";
           };
           sb_nodes_anytls_password = { inherit sopsFile; };
-          sb_ts_auth_key = { inherit sopsFile; };
         }
     )
     ++ (lib.optionals (!pkgs.stdenv.hostPlatform.isDarwin) (

@@ -18,12 +18,8 @@
     let
       ns_hostname = const.networking.findFirstHostBySubdomain "ns1";
     in
-    {
-      name =
-        if config.services.easytier.enable then
-          config.services.easytier.instances.main.extraSettings.flags.dev_name
-        else
-          config.services.tailscale.interfaceName;
+    lib.mkIf config.services.easytier.enable {
+      name = config.services.easytier.instances.main.extraSettings.flags.dev_name;
 
       networkConfig.KeepConfiguration = "yes"; # Prevent systemd-networkd managing other things (like IP addresses)
 
@@ -36,33 +32,15 @@
         lib.mapAttrsToList (_: zone: "~${zone.name}") machineConfigs.${ns_hostname}.config.services.bind.zones
       );
 
-      dns =
-        let
-          ns_host_nics = const.networking.allHostAddrs.${ns_hostname};
-        in
-        if config.services.easytier.enable then
-          with ns_host_nics.easytier;
-          [
-            "${ipv4NoCidr}#${const.domain}"
-            "${ipv6NoCidr}#${const.domain}"
-          ]
-        else
-          with ns_host_nics.tailscale;
-          [
-            "${ipv4NoCidr}#${const.domain}"
-            "${ipv6NoCidr}#${const.domain}"
-          ];
+      dns = with const.networking.allHostAddrs.${ns_hostname}.easytier; [
+        "${ipv4NoCidr}#${const.domain}"
+        "${ipv6NoCidr}#${const.domain}"
+      ];
     };
 
   # Trust Island
   environment.etc."dnssec-trust-anchors.d/${const.domain}.positive".text = ''
     ${const.domain}. IN DS 40751 15 2 EFFF70FD3922613584774DE050E31D5A3FFF988E45EB5C75296BF448B5B01FCF
-  '';
-  environment.etc."dnssec-trust-anchors.d/ts_v4_rev_zone.positive".text = ''
-    100.in-addr.arpa. IN DS 16452 15 2 673360156B641DBA72909952F230FA34A6FA8D8D249A8A8A55C05A94EC6794FF
-  '';
-  environment.etc."dnssec-trust-anchors.d/ts_v6_rev_zone.positive.positive".text = ''
-    0.e.1.a.c.5.1.1.a.7.d.f.ip6.arpa. IN DS 2790 15 2 B90A8FDD8D504FC3182F57750FC433EF8D43AFA8ABE6716A3DC49BFBCCD5F3EA
   '';
   environment.etc."dnssec-trust-anchors.d/et_v4_rev_zone.positive".text = ''
     0.0.10.in-addr.arpa. IN DS 3009 15 2 E93B662038A9985D4A4BAEA2F619593EF4699EAFA08612BD7C3FCD00691FA85C

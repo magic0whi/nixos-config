@@ -10,17 +10,10 @@ let
   s_https = (sunshine_port - 5); # Default: 47984 HTTPS
 in
 {
-  vars.hostAddrs.${config.networking.hostName} =
-    let
-      subdomains = {
-        A = [ "sunshine" ];
-        AAAA = [ "sunshine" ];
-      };
-    in
-    {
-      tailscale = { inherit subdomains; };
-      easytier = { inherit subdomains; };
-    };
+  vars.hostAddrs.${config.networking.hostName}.easytier.subdomains = {
+    A = [ "sunshine" ];
+    AAAA = [ "sunshine" ];
+  };
   networking.firewall = {
     allowedTCPPorts = [
       s_https # Default: 47984 HTTPS

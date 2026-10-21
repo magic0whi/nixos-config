@@ -97,23 +97,16 @@ let
     );
 in
 {
-  vars.hostAddrs.${config.networking.hostName} =
+  vars.hostAddrs.${config.networking.hostName}.easytier.subdomains =
     let
-      subdomains =
-        let
-          subs = [
-            "@"
-            "ns1"
-          ];
-        in
-        {
-          A = subs;
-          AAAA = subs;
-        };
+      subs = [
+        "@"
+        "ns1"
+      ];
     in
     {
-      tailscale = { inherit subdomains; };
-      easytier = { inherit subdomains; };
+      A = subs;
+      AAAA = subs;
     };
   networking.firewall = {
     allowedTCPPorts = [
@@ -132,7 +125,7 @@ in
       # Access-control of what networks are allowed for recursive queries
       # cacheNetworks = [
       #   "127.0.0.0/8" "::1/128"
-      #   "100.64.0.0/10" "fd7a:115c:a1e0::/48"
+      #   "10.0.0.0/24" "fdfe:dcba:9877::/64"
       #   "192.168.0.0/16"
       # ];
       cacheNetworks = [ "none" ]; # Do not allow access to cache
@@ -143,12 +136,10 @@ in
       listenOn = [
         "127.0.0.1"
         nics.easytier.ipv4NoCidr
-        nics.tailscale.ipv4NoCidr
       ];
       listenOnIpv6 = [
         "::1"
         nics.easytier.ipv6NoCidr
-        nics.tailscale.ipv6NoCidr
       ];
       # Inject the variables into the raw extraOptions string for DoT and DoH
       extraOptions = ''
@@ -221,10 +212,8 @@ in
               shared_head_cfg // { subdomains = lib.mkMerge (mkSubdomainRecords const.networking.allHostAddrs); }
             );
           };
-          reverse_v4_et = mk_ipv4_reverse_zone 1 "tailscale";
-          reverse_v4_ts = mk_ipv4_reverse_zone 3 "easytier";
-          reverse_v6_et = mk_ipv6_reverse_zone (48 / 4) "tailscale";
-          reverse_v6_ts = mk_ipv6_reverse_zone (64 / 4) "easytier";
+          reverse_v4_et = mk_ipv4_reverse_zone 3 "easytier";
+          reverse_v6_et = mk_ipv6_reverse_zone (64 / 4) "easytier";
         };
     };
 
@@ -238,7 +227,6 @@ in
             "("
             "Host(`${const.domain}`)"
             " || Host(`ns1.${const.domain}`)"
-            " || Host(`${hostname}.${const.tailnet}`)"
             ")"
             " && Path(`/dns-query`)"
           ];
@@ -257,7 +245,6 @@ in
           rule = builtins.concatStringsSep " " [
             "HostSNI(`${const.domain}`)"
             "|| HostSNI(`ns1.${const.domain}`)"
-            "|| HostSNI(`${hostname}.${const.tailnet}`)"
           ];
           entryPoints = [ "dot" ];
           service = "dot";

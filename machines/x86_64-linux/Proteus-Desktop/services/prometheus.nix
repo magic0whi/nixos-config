@@ -18,17 +18,10 @@
       };
     };
 
-  vars.hostAddrs.${config.networking.hostName} =
-    let
-      subdomains = {
-        A = [ "prometheus" ];
-        AAAA = [ "prometheus" ];
-      };
-    in
-    {
-      tailscale = { inherit subdomains; };
-      easytier = { inherit subdomains; };
-    };
+  vars.hostAddrs.${config.networking.hostName}.easytier.subdomains = {
+    A = [ "prometheus" ];
+    AAAA = [ "prometheus" ];
+  };
   services.prometheus = {
     enable = true;
     enableReload = true;

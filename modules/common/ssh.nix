@@ -29,7 +29,7 @@
                 let
                   fallback = "${hostname}.lan"; # NOTE: LLMNR don't work on remote machines
                 in
-                if config.services.easytier.enable then nics.easytier.ipv4NoCidr or fallback else nics.tailscale.ipv4NoCidr or fallback
+                if config.services.easytier.enable then nics.easytier.ipv4NoCidr or fallback else fallback
               }
               Port 22
           '') const.networking.allHostAddrs
@@ -49,13 +49,6 @@
           ]
           ++ lib.optionals (nics ? easytier) (
             with nics.easytier;
-            [
-              ipv4NoCidr
-              ipv6NoCidr
-            ]
-          )
-          ++ lib.optionals (nics ? tailscale) (
-            with nics.tailscale;
             [
               ipv4NoCidr
               ipv6NoCidr

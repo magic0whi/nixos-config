@@ -13,8 +13,7 @@ let
     CURRENT_MONTH=$(date +%-m)
 
     # Query vnstat for total RX + TX for the current month.
-    # We include all interfaces, but exclude lo, docker, br-, veth, tailscale, virbr
-    # Or more robustly, we can just sum up the interfaces matched by "^(eth|en|wl|venet)".
+    # Only sum up the interfaces matched by "^(eth|en|wl|venet)".
     # This correctly catches enp46s0, eth0, ens3, wlo1, etc.
     TOTAL_BYTES=$(vnstat --json | jq -r --arg year "$CURRENT_YEAR" --arg month "$CURRENT_MONTH" '
       [

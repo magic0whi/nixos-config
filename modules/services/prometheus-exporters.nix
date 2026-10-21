@@ -43,21 +43,12 @@ in
     }) exporter_list
   );
 
-  vars.hostAddrs.${hostname} = lib.mkMerge (
-    map
-      (nic_name: {
-        ${nic_name}.subdomains =
-          let
-            subs = map (name: "${name}-${hostname}.exporter") exporter_list;
-          in
-          {
-            A = subs;
-            AAAA = subs;
-          };
-      })
-      [
-        "tailscale"
-        "easytier"
-      ]
-  );
+  vars.hostAddrs.${hostname}.easytier.subdomains =
+    let
+      subs = map (name: "${name}-${hostname}.exporter") exporter_list;
+    in
+    {
+      A = subs;
+      AAAA = subs;
+    };
 }

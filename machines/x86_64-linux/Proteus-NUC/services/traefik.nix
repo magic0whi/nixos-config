@@ -8,23 +8,16 @@ let
   hostname = config.networking.hostName;
 in
 {
-  vars.hostAddrs.${config.networking.hostName} =
+  vars.hostAddrs.${config.networking.hostName}.easytier.subdomains =
     let
-      subdomains =
-        let
-          subs = [
-            "${hostname}.syncthing"
-            "${hostname}.sb"
-          ];
-        in
-        {
-          A = subs;
-          AAAA = subs;
-        };
+      subs = [
+        "${hostname}.syncthing"
+        "${hostname}.sb"
+      ];
     in
     {
-      tailscale = { inherit subdomains; };
-      easytier = { inherit subdomains; };
+      A = subs;
+      AAAA = subs;
     };
   services.traefik = {
     dynamicConfigOptions.http = {

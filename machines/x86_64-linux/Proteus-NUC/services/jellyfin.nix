@@ -1,16 +1,9 @@
 { config, const, ... }:
 {
-  vars.hostAddrs.${config.networking.hostName} =
-    let
-      subdomains = {
-        A = [ "jellyfin" ];
-        AAAA = [ "jellyfin" ];
-      };
-    in
-    {
-      tailscale = { inherit subdomains; };
-      easytier = { inherit subdomains; };
-    };
+  vars.hostAddrs.${config.networking.hostName}.easytier.subdomains = {
+    A = [ "jellyfin" ];
+    AAAA = [ "jellyfin" ];
+  };
   services.jellyfin =
     let
       use_nvidia = true;

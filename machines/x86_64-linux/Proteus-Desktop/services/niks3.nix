@@ -9,17 +9,10 @@ let
   hostname_psql = const.networking.findFirstHostBySubdomain "psql";
 in
 {
-  vars.hostAddrs.${hostname} =
-    let
-      subdomains = {
-        A = [ "niks3" ];
-        AAAA = [ "niks3" ];
-      };
-    in
-    {
-      tailscale = { inherit subdomains; };
-      easytier = { inherit subdomains; };
-    };
+  vars.hostAddrs.${hostname}.easytier.subdomains = {
+    A = [ "niks3" ];
+    AAAA = [ "niks3" ];
+  };
   sops =
     let
       restartUnits = [ "niks3.service" ];

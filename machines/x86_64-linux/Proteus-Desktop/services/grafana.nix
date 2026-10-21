@@ -14,17 +14,10 @@ let
   machine_config_psql = machineConfigs.${hostname_psql}.config;
 in
 {
-  vars.hostAddrs.${hostname} =
-    let
-      subdomains = {
-        A = [ "grafana" ];
-        AAAA = [ "grafana" ];
-      };
-    in
-    {
-      tailscale = { inherit subdomains; };
-      easytier = { inherit subdomains; };
-    };
+  vars.hostAddrs.${hostname}.easytier.subdomains = {
+    A = [ "grafana" ];
+    AAAA = [ "grafana" ];
+  };
   sops =
     let
       restartUnits = [ "grafana.service" ];

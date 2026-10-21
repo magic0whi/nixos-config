@@ -1,22 +1,13 @@
 { config, pkgs, ... }:
 {
-  vars.hostAddrs.${config.networking.hostName} =
-    let
+  vars.hostAddrs.${config.networking.hostName} = {
+    easytier = {
       regHost = true;
-    in
-    {
-      tailscale = {
-        inherit regHost;
-        ipv4 = "100.64.161.20/10";
-        ipv6 = "fd7a:115c:a1e0::cd3a:a114/48";
-      };
-      easytier = {
-        inherit regHost;
-        ipv4 = "10.0.0.2/24";
-        ipv6 = "fdfe:dcba:9877::2/64";
-      };
-      wire.name = "enp46s0";
+      ipv4 = "10.0.0.2/24";
+      ipv6 = "fdfe:dcba:9877::2/64";
     };
+    wire.name = "enp46s0";
+  };
   services.sing-box.generateMobileConfig.enable = true;
   environment.systemPackages = with pkgs; [ bpftrace ]; # powerful tracing tool, ref: https://github.com/bpftrace/bpftrace
   ## BEGIN zfs.nix

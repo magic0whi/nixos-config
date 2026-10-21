@@ -6,17 +6,10 @@
   ...
 }:
 {
-  vars.hostAddrs.${config.networking.hostName} =
-    let
-      subdomains = {
-        A = [ "hass" ];
-        AAAA = [ "hass" ];
-      };
-    in
-    {
-      tailscale = { inherit subdomains; };
-      easytier = { inherit subdomains; };
-    };
+  vars.hostAddrs.${config.networking.hostName}.easytier.subdomains = {
+    A = [ "hass" ];
+    AAAA = [ "hass" ];
+  };
   sops =
     let
       restartUnits = [ "home-assistant.service" ];

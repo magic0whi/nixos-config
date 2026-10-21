@@ -13,17 +13,10 @@ let
   openldap_backend_port = 389;
 in
 {
-  vars.hostAddrs.${config.networking.hostName} =
-    let
-      subdomains = {
-        A = [ "ldap" ];
-        AAAA = [ "ldap" ];
-      };
-    in
-    {
-      tailscale = { inherit subdomains; };
-      easytier = { inherit subdomains; };
-    };
+  vars.hostAddrs.${config.networking.hostName}.easytier.subdomains = {
+    A = [ "ldap" ];
+    AAAA = [ "ldap" ];
+  };
   networking.firewall.allowedTCPPorts = [ openldap_port ]; # UDP generally not used
   services.openldap =
     let

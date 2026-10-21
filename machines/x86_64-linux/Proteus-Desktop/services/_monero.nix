@@ -19,17 +19,10 @@ in
     config.services.monero.rpc.port
   ];
 
-  vars.hostAddrs.${config.networking.hostName} =
-    let
-      subdomains = {
-        A = [ "monero" ];
-        AAAA = [ "monero" ];
-      };
-    in
-    {
-      tailscale = { inherit subdomains; };
-      easytier = { inherit subdomains; };
-    };
+  vars.hostAddrs.${config.networking.hostName}.easytier.subdomains = {
+    A = [ "monero" ];
+    AAAA = [ "monero" ];
+  };
   systemd.services.monero.unitConfig.RequiresMountsFor = [ const.storagePath ];
   services.monero = {
     enable = true;
