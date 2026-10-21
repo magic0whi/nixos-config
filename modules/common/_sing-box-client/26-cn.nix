@@ -8,7 +8,7 @@
   ...
 }:
 let
-  pri = 0.99;
+  pri = 0.26;
   out = "Direct";
 
   rules = [ { rule_set = [ "geosite-cn" ]; } ];
