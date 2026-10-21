@@ -6,6 +6,9 @@
   pkgs,
   ...
 }:
+let
+  hostname = config.networking.hostName;
+in
 {
   sops =
     let
@@ -64,8 +67,8 @@
       environmentFiles = [ config.sops.templates."easytier.env".path ];
       settings = {
         network_name = const.domain;
-        ipv4 = config.vars.hostAddrs.${config.networking.hostName}.easytier.ipv4;
-        hostname = config.networking.hostName;
+        ipv4 = config.vars.hostAddrs.${hostname}.easytier.ipv4;
+        inherit hostname;
         # peers = [ "txt://txt.easytier.cn" ];
         listeners = [
           "tcp://0.0.0.0:11010"
