@@ -8,15 +8,23 @@
 }:
 let
   out = "HSBC";
-  rules = [
+  super_rules = [
     {
-      domain_suffix = [
-        "checkfreeweb.com" # HSBC US Bank-to-Bank
-        "firstdata.com" # HSBC US credit card
+      inherit out;
+      rules = [
+        {
+          domain_suffix = [
+            "checkfreeweb.com" # HSBC US Bank-to-Bank
+            "firstdata.com" # HSBC US credit card
+          ];
+        }
+        { rule_set = "geosite-hsbc"; }
       ];
     }
-
-    { rule_set = "geosite-hsbc"; }
+    {
+      out = "Default";
+      rules = lib.singleton { domain_suffix = [ "d3ksttzjeov72n.cloudfront.net" ]; };
+    }
   ];
 in
 {
@@ -28,7 +36,7 @@ in
         detour = out;
       }
     );
-    rules = mylib.mkSbRules true out rules;
+    rules = builtins.concatMap (rules: mylib.mkSbRules true rules.out rules.rules) super_rules;
   };
   outbounds = lib.singleton (
     selectorCfg
@@ -38,7 +46,7 @@ in
     }
   );
   route = {
-    rules = mylib.mkSbRules false out rules;
+    rules = builtins.concatMap (rules: mylib.mkSbRules false rules.out rules.rules) super_rules;
     rule_set = lib.singleton (
       ruleSetCfg.defaultCfg
       // {
