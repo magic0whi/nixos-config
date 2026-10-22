@@ -189,11 +189,11 @@ in
       Mod+Ctrl+F hotkey-overlay-title="Expand Column to width" { expand-column-to-available-width; }
 
       // Finer width adjustments.
-      Mod+Minus hotkey-overlay-title="Fine-tune add width" { set-column-width "-10%"; }
-      Mod+Equal hotkey-overlay-title="Fine-tune minus width" { set-column-width "+10%"; }
+      Mod+Minus hotkey-overlay-title="Fine-tune add width" { set-column-width "-${toString ((100 - 100 / 3.0) / 11)}%"; }
+      Mod+Equal hotkey-overlay-title="Fine-tune minus width" { set-column-width "+${toString ((100 - 100 / 3.0) / 11)}%"; }
       // Finer height adjustments when in column with other windows.
-      Mod+Shift+Minus { set-window-height "-10%"; }
-      Mod+Shift+Equal { set-window-height "+10%"; }
+      Mod+Shift+Minus { set-window-height "-${toString ((100 - 100 / 3.0) / 11)}%"; }
+      Mod+Shift+Equal { set-window-height "+${toString ((100 - 100 / 3.0) / 11)}%"; }
 
       // Media Keys (Locked & Repeating)
       // Example volume keys mappings for PipeWire & WirePlumber.
