@@ -44,10 +44,10 @@
       url = "github:serokell/deploy-rs/45ba3f8c5cb28396fff71671806e2550b464ac86";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Pinned as of 2026-06-05 18:14
+    # Pinned as of 2026-10-21
     nix-darwin = {
       url = "github:magic0whi/nix-darwin/main";
-      # url = "path:/Users/proteus/Works/Reference/nix-darwin";
+      # url = "path:/Users/proteus/Proteus/Projects-Ref/nosync/nix-darwin";
       # url = "path:/home/proteus/Works-References/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
