@@ -33,13 +33,12 @@ pkgs.testers.runNixOSTest {
         machine.wait_for_unit("vnstat.service")
         machine.wait_for_unit("traffic-quota.timer")
 
-    for machine in [machine_normal, machine_exceeded]:
-        machine.execute("systemctl start traffic-quota.service")
-
     with subtest("Normal machine: executes successfully without shutting down"):
+        machine_normal.succeed("systemctl start traffic-quota.service")
         machine_normal.succeed("systemctl is-active multi-user.target")
 
     with subtest("Exceeded machine: automatically powers off when limit is breached"):
+        machine_exceeded.execute("systemctl start --no-block traffic-quota.service")
         machine_exceeded.wait_for_shutdown()
   '';
 }
