@@ -7,6 +7,9 @@
 }:
 {
   services.resolved.settings.Resolve.DNSStubListenerExtra = [ "172.17.0.1" ]; # for split DNS
+  networking.firewall.extraInputRules = ''
+    iifname { "docker0", "br-*" } ip daddr 172.17.0.1 meta l4proto { tcp, udp } th dport 53 accept comment "Docker containers to systemd-resolved"
+  '';
   users.users.${const.username}.extraGroups = [ "docker" ];
   systemd.services.docker.path = lib.mkIf (config.virtualisation.docker.daemon.settings.firewall-backend == "nftables") [
     pkgs.nftables
