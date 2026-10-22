@@ -84,6 +84,10 @@ in
           tag = "geosite-ifast";
           url = "${urlPrefix}/geo/geosite/ifast.srs";
         }
+        {
+          tag = "geosite-wise";
+          url = "${urlPrefix}/geo/geosite/wise.srs";
+        }
       ];
   };
 }

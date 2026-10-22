@@ -72,12 +72,17 @@ let
 
         "westernunion.com"
 
+        "sumup.com"
+        "sumup.io"
+        "sumup.net"
+
         # Misc
         "truelayer.com"
         "yapily.com"
         "zimperium.com"
       ];
     }
+    { rule_set = [ "geosite-squareup" ]; }
   ];
 in
 {
@@ -90,8 +95,8 @@ in
       in
       map (rule_set: defaultCfg // rule_set) (
         lib.singleton {
-          tag = "geosite-wise";
-          url = "${urlPrefix}/geo/geosite/wise.srs";
+          tag = "geosite-squareup";
+          url = "${urlPrefix}/geo/geosite/squareup.srs";
         }
       );
   };
