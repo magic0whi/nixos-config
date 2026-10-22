@@ -44,7 +44,8 @@
       };
     };
   virtualisation.oci-containers.containers.papra = {
-    image = "ghcr.io/papra-hq/papra@sha256:feb8c6e03bbbd1a730bc606fe3fb5a0fe13a71edb4f7d44b7f8f6940cca76a3a";
+    # Ref: https://github.com/papra-hq/papra/pkgs/container/papra
+    image = "ghcr.io/papra-hq/papra@sha256:bf4a66e776d0a40d71543747a2e17af800204b4a81d19f7951b8552c8032dbeb";
     # autoStart = false; # equivalent to 'restart: unless-stopped', default true
     ports = [ "127.0.0.1:1221:1221" ];
     environmentFiles = [ config.sops.templates."papra.env".path ];
