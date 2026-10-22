@@ -49,12 +49,6 @@ let
 
         "chiphq.net"
 
-        ## CEx
-        "backpack.exchange"
-        "backpack.workers.dev"
-
-        "neverless.com"
-
         "uphold.com"
 
         ## Brokerages
