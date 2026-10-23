@@ -6,7 +6,10 @@
       ipv4 = "10.0.0.2/24";
       ipv6 = "fdfe:dcba:9877::2/64";
     };
-    wire.name = "enp46s0";
+    wire = {
+      name = "enp46s0";
+      ipv4 = "192.168.1.2/24";
+    };
   };
   services.sing-box.generateMobileConfig.enable = true;
   environment.systemPackages = with pkgs; [ bpftrace ]; # powerful tracing tool, ref: https://github.com/bpftrace/bpftrace
