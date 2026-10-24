@@ -91,6 +91,8 @@ rec {
     hostname = "Proteus-Desktop";
     url = "https://nix-cache.${hostname}.s3-pub.${domain}";
     publicKey = "${hostname}.s3.${domain}-1:IxrRwk4uC5ittHeG9menkuajABnrX9cboEWwZz/m4+E=";
+    # TODO(2026-11-23): Remove once narinfos signed under the old key name have been GCed (default 720h)
+    legacyPublicKey = "s3.${domain}-1:IxrRwk4uC5ittHeG9menkuajABnrX9cboEWwZz/m4+E=";
   };
 
   domain = "proteus.eu.org";
