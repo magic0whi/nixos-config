@@ -1,4 +1,3 @@
-# TODO 'garage-webui' has been removed as it is unmaintained upstream
 # Ref: https://garagehq.deuxfleurs.fr/documentation/reference-manual/configuration/
 #
 # TIP: Manually setup a Nix binary cache server
@@ -58,14 +57,10 @@ in
           GARAGE_METRICS_TOKEN = config.sops.placeholder.prometheus_bearer_token;
         };
       };
-      # templates."garage-webui.env" = {
-      #   restartUnits = [ "garage-webui.service" ];
-      #   content = mylib.toEnv {
-      #     # garage-webui default use rpc_public_addr to access admin API
-      #     API_BASE_URL = "http://${garage_settings.admin.api_bind_addr}";
-      #     API_ADMIN_KEY = config.sops.placeholder.garage_admin_token;
-      #   };
-      # };
+      templates."garage-ui.env" = {
+        restartUnits = [ "${config.virtualisation.oci-containers.containers.garage-ui.serviceName}.service" ];
+        content = mylib.toEnv { GARAGE_UI_GARAGE_ADMIN_TOKEN = config.sops.placeholder.garage_admin_token; };
+      };
     };
 
   systemd.services.garage.serviceConfig.EnvironmentFile = config.sops.templates."garage.env".path;
@@ -88,34 +83,30 @@ in
         bind_addr = "127.0.0.1:3902";
         root_domain = ".${lib.toLower hostname}.s3-pub.${const.domain}";
       };
-      # admin (3903) is for webui access
+      # admin (3903) is for garage-ui access
       admin.api_bind_addr = "127.0.0.1:3903";
       replication_factor = lib.mkDefault 1;
       compression_level = 0; # A value of 0 will let zstd choose a default value (currently 3)
     };
   };
 
-  # systemd.services.garage-webui = {
-  #   description = "Garage Web UI";
-  #   after = [
-  #     "network.target"
-  #     "network-online.target"
-  #   ];
-  #   wants = [
-  #     "network.target"
-  #     "network-online.target"
-  #   ];
-  #   wantedBy = [ "multi-user.target" ];
-  #   environment = {
-  #     PORT = "3999"; # the type check only allow string
-  #     CONFIG_PATH = "${(pkgs.formats.toml { }).generate "config.toml" garage_settings}";
-  #   };
-  #   serviceConfig = {
-  #     ExecStart = lib.getExe pkgs.garage-webui;
-  #     Restart = "on-failure";
-  #     EnvironmentFile = config.sops.templates."garage-webui.env".path;
-  #   };
-  # };
+  virtualisation.oci-containers.containers.garage-ui = {
+    # Ref: https://hub.docker.com/r/noooste/garage-ui/tags
+    image = "docker.io/noooste/garage-ui:v0.14.0@sha256:e4a33c448304a3f6e60f08d6aa71b2471fd79ac870a5c7e178ea247dea3238b3";
+    extraOptions = [ "--network=host" ]; # Use the host network to reach Garage that listening on loopback
+    environmentFiles = [ config.sops.templates."garage-ui.env".path ];
+    # Environment variables must be strings in Nix
+    environment = {
+      GARAGE_UI_SERVER_HOST = "127.0.0.1";
+      GARAGE_UI_SERVER_PORT = "3909";
+      GARAGE_UI_SERVER_ENVIRONMENT = "production";
+      GARAGE_UI_SERVER_ROOT_URL = "https://${hostname}.garage.${const.domain}";
+      GARAGE_UI_GARAGE_ENDPOINT = "http://${garage_settings.s3_api.api_bind_addr}";
+      GARAGE_UI_GARAGE_ADMIN_ENDPOINT = "http://${garage_settings.admin.api_bind_addr}";
+      GARAGE_UI_GARAGE_REGION = garage_settings.s3_api.s3_region;
+    };
+    volumes = [ "garage-ui:/app/data" ]; # Persist the generated JWT signing key so logins survive container recreation
+  };
 
   services.traefik.dynamicConfigOptions.http = {
     routers = {
@@ -138,13 +129,13 @@ in
         service = "s3-pub";
         tls = { };
       };
-      # garage-webui = {
-      #   rule = "Host(`${hostname}.garage.${const.domain}`)";
-      #   entryPoints = [ "websecure" ];
-      #   middlewares = [ "authelia-auth" ];
-      #   service = "garage-webui";
-      #   tls = { };
-      # };
+      garage-ui = {
+        rule = "Host(`${hostname}.garage.${const.domain}`)";
+        entryPoints = [ "websecure" ];
+        middlewares = [ "authelia-auth" ];
+        service = "garage-ui";
+        tls = { };
+      };
       # For metrics
       garage-admin-api = {
         rule = "Host(`admin-api-${hostname}.garage.${const.domain}`)";
@@ -170,9 +161,9 @@ in
           servers = [ { url = "http://${garage_settings.s3_web.bind_addr}"; } ]; # Default :3902
           inherit healthCheck;
         };
-        # garage-webui.loadBalancer.servers = lib.singleton {
-        #   url = "http://127.0.0.1:${config.systemd.services.garage-webui.environment.PORT}"; # Default :3909
-        # };
+        garage-ui.loadBalancer.servers = lib.singleton {
+          url = "http://127.0.0.1:${config.virtualisation.oci-containers.containers.garage-ui.environment.GARAGE_UI_SERVER_PORT}";
+        };
         garage-admin-api.loadBalancer = {
           servers = [ { url = "http://${garage_settings.admin.api_bind_addr}"; } ]; # Default :3903
           inherit healthCheck;

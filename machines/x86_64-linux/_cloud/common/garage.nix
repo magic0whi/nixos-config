@@ -2,8 +2,6 @@
 {
   config,
   const,
-  mylib,
-  lib,
   ...
 }:
 let
@@ -13,23 +11,13 @@ in
 {
   networking.firewall.allowedTCPPorts = [ rpc_port ];
 
-  sops =
+  sops.secrets =
     let
       sopsFile = "${const.secretsDir}/gcp.sops.yaml";
-      restartUnits = [ "garage-webui.service" ];
     in
     {
-      secrets = {
-        garage_rpc_secret = { inherit sopsFile restartUnits; };
-        garage_admin_token = { inherit sopsFile restartUnits; };
-      };
-      templates."garage-webui.env" = {
-        inherit restartUnits;
-        content = mylib.toEnv {
-          # garage-webui use http://<rpc_public_addr>:3900 by default
-          S3_ENDPOINT_URL = "https://${lib.toLower hostname}.s3.${const.domain}${config.services.traefik.staticConfigOptions.entryPoints.websecure.address}";
-        };
-      };
+      garage_rpc_secret = { inherit sopsFile; };
+      garage_admin_token = { inherit sopsFile; };
     };
 
   services.garage.settings = {
