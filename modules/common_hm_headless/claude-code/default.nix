@@ -1,4 +1,17 @@
 {
+  config,
+  const,
+  lib,
+  ...
+}:
+{
+  sops.secrets.claude_code_oauth_token.sopsFile = "${const.secretsDir}/common_hm.sops.yaml";
+
+  programs.zsh.initContent = lib.mkAfter ''
+    if [[ -r ${config.sops.secrets.claude_code_oauth_token.path} ]]; then
+      export CLAUDE_CODE_OAUTH_TOKEN="$(<${config.sops.secrets.claude_code_oauth_token.path})"
+    fi
+  '';
   programs.claude-code = {
     enable = true;
     context = ./CLAUDE.md; # ~/.claude/CLAUDE.md
