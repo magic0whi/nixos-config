@@ -1,4 +1,4 @@
-_: {
+{
   # To test a link file whether malformed: `sudo udevadm test-builtin net_setup_link /sys/class/net/<iface>`
   systemd.network = {
     links =

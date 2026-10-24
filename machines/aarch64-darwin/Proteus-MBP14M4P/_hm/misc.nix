@@ -1,4 +1,4 @@
-_: {
+{
   ## BEGIN aerospace.nix
   programs.aerospace.settings.workspace-to-monitor-force-assignment = {
     "7" = [ "C340SCA" ];
