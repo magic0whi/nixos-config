@@ -1,5 +1,16 @@
 { lib, ... }:
 {
+  # A forwarded agent socket lives only as long as its SSH connection, but zellij sessions outlive it and keep the stale
+  # path.
+  # Ref: https://github.com/zellij-org/zellij/issues/1637
+  #
+  programs.zsh.envExtra = ''
+    # Point a stable symlink at the newest forwarded socket on each new SSH login
+    if [ -n "$SSH_CONNECTION" ] && [ "$SSH_AUTH_SOCK" != "$HOME/.ssh/agent-forwarded.sock" ] && [ -S "$SSH_AUTH_SOCK" ]; then
+      ln -sfn "$SSH_AUTH_SOCK" "$HOME/.ssh/agent-forwarded.sock"
+      export SSH_AUTH_SOCK="$HOME/.ssh/agent-forwarded.sock"
+    fi
+  '';
   programs.ssh = {
     enable = true;
     enableDefaultConfig = false;
