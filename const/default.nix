@@ -16,7 +16,7 @@ rec {
   city = "Suzhou, China";
   latitude = "31.3113626";
   longitude = "121.5020943";
-  timeZone = "Asia/Taipei"; # Main timezone
+  timeZone = "Asia/Hong_Kong"; # Main timezone
 
   monospace = {
     name = "Iosevka Nerd Font Mono";
