@@ -5,6 +5,7 @@
   ...
 }:
 let
+  pri = 0.51;
   out = "Default";
   rules = [
     {
@@ -18,7 +19,7 @@ let
   ];
 in
 {
-  dns.rules = mylib.mkSbRules true out rules;
+  dns.rules = lib.mkOrder (pri * 2000) (mylib.mkSbRules true out rules);
   route = {
     rules =
       let
@@ -26,7 +27,7 @@ in
       in
       lib.mkMerge [
         (lib.mkBefore (mkSbRules out [ { rule_set = [ "geoip-telegram" ]; } ]))
-        (mkSbRules out rules)
+        (lib.mkOrder (pri * 2000) (mkSbRules out rules))
       ];
     rule_set =
       let
