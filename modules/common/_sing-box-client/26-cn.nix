@@ -70,7 +70,7 @@ in
           )
         ))
 
-        (lib.mkOrder pri (mkSbRules out rules))
+        (lib.mkOrder (pri * 1000) (mkSbRules out rules))
       ];
   };
 }
