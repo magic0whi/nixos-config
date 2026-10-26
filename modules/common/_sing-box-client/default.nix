@@ -214,6 +214,17 @@ lib.mkMerge (
         # Most rules depend on protocol sniff and DNS hijack, set priority = (mkBefore - 2)
         rules = lib.mkMerge [
           # https://sing-box.sagernet.org/configuration/route/sniff/
+          (lib.mkOrder 0 [
+            {
+              clash_mode = "direct";
+              outbound = "Direct";
+            }
+            {
+              clash_mode = "global";
+              outbound = "Default";
+            }
+          ])
+
           (lib.mkOrder (const.sb.routeSniffPri) (
             lib.singleton {
               action = "sniff";
@@ -233,15 +244,6 @@ lib.mkMerge (
                 { port = 53; }
                 { protocol = "dns"; }
               ];
-            }
-            # Put clash mode rule here, so it don't interfere the mobile DNS rule (e.g. Tailscale)
-            {
-              clash_mode = "direct";
-              outbound = "Direct";
-            }
-            {
-              clash_mode = "global";
-              outbound = "Default";
             }
           ])
         ];
