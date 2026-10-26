@@ -14,10 +14,7 @@
         "${common}/secrets.nix"
         "${common}/shell.nix"
       ];
-      baseOverlays = with inputs; [
-        prince213-nix-packages.overlays.default
-        helix.overlays.default
-      ];
+      baseOverlays = with inputs; [ helix.overlays.default ];
       seat = map mylib.relativeToRoot [
         "${common}/sing-box-client.nix"
         "${common}/fonts.nix"

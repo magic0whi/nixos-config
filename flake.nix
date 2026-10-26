@@ -122,14 +122,6 @@
       url = "github:noctalia-dev/noctalia-greeter/f19b5fe2e20f1a80de178c8dedfbd838ce8eb2ca";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    prince213-nix-packages = {
-      url = "github:Prince213/nix-packages/66dbebd3239cdbdd10c1aca3ca9f60bb3f9db6d1";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-parts.follows = "flake-parts";
-        treefmt-nix.follows = "treefmt-nix";
-      };
-    };
     dns = {
       url = "github:magic0whi/dns.nix";
       # url = "path:/home/proteus/Works-References/dns.nix";

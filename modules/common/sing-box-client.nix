@@ -44,7 +44,6 @@
     {
       sing-box = {
         enable = true;
-        package = pkgs.sing-box-beta;
         # Full config.json encryption, to ease the debugging
         # settings = {
         #   _secret = config.sops.secrets."sb_test.json".path;
