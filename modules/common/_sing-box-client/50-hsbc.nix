@@ -23,7 +23,12 @@ let
     }
     {
       out = "Default";
-      rules = lib.singleton { domain_suffix = [ "d3ksttzjeov72n.cloudfront.net" ]; };
+      rules = lib.singleton {
+        domain_suffix = [
+          "adobesign.com" # Document sign
+          "d3ksttzjeov72n.cloudfront.net" # firstdata
+        ];
+      };
     }
   ];
 in
