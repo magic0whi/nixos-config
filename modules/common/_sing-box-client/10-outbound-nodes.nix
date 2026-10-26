@@ -22,7 +22,8 @@ let
                   username = "proteus";
                   password._secret = config.sops.secrets.sb_nodes_anytls_password.path;
                   tls.enabled = true;
-                  quic = true;
+                  # NOTE: China Mobile heavily throttles QUIC traffic
+                  # quic = true;
                   udp_over_tcp = true;
                 }
               ];
