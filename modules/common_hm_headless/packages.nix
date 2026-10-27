@@ -17,6 +17,7 @@
       # A fast and polyglot tool for code searching, linting, rewriting at large scale
       # Supported languages: only some mainstream languages currently (don't support nix/nginx/yaml/toml/...)
       ast-grep
+      sd # Intuitive find & replace CLI (sed alternative)
       sad # CLI search and replace, just like sed, but with diff preview.
       lazygit # Git terminal UI.
       hyperfine # Command-line benchmarking tool, replace `time`
