@@ -6,12 +6,12 @@
       ipv4 = "10.0.0.2/24";
       ipv6 = "fdfe:dcba:9877::2/64";
     };
-    wire = {
-      name = "enp46s0";
-      ipv4 = "192.168.1.2/24";
-    };
+    # NOTE: Through we can use `enp46s0 = {}`, but I configured networkd-dispatcher which utilize the *.wire attribute
+    wire.name = "enp46s0";
   };
   services.sing-box.generateMobileConfig.enable = true;
+  systemd.services.sing-box.enable = false; # Since NUC is now under sing-box gateway
+
   environment.systemPackages = with pkgs; [ bpftrace ]; # powerful tracing tool, ref: https://github.com/bpftrace/bpftrace
   ## BEGIN zfs.nix
   networking.hostId = "5736070c"; # ZFS requires this
