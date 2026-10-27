@@ -31,12 +31,16 @@
   dconf.settings."org/gnome/desktop/interface".color-scheme = "prefer-dark"; # GTK4 prefer dark
   qt = {
     enable = true;
-    platformTheme.name = "qt6ct";
-    style.name = "kvantum";
+    platformTheme = {
+      name = "qt6ct";
+      # HM only maps "qtct" to packages, so "qt6ct" alone installs nothing and the platform theme silently fails to load
+      package = pkgs.qt6Packages.qt6ct;
+    };
     qt6ctSettings.Appearance = {
       style = "kvantum";
       # Without an icon theme, qt6ct falls back to hicolor only and themed icons (e.g. input-keyboard) are missing
       icon_theme = config.gtk.iconTheme.name;
     };
+    style.name = "kvantum";
   };
 }
