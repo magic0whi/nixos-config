@@ -76,9 +76,9 @@
       url = "github:numtide/treefmt-nix/db947814a175b7ca6ded66e21383d938df01c227";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Pinned as of 2026-06-05 18:17
+    # Pinned as of 2026-10-27
     niks3 = {
-      url = "github:Mic92/niks3/c9a54708e881d51a76309168c5cda516bb2daeb0";
+      url = "github:Mic92/niks3/v1.15.0";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         treefmt-nix.follows = "treefmt-nix";

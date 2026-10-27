@@ -1,7 +1,6 @@
 {
   config,
   const,
-  mylib,
   ...
 }:
 let
@@ -44,29 +43,25 @@ in
           inherit restartUnits;
         };
       };
-      templates."niks3.env" = {
+      templates.niks3_db_dsn = {
         # Unix socket if psql is on the same machines
-        content = mylib.toEnv (
+        content =
           if hostname == hostname_psql then
-            {
-              CONN_URL = "postgres://niks3:${config.sops.placeholder.niks3_db_password}@/niks3";
-            }
+            "postgres://niks3:${config.sops.placeholder.niks3_db_password}@/niks3"
           else
-            {
-              CONN_URL = "postgres://niks3:${config.sops.placeholder.niks3_db_password}@psql.${const.domain}/niks3?sslmode=require";
-            }
-        );
+            "postgres://niks3:${config.sops.placeholder.niks3_db_password}@psql.${const.domain}/niks3?sslmode=require";
+        owner = "niks3";
         inherit restartUnits;
       };
     };
 
-  systemd.services.niks3.serviceConfig.EnvironmentFile = config.sops.templates."niks3.env".path;
+  systemd.services.niks3.environment.NIKS3_DB_FILE = config.sops.templates.niks3_db_dsn.path;
 
   services.niks3 = {
     enable = true;
     httpAddr = "127.0.0.1:5751";
 
-    database.connectionString = "$CONN_URL";
+    database.connectionString = ""; # let niks3 read from NIKS3_DB_FILE. Default: "postgres:///niks3?user=niks3"
     s3 = {
       endpoint = "${hostname}.s3.${const.domain}";
       bucket = "nix-cache";
