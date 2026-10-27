@@ -27,26 +27,6 @@
   networking.firewall.allowedTCPPorts = [ config.services.i2pd.settings.port ];
   services.i2pd = {
     enable = true;
-    # enableIPv6 = true;
-    # port = 11451;
-    # upnp.enable = true;
-    # reseed = {
-    #   verify = true;
-    #   proxy = "socks://127.0.0.1:2080";
-    #   urls = [
-    #     "https://reseed.i2p-projekt.de/"
-    #     "https://i2p.mooo.com/netDb/"
-    #     "https://netdb.i2p2.no/"
-    #   ];
-    # };
-    # proto = {
-    #   http.enable = true; # Web console
-    #   # httpProxy.enable = true;
-    #   socksProxy.enable = true;
-    #   sam.enable = true;
-    # };
-
-    # NOTE: incoming in the future nixos-unstable branch
     settings = {
       port = 11451;
       upnp.enabled = true;
