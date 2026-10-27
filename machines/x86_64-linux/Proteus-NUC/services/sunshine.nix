@@ -45,7 +45,7 @@ in
       ${config.security.wrapperDir}/conntrack -E -e new -p tcp --dport ${toString s_https} | \
       while read line; do
         echo "New Sunshine connection detected, waking up the monitors"
-        ${lib.getExe pkgs.niri} msg action power-on-monitors
+        ${pkgs.niri}/bin/niri msg action power-on-monitors
         sleep 5
       done
     '';

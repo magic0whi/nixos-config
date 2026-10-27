@@ -122,7 +122,7 @@ in
         set -euo pipefail
         echo $1 > /sys/bus/pci/devices/$1/driver/unbind
         echo vfio-pci > /sys/bus/pci/devices/$1/driver_override
-        ${lib.getExe' pkgs.kmod "modprobe"} vfio-pci
+        ${pkgs.kmod}/bin/modprobe vfio-pci
         echo $1 > /sys/bus/pci/drivers/vfio-pci/bind
       ''} $kernel"''
     ]}
@@ -158,9 +158,9 @@ in
 
         #   MEM_MIB=$((
         #     $(printf '%s' "$DOMAIN_XML" \
-        #     | ${lib.getExe' pkgs.libxml2 "xmllint"} --xpath "string(//domain/memory)" -) / 1024
+        #     | ${pkgs.libxml2}/bin/xmllint --xpath "string(//domain/memory)" -) / 1024
         #   )) # Unit in xml is KiB
-        #   HP_SIZE_KB=$(${lib.getExe pkgs.gawk} '/Hugepagesize:/ { print $2 }' /proc/meminfo)
+        #   HP_SIZE_KB=$(${pkgs.gawk}/bin/awk '/Hugepagesize:/ { print $2 }' /proc/meminfo)
         #   HP_SYSFS="/sys/kernel/mm/hugepages/hugepages-''${HP_SIZE_KB}kB/nr_hugepages"
 
         #   STATE_DIR="/run/libvirt-hugepages"

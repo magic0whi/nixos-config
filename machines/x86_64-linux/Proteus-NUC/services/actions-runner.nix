@@ -46,7 +46,7 @@ in
 
           echo "Waiting for Forgejo to be online..."
           # Retry until Forgejo reports status=pass
-          while [ "$(${lib.getExe pkgs.curl} -sSf https://git.${const.domain}/api/healthz | ${lib.getExe pkgs.jq} -r '.status')" != "pass" ]; do
+          while [ "$(${pkgs.curl}/bin/curl -sSf https://git.${const.domain}/api/healthz | ${pkgs.jq}/bin/jq -r '.status')" != "pass" ]; do
             sleep 1
           done
 

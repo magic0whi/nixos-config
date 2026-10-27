@@ -46,7 +46,7 @@ in
           set -euo pipefail
 
           echo "Waiting for LDAP (ldap.${const.domain}) to be ready..."
-          while ! ${lib.getExe pkgs.netcat} -z ldap.proteus.eu.org 636; do
+          while ! ${pkgs.netcat}/bin/nc -z ldap.proteus.eu.org 636; do
             sleep 2
           done
           echo "LDAP is online, proceeding with Forgejo startup."

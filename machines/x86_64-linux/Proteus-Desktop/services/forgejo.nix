@@ -86,7 +86,7 @@ in
         set -euo pipefail
 
         echo "Waiting for LDAP (ldap.${const.domain}) to be ready..."
-        while ! ${lib.getExe pkgs.netcat} -z ldap.proteus.eu.org 636; do
+        while ! ${pkgs.netcat}/bin/nc -z ldap.proteus.eu.org 636; do
           sleep 2
         done
         echo "LDAP is online, proceeding with Forgejo startup."
@@ -104,7 +104,7 @@ in
         set -euo pipefail
 
         # Wait for Forgejo to be fully ready to accept CLI commands
-        while [ "$(${lib.getExe pkgs.curl} -sSf https://git.${const.domain}/api/healthz | ${lib.getExe pkgs.jq} -r '.status')" != "pass" ]; do
+        while [ "$(${pkgs.curl}/bin/curl -sSf https://git.${const.domain}/api/healthz | ${pkgs.jq}/bin/jq -r '.status')" != "pass" ]; do
           sleep 1
         done
 
@@ -127,7 +127,7 @@ in
             --icon-url "/assets/img/auth/authelia.png"
         else
           echo "Updating existing Authelia OIDC provider..."
-          AUTHELIA_ID=$($FORGEJO_CLI list | ${lib.getExe pkgs.gawk} '/Authelia/ {print $1;}')
+          AUTHELIA_ID=$($FORGEJO_CLI list | ${pkgs.gawk}/bin/awk '/Authelia/ {print $1;}')
           $FORGEJO_CLI update-oauth \
             --name Authelia \
             --id $AUTHELIA_ID \

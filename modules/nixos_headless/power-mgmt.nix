@@ -1,8 +1,4 @@
-{
-  lib,
-  pkgs,
-  ...
-}:
+{ pkgs, ... }:
 {
   services.power-profiles-daemon.enable = true;
   services.upower.enable = true;
@@ -17,7 +13,7 @@
       Type = "oneshot";
       StandardOutput = "tty";
       TTYPath = "/dev/console";
-      ExecStart = "${lib.getExe' pkgs.util-linux "setterm"} --blank 2 --powerdown 3";
+      ExecStart = "${pkgs.util-linux}/bin/setterm --blank 2 --powerdown 3";
     };
     wantedBy = [ "multi-user.target" ];
   };

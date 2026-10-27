@@ -59,7 +59,7 @@ in
   users.users.${config.services.caddy.user} = {
     shell = config.users.defaultUserShell; # rrsync cannot use alone with nologin
     openssh.authorizedKeys.keys = [
-      ''command="${lib.getExe pkgs.rrsync} ${web_root}",no-port-forwarding,no-X11-forwarding,no-agent-forwarding,no-pty,no-user-rc ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILIqIOCSIyS87hlO8H4QnCuuN5NAZxe6Pz9CF6BCqsf4 caddy@Proteus-NUC''
+      ''command="${pkgs.rrsync}/bin/rrsync ${web_root}",no-port-forwarding,no-X11-forwarding,no-agent-forwarding,no-pty,no-user-rc ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILIqIOCSIyS87hlO8H4QnCuuN5NAZxe6Pz9CF6BCqsf4 caddy@Proteus-NUC''
     ];
   };
   services.traefik.dynamicConfigOptions.http = {

@@ -86,7 +86,7 @@
   ## BEGIN associations.nix
   home.activation.mpv_associations =
     let
-      duti_exe = lib.getExe' pkgs.duti "duti";
+      duti_exe = "${pkgs.duti}/bin/duti";
     in
     lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       # Set UTIs

@@ -1,4 +1,4 @@
-{ lib, pkgs, ... }:
+{ pkgs, ... }:
 {
   services = {
     printing.enable = true; # Enable CUPS to print documents.
@@ -28,6 +28,6 @@
   services.udev.extraRules = ''
     # USB SSD Trim
     ACTION=="change", SUBSYSTEM=="scsi_disk", ATTRS{idVendor}=="152d", ATTRS{idProduct}=="a583", ATTR{provisioning_mode}="unmap"
-    ACTION=="add", SUBSYSTEM=="block", ATTRS{idVendor}=="152d", ATTRS{idProduct}=="a583", RUN+="${lib.getExe' pkgs.systemd "udevadm"} trigger --action=change --subsystem-match=scsi_disk"
+    ACTION=="add", SUBSYSTEM=="block", ATTRS{idVendor}=="152d", ATTRS{idProduct}=="a583", RUN+="${pkgs.systemd}/bin/udevadm trigger --action=change --subsystem-match=scsi_disk"
   '';
 }

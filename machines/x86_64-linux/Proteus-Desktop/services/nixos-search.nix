@@ -355,7 +355,7 @@ in
           chmod 600 "$RUNTIME_DIRECTORY/config.yml"
 
           SECRET_VAL=$(cat $CREDENTIALS_DIRECTORY/opensearch-dashboards_client_secret)
-          cat "$RUNTIME_DIRECTORY/config.yml" | ${pkgs.sd}/bin/sd "@OIDC_CLIENT_SECRET@" "$SECRET_VAL" | ${lib.getExe' pkgs.moreutils "sponge"} "$RUNTIME_DIRECTORY/config.yml"
+          cat "$RUNTIME_DIRECTORY/config.yml" | ${pkgs.sd}/bin/sd "@OIDC_CLIENT_SECRET@" "$SECRET_VAL" | ${pkgs.moreutils}/bin/sponge "$RUNTIME_DIRECTORY/config.yml"
 
           # Wait for yellow status
           while true; do
@@ -403,7 +403,7 @@ in
 
           # Apply the configuration to the OpenSearch index
           export JAVA_HOME="${pkgs.jdk21_headless}"
-          ${lib.getExe pkgs.bash} ${config.services.opensearch.package}/plugins/opensearch-security/tools/securityadmin.sh \
+          ${pkgs.bash}/bin/bash ${config.services.opensearch.package}/plugins/opensearch-security/tools/securityadmin.sh \
             -cacert ${cfg.settings."plugins.security.ssl.transport.pemcert_filepath"} \
             -cert ${cfg.settings."plugins.security.ssl.transport.pemcert_filepath"} \
             -key ${cfg.settings."plugins.security.ssl.transport.pemkey_filepath"} \

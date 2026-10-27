@@ -1,7 +1,6 @@
 {
   baseDN,
   pkgs,
-  lib,
   machineConfigs,
   const,
   ...
@@ -25,7 +24,7 @@ in
   o: Proteus Homelab
   cn: Atuin Database Auth Service
   sn: Service
-  # loginShell: ${lib.getExe' pkgs.shadow "nologin"}
+  # loginShell: ${pkgs.shadow}/bin/nologin
   # homeDirectory: /var/empty
   description: Dedicated LDAP account for authenticating database user
   userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$2/qpzCZL/QW5fczhx60Bwg$64zn/anj0LiNqsupuKnr5UA7B+Ejm3H+JL29NgSqwVs
