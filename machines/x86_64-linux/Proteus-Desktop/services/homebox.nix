@@ -49,6 +49,17 @@ in
         done
         echo "PostgreSQL is ready! Starting HomeBox."
       '')
+
+      # HomeBox gives up OIDC discovery after ~2.5s and never retries, so wait for the issuer to be reachable
+      (pkgs.writeShellScript "wait-for-oidc" ''
+        set -euo pipefail
+
+        echo "Waiting for OIDC issuer to be online..."
+        while ! ${pkgs.curl}/bin/curl -sSf "${config.services.homebox.settings.HBOX_OIDC_ISSUER_URL}/.well-known/openid-configuration"; do
+          sleep 2
+        done
+        echo "OIDC issuer is online! Starting HomeBox."
+      '')
     ];
   };
 
