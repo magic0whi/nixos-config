@@ -159,7 +159,7 @@
         "${headless}/udiskie.nix"
 
         "${gui}/fcitx5.nix"
-        "${gui}/gtk_and_qt.nix"
+        "${gui}/theming.nix"
         "${gui}/hypridle.nix"
         "${gui}/misc.nix"
         "${gui}/niri"

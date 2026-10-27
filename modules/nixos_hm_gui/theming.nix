@@ -33,5 +33,10 @@
     enable = true;
     platformTheme.name = "qt6ct";
     style.name = "kvantum";
+    qt6ctSettings.Appearance = {
+      style = "kvantum";
+      # Without an icon theme, qt6ct falls back to hicolor only and themed icons (e.g. input-keyboard) are missing
+      icon_theme = config.gtk.iconTheme.name;
+    };
   };
 }
