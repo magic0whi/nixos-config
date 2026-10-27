@@ -28,6 +28,9 @@ let
           config = {
             dynamic = {
               http.anonymous_auth_enabled = false;
+              # Filter unscoped requests (e.g. `GET _alias/<name>` from flake-info) to the indices that `flake-info` may
+              # access, instead of returning 403
+              do_not_fail_on_forbidden = true;
               authc = {
                 # For nixos-search
                 basic_auth_domain = {
@@ -128,6 +131,7 @@ let
                 "*-nixos-*"
                 "latest-*"
                 "group-*-manual-*"
+                "images-*" # Icons and screenshots, aliased as `latest-*-images`
                 "error"
                 "status"
               ];
@@ -141,6 +145,8 @@ let
                 "indices:admin/create"
                 "indices:admin/delete"
                 "indices:admin/get" # Required for check_index (HEAD request)
+                # Required for index_uuid, which detects an index replaced during the push
+                "indices:monitor/settings/get"
                 # Required for write_alias
                 "indices:admin/aliases"
                 "indices:admin/aliases/get"
