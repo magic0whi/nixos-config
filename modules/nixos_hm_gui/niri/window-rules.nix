@@ -16,6 +16,7 @@ let
         ''match app-id=r#"^org\.inkscape\.Inkscape$"# title="Function Plotter"''
         ''match title="Select what to share"'' # Screensharing (xdg-desktop-portal-hyprland)
         ''match app-id=r#"^org\.keepassxc\.KeePassXC$"# title="KeePassXC - Passkey credentials"''
+        ''match app-id=r#"^(com\.gabm\.)?satty$"#'' # Screenshot annotation (nirishot)
       ];
     }
 
