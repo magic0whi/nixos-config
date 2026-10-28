@@ -7,6 +7,7 @@
   ...
 }:
 let
+  pri = 0.52 * 2000;
   out = "Microsoft";
   rules = [ { rule_set = [ "geosite-microsoft" ]; } ];
 in
@@ -19,7 +20,7 @@ in
         detour = out;
       }
     );
-    rules = mylib.mkSbRules true out rules;
+    rules = lib.mkOrder pri (mylib.mkSbRules true out rules);
   };
   outbounds = lib.singleton (
     selectorCfg
@@ -29,7 +30,7 @@ in
     }
   );
   route = {
-    rules = mylib.mkSbRules false out rules;
+    rules = lib.mkOrder pri (mylib.mkSbRules false out rules);
     rule_set = lib.singleton (
       ruleSetCfg.defaultCfg
       // {
