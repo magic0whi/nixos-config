@@ -4,12 +4,12 @@
   const,
   features,
 
-  deploy-rs,
-  nixpkgs,
-  i915-sriov-dkms,
   NixVirt,
-  nixvim,
+  deploy-rs,
   dev-flake,
+  i915-sriov-dkms,
+  nixpkgs,
+  nixvim,
   ...
 }:
 let
@@ -33,10 +33,10 @@ let
       overlays = with features; common.baseOverlays ++ nixos.seat.guiOverlays;
       specialArgs = {
         inherit
-          deploy-rs
           NixVirt
-          nixvim
+          deploy-rs
           dev-flake
+          nixvim
           ;
       };
       modules =
