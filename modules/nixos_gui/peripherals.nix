@@ -16,7 +16,8 @@
         main = {
           # Overloads the capslock key to function as both escape (when tapped) and control (when held)
           capslock = "overload(control, esc)";
-          esc = "capslock";
+          # Mimic macOS: tap to toggle 中/英 (send Ctrl + Space, fcitx5's default), hold for capslock
+          esc = "timeout(C-space, 300, capslock)";
         };
       };
     };
