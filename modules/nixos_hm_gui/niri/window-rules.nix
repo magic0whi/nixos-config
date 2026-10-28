@@ -85,6 +85,11 @@ let
         ''match app-id=".exe$" // All *.exe (Windows applications)''
       ];
     }
+    # Music applications - open in workspace 5
+    {
+      action = ''open-on-workspace "5music"'';
+      matches = [ ''match app-id="feishin"'' ];
+    }
     # File management applications - open in workspace 6
     {
       action = ''open-on-workspace "6file"'';
