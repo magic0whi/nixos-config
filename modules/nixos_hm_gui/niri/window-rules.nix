@@ -96,6 +96,7 @@ let
       matches = [
         ''match app-id="com.github.johnfactotum.Foliate"''
         ''match app-id="thunar"''
+        ''match app-id="anki"''
       ];
     }
     # VM - open in workspace 8vm
