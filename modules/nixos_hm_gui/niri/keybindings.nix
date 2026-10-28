@@ -19,11 +19,11 @@ in
     # Screenshot Annotation via satty
     (pkgs.writeShellApplication {
       name = "nirishot";
-      runtimeInputs = [
-        pkgs.grim
-        pkgs.slurp
-        pkgs.satty
-        pkgs.wl-clipboard
+      runtimeInputs = with pkgs; [
+        grim
+        slurp
+        satty
+        wl-clipboard
       ];
       text = ''
         grim -t ppm -g "$(slurp -o -d -F monospace)" - \
