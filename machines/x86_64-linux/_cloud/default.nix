@@ -14,7 +14,7 @@ let
       gen_nixos_system =
         name:
         nixpkgs.lib.nixosSystem (
-          mylib.genOsConfiguration {
+          mylib.mkOsConfiguration {
             inherit
               name
               mylib
@@ -47,7 +47,7 @@ in
   packages = builtins.mapAttrs (_: nixos_cfg: nixos_cfg.config.system.build.diskoImages) nixos_configurations;
   deploy_nodes = builtins.mapAttrs (
     name: nixosCfg:
-    mylib.genDeployNode {
+    mylib.mkDeployNode {
       nics = nixosCfg.config.vars.hostAddrs.${name};
       inherit nixosCfg;
     }

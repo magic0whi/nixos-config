@@ -29,7 +29,7 @@ let
     # "modules/nixos_headless/traffic-quota.nix"
   ];
   nixosCfg = nixpkgs.lib.nixosSystem (
-    mylib.genOsConfiguration {
+    mylib.mkOsConfiguration {
       inherit
         name
         mylib
@@ -69,7 +69,7 @@ let
     }
   );
   nixos_sd_image = nixpkgs.lib.nixosSystem (
-    mylib.genOsConfiguration {
+    mylib.mkOsConfiguration {
       inherit
         name
         mylib
@@ -103,7 +103,7 @@ in
   nixos_configurations.${name} = nixosCfg;
   # packages.${name} = nixos_sd_image.config.system.build.images.sd-card; # Generate iso image
   packages.${name} = nixos_sd_image.config.system.build.sdImage;
-  deploy_nodes.${name} = mylib.genDeployNode {
+  deploy_nodes.${name} = mylib.mkDeployNode {
     nics = nixosCfg.config.vars.hostAddrs.${name};
     inherit nixosCfg;
   };

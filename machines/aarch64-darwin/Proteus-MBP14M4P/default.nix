@@ -13,7 +13,7 @@
 let
   name = baseNameOf ./.;
   darwin_system = nix-darwin.lib.darwinSystem (
-    mylib.genOsConfiguration {
+    mylib.mkOsConfiguration {
       inherit
         name
         mylib
@@ -33,7 +33,7 @@ in
   darwin_configurations.${name} = darwin_system;
   # It’s only possible to cross compile between aarch64-darwin and x86_64-darwin
   # Ref: https://nix.dev/tutorials/cross-compilation.html#determining-the-host-platform-config
-  deploy_nodes.${name} = mylib.genDeployNode {
+  deploy_nodes.${name} = mylib.mkDeployNode {
     nics = darwin_system.config.vars.hostAddrs.${name};
     nixosCfg = darwin_system;
     isDarwin = true;

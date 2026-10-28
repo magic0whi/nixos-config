@@ -32,8 +32,8 @@ let
         mylib
         // mylib_pkg_funcs
         // {
-          genOsConfiguration = mylib_pkg_funcs.genOsConfiguration_unwrapped inputs.home-manager;
-          genDeployNode = mylib.genDeployNode_unwrapped inputs.deploy-rs.lib;
+          mkOsConfiguration = mylib_pkg_funcs.mkOsConfiguration_unwrapped inputs.home-manager;
+          mkDeployNode = mylib.mkDeployNode_unwrapped inputs.deploy-rs.lib;
         };
 
       features = import ./machines/feature-levels.nix { inherit mylib inputs; };

@@ -14,7 +14,7 @@
 let
   name = baseNameOf ./.;
   nixosCfg = nixpkgs.lib.nixosSystem (
-    mylib.genOsConfiguration {
+    mylib.mkOsConfiguration {
       inherit
         name
         machineConfigs
@@ -65,7 +65,7 @@ in
 {
   _DEBUG = { inherit name; };
   nixos_configurations.${name} = nixosCfg;
-  deploy_nodes.${name} = mylib.genDeployNode {
+  deploy_nodes.${name} = mylib.mkDeployNode {
     nics = nixosCfg.config.vars.hostAddrs.${name};
     inherit nixosCfg;
   };

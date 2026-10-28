@@ -12,7 +12,7 @@
 let
   name = baseNameOf ./.;
   nixos_system = nixpkgs.lib.nixosSystem (
-    mylib.genOsConfiguration {
+    mylib.mkOsConfiguration {
       inherit
         name
         mylib

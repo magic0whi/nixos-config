@@ -71,7 +71,7 @@ in
     else
       null;
 
-  genDeployNode_unwrapped =
+  mkDeployNode_unwrapped =
     deployLib:
     {
       nics,
@@ -147,7 +147,7 @@ in
       pkgs.runCommandLocal name { } "ln -s ${lib.escapeShellArg path_str} $out";
 
     # Args to generate nixosSystem/darwinSystem
-    genOsConfiguration_unwrapped =
+    mkOsConfiguration_unwrapped =
       home-manager:
       {
         name,
