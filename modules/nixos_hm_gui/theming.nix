@@ -7,6 +7,7 @@
   # If your themes for mouse cursor, icons or windows don’t load correctly, try setting them with `home.pointerCursor`
   # and `gtk.theme`, which enables a bunch of compatibility options that should make the themes load in all situations
   home.pointerCursor = {
+    enable = true;
     gtk.enable = true;
     # x11.enable = true;
     package = pkgs.bibata-cursors;

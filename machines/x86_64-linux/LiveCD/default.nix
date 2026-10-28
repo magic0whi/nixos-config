@@ -6,7 +6,6 @@
   deploy-rs,
   nixpkgs,
   noctalia-greeter,
-  niri-nix,
   ...
 }:
 let
@@ -55,8 +54,7 @@ let
           commonHmGui = "modules/common_hm_gui";
           nixosHmGui = "modules/nixos_hm_gui";
         in
-        [ niri-nix.homeModules.default ]
-        ++ features.hm.common.base
+        features.hm.common.base
         ++ map mylib.relativeToRoot [
           "${commonHmHeadless}/helix.nix"
           "${commonHmHeadless}/misc.nix"

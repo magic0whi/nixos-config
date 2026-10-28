@@ -7,9 +7,9 @@
     # nixpkgs.url = "path:/Users/proteus/Proteus/Projects-Ref/nosync/nixpkgs";
     # Pinned as of 2026-04-14 17:55, branch: nixos-unstable
     # nixpkgs-postgresql.url = "github:NixOS/nixpkgs/4c1018dae018162ec878d42fec712642d214fdfa";
-    # Pinned as of 2026-06-19 01:35, branch: master
+    # Pinned as of 2026-10-29, branch: master
     home-manager = {
-      url = "github:nix-community/home-manager/8af17160d162bda6f0861c5c7249347c5df16635";
+      url = "github:nix-community/home-manager/095fef2f265c3c0da4fe315efba8f8a04495ab34";
       # The `follows` keyword in inputs is used for inheritance.
       # Here, `inputs.nixpkgs` of home-manager is kept consistent with the
       # `inputs.nixpkgs` of the current flake, to avoid problems caused by
@@ -51,9 +51,9 @@
       # url = "path:/home/proteus/Works-References/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Pinned as of 2026-06-19 00:05,
+    # Pinned as of 2026-10-29
     catppuccin = {
-      url = "github:catppuccin/nix/036c78ea4cd8a42c8546c6316a944fd7d59d4341";
+      url = "github:catppuccin/nix/ddfe53d3304399d50a89ef6503b6ca1be9349fab";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # Pinned as of 2026-06-05 18:15
@@ -86,13 +86,14 @@
     };
     # Pinned as of 2026-06-05 17:32
     flake-parts.url = "github:hercules-ci/flake-parts/f7c1a2d347e4c52d5fb8d10cb4d94b5884e546fb";
-    # Pinned as of 2026-06-05 17:32
+    # Pinned as of 2026-10-29, branch release-2.96
     lix = {
-      url = "https://git.lix.systems/lix-project/lix/archive/c13ca9adcfb39914efcb88e18c628e95e2ba51e9.tar.gz";
+      url = "https://git.lix.systems/lix-project/lix/archive/5bd6eaabd8bb9cdddadc3f8481327702e4d37cc3.tar.gz";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # Pinned as of 2026-10-29
     lix-module = {
-      url = "https://git.lix.systems/lix-project/nixos-module/archive/727d859b6f5f3289ce49fe26146b3f006387d457.tar.gz";
+      url = "https://git.lix.systems/lix-project/nixos-module/archive/9311ca94aac0ff3378ab4eea887284d11de94158.tar.gz";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         lix.follows = "lix";
@@ -112,11 +113,6 @@
         nixpkgs.follows = "nixpkgs";
         noctalia-qs.follows = "noctalia-qs";
       };
-    };
-    niri-nix = {
-      url = "https://codeberg.org/bananad3v/niri-nix/archive/841861b39dc0c4fe36ed2a92289b899fd4d956f2.tar.gz";
-      # url = "path:/home/proteus/Works-References/niri-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
     noctalia-greeter = {
       url = "github:noctalia-dev/noctalia-greeter/f19b5fe2e20f1a80de178c8dedfbd838ce8eb2ca";

@@ -123,7 +123,6 @@
           [
             sops-nix.homeModules.sops
             noctalia.homeModules.default
-            niri-nix.homeModules.default
             nixvim.homeModules.nixvim
           ]
           ++ map mylib.relativeToRoot [

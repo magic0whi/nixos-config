@@ -137,6 +137,7 @@
         ''--bind=\"ctrl-a:select-all\"''
       ];
       defaultCommand = "rg --files"; # Using `ripgrep` in `fzf`
+      historyWidget.command = ""; # Let atuin own Ctrl-R
     };
     # zoxide is a smarter cd command, inspired by z and autojump.
     # It remembers which directories you use most frequently,
