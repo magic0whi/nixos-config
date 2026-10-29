@@ -34,7 +34,6 @@
       nix-init # Generate nix derivation from url
       nix-melt # A TUI flake.lock viewer, ref: https://github.com/nix-community/nix-melt
 
-      keepassxc # Offline password manager, provides both CLI and GUI
       just # A command runner like make, but simpler
 
       # Misc

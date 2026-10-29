@@ -63,6 +63,7 @@
         gui =
           (with inputs; [ noctalia-greeter.nixosModules.default ])
           ++ map mylib.relativeToRoot [
+            "${gui}/security.nix"
             "${gui}/steam.nix"
             "${gui}/wayland.nix"
           ];
