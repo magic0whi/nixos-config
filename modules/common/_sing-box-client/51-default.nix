@@ -13,6 +13,8 @@ let
         "naixi.net"
         "shuzijumin.com"
         "wenziwanka.com"
+
+        "cachix.org"
       ];
     }
     { rule_set = [ "geosite-gfw" ]; }
