@@ -4,7 +4,6 @@
     printing.enable = true; # Enable CUPS to print documents.
     geoclue2.enable = true; # Enable geolocation services.
     udev.packages = with pkgs; [
-      # gnome-settings-daemon # TODO, maybe unnecessary
       platformio # udev rules for platformio
       openocd # Required by paltformio, ref: https://github.com/NixOS/nixpkgs/issues/224895
       openfpgaloader
