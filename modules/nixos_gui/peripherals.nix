@@ -17,6 +17,7 @@
           # Overloads the capslock key to function as both escape (when tapped) and control (when held)
           capslock = "overload(control, esc)";
           # Mimic macOS: tap to toggle 中/英 (send Ctrl + Space, fcitx5's default), hold for capslock
+          # Ref: https://github.com/rvaiya/keyd/blob/f564288ac2b19d2305a5b39023c474805ff8fce5/docs/keyd.scdoc#L754
           esc = "timeout(C-space, 300, capslock)";
         };
       };
