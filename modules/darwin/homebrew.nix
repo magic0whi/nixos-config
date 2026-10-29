@@ -78,7 +78,7 @@ in
       "keepassxc" # gpgme is marked as broken, use casks temporally
       # "sfm" # Standalone client for sing-box, it lacks some features compares to its cli version
       # "clash-verge-rev"
-      "thaw" # Powerful menu bar manager, fork of jordanbaird-ice
+      "thaw@beta" # Powerful menu bar manager, fork of jordanbaird-ice
       "tor-browser"
       "google-chrome"
       "deepl"
