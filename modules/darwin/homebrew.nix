@@ -75,6 +75,7 @@ in
       "super-productivity"
       "nextcloud"
       "blender" # 3D modeling, currently in nixpkg it's marked as broken on darwin
+      "keepassxc" # gpgme is marked as broken, use casks temporally
       "tor-browser"
       "google-chrome"
       "deepl"
