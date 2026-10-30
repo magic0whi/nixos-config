@@ -84,11 +84,18 @@
   };
   ## END shell.nix
   ## BEGIN associations.nix
+  # Some UTIs (e.g. org.matroska.mkv) are only exported by the app bundles themselves, so run after copyApps/linkApps
+  # and force-register the freshly copied bundles. Otherwise LaunchServices may resolve `.mkv` to a dynamic UTI
+  # (dyn.*) and duti fails with error -50
   home.activation.mpv_associations =
     let
       duti_exe = "${pkgs.duti}/bin/duti";
+      lsregister = "/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister";
     in
-    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    lib.hm.dag.entryAfter [ "writeBoundary" "copyApps" "linkApps" ] ''
+      for app in "$HOME/Applications/Home Manager Apps/"{mpv,sioyek}.app; do
+        [[ -d "$app" ]] && ${lsregister} -f "$app"
+      done
       # Set UTIs
       ${duti_exe} -s io.mpv public.movie viewer
       ${duti_exe} -s info.sioyek.sioyek com.adobe.pdf viewer
