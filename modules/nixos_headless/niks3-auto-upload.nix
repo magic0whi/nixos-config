@@ -5,13 +5,9 @@
   ...
 }:
 {
-  sops.secrets.niks3_client_secret_yajuusexnpai.sopsFile = "${const.secretsDir}/common.sops.yaml";
-  services.niks3-auto-upload = {
-    enable = true;
-    serverUrl = "https://niks3.${const.domain}";
-    # authTokenFile = config.sops.secrets.niks3-auto-upload_api_token.path;
-    authTokenFile = "\${RUNTIME_DIRECTORY}/niks3-oidc-token";
-  };
+  services.niks3-auto-upload.authTokenFile =
+    # config.sops.secrets.niks3-auto-upload_api_token.path;
+    "\${RUNTIME_DIRECTORY}/niks3-oidc-token";
   systemd.services.niks3-auto-upload.serviceConfig = {
     RuntimeDirectory = "niks3-auto-upload";
     RuntimeDirectoryMode = "0700";

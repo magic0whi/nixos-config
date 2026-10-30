@@ -10,6 +10,7 @@
         "${common}/debug.nix"
         "${common}/easytier.nix"
         "${common}/misc.nix"
+        "${common}/niks3-auto-upload.nix"
         "${common}/nix.nix"
         "${common}/secrets.nix"
         "${common}/shell.nix"
@@ -97,6 +98,7 @@
     [
       lix-module.darwinModules.default
       sops-nix.darwinModules.sops
+      niks3.darwinModules.niks3-auto-upload
     ]
     ++ map mylib.relativeToRoot [ "modules/darwin" ];
 
