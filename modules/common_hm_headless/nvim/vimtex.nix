@@ -2,6 +2,7 @@
   programs.nixvim = {
     plugins.vimtex = {
       enable = true;
+      texlivePackage = null; # texlive is already provided by the dev-flake#latex
 
       settings = {
         quickfix_enabled = true;
