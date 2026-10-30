@@ -45,6 +45,14 @@ in
     }
   ) rules;
   route = {
+    rules =
+      let
+        mkSbRules = mylib.mkSbRules false;
+      in
+      lib.mkMerge (
+        [ (lib.mkBefore (mkSbRules out [ { rule_set = [ "geoip-apple" ]; } ])) ]
+        ++ (map (rule: mkSbRules rule.out rule.rules) rules)
+      );
     rule_set =
       let
         inherit (ruleSetCfg) urlPrefix defaultCfg;
@@ -63,13 +71,5 @@ in
           url = "${urlPrefix}/geo/geosite/apple-update.srs";
         }
       ];
-    rules =
-      let
-        mkSbRules = mylib.mkSbRules false;
-      in
-      lib.mkMerge (
-        [ (lib.mkBefore (mkSbRules out [ { rule_set = [ "geoip-apple" ]; } ])) ]
-        ++ (map (rule: mkSbRules rule.out rule.rules) rules)
-      );
   };
 }
