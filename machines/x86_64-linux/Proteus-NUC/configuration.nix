@@ -1,4 +1,9 @@
-{ config, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 {
   vars.hostAddrs.${config.networking.hostName} = {
     easytier = {
@@ -10,7 +15,8 @@
     wire.name = "enp46s0";
   };
   services.sing-box.generateMobileConfig.enable = true;
-  systemd.services.sing-box.enable = false; # Since NUC is now under sing-box gateway
+  # Since NUC is now under a sing-box gateway, don't autostart
+  systemd.services.sing-box.wantedBy = lib.mkForce [ ];
 
   environment.systemPackages = with pkgs; [ bpftrace ]; # powerful tracing tool, ref: https://github.com/bpftrace/bpftrace
   ## BEGIN zfs.nix
