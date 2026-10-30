@@ -29,7 +29,7 @@
   gidNumber: ${toString config.users.groups.users.gid}
   homeDirectory: ${config.users.users.${const.username}.home}
   description: Primary personal account
-  userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$arVKdAqitf39aAVGaLS5Qw$AtzBSJDhT9vsiLg6ZhZDuHxH5euYqlVmGSE+EWjlxqs
+  userPassword: {ARGON2}$argon2id$v=19$m=65536,t=2,p=1$xeaCYCOeyF5B8zjqNo4WpQ$ZBQbmev22zCczx/O0H7MKPVPeRJ8WyjfS6ixqBSM2xk
 
   dn: uid=father,ou=People,${baseDN}
   objectClass: top
