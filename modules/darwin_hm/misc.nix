@@ -87,6 +87,8 @@
   # Some UTIs (e.g. org.matroska.mkv) are only exported by the app bundles themselves, so run after copyApps/linkApps
   # and force-register the freshly copied bundles. Otherwise LaunchServices may resolve `.mkv` to a dynamic UTI
   # (dyn.*) and duti fails with error -50
+  # Check:
+  # `/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -dump | rg -A8 '^type id:\s+org\.matroska\.mkv ' | rg '^(type id|bundle|flags|tags)'`
   home.activation.mpv_associations =
     let
       duti_exe = "${pkgs.duti}/bin/duti";
@@ -96,9 +98,6 @@
       for app in "$HOME/Applications/Home Manager Apps/"{mpv,sioyek}.app; do
         [[ -d "$app" ]] && ${lsregister} -f "$app"
       done
-      # Set UTIs
-      ${duti_exe} -s io.mpv public.movie viewer
-      ${duti_exe} -s info.sioyek.sioyek com.adobe.pdf viewer
       # Set file extensions
       ${duti_exe} -s io.mpv .mkv viewer
       ${duti_exe} -s io.mpv .mp4 viewer
