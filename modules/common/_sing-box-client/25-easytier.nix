@@ -1,8 +1,10 @@
+# NOTE: use geosite-category-stun and `protocol = "stun"` may increase the risk of IP leaks (e.g. companies that use
+# MetrixNet)
 {
-  const,
+  # const,
   lib,
   mylib,
-  ruleSetCfg,
+  # ruleSetCfg,
   ...
 }:
 let
@@ -16,19 +18,19 @@ let
         "public.easytier.cn"
       ];
     }
-    { rule_set = "geosite-category-stun"; }
+    # { rule_set = "geosite-category-stun"; }
   ];
 in
 {
   dns.rules = lib.mkOrder (pri * 2000) (mylib.mkSbRules true out rules); # Before FakeIP rules
   route = {
-    rule_set = lib.singleton (
-      ruleSetCfg.defaultCfg
-      // {
-        tag = "geosite-category-stun";
-        url = "${ruleSetCfg.urlPrefix}/geo/geosite/category-stun.srs";
-      }
-    );
+    # rule_set = lib.singleton (
+    #   ruleSetCfg.defaultCfg
+    #   // {
+    #     tag = "geosite-category-stun";
+    #     url = "${ruleSetCfg.urlPrefix}/geo/geosite/category-stun.srs";
+    #   }
+    # );
     rules =
       let
         mkSbRules = mylib.mkSbRules false;
@@ -48,12 +50,12 @@ in
           ++ (mkSbRules out rules)
         ))
 
-        (lib.mkOrder (const.sb.routeSniffPri + 1) (
-          lib.singleton {
-            outbound = out;
-            protocol = "stun";
-          }
-        ))
+        # (lib.mkOrder (const.sb.routeSniffPri + 1) (
+        #   lib.singleton {
+        #     outbound = out;
+        #     protocol = "stun";
+        #   }
+        # ))
       ];
   };
 }
