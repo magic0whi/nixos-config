@@ -32,13 +32,33 @@ in
     }
   );
   route = {
-    rules = mylib.mkSbRules false out rules;
-    rule_set = lib.singleton (
-      ruleSetCfg.defaultCfg
-      // {
-        tag = "geosite-hcaptcha";
-        url = "${ruleSetCfg.urlPrefix}/geo/geosite/hcaptcha.srs";
-      }
-    );
+    rules =
+      let
+        mkSbRules = mylib.mkSbRules false;
+      in
+      lib.mkMerge [
+        (mkSbRules out rules)
+        (lib.mkBefore (mkSbRules out [ { rule_set = [ "geoip-cloudflare" ]; } ]))
+      ];
+    rule_set =
+      let
+        inherit (ruleSetCfg) defaultCfg urlPrefix;
+      in
+      [
+        (
+          defaultCfg
+          // {
+            tag = "geoip-cloudflare";
+            url = "${urlPrefix}/geo/geoip/cloudflare.srs";
+          }
+        )
+        (
+          defaultCfg
+          // {
+            tag = "geosite-hcaptcha";
+            url = "${urlPrefix}/geo/geosite/hcaptcha.srs";
+          }
+        )
+      ];
   };
 }
