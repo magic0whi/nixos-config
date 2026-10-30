@@ -6,7 +6,7 @@
   ...
 }:
 let
-  out = "Cloudflare IP";
+  out = "CloudflareIP";
 in
 {
   outbounds = lib.singleton (
