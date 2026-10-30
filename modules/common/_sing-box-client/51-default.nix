@@ -8,15 +8,7 @@ let
   pri = 0.51;
   out = "Default";
   rules = [
-    {
-      domain_suffix = [
-        "naixi.net"
-        "shuzijumin.com"
-        "wenziwanka.com"
-
-        "cachix.org"
-      ];
-    }
+    { domain_suffix = [ "shuzijumin.com" ]; }
     { rule_set = [ "geosite-gfw" ]; }
   ];
 in
