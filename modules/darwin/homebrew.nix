@@ -75,9 +75,6 @@ in
       "super-productivity"
       "nextcloud"
       "blender" # 3D modeling, currently in nixpkg it's marked as broken on darwin
-      "keepassxc" # gpgme is marked as broken, use casks temporally
-      # "sfm" # Standalone client for sing-box, it lacks some features compares to its cli version
-      # "clash-verge-rev"
       "thaw@beta" # Powerful menu bar manager, fork of jordanbaird-ice
       "tor-browser"
       "google-chrome"
@@ -86,9 +83,7 @@ in
       # Misc
       # "tencent-lemon" # macOS cleaner
       # "neteasemusic" # music
-      # "mihomo-party" # transparent proxy tool
       "obs"
-      # "ibkr"
       "trader-workstation"
       "thinkorswim"
 

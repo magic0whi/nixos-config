@@ -7,5 +7,7 @@
     raycast # (HotKey: alt/option + space)search, calculate and run scripts(with many plugins)
     stats # Beautiful system status monitor in menu bar
     betterdisplay # Unlock display settings
+
+    keepassxc # Offline password manager, provides both CLI and GUI
   ];
 }
