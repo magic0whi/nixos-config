@@ -47,7 +47,8 @@
         trusted-public-keys = [ "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=" ];
         sandbox =
           if pkgs.stdenv.hostPlatform.isDarwin then
-            "relaxed" # KeePassXC
+            false
+          # "relaxed" # KeePassXC
           else
             true;
         # The substituter will be appended to the default substituters when fetching packages.
