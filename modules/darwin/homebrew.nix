@@ -75,7 +75,6 @@ in
       "super-productivity"
       "nextcloud"
       "blender" # 3D modeling, currently in nixpkg it's marked as broken on darwin
-      "thaw@beta" # Powerful menu bar manager, fork of jordanbaird-ice
       "tor-browser"
       "google-chrome"
       "deepl"
