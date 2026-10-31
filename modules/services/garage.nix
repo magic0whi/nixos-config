@@ -1,15 +1,16 @@
 # Ref: https://garagehq.deuxfleurs.fr/documentation/reference-manual/configuration/
 #
 # TIP: Manually setup a Nix binary cache server
-# 1. Get node id: `ID=$(sudo garage node id | cut -d@ -f1)`
-# 2. Input rpc secret: `export GARAGE_RPC_SECRET=$(systemd-ask-password)`
-# 3. Initialize single-node layout: `garage -h $ID@127.0.0.1:3901 layout assign $ID -z us-east-1 -c 200G -t $(hostname)`
-# 4. Commit layout: `garage -h $ID@127.0.0.1:3901 layout apply --version 1`
-# 5. Create the bucket: `garage -h <full-node-id>@127.0.0.1:3901 bucket create nix-cache`
-# 6. Create the access key: `garage -h <full-node-id>@127.0.0.1:3901 key create nixbuilder`
-# 7. Allow the key to access the bucket:
-#   `garage -h <full-node-id>@127.0.0.1:3901 bucket allow --read --write --owner nix-cache --key nixbuilder`
-# 8. Allow bucket-as-website bucket-as-website: garage -h <full-node-id>@127.0.0.1:3901 bucket website --allow nix-cache
+# ```bash
+# export GARAGE_RPC_SECRET=$(systemd-ask-password)
+# alias g="garage -h $(sudo garage node id | cut -d@ -f1)@127.0.0.1:3901"
+# g layout assign $ID -z us-east-1 -c 200G -t $(hostname) # Initialize single-node layout
+# g layout apply --version 1 # Commit layout
+# g bucket create nix-cache # Create the bucket
+# g key create nixbuilder # Create the access key
+# g bucket allow --read --write --owner nix-cache --key nixbuilder # Allow the key to access the bucket
+# g bucket website --allow nix-cache # Allow bucket-as-website
+# ```
 {
   config,
   lib,
