@@ -1,9 +1,9 @@
 # Ref: https://garagehq.deuxfleurs.fr/documentation/reference-manual/configuration/
 #
 # TIP: Manually setup a Nix binary cache server
-# 1. Get node id: `sudo garage node id`
+# 1. Get node id: `ID=$(sudo garage node id | cut -d@ -f1)`
 # 2. Input rpc secret: `export GARAGE_RPC_SECRET=$(systemd-ask-password)`
-# 3. Initialize single-node layout: `-h $ID@127.0.0.1:3901 layout assign $ID -z us-east-1 -c 200G -t <hostname>`
+# 3. Initialize single-node layout: `garage -h $ID@127.0.0.1:3901 layout assign $ID -z us-east-1 -c 200G -t $(hostname)`
 # 4. Commit layout: `garage -h $ID@127.0.0.1:3901 layout apply --version 1`
 # 5. Create the bucket: `garage -h <full-node-id>@127.0.0.1:3901 bucket create nix-cache`
 # 6. Create the access key: `garage -h <full-node-id>@127.0.0.1:3901 key create nixbuilder`
