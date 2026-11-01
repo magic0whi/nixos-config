@@ -75,7 +75,7 @@ rec {
   ];
 
   sb = rec {
-    routeDnsHijackPri = 0.48 * 2000;
+    routeDnsHijackPri = 0.99 * 2000;
     routeSniffPri = routeDnsHijackPri - 2;
     ruleSetCfg = {
       urlPrefix = "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing";
