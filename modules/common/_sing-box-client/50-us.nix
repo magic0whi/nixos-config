@@ -9,6 +9,7 @@ let
     domain_suffix = [
       "t-mobile.com"
       "connectbyt-mobile.com"
+      "redpocket.com"
     ];
   };
 in
