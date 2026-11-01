@@ -1,4 +1,5 @@
 {
+  const,
   lib,
   mylib,
   ruleSetCfg,
@@ -6,6 +7,10 @@
 }:
 let
   pri = 0.51;
+  fakeip_pri = pri * (2000 - const.sb.dnsFakeIpPri) + const.sb.dnsFakeIpPri;
+  no_sniff_pri = pri * const.sb.routeSniffPri;
+  sniff_pri = pri * (2000 - const.sb.routeSniffPri) + const.sb.routeSniffPri;
+
   out = "Default";
   rules = [
     { domain_suffix = [ "shuzijumin.com" ]; }
@@ -13,15 +18,15 @@ let
   ];
 in
 {
-  dns.rules = lib.mkOrder (pri * 2000) (mylib.mkSbRules true out rules);
+  dns.rules = lib.mkOrder fakeip_pri (mylib.mkSbRules true out rules);
   route = {
     rules =
       let
         mkSbRules = mylib.mkSbRules false;
       in
       lib.mkMerge [
-        (lib.mkBefore (mkSbRules out [ { rule_set = [ "geoip-telegram" ]; } ]))
-        (lib.mkOrder (pri * 2000) (mkSbRules out rules))
+        (lib.mkOrder no_sniff_pri (mkSbRules out [ { rule_set = [ "geoip-telegram" ]; } ]))
+        (lib.mkOrder sniff_pri (mkSbRules out rules))
       ];
     rule_set =
       let

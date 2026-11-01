@@ -1,4 +1,5 @@
 {
+  const,
   dnsServerCfg,
   lib,
   mylib,
@@ -7,7 +8,10 @@
   ...
 }:
 let
-  pri = 0.49 * 2000;
+  pri = 0.49;
+  fakeip_pri = pri * (2000 - const.sb.dnsFakeIpPri) + const.sb.dnsFakeIpPri;
+  sniff_pri = pri * (2000 - const.sb.routeSniffPri) + const.sb.routeSniffPri;
+
   out = "AI";
   rules = [
     { domain = "gspe1-ssl.ls.apple.com"; }
@@ -34,7 +38,7 @@ in
         detour = out;
       }
     );
-    rules = lib.mkOrder pri (mylib.mkSbRules true out rules);
+    rules = lib.mkOrder fakeip_pri (mylib.mkSbRules true out rules);
   };
   outbounds = lib.singleton (
     selectorCfg
@@ -44,7 +48,7 @@ in
     }
   );
   route = {
-    rules = lib.mkOrder pri (mylib.mkSbRules false out rules);
+    rules = lib.mkOrder sniff_pri (mylib.mkSbRules false out rules);
     rule_set =
       let
         inherit (ruleSetCfg) urlPrefix defaultCfg;

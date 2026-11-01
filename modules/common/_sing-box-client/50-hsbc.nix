@@ -1,4 +1,5 @@
 {
+  const,
   dnsServerCfg,
   lib,
   mylib,
@@ -7,6 +8,10 @@
   ...
 }:
 let
+  pri = 0.50;
+  fakeip_pri = pri * (2000 - const.sb.dnsFakeIpPri) + const.sb.dnsFakeIpPri;
+  sniff_pri = pri * (2000 - const.sb.routeSniffPri) + const.sb.routeSniffPri;
+
   out = "HSBC";
   super_rules = [
     {
@@ -41,7 +46,7 @@ in
         detour = out;
       }
     );
-    rules = builtins.concatMap (rules: mylib.mkSbRules true rules.out rules.rules) super_rules;
+    rules = lib.mkOrder fakeip_pri (builtins.concatMap (rules: mylib.mkSbRules true rules.out rules.rules) super_rules);
   };
   outbounds = lib.singleton (
     selectorCfg
@@ -51,7 +56,7 @@ in
     }
   );
   route = {
-    rules = builtins.concatMap (rules: mylib.mkSbRules false rules.out rules.rules) super_rules;
+    rules = lib.mkOrder sniff_pri (builtins.concatMap (rules: mylib.mkSbRules false rules.out rules.rules) super_rules);
     rule_set = lib.singleton (
       ruleSetCfg.defaultCfg
       // {

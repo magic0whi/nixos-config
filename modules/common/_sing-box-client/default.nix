@@ -87,24 +87,28 @@ lib.mkMerge (
         # (source_port || source_port_range) &&
         # other fields
         # Ref: https://sing-box.sagernet.org/configuration/dns/rule/#default-fields
-        # FaleIP; Clash mode
-        rules = lib.mkOrder const.sb.routeDnsHijackPri [
-          # Set before fakeIP rule to let global & direct mode get RealIP
-          {
-            server = "Default";
-            clash_mode = "global";
-          }
-          {
-            server = "Direct";
-            clash_mode = "direct";
-          }
-          {
-            server = "FakeIP";
-            query_type = [
-              "A"
-              "AAAA"
-            ];
-          }
+        # FakeIP; Clash mode
+        rules = lib.mkMerge [
+          # Set before FakeIP rule to let global & direct mode get RealIP
+          (lib.mkOrder 0 [
+            {
+              server = "Default";
+              clash_mode = "global";
+            }
+            {
+              server = "Direct";
+              clash_mode = "direct";
+            }
+          ])
+          (lib.mkOrder const.sb.dnsFakeIpPri [
+            {
+              server = "FakeIP";
+              query_type = [
+                "A"
+                "AAAA"
+              ];
+            }
+          ])
         ];
       };
       experimental = {
@@ -211,7 +215,8 @@ lib.mkMerge (
         # other fields
         # Ref: https://sing-box.sagernet.org/configuration/route/rule/#default-fields
         #
-        # Most rules depend on protocol sniff and DNS hijack, set priority = (mkBefore - 2)
+        # IP/process/port rules go before the sniff rule (`no_sniff_pri`), domain rules after it (`sniff_pri`);
+        # DNS hijack comes last
         rules = lib.mkMerge [
           # https://sing-box.sagernet.org/configuration/route/sniff/
           (lib.mkOrder 0 [
@@ -235,7 +240,7 @@ lib.mkMerge (
             }
           ))
 
-          (lib.mkOrder (const.sb.routeDnsHijackPri) [
+          (lib.mkOrder (0.99 * 2000) [
             {
               action = "hijack-dns";
               type = "logical";

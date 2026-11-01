@@ -1,4 +1,5 @@
 {
+  const,
   dnsServerCfg,
   lib,
   mylib,
@@ -7,6 +8,11 @@
   ...
 }:
 let
+  pri = 0.50;
+  fakeip_pri = pri * (2000 - const.sb.dnsFakeIpPri) + const.sb.dnsFakeIpPri;
+  no_sniff_pri = pri * const.sb.routeSniffPri;
+  sniff_pri = pri * (2000 - const.sb.routeSniffPri) + const.sb.routeSniffPri;
+
   out = "Cybersecurity";
   rules = [
     { domain_suffix = [ "online-metrix.net" ]; }
@@ -22,7 +28,7 @@ in
         detour = out;
       }
     );
-    rules = mylib.mkSbRules true out rules;
+    rules = lib.mkOrder fakeip_pri (mylib.mkSbRules true out rules);
   };
   outbounds = lib.singleton (
     selectorCfg
@@ -37,8 +43,8 @@ in
         mkSbRules = mylib.mkSbRules false;
       in
       lib.mkMerge [
-        (mkSbRules out rules)
-        (lib.mkBefore (mkSbRules out [ { rule_set = [ "geoip-cloudflare" ]; } ]))
+        (lib.mkOrder sniff_pri (mkSbRules out rules))
+        (lib.mkOrder no_sniff_pri (mkSbRules out [ { rule_set = [ "geoip-cloudflare" ]; } ]))
       ];
     rule_set =
       let

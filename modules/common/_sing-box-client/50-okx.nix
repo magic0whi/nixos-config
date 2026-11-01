@@ -1,4 +1,5 @@
 {
+  const,
   dnsServerCfg,
   lib,
   mylib,
@@ -7,6 +8,10 @@
   ...
 }:
 let
+  pri = 0.50;
+  fakeip_pri = pri * (2000 - const.sb.dnsFakeIpPri) + const.sb.dnsFakeIpPri;
+  sniff_pri = pri * (2000 - const.sb.routeSniffPri) + const.sb.routeSniffPri;
+
   out = "OKX";
   rules = [
     { domain_suffix = [ "okcoin.com" ]; }
@@ -22,7 +27,7 @@ in
         detour = out;
       }
     );
-    rules = mylib.mkSbRules true out rules;
+    rules = lib.mkOrder fakeip_pri (mylib.mkSbRules true out rules);
   };
   outbounds = lib.singleton (
     selectorCfg
@@ -32,7 +37,7 @@ in
     }
   );
   route = {
-    rules = mylib.mkSbRules false out rules;
+    rules = lib.mkOrder sniff_pri (mylib.mkSbRules false out rules);
     rule_set = lib.singleton (
       ruleSetCfg.defaultCfg
       // {

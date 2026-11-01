@@ -11,11 +11,17 @@
 }:
 let
   pri = 0.25;
+  realip_pri = pri * const.sb.dnsFakeIpPri;
+  no_sniff_pri = pri * const.sb.routeSniffPri;
+  sniff_pri = pri * (2000 - const.sb.routeSniffPri) + const.sb.routeSniffPri;
+
   out = "Direct";
   rules = [
-    { domain_suffix = [ "syncthing.net" ]; }
     {
-      domain_suffix = [ "szgjgs.com" ];
+      domain_suffix = [
+        "syncthing.net"
+        "szgjgs.com"
+      ];
     }
     {
       rule_set = [
@@ -26,19 +32,17 @@ let
   ];
 in
 {
-  # Before FakeIP rule so all resolve to RealIP
-  dns.rules = lib.mkOrder (pri * 2000) (mylib.mkSbRules true out rules);
+  dns.rules = lib.mkOrder realip_pri (mylib.mkSbRules true out rules);
   route = {
     rules =
       let
         mkSbRules = mylib.mkSbRules false;
       in
       lib.mkMerge [
-        (lib.mkOrder (pri * 1000) (
+        (lib.mkOrder no_sniff_pri (
           mkSbRules out (
-            rules
             # BEGIN Processes rules
-            ++ [
+            [
               # Tor & I2P
               {
                 process_name = [
@@ -72,6 +76,8 @@ in
             # END Processes rules
           )
         ))
+
+        (lib.mkOrder sniff_pri (mkSbRules out rules))
 
         (lib.mkOrder 2000 (mkSbRules out [ { protocol = "ssh"; } ]))
       ];

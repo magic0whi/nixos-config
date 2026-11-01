@@ -74,9 +74,10 @@ rec {
     "9"
   ];
 
-  sb = rec {
-    routeDnsHijackPri = 0.99 * 2000;
-    routeSniffPri = routeDnsHijackPri - 2;
+  sb = {
+    dnsFakeIpPri = 0.20 * 2000;
+    # NOTE: domain match rules should AFTER the sniff rule
+    routeSniffPri = 0.20 * 2000;
     ruleSetCfg = {
       urlPrefix = "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing";
       defaultCfg = {

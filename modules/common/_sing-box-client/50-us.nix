@@ -1,9 +1,14 @@
 {
+  const,
   lib,
   mylib,
   ...
 }:
 let
+  pri = 0.50;
+  fakeip_pri = pri * (2000 - const.sb.dnsFakeIpPri) + const.sb.dnsFakeIpPri;
+  sniff_pri = pri * (2000 - const.sb.routeSniffPri) + const.sb.routeSniffPri;
+
   out = "UnitedStates";
   rules = lib.singleton {
     domain_suffix = [
@@ -14,6 +19,6 @@ let
   };
 in
 {
-  dns.rules = mylib.mkSbRules true out rules;
-  route.rules = mylib.mkSbRules false out rules;
+  dns.rules = lib.mkOrder fakeip_pri (mylib.mkSbRules true out rules);
+  route.rules = lib.mkOrder sniff_pri (mylib.mkSbRules false out rules);
 }

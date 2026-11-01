@@ -1,4 +1,5 @@
 {
+  const,
   dnsServerCfg,
   lib,
   mylib,
@@ -7,8 +8,13 @@
   ...
 }:
 let
+  pri = 0.50;
+  fakeip_pri = pri * (2000 - const.sb.dnsFakeIpPri) + const.sb.dnsFakeIpPri;
+  no_sniff_pri = pri * const.sb.routeSniffPri;
+  sniff_pri = pri * (2000 - const.sb.routeSniffPri) + const.sb.routeSniffPri;
+
   out = "Apple";
-  rules = [
+  super_rules = [
     {
       inherit out;
       rules = [ { rule_set = [ "geosite-apple" ]; } ];
@@ -29,12 +35,12 @@ in
         tag = rule.out;
         detour = rule.out;
       }
-    ) rules;
+    ) super_rules;
     rules =
       let
         mkSbRules = mylib.mkSbRules true;
       in
-      builtins.concatMap (rule: mkSbRules rule.out rule.rules) rules;
+      lib.mkOrder fakeip_pri (builtins.concatMap (rule: mkSbRules rule.out rule.rules) super_rules);
   };
   outbounds = map (
     rule:
@@ -43,15 +49,15 @@ in
       tag = rule.out;
       default = "Direct";
     }
-  ) rules;
+  ) super_rules;
   route = {
     rules =
       let
         mkSbRules = mylib.mkSbRules false;
       in
       lib.mkMerge (
-        [ (lib.mkBefore (mkSbRules out [ { rule_set = [ "geoip-apple" ]; } ])) ]
-        ++ (map (rule: mkSbRules rule.out rule.rules) rules)
+        [ (lib.mkOrder no_sniff_pri (mkSbRules out [ { rule_set = [ "geoip-apple" ]; } ])) ]
+        ++ (map (rule: lib.mkOrder sniff_pri (mkSbRules rule.out rule.rules)) super_rules)
       );
     rule_set =
       let

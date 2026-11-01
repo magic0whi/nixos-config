@@ -9,25 +9,31 @@
 }:
 let
   pri = 0.26;
+  realip_pri = pri * const.sb.dnsFakeIpPri;
+  no_sniff_pri = pri * const.sb.routeSniffPri;
+  sniff_pri = pri * (2000 - const.sb.routeSniffPri) + const.sb.routeSniffPri;
+
   out = "Direct";
 
   rules = [ { rule_set = [ "geosite-cn" ]; } ];
 in
 {
-  dns.rules = lib.mkOrder (pri * 2000) (
-    mylib.mkSbRules true out rules
-    ++ lib.optionals (config.services.sing-box.settings.dns.final != "Direct") [
-      {
-        action = "evaluate";
-        server = out;
-      }
-      {
-        match_response = true;
-        rule_set = "geoip-cn";
-        action = "respond";
-      }
-    ]
-  );
+  dns.rules = lib.mkMerge [
+    (lib.mkOrder realip_pri (mylib.mkSbRules true out rules))
+    (lib.mkOrder (0.51 * const.sb.dnsFakeIpPri) (
+      lib.optionals (config.services.sing-box.settings.dns.final != "Direct") [
+        {
+          action = "evaluate";
+          server = out;
+        }
+        {
+          match_response = true;
+          rule_set = "geoip-cn";
+          action = "respond";
+        }
+      ]
+    ))
+  ];
   route = {
     rule_set =
       let
@@ -48,7 +54,7 @@ in
         mkSbRules = mylib.mkSbRules false;
       in
       lib.mkMerge [
-        (lib.mkOrder (const.sb.routeSniffPri - 1) (
+        (lib.mkOrder no_sniff_pri (
           mkSbRules out (
             lib.singleton (
               # Bypass CN IPs but exclude DNS IP so sing-box can still hijack DNS request on macOS
@@ -70,7 +76,7 @@ in
           )
         ))
 
-        (lib.mkOrder (pri * 1000) (mkSbRules out rules))
+        (lib.mkOrder sniff_pri (mkSbRules out rules))
       ];
   };
 }

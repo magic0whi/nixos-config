@@ -1,4 +1,5 @@
 {
+  const,
   dnsServerCfg,
   lib,
   mylib,
@@ -7,6 +8,11 @@
   ...
 }:
 let
+  pri = 0.50;
+  fakeip_pri = pri * (2000 - const.sb.dnsFakeIpPri) + const.sb.dnsFakeIpPri;
+  no_sniff_pri = pri * const.sb.routeSniffPri;
+  sniff_pri = pri * (2000 - const.sb.routeSniffPri) + const.sb.routeSniffPri;
+
   out = "Brokerage";
   rules = lib.singleton {
     rule_set = [
@@ -25,7 +31,7 @@ in
         detour = out;
       }
     );
-    rules = mylib.mkSbRules true out rules;
+    rules = lib.mkOrder fakeip_pri (mylib.mkSbRules true out rules);
   };
   outbounds = lib.singleton (
     selectorCfg
@@ -40,7 +46,7 @@ in
         mkSbRules = mylib.mkSbRules false;
       in
       lib.mkMerge [
-        (lib.mkBefore (
+        (lib.mkOrder no_sniff_pri (
           mkSbRules out (
             lib.singleton {
               rule_set = [
@@ -53,7 +59,7 @@ in
           )
         ))
 
-        (mkSbRules out rules)
+        (lib.mkOrder sniff_pri (mkSbRules out rules))
       ];
     rule_set =
       let

@@ -9,7 +9,12 @@
 }:
 let
   pri = 0.25;
+  realip_pri = pri * const.sb.dnsFakeIpPri;
+  no_sniff_pri = pri * const.sb.routeSniffPri;
+  sniff_pri = pri * (2000 - const.sb.routeSniffPri) + const.sb.routeSniffPri;
+
   out = "Direct";
+  # All after the sniff rule
   rules = [
     {
       domain_suffix = [
@@ -22,7 +27,7 @@ let
   ];
 in
 {
-  dns.rules = lib.mkOrder (pri * 2000) (mylib.mkSbRules true out rules); # Before FakeIP rules
+  dns.rules = lib.mkOrder realip_pri (mylib.mkSbRules true out rules);
   route = {
     rule_set = lib.singleton (
       ruleSetCfg.defaultCfg
@@ -36,7 +41,7 @@ in
         mkSbRules = mylib.mkSbRules false;
       in
       lib.mkMerge [
-        (lib.mkOrder (pri * 1000) (
+        (lib.mkOrder no_sniff_pri (
           mkSbRules out [
             { ip_cidr = [ "10.0.0.0/24" ]; }
             { port_range = "11010:11013"; }
@@ -47,14 +52,14 @@ in
               ];
             }
           ]
-          ++ (mkSbRules out rules)
         ))
 
-        (lib.mkOrder (const.sb.routeSniffPri + 1) (
+        (lib.mkOrder sniff_pri (
           lib.singleton {
             outbound = out;
             protocol = "stun";
           }
+          ++ (mkSbRules out rules)
         ))
       ];
   };
