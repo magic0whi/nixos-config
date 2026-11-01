@@ -6,6 +6,7 @@
   ...
 }:
 let
+  pri = 0.25;
   out = "VoWiFi";
   rules = [
     {
@@ -15,12 +16,10 @@ let
         4500
       ];
     }
-
     {
       network = "tcp";
       port = 143;
     }
-
     {
       domain_suffix = [
         "3gppnetwork.org"
@@ -41,7 +40,7 @@ in
         detour = out;
       }
     );
-    rules = mylib.mkSbRules true out rules;
+    rules = lib.mkOrder (pri * 2000) (mylib.mkSbRules true out rules);
   };
   outbounds = lib.singleton (
     selectorCfg
@@ -50,5 +49,5 @@ in
       default = "Default";
     }
   );
-  route.rules = mylib.mkSbRules false out rules;
+  route.rules = lib.mkOrder (pri * 1000) (mylib.mkSbRules false out rules);
 }
