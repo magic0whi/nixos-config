@@ -107,7 +107,7 @@ in
       GARAGE_UI_SERVER_HOST = "127.0.0.1";
       GARAGE_UI_SERVER_PORT = "3909";
       GARAGE_UI_SERVER_ENVIRONMENT = "production";
-      GARAGE_UI_SERVER_ROOT_URL = "https://${hostname}.garage.${const.domain}";
+      GARAGE_UI_SERVER_ROOT_URL = lib.mkDefault "https://${hostname}.garage.${const.domain}";
       GARAGE_UI_GARAGE_ENDPOINT = "http://${garage_settings.s3_api.api_bind_addr}";
       GARAGE_UI_GARAGE_ADMIN_ENDPOINT = "http://${garage_settings.admin.api_bind_addr}";
       GARAGE_UI_GARAGE_REGION = garage_settings.s3_api.s3_region;

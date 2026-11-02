@@ -28,5 +28,9 @@ in
     replication_factor = 2; # allows one node die
   };
 
-  virtualisation.oci-containers.containers.garage-ui.environment.GARAGE_UI_AUTH_OIDC_CLIENT_ID = "garage-ui-gcp";
+  virtualisation.oci-containers.containers.garage-ui.environment = {
+    GARAGE_UI_AUTH_OIDC_CLIENT_ID = "garage-ui-gcp";
+    # sing-box occupies 443, Traefik websecure listens on 8443. OIDC redirect URI is derived from root URL
+    GARAGE_UI_SERVER_ROOT_URL = "https://${hostname}.garage.${const.domain}${config.services.traefik.staticConfigOptions.entryPoints.websecure.address}";
+  };
 }
