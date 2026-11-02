@@ -18,13 +18,15 @@
 
   sops.secrets =
     let
-      sopsFile = "${const.secretsDir}/common.sops.yaml";
       restartUnits = [ "sing-box.service" ];
     in
     {
-      sb_nodes_anytls_password = { inherit sopsFile restartUnits; };
+      sb_nodes_anytls_password = { inherit restartUnits; };
       # Shared with ddclient (Cloudflare "Edit zone DNS" token), used for ACME DNS-01
-      ddclient_cloudflare_password = { inherit sopsFile restartUnits; };
+      ddclient_cloudflare_password = {
+        inherit restartUnits;
+        sopsFile = "${const.secretsDir}/cloud.sops.yaml";
+      };
     };
   services.sing-box = {
     enable = true;

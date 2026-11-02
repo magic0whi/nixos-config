@@ -7,6 +7,7 @@
     {
       garage_rpc_secret = { inherit sopsFile; };
       garage_admin_token = { inherit sopsFile; };
+      garage_ui_oidc_client_secret = { inherit sopsFile; };
     };
 
   # systemd.tmpfiles.settings."10-garage-create-dir" = {
@@ -37,4 +38,6 @@
     data_dir = "${const.storagePath}/garage/data";
     s3_api.s3_region = "cn-east1-a";
   };
+
+  virtualisation.oci-containers.containers.garage-ui.environment.GARAGE_UI_AUTH_OIDC_CLIENT_ID = "garage-ui-desktop";
 }

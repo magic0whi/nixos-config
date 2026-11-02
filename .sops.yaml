@@ -51,8 +51,8 @@ creation_rules:
       - pgp: [*openpgp]
         age: [*Proteus-NUC, *Proteus-Desktop, *Proteus-MBP14M4P]
   ## END Common
-  ## BEGIN GCP Compute Engines
-  - path_regex: secrets/gcp\.sops\.yaml$
+  ## BEGIN Cloud Common
+  - path_regex: secrets/cloud\.sops\.yaml$
     key_groups:
       - pgp: [*openpgp]
         age:
@@ -62,8 +62,7 @@ creation_rules:
           - *Proteus-NixOS-3
           - *Proteus-NixOS-4
           - *Proteus-NixOS-5
-
-  ## END GCP Compute Engines
+  ## END Cloud Common
   ## BEGIN Proteus-NUC
   - path_regex: secrets/Proteus-NUC\.sops\.yaml$
     key_groups: [{ pgp: [*openpgp], age: [*Proteus-NUC] }]

@@ -39,7 +39,6 @@ in
       A = subs;
       AAAA = subs;
     };
-  vars.forwardAuthServices = [ "${hostname}.garage" ];
 
   sops =
     let
@@ -50,6 +49,9 @@ in
         garage_rpc_secret = { inherit restartUnits; };
         garage_admin_token = { inherit restartUnits; };
         prometheus_bearer_token = { inherit restartUnits; };
+        garage_ui_oidc_client_secret.restartUnits = [
+          "${config.virtualisation.oci-containers.containers.garage-ui.serviceName}.service"
+        ];
       };
       templates."garage.env" = {
         inherit restartUnits;
@@ -61,7 +63,10 @@ in
       };
       templates."garage-ui.env" = {
         restartUnits = [ "${config.virtualisation.oci-containers.containers.garage-ui.serviceName}.service" ];
-        content = mylib.toEnv { GARAGE_UI_GARAGE_ADMIN_TOKEN = config.sops.placeholder.garage_admin_token; };
+        content = mylib.toEnv {
+          GARAGE_UI_GARAGE_ADMIN_TOKEN = config.sops.placeholder.garage_admin_token;
+          GARAGE_UI_AUTH_OIDC_CLIENT_SECRET = config.sops.placeholder.garage_ui_oidc_client_secret;
+        };
       };
     };
 
@@ -97,7 +102,7 @@ in
     image = "docker.io/noooste/garage-ui:v0.14.0@sha256:e4a33c448304a3f6e60f08d6aa71b2471fd79ac870a5c7e178ea247dea3238b3";
     extraOptions = [ "--network=host" ]; # Use the host network to reach Garage that listening on loopback
     environmentFiles = [ config.sops.templates."garage-ui.env".path ];
-    # Environment variables must be strings in Nix
+    # NOTE: Environment variables must be strings in Nix
     environment = {
       GARAGE_UI_SERVER_HOST = "127.0.0.1";
       GARAGE_UI_SERVER_PORT = "3909";
@@ -106,8 +111,23 @@ in
       GARAGE_UI_GARAGE_ENDPOINT = "http://${garage_settings.s3_api.api_bind_addr}";
       GARAGE_UI_GARAGE_ADMIN_ENDPOINT = "http://${garage_settings.admin.api_bind_addr}";
       GARAGE_UI_GARAGE_REGION = garage_settings.s3_api.s3_region;
+      # OIDC, ref: https://github.com/Noooste/garage-ui/blob/v0.14.0/config.example.yaml
+      GARAGE_UI_AUTH_OIDC_ENABLED = "true";
+      GARAGE_UI_AUTH_OIDC_PROVIDER_NAME = "Authelia";
+      GARAGE_UI_AUTH_OIDC_ISSUER_URL = "https://auth.${const.domain}";
+      GARAGE_UI_AUTH_OIDC_SCOPES = "openid,profile,email,groups";
+      GARAGE_UI_AUTH_OIDC_USERNAME_ATTRIBUTE = "preferred_username";
+      GARAGE_UI_AUTH_OIDC_EMAIL_ATTRIBUTE = "email";
+      GARAGE_UI_AUTH_OIDC_NAME_ATTRIBUTE = "name";
+      # I don't use access control for now, only users having the admin role can log in
+      GARAGE_UI_AUTH_OIDC_ROLE_ATTRIBUTE_PATH = "groups";
+      GARAGE_UI_AUTH_OIDC_ADMIN_ROLE = "admins";
+      GARAGE_UI_AUTH_OIDC_COOKIE_SECURE = "true";
     };
-    volumes = [ "garage-ui:/app/data" ]; # Persist the generated JWT signing key so logins survive container recreation
+    volumes = [
+      "garage-ui:/app/data" # Persist the generated JWT signing key so logins survive container recreation
+      "${config.security.pki.caBundle}:/etc/ssl/certs/ca-certificates.crt:ro"
+    ];
   };
 
   services.traefik.dynamicConfigOptions.http = {
@@ -134,7 +154,6 @@ in
       garage-ui = {
         rule = "Host(`${hostname}.garage.${const.domain}`)";
         entryPoints = [ "websecure" ];
-        middlewares = [ "authelia-auth" ];
         service = "garage-ui";
         tls = { };
       };
