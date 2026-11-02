@@ -15,49 +15,12 @@ in
       mkRestartUnits = lib.optionalAttrs (!pkgs.stdenv.hostPlatform.isDarwin) {
         restartUnits = map (name: "easytier-${name}.service") (builtins.attrNames config.services.easytier.instances);
       };
-      nodes = [
-        0
-        1
-        2
-        3
-        4
-        5
-      ];
     in
     {
-      secrets =
-        let
-          sopsFile = "${const.secretsDir}/common.sops.yaml";
-        in
-        lib.mkMerge (
-          # Iterate mkMerge list
-          map
-            # add restartUnits optionally for each attrsets in the outer mkMerge list
-            (builtins.mapAttrs (
-              _: secret:
-              lib.mkMerge [
-                secret
-                mkRestartUnits
-              ]
-            ))
-            (
-              map (secret: secret) (
-                lib.singleton { easytier_network_secret = { inherit sopsFile; }; }
-                ++ (map (i: { "easytier_peer_${toString i}" = { inherit sopsFile; }; }) nodes)
-              )
-            )
-        );
+      secrets.easytier_network_secret = mkRestartUnits;
       templates."easytier.env" = lib.mkMerge [
         mkRestartUnits
-        {
-          content = mylib.toEnv {
-            ET_NETWORK_SECRET = config.sops.placeholder.easytier_network_secret;
-            # ET_PEERS uses comma delimiter
-            ET_PEERS = builtins.concatStringsSep "," (
-              map (i: "udp://${config.sops.placeholder."easytier_peer_${toString i}"}") nodes
-            );
-          };
-        }
+        { content = mylib.toEnv { ET_NETWORK_SECRET = config.sops.placeholder.easytier_network_secret; }; }
       ];
     };
   services.easytier = {
@@ -70,6 +33,14 @@ in
         ipv4 = config.vars.hostAddrs.${hostname}.easytier.ipv4;
         inherit hostname;
         # peers = [ "txt://txt.easytier.cn" ];
+        peers = map (i: "udp://proteus-nixos-${toString i}.${const.cloud_domain}") [
+          0
+          1
+          2
+          3
+          4
+          5
+        ];
         listeners = [
           "tcp://0.0.0.0:11010"
           "udp://0.0.0.0:11010"

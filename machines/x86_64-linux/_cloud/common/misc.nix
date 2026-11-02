@@ -43,18 +43,18 @@
     # Ref: https://ddclient.net/protocols.html
     # protocol = "namecheap";
     # server = "dynamicdns.park-your-domain.com";
-    # username = "proteus11451.online";
+    # username = const.cloud_domain;
     # domains = [ config.networking.hostName ];
     # passwordFile = config.sops.secrets.ddclient_namecheap_password.path;
     usev6 = ""; # disable IPv6 since Namecheap DDNS does not support AAAA records
 
     # Cloudflare setup
     protocol = "cloudflare";
-    zone = "proteus11451.online";
+    zone = const.cloud_domain;
     username = "token";
     # Profile -> API Tokens -> Create Token -> API token templates (Edit zone DNS)
     passwordFile = config.sops.secrets.ddclient_cloudflare_password.path;
-    domains = [ "${lib.toLower config.networking.hostName}.proteus11451.online" ]; # Requires FQDN
+    domains = [ "${lib.toLower config.networking.hostName}.${const.cloud_domain}" ]; # NOTE: Requires FQDN
   };
   ## END ddclient.nix
 }

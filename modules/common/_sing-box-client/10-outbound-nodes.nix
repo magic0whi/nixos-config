@@ -1,5 +1,6 @@
 {
   config,
+  const,
   lib,
   pkgs,
   ...
@@ -33,11 +34,17 @@ let
       )
       (
         map
-          (num: {
-            tag = "Proteus-NixOS-${num}";
-            server._secret = config.sops.secrets."easytier_peer_${num}".path;
-            tls.server_name._secret = config.sops.secrets."easytier_peer_${num}".path;
-          })
+          (
+            i:
+            let
+              server = "proteus-nixos-${i}.${const.cloud_domain}";
+            in
+            {
+              tag = "Proteus-NixOS-${i}";
+              inherit server;
+              tls.server_name = server;
+            }
+          )
           [
             "0"
             "1"

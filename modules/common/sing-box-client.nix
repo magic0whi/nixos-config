@@ -7,38 +7,26 @@
   ...
 }:
 {
-  sops.secrets = lib.mkMerge (
-    lib.singleton (
-      let
-        sopsFile = "${const.secretsDir}/common.sops.yaml";
-      in
-      builtins.mapAttrs
-        (
-          _: secret:
-          lib.mkMerge [
-            secret
-            ((lib.optionalAttrs (!pkgs.stdenv.hostPlatform.isDarwin)) { restartUnits = [ "sing-box.service" ]; })
-          ]
-        )
-        {
-          "sb_test.json" = {
-            sopsFile = "${const.secretsDir}/sb_test.json.sops";
-            format = "binary";
-          };
-          sb_nodes_anytls_password = { inherit sopsFile; };
-        }
-    )
-    ++ (lib.optionals (!pkgs.stdenv.hostPlatform.isDarwin) (
-      map (num: { "easytier_peer_${num}".restartUnits = [ "sing-box.service" ]; }) [
-        "0"
-        "1"
-        "2"
-        "3"
-        "4"
-        "5"
-      ]
-    ))
-  );
+  sops.secrets =
+    let
+      sopsFile = "${const.secretsDir}/common.sops.yaml";
+    in
+    # Add conditional restartUnits to the secrets
+    builtins.mapAttrs
+      (
+        _: secretCfg:
+        lib.mkMerge [
+          secretCfg
+          ((lib.optionalAttrs (!pkgs.stdenv.hostPlatform.isDarwin)) { restartUnits = [ "sing-box.service" ]; })
+        ]
+      )
+      {
+        "sb_test.json" = {
+          sopsFile = "${const.secretsDir}/sb_test.json.sops";
+          format = "binary";
+        };
+        sb_nodes_anytls_password = { inherit sopsFile; };
+      };
 
   services = lib.mkMerge [
     {
