@@ -66,7 +66,6 @@
 
     volumes = [
       "${const.storagePath}/papra:/app/app-data"
-      # "${const.secretsDir}/proteus_ca.pub.pem:/etc/ssl/certs/proteus_ca.pub.pem:ro"
       "${config.security.pki.caBundle}:/etc/ssl/certs/ca-certificates.crt:ro"
     ];
     user = "${toString config.users.users.${const.username}.uid}:${toString config.users.groups.storage.gid}";

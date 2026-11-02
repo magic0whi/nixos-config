@@ -12,7 +12,7 @@ let
 
   backend_volumes = [
     "${./plane_gitea_authelia.py}:/code/plane/authentication/provider/oauth/gitea.py"
-    "${config.security.pki.caBundle}:/usr/local/share/ca-certificates/proteus_ca.crt:ro"
+    "${const.secretsDir}/proteus_ca.pub.pem:/usr/local/share/ca-certificates/proteus_ca.crt:ro"
   ];
 
   pgdata = "/var/lib/postgresql/data";
