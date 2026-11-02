@@ -31,10 +31,17 @@ in
       };
     };
 
-  vars.hostAddrs.${hostname}.easytier.subdomains = {
-    A = [ "restic-${hostname}.exporter" ];
-    AAAA = [ "restic-${hostname}.exporter" ];
-  };
+  vars =
+    let
+      subs = [ "restic-${hostname}.exporter" ];
+    in
+    {
+      hostAddrs.${hostname}.easytier.subdomains = {
+        A = subs;
+        AAAA = subs;
+      };
+      forwardAuthServices = subs;
+    };
 
   # Currenly only export main backup metrics
   services.prometheus.exporters.restic = {

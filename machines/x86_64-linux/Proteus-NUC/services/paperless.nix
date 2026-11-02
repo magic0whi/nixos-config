@@ -9,12 +9,17 @@
 let
   hostname = config.networking.hostName;
   hostname_psql = const.networking.findFirstHostBySubdomain "psql";
+
 in
 {
-  vars.hostAddrs.${hostname}.easytier.subdomains = {
-    A = [ "paperless" ];
-    AAAA = [ "paperless" ];
-  };
+  vars.hostAddrs.${hostname}.easytier.subdomains =
+    let
+      subs = [ "paperless" ];
+    in
+    {
+      A = subs;
+      AAAA = subs;
+    };
   sops =
     let
       sopsFile = "${const.secretsDir}/${hostname}.sops.yaml";

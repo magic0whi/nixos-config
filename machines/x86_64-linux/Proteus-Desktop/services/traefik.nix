@@ -8,14 +8,18 @@ let
   hostname = config.networking.hostName;
 in
 {
-  vars.hostAddrs.${config.networking.hostName}.easytier.subdomains =
+  vars =
     let
       subs = [ "${hostname}.sb" ];
     in
     {
-      A = subs;
-      AAAA = subs;
+      hostAddrs.${config.networking.hostName}.easytier.subdomains = {
+        A = subs;
+        AAAA = subs;
+      };
+      forwardAuthServices = subs;
     };
+
   services.traefik = {
     dynamicConfigOptions.http = {
       routers.sb-dashboard = {

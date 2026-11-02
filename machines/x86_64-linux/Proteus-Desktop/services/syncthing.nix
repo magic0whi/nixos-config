@@ -5,12 +5,21 @@
 }:
 let
   hostname = config.networking.hostName;
+
 in
 {
-  vars.hostAddrs.${config.networking.hostName}.easytier.subdomains = {
-    A = [ "${hostname}.syncthing" ];
-    AAAA = [ "${hostname}.syncthing" ];
-  };
+  vars =
+    let
+      subs = [ "${hostname}.syncthing" ];
+    in
+    {
+      hostAddrs.${config.networking.hostName}.easytier.subdomains = {
+        A = subs;
+        AAAA = subs;
+      };
+      forwardAuthServices = subs;
+    };
+
   services.traefik.dynamicConfigOptions.http = {
     routers.syncthing = {
       rule = "Host(`${hostname}.syncthing.${const.domain}`)";

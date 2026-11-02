@@ -18,10 +18,18 @@
       };
     };
 
-  vars.hostAddrs.${config.networking.hostName}.easytier.subdomains = {
-    A = [ "prometheus" ];
-    AAAA = [ "prometheus" ];
-  };
+  vars =
+    let
+      subs = [ "prometheus" ];
+    in
+    {
+      hostAddrs.${config.networking.hostName}.easytier.subdomains = {
+        A = subs;
+        AAAA = subs;
+      };
+      forwardAuthServices = subs;
+    };
+
   services.prometheus = {
     enable = true;
     enableReload = true;

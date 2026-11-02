@@ -12,6 +12,18 @@ let
   ];
 in
 {
+  vars =
+    let
+      subs = map (name: "${name}-${hostname}.exporter") exporter_list;
+    in
+    {
+      hostAddrs.${hostname}.easytier.subdomains = {
+        A = subs;
+        AAAA = subs;
+      };
+      forwardAuthServices = subs;
+    };
+
   services.prometheus.exporters = lib.mkMerge (
     (map (exporter_name: {
       ${exporter_name} = {
@@ -42,13 +54,4 @@ in
       };
     }) exporter_list
   );
-
-  vars.hostAddrs.${hostname}.easytier.subdomains =
-    let
-      subs = map (name: "${name}-${hostname}.exporter") exporter_list;
-    in
-    {
-      A = subs;
-      AAAA = subs;
-    };
 }

@@ -8,7 +8,7 @@ let
   hostname = config.networking.hostName;
 in
 {
-  vars.hostAddrs.${config.networking.hostName}.easytier.subdomains =
+  vars =
     let
       subs = [
         "${hostname}.syncthing"
@@ -16,16 +16,19 @@ in
       ];
     in
     {
-      A = subs;
-      AAAA = subs;
+      hostAddrs.${config.networking.hostName}.easytier.subdomains = {
+        A = subs;
+        AAAA = subs;
+      };
+      forwardAuthServices = subs;
     };
+
   services.traefik = {
     dynamicConfigOptions.http = {
       routers = {
         syncthing = {
           rule = "Host(`${hostname}.syncthing.${const.domain}`)";
           entryPoints = [ "websecure" ];
-          # TODO, security: all services accounts in LDAP allows access to authelia-auth
           middlewares = [ "authelia-auth" ];
           service = "syncthing-dashboard";
           tls = { };

@@ -32,12 +32,17 @@ let
     plane-minio = "${plane-minio.serviceName}.service";
     plane-proxy = "${plane-proxy.serviceName}.service";
   };
+
 in
 {
-  vars.hostAddrs.${config.networking.hostName}.easytier.subdomains = {
-    A = [ "plane" ];
-    AAAA = [ "plane" ];
-  };
+  vars.hostAddrs.${config.networking.hostName}.easytier.subdomains =
+    let
+      subs = [ "plane" ];
+    in
+    {
+      A = subs;
+      AAAA = subs;
+    };
 
   sops =
     let

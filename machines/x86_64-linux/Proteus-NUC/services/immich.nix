@@ -10,12 +10,17 @@ let
   hostname_psql = const.networking.findFirstHostBySubdomain "psql";
 
   use_unix_socket = hostname == hostname_psql;
+
 in
 {
-  vars.hostAddrs.${hostname}.easytier.subdomains = {
-    A = [ "immich" ];
-    AAAA = [ "immich" ];
-  };
+  vars.hostAddrs.${hostname}.easytier.subdomains =
+    let
+      subs = [ "immich" ];
+    in
+    {
+      A = subs;
+      AAAA = subs;
+    };
 
   sops =
     let

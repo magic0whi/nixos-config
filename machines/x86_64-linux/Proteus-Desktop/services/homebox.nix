@@ -14,10 +14,14 @@ let
   machine_config_psql = machineConfigs.${hostname_psql}.config;
 in
 {
-  vars.hostAddrs.${hostname}.easytier.subdomains = {
-    A = [ "homebox" ];
-    AAAA = [ "homebox" ];
-  };
+  vars.hostAddrs.${hostname}.easytier.subdomains =
+    let
+      subs = [ "homebox" ];
+    in
+    {
+      A = subs;
+      AAAA = subs;
+    };
 
   sops =
     let

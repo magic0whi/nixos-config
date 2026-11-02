@@ -6,10 +6,14 @@
   ...
 }:
 {
-  vars.hostAddrs.${config.networking.hostName}.easytier.subdomains = {
-    A = [ "papra" ];
-    AAAA = [ "papra" ];
-  };
+  vars.hostAddrs.${config.networking.hostName}.easytier.subdomains =
+    let
+      subs = [ "papra" ];
+    in
+    {
+      A = subs;
+      AAAA = subs;
+    };
   sops =
     let
       restartUnits = [ "${config.virtualisation.oci-containers.containers.papra.serviceName}.service" ];

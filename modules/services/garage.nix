@@ -39,6 +39,7 @@ in
       A = subs;
       AAAA = subs;
     };
+  vars.forwardAuthServices = [ "${hostname}.garage" ];
 
   sops =
     let

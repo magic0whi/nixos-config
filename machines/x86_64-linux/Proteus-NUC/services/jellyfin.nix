@@ -1,9 +1,13 @@
 { config, const, ... }:
 {
-  vars.hostAddrs.${config.networking.hostName}.easytier.subdomains = {
-    A = [ "jellyfin" ];
-    AAAA = [ "jellyfin" ];
-  };
+  vars.hostAddrs.${config.networking.hostName}.easytier.subdomains =
+    let
+      subs = [ "jellyfin" ];
+    in
+    {
+      A = subs;
+      AAAA = subs;
+    };
   services.jellyfin =
     let
       use_nvidia = true;

@@ -5,11 +5,18 @@
   mylib,
   ...
 }:
+let
+  hostname = config.networking.hostName;
+in
 {
-  vars.hostAddrs.${config.networking.hostName}.easytier.subdomains = {
-    A = [ "hass" ];
-    AAAA = [ "hass" ];
-  };
+  vars.hostAddrs.${hostname}.easytier.subdomains =
+    let
+      subs = [ "hass" ];
+    in
+    {
+      A = subs;
+      AAAA = subs;
+    };
   sops =
     let
       restartUnits = [ "home-assistant.service" ];
@@ -17,7 +24,7 @@
     {
       secrets.hass_oidc_secret = {
         inherit restartUnits;
-        sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
+        sopsFile = "${const.secretsDir}/${hostname}.sops.yaml";
       };
       templates."hass_secrets.yaml" = {
         inherit restartUnits;

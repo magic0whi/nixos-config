@@ -198,8 +198,10 @@ in
     # Proteus-Desktop) are preserved and not dropped for security reasons.
     staticConfigOptions.entryPoints.websecure.forwardedHeaders.trustedIPs =
       let
-        # Host services that requires OIDC
-        allowed_hosts = lib.unique (lib.concatMap const.networking.findAllHostContains const.networking.oauthServices);
+        # Hosts whose Traefik sends forward-auth requests to Authelia
+        allowed_hosts = lib.unique (
+          builtins.concatMap const.networking.findAllHostContains const.networking.forwardAuthServices
+        );
       in
       lib.concatMap (
         _hostname: with const.networking.allHostAddrs.${_hostname}.easytier; [

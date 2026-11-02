@@ -12,12 +12,18 @@ let
   hostname_psql = const.networking.findFirstHostBySubdomain "psql";
 
   machine_config_psql = machineConfigs.${hostname_psql}.config;
+
 in
 {
-  vars.hostAddrs.${hostname}.easytier.subdomains = {
-    A = [ "grafana" ];
-    AAAA = [ "grafana" ];
-  };
+  vars.hostAddrs.${hostname}.easytier.subdomains =
+    let
+      subs = [ "grafana" ];
+    in
+    {
+      A = subs;
+      AAAA = subs;
+    };
+
   sops =
     let
       restartUnits = [ "grafana.service" ];

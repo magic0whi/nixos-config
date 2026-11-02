@@ -6,7 +6,7 @@
     in
     {
       base = map mylib.relativeToRoot [
-        "modules/variables/host-addrs.nix"
+        "modules/variables"
         "${common}/debug.nix"
         "${common}/easytier.nix"
         "${common}/misc.nix"

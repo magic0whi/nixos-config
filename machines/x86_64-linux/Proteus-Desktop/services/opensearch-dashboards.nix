@@ -7,12 +7,17 @@
 }:
 let
   opensearch_dashboards_port = 5601;
+
 in
 {
-  vars.hostAddrs.${config.networking.hostName}.easytier.subdomains = {
-    A = [ "opensearch-dashboards" ];
-    AAAA = [ "opensearch-dashboards" ];
-  };
+  vars.hostAddrs.${config.networking.hostName}.easytier.subdomains =
+    let
+      subs = [ "opensearch-dashboards" ];
+    in
+    {
+      A = subs;
+      AAAA = subs;
+    };
   sops =
     let
       restartUnits = [ "${config.virtualisation.oci-containers.containers.opensearch-dashboards.serviceName}.service" ];

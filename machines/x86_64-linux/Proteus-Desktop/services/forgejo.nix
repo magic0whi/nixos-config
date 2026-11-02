@@ -10,10 +10,14 @@ let
   hostname_psql = const.networking.findFirstHostBySubdomain "psql";
 in
 {
-  vars.hostAddrs.${hostname}.easytier.subdomains = {
-    A = [ "git" ];
-    AAAA = [ "git" ];
-  };
+  vars.hostAddrs.${hostname}.easytier.subdomains =
+    let
+      subs = [ "git" ];
+    in
+    {
+      A = subs;
+      AAAA = subs;
+    };
   sops =
     let
       sopsFile = "${const.secretsDir}/${hostname}.sops.yaml";

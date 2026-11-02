@@ -17,12 +17,17 @@ let
     "nextcloud-update-db.service"
     "phpfpm-nextcloud.service"
   ];
+
 in
 {
-  vars.hostAddrs.${hostname}.easytier.subdomains = {
-    A = [ "nextcloud" ];
-    AAAA = [ "nextcloud" ];
-  };
+  vars.hostAddrs.${hostname}.easytier.subdomains =
+    let
+      subs = [ "nextcloud" ];
+    in
+    {
+      A = subs;
+      AAAA = subs;
+    };
   sops.secrets =
     let
       sopsFile = "${const.secretsDir}/${hostname}.sops.yaml";

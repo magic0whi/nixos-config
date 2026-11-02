@@ -23,6 +23,12 @@ let
             }) (nixosConfigurations // darwinConfigurations)
           );
         }
+        (mylib.relativeToRoot "modules/variables/forward-auth-services.nix")
+        {
+          config.vars.forwardAuthServices = lib.mkMerge (
+            lib.mapAttrsToList (_: host: host.config.vars.forwardAuthServices or [ ]) (nixosConfigurations // darwinConfigurations)
+          );
+        }
         (
           { config, ... }:
           {
@@ -64,20 +70,6 @@ let
     }).config;
 in
 {
-  # Services that uses Authelia as IAM, hosts have these subdomains will be allowed forwardedHeaders in Traefik
-  oauthServices = [
-    "git"
-    "hass"
-    "immich"
-    "jellyfin"
-    "nextcloud"
-    "paperless"
-    "papra"
-    "plane"
-
-    # find all contains
-    "exporter"
-  ];
   caddyPort = 8080;
 
   soaSerial = 2026071200;
@@ -103,6 +95,8 @@ in
     };
 
   allHostAddrs = custom_module.vars.hostAddrs;
+  # Services protected by Authelia forward-auth, hosts have these subdomains will be allowed forwardedHeaders in Traefik
+  forwardAuthServices = lib.unique custom_module.vars.forwardAuthServices;
   inherit (custom_module.utils) findFirstHostBySubdomain findAllHostContains;
 
   libvirtNetCidr = "192.168.122.0/24";

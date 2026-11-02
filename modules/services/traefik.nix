@@ -8,13 +8,16 @@ let
   hostname = config.networking.hostName;
 in
 {
-  vars.hostAddrs.${config.networking.hostName}.easytier.subdomains =
+  vars =
     let
       subs = [ "${hostname}.traefik" ];
     in
     {
-      A = subs;
-      AAAA = subs;
+      hostAddrs.${config.networking.hostName}.easytier.subdomains = {
+        A = subs;
+        AAAA = subs;
+      };
+      forwardAuthServices = subs;
     };
 
   networking.firewall = {
