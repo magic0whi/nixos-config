@@ -120,6 +120,15 @@
       ];
       language-server = {
         yaml-language-server.config.yaml.format.singleQuote = true;
+        # Typst live preview, open http://127.0.0.1:23635 in a browser
+        # Ref: https://myriad-dreamin.github.io/tinymist/feature/preview.html#label-Running%20preview%20server%20in%20background%20(Since%20Tinymist%20v0.13.6)
+        tinymist.config.preview.background = {
+          enabled = true;
+          args = [
+            "--data-plane-host=127.0.0.1:23635"
+            "--invert-colors=never"
+          ];
+        };
         beancount-language-server.config = {
           journal_file = "main.bean";
           completion.fuzzy_match_accounts = true;
