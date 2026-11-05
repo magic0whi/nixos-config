@@ -15,7 +15,12 @@ let
 
   out = "Cybersecurity";
   rules = [
-    { domain_suffix = [ "online-metrix.net" ]; }
+    {
+      domain_suffix = [
+        "online-metrix.net"
+        "zimperium.com"
+      ];
+    }
     { rule_set = "geosite-hcaptcha"; }
   ];
 in

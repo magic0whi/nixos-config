@@ -84,7 +84,6 @@ let
         # Misc
         "truelayer.com"
         "yapily.com"
-        "zimperium.com"
       ];
     }
     { rule_set = [ "geosite-squareup" ]; }
