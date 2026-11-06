@@ -20,11 +20,15 @@ in
     wire = {
       name = "enp4s0";
       ipv4 = builtins.head config.systemd.network.networks."10-wire".address;
+      ipv6 = lib.last config.systemd.network.networks."10-wire".address;
     };
   };
   systemd.network.networks."10-wire" = {
     inherit (config.vars.hostAddrs.${hostname}.wire) name;
-    address = [ "192.168.1.20/24" ];
+    address = [
+      "192.168.1.20/24"
+      "fe80::20/64"
+    ];
     gateway = [ "192.168.1.1" ];
     DHCP = "no";
     networkConfig.IPv6AcceptRA = true;
