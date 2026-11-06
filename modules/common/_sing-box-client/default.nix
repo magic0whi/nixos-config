@@ -168,6 +168,9 @@ lib.mkMerge (
                 fakeip_server.inet6_range
               ];
           })
+          (lib.mkIf (!isDarwin && config.services.aria2.enable && !isMobile) {
+            exclude_uid = [ config.users.users.aria2.uid ];
+          })
           {
             tag = "Tun";
             type = "tun";
