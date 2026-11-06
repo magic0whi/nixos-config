@@ -168,7 +168,7 @@ lib.mkMerge (
                 fakeip_server.inet6_range
               ];
           })
-          (lib.mkIf (!isDarwin && config.services.aria2.enable && !isMobile) {
+          (lib.mkIf (!isMobile && (config.services.aria2.enable or false)) {
             exclude_uid = [ config.users.users.aria2.uid ];
           })
           {
