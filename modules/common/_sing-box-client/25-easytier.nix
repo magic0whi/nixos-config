@@ -43,8 +43,13 @@ in
       lib.mkMerge [
         (lib.mkOrder no_sniff_pri (
           mkSbRules out [
+            {
+              # NOTE: `bypass` needs auto_redirect's pre-match, so keep it before the sniff rule, which stops pre-match for TCP
+              # NOTE: sing-box will fallback to outbound if not auto-redirected
+              action = "bypass";
+              port_range = "11010:11013";
+            }
             { ip_cidr = [ "10.0.0.0/24" ]; }
-            { port_range = "11010:11013"; }
             {
               process_name = [
                 "easytier-core"
