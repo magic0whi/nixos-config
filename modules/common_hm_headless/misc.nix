@@ -80,4 +80,7 @@
     inherit (const.catppuccin) accent flavor;
   };
   ## END catppuccin.nix
+  ## BEGIN secrets.nix
+  sops.defaultSopsFile = "${const.secretsDir}/common_hm.sops.yaml";
+  ## END secrets.nix
 }

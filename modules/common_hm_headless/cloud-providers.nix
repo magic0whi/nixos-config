@@ -10,29 +10,23 @@
   sops = {
     secrets = lib.mkMerge (
       map
-        (
-          num:
-          let
-            sopsFile = "${const.secretsDir}/common_hm.sops.yaml";
-          in
-          {
-            "project-${num}.secret.json" = {
-              sopsFile = "${const.secretsDir}/gcloud_project-${num}.secret.json.sops";
-              format = "binary";
-              path = "${config.xdg.configHome}/gcloud/project-${num}.secret.json";
-            };
-            "config_account_project-${num}" = { inherit sopsFile; };
-            "config_projectid_project-${num}" = { inherit sopsFile; };
-            oracle_user_ocid = { inherit sopsFile; };
-            oracle_fingerprint = { inherit sopsFile; };
-            oracle_tenancy = { inherit sopsFile; };
-            oracle_region = { inherit sopsFile; };
-            "oracle_secret.pem" = {
-              sopsFile = "${const.secretsDir}/oracle_secret.pem.sops";
-              format = "binary";
-            };
-          }
-        )
+        (num: {
+          "project-${num}.secret.json" = {
+            sopsFile = "${const.secretsDir}/gcloud_project-${num}.secret.json.sops";
+            format = "binary";
+            path = "${config.xdg.configHome}/gcloud/project-${num}.secret.json";
+          };
+          "config_account_project-${num}" = { };
+          "config_projectid_project-${num}" = { };
+          oracle_user_ocid = { };
+          oracle_fingerprint = { };
+          oracle_tenancy = { };
+          oracle_region = { };
+          "oracle_secret.pem" = {
+            sopsFile = "${const.secretsDir}/oracle_secret.pem.sops";
+            format = "binary";
+          };
+        })
         [
           "0"
           "1"

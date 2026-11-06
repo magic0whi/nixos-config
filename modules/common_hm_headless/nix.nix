@@ -8,14 +8,14 @@
   xdg.configFile."nix/public.key".text = const.nixCache.publicKey;
   sops = {
     secrets = {
-      github_access_tokens.sopsFile = "${const.secretsDir}/common_hm.sops.yaml";
+      github_access_tokens = { };
       "nix_secret.key" = {
         sopsFile = "${const.secretsDir}/nix_secret.key.sops";
         format = "binary";
         path = "${config.xdg.configHome}/nix/secret.key";
       };
-      aws_access_key.sopsFile = "${const.secretsDir}/common_hm.sops.yaml";
-      aws_secret_key.sopsFile = "${const.secretsDir}/common_hm.sops.yaml";
+      aws_access_key = { };
+      aws_secret_key = { };
     };
     templates = {
       aws_credentials = {

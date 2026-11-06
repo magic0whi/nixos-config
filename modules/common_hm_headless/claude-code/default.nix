@@ -1,13 +1,12 @@
 {
   config,
-  const,
   lib,
   ...
 }:
 {
   sops.secrets = {
-    claude_code_oauth_token.sopsFile = "${const.secretsDir}/common_hm.sops.yaml";
-    github_mcp_pat.sopsFile = "${const.secretsDir}/common_hm.sops.yaml";
+    claude_code_oauth_token = { };
+    github_mcp_pat = { };
   };
 
   programs.zsh.initContent = lib.mkAfter (
