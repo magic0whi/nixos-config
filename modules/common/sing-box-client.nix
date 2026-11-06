@@ -6,18 +6,19 @@
   pkgs,
   ...
 }:
+let
+  not_darwin = !pkgs.stdenv.hostPlatform.isDarwin;
+in
+
 {
   sops.secrets =
-    let
-      sopsFile = "${const.secretsDir}/common.sops.yaml";
-    in
     # Add conditional restartUnits to the secrets
     builtins.mapAttrs
       (
         _: secretCfg:
         lib.mkMerge [
           secretCfg
-          ((lib.optionalAttrs (!pkgs.stdenv.hostPlatform.isDarwin)) { restartUnits = [ "sing-box.service" ]; })
+          ((lib.optionalAttrs not_darwin) { restartUnits = [ "sing-box.service" ]; })
         ]
       )
       {
@@ -25,7 +26,7 @@
           sopsFile = "${const.secretsDir}/sb_test.json.sops";
           format = "binary";
         };
-        sb_nodes_anytls_password = { inherit sopsFile; };
+        sb_nodes_anytls_password = { };
       };
 
   services = lib.mkMerge [
@@ -49,7 +50,7 @@
         };
       };
     }
-    (lib.optionalAttrs (!pkgs.stdenv.hostPlatform.isDarwin) {
+    (lib.optionalAttrs not_darwin {
       networkd-dispatcher = {
         enable = true;
         rules.restart-sing-box = {
