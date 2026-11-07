@@ -17,8 +17,11 @@ let
   rules = [
     {
       domain_suffix = [
-        "online-metrix.net"
-        "zimperium.com"
+        "awswaf.com" # AWS WAF: bot-control challenge / token SDK
+        "eum-appdynamics.com" # Cisco AppDynamics: app performance monitoring
+        "medallia.com" # Medallia: customer feedback surveys & experience analytics
+        "online-metrix.net" # LexisNexis ThreatMetrix: device fingerprinting & fraud scoring
+        "zimperium.com" # Zimperium: mobile threat defense / app anti-tamper SDK
       ];
     }
     { rule_set = "geosite-hcaptcha"; }
