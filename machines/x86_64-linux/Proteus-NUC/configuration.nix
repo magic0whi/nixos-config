@@ -1,5 +1,6 @@
 {
   config,
+  const,
   lib,
   pkgs,
   ...
@@ -40,4 +41,9 @@
   ## START thunderbolt.nix
   services.hardware.bolt.enable = true;
   ## END thunderbolt.nix
+  ## BEGIN easytier.nix
+  services.easytier.instances.main.settings.peers = with const.networking.allHostAddrs; [
+    "udp://${Proteus-Desktop.wire.ipv4NoCidr}"
+  ];
+  ## END easytier.nix
 }
