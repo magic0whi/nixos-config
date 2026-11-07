@@ -55,10 +55,6 @@ in
                 ];
               }
               { process_path_regex = [ ".*snowflake.*" ]; }
-
-              # DNS utils
-              { process_name = [ "doggo" ]; }
-
               # Misc
               {
                 process_name = [
