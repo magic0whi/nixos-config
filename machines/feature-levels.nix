@@ -15,7 +15,11 @@
         "${common}/secrets.nix"
         "${common}/shell.nix"
       ];
-      baseOverlays = with inputs; [ helix.overlays.default ];
+      baseOverlays = with inputs; [
+        helix.overlays.default
+        # Take sing-box from a newer nixpkgs
+        (_: prev: { inherit (nixpkgs-sing-box.legacyPackages.${prev.stdenv.hostPlatform.system}) sing-box; })
+      ];
       seat = map mylib.relativeToRoot [
         "${common}/sing-box-client.nix"
         "${common}/fonts.nix"

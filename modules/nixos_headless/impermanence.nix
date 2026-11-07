@@ -60,7 +60,7 @@
             ".pki"
 
             # Cloud native
-            # TODO: Try pulumi - infrastructure as code
+            # TODO: Try pulumi - infrastructure as code, open source alternative of terraform
             {
               directory = ".pulumi";
               mode = "0700";

@@ -3,10 +3,8 @@
   inputs = {
     # Pinned as of 2026-06-05 18:10, branch: nixos-unstable
     nixpkgs.url = "github:magic0whi/nixpkgs/nixos-unstable";
-    # nixpkgs-old.url = "github:magic0whi/nixpkgs/45e757b72a4cf53734c4a816f02580665ac20454";
     # nixpkgs.url = "path:/Users/proteus/Proteus/Projects-Ref/nosync/nixpkgs";
-    # Pinned as of 2026-04-14 17:55, branch: nixos-unstable
-    # nixpkgs-postgresql.url = "github:NixOS/nixpkgs/4c1018dae018162ec878d42fec712642d214fdfa";
+    nixpkgs-sing-box.url = "github:NixOS/nixpkgs/f9a75f41be3a74eab55d3a7679d34ad6cc0da977";
     # Pinned as of 2026-10-29, branch: master
     home-manager = {
       url = "github:nix-community/home-manager/095fef2f265c3c0da4fe315efba8f8a04495ab34";

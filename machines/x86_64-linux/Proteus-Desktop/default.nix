@@ -6,7 +6,6 @@
 
   niks3,
   nixpkgs,
-  # nixpkgs-old,
   sops-nix,
   dns,
   ...
@@ -22,10 +21,7 @@ let
         const
         ;
       machinePath = ./.;
-      specialArgs = {
-        inherit dns;
-        # pkgs-old = nixpkgs-old.legacyPackages.x86_64-linux;
-      };
+      specialArgs = { inherit dns; };
       overlays =
         (with features; common.baseOverlays)
         ++ nixpkgs.lib.singleton (
