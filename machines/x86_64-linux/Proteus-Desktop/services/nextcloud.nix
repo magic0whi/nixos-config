@@ -79,6 +79,7 @@ in
           nextcloud-occ app:disable user_status # Allows users to set a status message (e.g., "In a meeting", "Away")
           nextcloud-occ app:disable dashboard
           nextcloud-occ app:disable photos # I use immich instead
+          nextcloud-occ app:disable updatenotification
 
           nextcloud-occ app:enable files_external # Enable External Storage to mount Syncthing shared folders
           # Define the list of Syncthing folders to mount
@@ -147,7 +148,9 @@ in
 
       maintenance_window_start = 18;
 
-      default_phone_region = "GB";
+      default_phone_region = "CN";
+
+      updatechecker = false;
 
       allow_user_to_change_display_name = false;
       lost_password_link = "disabled";
