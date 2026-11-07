@@ -181,7 +181,12 @@ lib.mkMerge (
             stack = "gvisor";
             auto_route = true;
             # strict_route = true;
-            udp_mapping = "address_dependent"; # separate mapping for each destination address
+
+            # One UDP NAT mapping per (source, destination IP) instead of per source. Phones behind a NAT router on
+            # different carriers can all reach the gateway as e.g. 192.168.1.22:4500, so with the default
+            # `endpoint_independent` their VoWiFi (IPsec NAT-T) sessions to different ePDGs share a mapping and only one
+            # stays up. Cost: STUN sees a per-destination port, so UDP hole punching from LAN devices relays more often
+            udp_mapping = if isRouter then "address_dependent" else "endpoint_independent";
           }
         ])
       ];
