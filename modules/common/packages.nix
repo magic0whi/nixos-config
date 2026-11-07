@@ -56,7 +56,7 @@
         # dnsutils # `dig` + `nslookup`
 
         # System Call Monitoring
-        # tcpdump # network sniffer
+        tcpdump # network sniffer
         # lsof # list open files
       ]
     );
