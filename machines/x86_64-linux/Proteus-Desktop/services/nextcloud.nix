@@ -18,6 +18,7 @@ let
     "phpfpm-nextcloud.service"
   ];
 
+  cfg = config.services.nextcloud;
 in
 {
   vars.hostAddrs.${hostname}.easytier.subdomains =
@@ -65,7 +66,7 @@ in
         after = [ "nextcloud-setup.service" ];
         wantedBy = [ "multi-user.target" ];
         path = [
-          config.services.nextcloud.occ
+          cfg.occ
           pkgs.jq
         ];
         script = ''
@@ -193,10 +194,10 @@ in
     };
     phpOptions."opcache.interned_strings_buffer" = "23";
 
-    extraApps = { inherit (pkgs.nextcloud33Packages.apps) oidc_login; };
+    extraApps = { inherit (cfg.package.packages.apps) oidc_login; };
   };
   # Let Traefik own :80/:443, and move the generated Nextcloud nginx vhost to loopback.
-  services.nginx.virtualHosts."${config.services.nextcloud.hostName}".listen = [
+  services.nginx.virtualHosts."${cfg.hostName}".listen = [
     {
       addr = "127.0.0.1";
       port = nextcloud_port;
