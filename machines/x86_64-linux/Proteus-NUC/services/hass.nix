@@ -37,6 +37,20 @@ in
       ln -sf $CREDENTIALS_DIRECTORY/hass_secrets.yaml ${config.services.home-assistant.configDir}/secrets.yaml
     '';
   };
+  # HA falls into recovery mode (which skips custom components like auth_oidc) if they're missing on the first run
+  systemd.tmpfiles.settings."10-home-assistant-ui-includes" =
+    let
+      inherit (config.services.home-assistant) configDir;
+      f = {
+        mode = "0644";
+        user = "hass";
+        group = "hass";
+      };
+    in
+    {
+      "${configDir}/automations.yaml" = { inherit f; };
+      "${configDir}/scripts.yaml" = { inherit f; };
+    };
   hardware.bluetooth.enable = true;
   services.home-assistant = {
     enable = true;
