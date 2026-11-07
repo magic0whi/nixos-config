@@ -58,7 +58,7 @@ let
           default = if config.ipv6 != null then builtins.head (lib.strings.splitString "/" config.ipv6) else null;
         };
 
-        regHost = lib.mkEnableOption "Whether add TODO to the subdomains A/AAAA records";
+        regHost = lib.mkEnableOption "registering the hostname as a subdomain (both A and AAAA records)";
 
         subdomains = lib.mkOption {
           type = lib.types.submodule (subdomainsCfg hostname _nicCfg);
