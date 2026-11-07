@@ -13,7 +13,10 @@ let
 
   out = "Default";
   rules = [
-    { domain_suffix = [ "shuzijumin.com" ]; }
+    {
+      domain = "cache.nixos.org";
+      domain_suffix = [ "shuzijumin.com" ];
+    }
     { rule_set = [ "geosite-gfw" ]; }
   ];
 in
