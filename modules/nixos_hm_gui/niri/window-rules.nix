@@ -20,20 +20,6 @@ let
       ];
     }
 
-    # Video Picture-in-Picture
-    {
-      action = ''
-        open-floating true
-        default-floating-position x=5 y=5 relative-to="bottom-right"
-        default-column-width { fixed 480; }
-        default-window-height { fixed 270; }
-      '';
-      matches = [
-        ''match app-id="^firefox$" title="^Picture-in-Picture$"''
-        ''match title="^Picture in picture$"''
-      ];
-    }
-
     # Terminal applications - open in workspace 1, with blur
     {
       action = ''
@@ -49,15 +35,34 @@ let
         ''
       ];
     }
-    # Web browsers - open in workspace 2
+    # # Web browsers - open in workspace 2
+    # {
+    #   action = ''
+    #     open-on-workspace "2browser"
+    #     open-maximized true
+    #   '';
+    #   matches = [
+    #     ''match app-id="firefox"''
+    #     ''match app-id="google-chrome"''
+    #   ];
+    # }
+    # Video Picture-in-Picture, placed after the web browser rule to override its open-maximized
     {
       action = ''
-        open-on-workspace "2browser"
-        open-maximized true
+        open-floating true
+        open-maximized false
+        default-floating-position x=5 y=5 relative-to="bottom-right"
+        default-column-width { fixed 480; }
+        default-window-height { fixed 270; }
       '';
       matches = [
-        ''match app-id="firefox"''
-        ''match app-id="google-chrome"''
+        ''match app-id="^firefox$" title="^Picture-in-Picture$"''
+        ''match title="^Picture in picture$"''
+        ''
+          // Chrome titles PiP with the page title, without the " - Google Chrome" suffix
+          match app-id="^google-chrome$"
+          exclude title=" - Google Chrome$"
+        ''
       ];
     }
     # Chat applications - open in workspace 3
