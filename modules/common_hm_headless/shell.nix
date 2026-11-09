@@ -6,6 +6,7 @@
   ...
 }:
 {
+  home.persistence."/persistent".directories = [ ".cache/tealdeer" ];
   home.packages = with pkgs; [
     # tlrc # Official tldr written in Rust
     tealdeer # tldr written in Rust
