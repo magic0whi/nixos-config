@@ -9,7 +9,10 @@
     serviceConfig = {
       Type = "oneshot";
       # `-r` destroys any snapshots and bookmarks more recent than the one specified
-      ExecStart = "${config.boot.zfs.package}/sbin/zfs rollback -r zroot/root@blank";
+      ExecStart = [
+        "${config.boot.zfs.package}/sbin/zfs rollback -r zroot/root@blank"
+        "${config.boot.zfs.package}/sbin/zfs rollback -r zroot/home@blank"
+      ];
     };
   };
 
