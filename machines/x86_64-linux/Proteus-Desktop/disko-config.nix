@@ -1,6 +1,7 @@
 # disko will take care of filesystems.*, swapDevices, boot.resumeDevice, boot.initrd.luks.devices
 { const, lib, ... }:
 let
+  zroot = "zroot";
   luks_settings = name: {
     type = "CA7D7CCB-63ED-4C53-861C-1742536059CC";
     content = {
@@ -79,7 +80,7 @@ in
               size = "100%";
               content = {
                 type = "zfs";
-                pool = "zroot";
+                pool = zroot;
               };
             };
           };
@@ -141,32 +142,40 @@ in
           rootFsOptions = rootFsOptions // {
             mountpoint = "/";
           };
-          postCreateHook = "zpool set bootfs=zroot/root zroot;" + "zpool set cachefile=/etc/zfs/zpool.cache zroot"; # Create zpool.cache
-          datasets = {
-            # ROOT dataset (ephemeral, rolled back to blank on boot)
-            root = {
-              type = "zfs_fs";
-              mountpoint = "/";
-              postCreateHook = "zfs list -t snapshot -H -o name | grep -E '^zroot/root@blank$' || zfs snapshot zroot/root@blank";
+          # Create zpool.cache
+          postCreateHook = "zpool set bootfs=${zroot}/root ${zroot};" + "zpool set cachefile=/etc/zfs/zpool.cache ${zroot}";
+          datasets =
+            let
+              mk_blank_snapshot =
+                ds: "zfs list -t snapshot -H -o name | grep -E '^${zroot}/${ds}@blank$' || zfs snapshot ${zroot}/${ds}@blank";
+
+            in
+            {
+              # ROOT dataset (ephemeral, rolled back to blank on boot)
+              root = {
+                type = "zfs_fs";
+                mountpoint = "/";
+                postCreateHook = mk_blank_snapshot "root";
+              };
+              home = {
+                type = "zfs_fs";
+                mountpoint = "/home";
+                postCreateHook = mk_blank_snapshot "home";
+              };
+              "home/root" = {
+                type = "zfs_fs";
+                mountpoint = "/root";
+              };
+              nix = {
+                type = "zfs_fs";
+                mountpoint = "/nix";
+                options.atime = "off";
+              };
+              persistent = {
+                type = "zfs_fs";
+                mountpoint = "/persistent";
+              };
             };
-            home = {
-              type = "zfs_fs";
-              mountpoint = "/home";
-            };
-            "home/root" = {
-              type = "zfs_fs";
-              mountpoint = "/root";
-            };
-            nix = {
-              type = "zfs_fs";
-              mountpoint = "/nix";
-              options.atime = "off";
-            };
-            persistent = {
-              type = "zfs_fs";
-              mountpoint = "/persistent";
-            };
-          };
         };
         # 6 SATAs RAIDZ2 (RAID-6)
         storage = {

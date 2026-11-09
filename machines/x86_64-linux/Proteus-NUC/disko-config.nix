@@ -121,17 +121,20 @@ in
       datasets =
         let
           type = "zfs_fs";
+          mk_blank_snapshot =
+            ds: "zfs list -t snapshot -H -o name | grep -E '^${zroot}/${ds}@blank$' || zfs snapshot ${zroot}/${ds}@blank";
         in
         {
           # ROOT dataset (ephemeral, rolled back to blank on boot)
           root = {
             inherit type;
             mountpoint = "/";
-            postCreateHook = "zfs list -t snapshot -H -o name | grep -E '^${zroot}/root@blank$' || zfs snapshot ${zroot}/root@blank";
+            postCreateHook = mk_blank_snapshot "root";
           };
           home = {
             inherit type;
             mountpoint = "/home";
+            postCreateHook = mk_blank_snapshot "home";
           };
           "home/root" = {
             inherit type;
