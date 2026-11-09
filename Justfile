@@ -184,8 +184,8 @@ local name mode="default":
 [group('homelab')]
 [linux]
 upload-vm name mode="default":
-    #!/usr/bin/env nu
-    use {{ utils }} *;
+    #!/usr/bin/env zsh
+    . {{ utils }}
     upload-vm {{ name }} {{ mode }}
 
 # TODO: Learn KubeVirt
@@ -305,15 +305,22 @@ emacs-reload:
 # Other useful commands
 #
 # =================================================
-# TODO: Nushell-only commands
+# Print each $PATH entry on its own line
 [group('common')]
 path:
-    $env.PATH | split row ":"
+    @print -l $path
 
-# TODO: Nushell-only commands
+# List the paths an app touches via file syscalls, excluding /nix/store, /newroot and /proc
 [group('common')]
+[linux]
 trace-access app *args:
-    strace -f -t -e trace=file {{ app }} {{ args }} | complete | $in.stderr | lines | find -v -r "(/nix/store|/newroot|/proc)" | parse --regex '"(/.+)"' | sort | uniq
+    #!/usr/bin/env zsh
+    set -euo pipefail
+    log=$(mktemp)
+    trap 'rm -f $log' EXIT
+    if (( $+commands[strace] )); then st=(strace); else st=(nix run nixpkgs#strace --); fi
+    $st -f -e trace=file -o $log {{ app }} {{ args }} || true # Still report if the app exits non-zero
+    rg -o '"(/[^"]+)"' -r '$1' $log | rg -v '^/(nix/store|newroot|proc)(/|$)' | sort -u
 
 [group('common')]
 [linux]
