@@ -19,6 +19,9 @@
     # QT_QPA_PLATFORMTHEME = "qt6ct";
   };
 
+  # Launcher usage, notifications and last-seen changelog (shell-state.json etc.)
+  home.persistence."/persistent".directories = [ ".cache/noctalia" ];
+
   programs.noctalia-shell = {
     enable = true;
     settings = {

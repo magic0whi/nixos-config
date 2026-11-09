@@ -1,4 +1,6 @@
 {
+  home.persistence."/persistent".directories = [ ".cache/zellij" ]; # Keep resurrectable sessions
+
   home.shellAliases."zj" = "zellij";
   programs.zellij = {
     enable = true;
