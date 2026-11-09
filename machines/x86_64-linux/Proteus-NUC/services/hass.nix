@@ -70,19 +70,6 @@ in
     ];
     config = {
       default_config = { }; # Implicitly enable `mobile_app`
-      http = {
-        server_port = 8123;
-        server_host = [
-          "127.0.0.1"
-          "::1"
-        ];
-        use_x_forwarded_for = true;
-        trusted_proxies = [
-          "127.0.0.1"
-          "::1"
-        ];
-        cors_allowed_origins = [ "https://hass.${const.domain}" ];
-      };
       homeassistant = {
         name = "Proteus' Homo";
         unit_system = "metric"; # or "us_customary"
@@ -114,11 +101,11 @@ in
     };
     services.home-assistant.loadBalancer.servers =
       let
-        hass_port = toString config.services.home-assistant.config.http.server_port;
+        hass_port = 8123;
       in
       [
-        { url = "http://127.0.0.1:${hass_port}"; }
-        { url = "http://[::1]:${hass_port}"; }
+        { url = "http://127.0.0.1:${toString hass_port}"; }
+        { url = "http://[::1]:${toString hass_port}"; }
       ];
   };
 }
