@@ -9,6 +9,10 @@
     github_mcp_pat = { };
   };
 
+  # Move CC's global state file `~/.claude.json` into ~/.claude/
+  home.sessionVariables.CLAUDE_CONFIG_DIR = config.programs.claude-code.configDir;
+  home.persistence."/persistent".directories = [ ".claude" ];
+
   programs.zsh.initContent = lib.mkAfter (
     with config.sops.secrets;
     ''
@@ -23,7 +27,7 @@
   programs.claude-code = {
     enable = true;
     context = ./CLAUDE.md; # ~/.claude/CLAUDE.md
-    # ~/.claude.json mcpServers
+    # ~/.claude/skills/claude-code-home-manager/.mcp.json,
     mcpServers = {
       context7 = {
         type = "http";

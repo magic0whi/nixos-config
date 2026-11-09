@@ -2,6 +2,15 @@
 # - https://github.com/redyf/Neve
 # - https://www.lazyvim.org/extras/lang/typst#typst-previewnvim
 {
+  home.persistence."/persistent" = {
+    directories = [
+      # neovim plugins (wakatime & copilot)
+      ".wakatime"
+      # ".config/github-copilot"
+    ];
+    files = [ ".wakatime.cfg" ];
+  };
+
   programs.nixvim = {
     enable = true;
     viAlias = true;

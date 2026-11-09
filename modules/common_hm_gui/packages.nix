@@ -67,5 +67,10 @@
         super-productivity
       ]
     );
+  home.persistence."/persistent".directories = [
+    ".config/blender"
+    ".config/feishin"
+    ".config/superProductivity"
+  ];
   programs.discord.enable = true; # Update too frequently, it is recommend to use the web version instead
 }

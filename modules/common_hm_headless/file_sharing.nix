@@ -1,1 +1,4 @@
-{ programs.rclone.enable = true; }
+{
+  programs.rclone.enable = true;
+  home.persistence."/persistent".directories = [ ".config/rclone" ];
+}

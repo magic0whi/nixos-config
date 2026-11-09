@@ -1,8 +1,10 @@
 {
+  const,
   pkgs,
   ...
 }:
 {
+  environment.persistence."/persistent".users.${const.username}.directories = [ ".steam" ];
   programs.steam = {
     enable = true;
     # This also enables programs.gamescope.enable

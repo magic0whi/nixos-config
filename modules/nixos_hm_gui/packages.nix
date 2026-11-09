@@ -1,5 +1,7 @@
 { pkgs, ... }:
 {
+  home.persistence."/persistent".directories = [ ".tor project" ];
+
   home.packages = with pkgs; [
     brightnessctl
     sound-theme-freedesktop

@@ -14,6 +14,7 @@ in
     A = [ "sunshine" ];
     AAAA = [ "sunshine" ];
   };
+
   networking.firewall = {
     allowedTCPPorts = [
       s_https # Default: 47984 HTTPS
@@ -26,6 +27,7 @@ in
       (sunshine_port + 11) # Default: 48000 UDP
     ];
   };
+
   # Ref: https://github.com/orgs/LizardByte/discussions/439#discussioncomment-15813284
   security.wrappers = lib.mkIf config.services.sunshine.enable {
     conntrack = {
@@ -50,6 +52,9 @@ in
       done
     '';
   };
+
+  environment.persistence."/persistent".users.${const.username}.directories = [ ".config/sunshine" ];
+
   services.sunshine = {
     enable = true;
     capSysAdmin = true;

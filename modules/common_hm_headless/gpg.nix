@@ -5,6 +5,11 @@
   ...
 }:
 {
+  home.persistence."/persistent".directories = lib.singleton {
+    directory = ".gnupg";
+    mode = "0700";
+  };
+
   programs.gpg = {
     # https://www.gnupg.org/gph/en/manual/x334.html
     publicKeys = [

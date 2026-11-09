@@ -70,6 +70,27 @@
     );
   };
   home = {
+    persistence."/persistent".directories = [
+      ".config/gcloud"
+      ".config/terraform.d"
+      # TODO: Try pulumi an open source infrastructure-as-code alternative to terraform
+      {
+        directory = ".pulumi";
+        mode = "0700";
+      }
+      {
+        directory = ".aws";
+        mode = "0700";
+      }
+      {
+        directory = ".docker";
+        mode = "0700";
+      }
+      {
+        directory = ".kube";
+        mode = "0700";
+      }
+    ];
     sessionVariables.OCI_CLI_SUPPRESS_FILE_PERMISSIONS_WARNING = "True";
     packages = with pkgs; [
       google-cloud-sdk # gcloud

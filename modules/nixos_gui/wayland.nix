@@ -108,6 +108,8 @@
   ## END security.nix
   ## BEGIN misc.nix
   programs.dconf.enable = true;
+  # Persist app state (virt-manager, blueman, ...)
+  environment.persistence."/persistent".users.${const.username}.directories = [ ".config/dconf" ];
   services = {
     gvfs.enable = true; # Mount, trash, and other functionalities
     tumbler.enable = true; # Thumbnail support for images

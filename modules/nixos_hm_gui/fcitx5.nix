@@ -1,5 +1,7 @@
 { pkgs, ... }:
 {
+  home.persistence."/persistent".directories = [ ".config/mozc" ];
+
   i18n.inputMethod = {
     enable = true;
     type = "fcitx5";

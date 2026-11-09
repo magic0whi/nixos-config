@@ -9,6 +9,19 @@
 }:
 {
   home = {
+    persistence."/persistent".directories = map baseNameOf (
+      with config.xdg.userDirs;
+      [
+        desktop
+        documents
+        download
+        music
+        pictures
+        projects
+        videos
+      ]
+    );
+
     packages = with pkgs; [
       xdg-utils # Provides cli tools such as `xdg-mime` `xdg-open`
       xdg-user-dirs

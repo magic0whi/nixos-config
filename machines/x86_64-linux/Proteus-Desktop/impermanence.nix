@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, lib, ... }:
 {
   # Rollback `/` to blank snapshot on boot
   boot.initrd.systemd.services."zfs-rollback-root" = {
@@ -13,13 +13,9 @@
     };
   };
 
-  environment.persistence."/persistent".files = [
-    {
-      # TODO: Unsafe
-      file = "/etc/dm_keyfile.key";
-      parentDirectory = {
-        mode = "0700";
-      };
-    }
-  ];
+  environment.persistence."/persistent".files = lib.singleton {
+    # TODO: Unsafe, the LUKS keyfile is stored in plain text on /persistent
+    file = "/etc/dm_keyfile.key";
+    parentDirectory.mode = "0700";
+  };
 }
