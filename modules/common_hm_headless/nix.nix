@@ -9,6 +9,7 @@
 
   xdg.configFile."nix/public.key".text = const.nixCache.publicKey;
   sops = {
+    defaultSopsFile = "${const.secretsDir}/common_hm.sops.yaml";
     secrets = {
       github_access_tokens = { };
       "nix_secret.key" = {

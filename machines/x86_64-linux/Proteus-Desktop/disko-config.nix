@@ -148,7 +148,6 @@ in
             let
               mk_blank_snapshot =
                 ds: "zfs list -t snapshot -H -o name | grep -E '^${zroot}/${ds}@blank$' || zfs snapshot ${zroot}/${ds}@blank";
-
             in
             {
               # ROOT dataset (ephemeral, rolled back to blank on boot)
