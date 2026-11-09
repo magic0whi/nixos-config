@@ -156,6 +156,7 @@ in
                 mountpoint = "/";
                 postCreateHook = mk_blank_snapshot "root";
               };
+              # TODO create home@blank, add rollback when boot
               home = {
                 type = "zfs_fs";
                 mountpoint = "/home";
