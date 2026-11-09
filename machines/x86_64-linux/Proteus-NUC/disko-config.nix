@@ -121,19 +121,16 @@ in
       datasets =
         let
           type = "zfs_fs";
-          # `com.sun:auto-snapshot` is used by options `services.zfs.autoSnapshot.*`
-          options."com.sun:auto-snapshot" = "false";
         in
         {
           # ROOT dataset (ephemeral, rolled back to blank on boot)
           root = {
-            inherit type options;
+            inherit type;
             mountpoint = "/";
             postCreateHook = "zfs list -t snapshot -H -o name | grep -E '^${zroot}/root@blank$' || zfs snapshot ${zroot}/root@blank";
           };
-          # TODO add rollback when I ready to move to impermanence on /home
           home = {
-            inherit type options;
+            inherit type;
             mountpoint = "/home";
           };
           "home/root" = {
@@ -141,19 +138,18 @@ in
             mountpoint = "/root";
           };
           nix = {
-            inherit type options;
+            inherit type;
             mountpoint = "/nix";
           };
           persistent = {
             inherit type;
             mountpoint = "/persistent";
-            options."com.sun:auto-snapshot" = "true";
             mountOptions = [
               "defaults"
               "x-gvfs-trash"
             ];
           };
-          vm-images = { inherit type options; };
+          vm-images = { inherit type; };
         };
     };
   };

@@ -147,14 +147,11 @@ in
             root = {
               type = "zfs_fs";
               mountpoint = "/";
-              options."com.sun:auto-snapshot" = "false";
               postCreateHook = "zfs list -t snapshot -H -o name | grep -E '^zroot/root@blank$' || zfs snapshot zroot/root@blank";
             };
             home = {
-              # `com.sun:auto-snapshot` is used by options `services.zfs.autoSnapshot.*`
               type = "zfs_fs";
               mountpoint = "/home";
-              options."com.sun:auto-snapshot" = "true";
             };
             "home/root" = {
               type = "zfs_fs";
@@ -163,13 +160,11 @@ in
             nix = {
               type = "zfs_fs";
               mountpoint = "/nix";
-              options."com.sun:auto-snapshot" = "false";
               options.atime = "off";
             };
             persistent = {
               type = "zfs_fs";
               mountpoint = "/persistent";
-              options."com.sun:auto-snapshot" = "false";
             };
           };
         };
