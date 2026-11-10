@@ -44,12 +44,12 @@ let
           "modules/nixos_headless/packages.nix"
           "modules/nixos_headless/zfs.nix"
 
-          "modules/services/docker.nix"
-          "modules/services/traefik.nix"
-          "modules/services/prometheus-exporters.nix"
-          "modules/services/garage.nix"
           "modules/services/darknet.nix"
+          "modules/services/docker.nix"
+          "modules/services/garage.nix"
+          "modules/services/prometheus-exporters.nix"
           "modules/services/restic.nix"
+          "modules/services/traefik.nix"
         ]);
       hmModules =
         features.hm.common.base

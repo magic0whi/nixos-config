@@ -29,7 +29,16 @@
         "${common}/sing-box-client-mobile.nix"
         "${common}/ssh.nix"
       ];
-      services = map mylib.relativeToRoot [ "modules/services/sing-box.nix" ];
+      services =
+        let
+          services = "modules/services";
+        in
+        map mylib.relativeToRoot [
+          "${services}/garage.nix"
+          "${services}/prometheus-exporters.nix"
+          "${services}/sing-box.nix"
+          "${services}/traefik.nix"
+        ];
     };
 
   nixos =

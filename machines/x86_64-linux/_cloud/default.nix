@@ -25,12 +25,7 @@ let
             overlays = with features; common.baseOverlays;
             modules =
               (with features; common.base ++ common.services ++ nixos.base)
-              ++ map mylib.relativeToRoot [
-                "modules/nixos_headless/traffic-quota.nix"
-                "modules/services/traefik.nix"
-                "modules/services/prometheus-exporters.nix"
-                "modules/services/garage.nix"
-              ]
+              ++ map mylib.relativeToRoot [ "modules/nixos_headless/traffic-quota.nix" ]
               ++ [
                 ./common
                 (groupDir + "/_common") # Per-provider overrides (e.g. root partition layout)
