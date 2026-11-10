@@ -47,6 +47,7 @@ let
           "modules/services/darknet.nix"
           "modules/services/docker.nix"
           "modules/services/garage.nix"
+          "modules/services/ldap-online.nix"
           "modules/services/prometheus-exporters.nix"
           "modules/services/restic.nix"
           "modules/services/traefik.nix"

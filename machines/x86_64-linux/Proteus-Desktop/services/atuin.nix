@@ -2,7 +2,6 @@
   config,
   const,
   mylib,
-  pkgs,
   ...
 }:
 let
@@ -45,15 +44,14 @@ in
     openRegistration = true;
   };
 
-  systemd.services.atuin.serviceConfig.ExecStartPre = pkgs.writeShellScript "wait-for-ldap" ''
-    set -euo pipefail
-
-    echo "Waiting for LDAP (ldap.${const.domain}) to be ready..."
-    while ! ${pkgs.netcat}/bin/nc -z ldap.proteus.eu.org 636; do
-      sleep 2
-    done
-    echo "LDAP is online, proceeding with Atuin startup."
-  '';
+  systemd.services.atuin = {
+    wants = [ "ldap-online.service" ];
+    after = [ "ldap-online.service" ];
+    serviceConfig = {
+      Restart = "on-failure";
+      RestartSec = 5;
+    };
+  };
 
   services.traefik.dynamicConfigOptions.http = {
     routers.atuin = {

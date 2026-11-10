@@ -39,24 +39,15 @@ in
       nextcloud_oidc_client_secret = { inherit sopsFile restartUnits; };
     };
   systemd.services = lib.mkMerge [
-    # Add RequiresMountsFor to wait for storage mounted
     (
       let
         clean_units = map (s: lib.removeSuffix ".service" s) restartUnits;
       in
       lib.genAttrs clean_units (_: {
+        # Add RequiresMountsFor to wait for storage mounted
         unitConfig.RequiresMountsFor = [ const.storagePath ];
-        wants = [ "network-online.target" ];
-        after = [ "network-online.target" ];
-        preStart = lib.mkBefore ''
-          set -euo pipefail
-
-          echo "Waiting for LDAP (ldap.${const.domain}) to be ready..."
-          while ! ${pkgs.netcat}/bin/nc -z ldap.proteus.eu.org 636; do
-            sleep 2
-          done
-          echo "LDAP is online, proceeding with Forgejo startup."
-        '';
+        wants = [ "ldap-online.service" ];
+        after = [ "ldap-online.service" ];
       })
     )
 
