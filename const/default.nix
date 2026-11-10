@@ -97,7 +97,7 @@ rec {
   };
 
   domain = "proteus.eu.org";
-  cloud_domain = "proteus11451.online";
+  cloudDomain = "proteus11451.online";
   networking = import ./networking.nix args;
 
   syncthing = ./syncthing.nix; # Usage: imports = [ const.syncthing ];

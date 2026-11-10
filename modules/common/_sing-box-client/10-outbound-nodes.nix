@@ -33,26 +33,17 @@ let
         }).config.nodeCfg
       )
       (
-        map
-          (
-            i:
-            let
-              server = "proteus-nixos-${i}.${const.cloud_domain}";
-            in
-            {
-              tag = "Proteus-NixOS-${i}";
-              inherit server;
-              tls.server_name = server;
-            }
-          )
-          [
-            "0"
-            "1"
-            "2"
-            "3"
-            "4"
-            "5"
-          ]
+        map (
+          i:
+          let
+            server = "${lib.toLower i}.${const.cloudDomain}";
+          in
+          {
+            tag = i;
+            inherit server;
+            tls.server_name = server;
+          }
+        ) const.networking.cloudNodes
       )
   # ++ lib.singleton {
   #   tag = "Socks5";

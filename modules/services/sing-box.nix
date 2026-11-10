@@ -45,7 +45,7 @@
         type = "acme";
         # Per-node domain, since shared wildcard would hit the Let's Encrypt duplicate certificate rate limit (5 per
         # week) when all nodes request it
-        domain = [ "${config.networking.hostName}.${const.cloud_domain}" ];
+        domain = [ "${config.networking.hostName}.${const.cloudDomain}" ];
         data_directory = "/var/lib/sing-box/acme"; # StateDirectory, persisted by impermanence
         inherit (const) email;
         dns01_challenge = {

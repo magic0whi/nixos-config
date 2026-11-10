@@ -19,7 +19,7 @@ let
   rules = [
     {
       domain_suffix = [
-        const.cloud_domain
+        const.cloudDomain
         "syncthing.net"
         "szgjgs.com"
       ];

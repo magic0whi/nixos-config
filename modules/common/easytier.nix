@@ -32,15 +32,7 @@ in
         network_name = const.domain;
         ipv4 = config.vars.hostAddrs.${hostname}.easytier.ipv4;
         inherit hostname;
-        # peers = [ "txt://txt.easytier.cn" ];
-        peers = map (i: "udp://proteus-nixos-${toString i}.${const.cloud_domain}") [
-          0
-          1
-          2
-          3
-          4
-          5
-        ];
+        peers = map (i: "udp://${lib.toLower i}.${const.cloudDomain}") const.networking.cloudNodes;
         listeners = [
           "tcp://0.0.0.0:11010"
           "udp://0.0.0.0:11010"
