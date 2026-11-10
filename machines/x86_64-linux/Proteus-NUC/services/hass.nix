@@ -1,6 +1,7 @@
 {
   config,
   const,
+  lib,
   pkgs,
   mylib,
   ...
@@ -22,13 +23,17 @@ in
       restartUnits = [ "home-assistant.service" ];
     in
     {
-      secrets.hass_oidc_secret = {
+      secrets = lib.genAttrs [ "hass_oidc_secret" "hass_latitude" "hass_longitude" ] (_: {
         inherit restartUnits;
         sopsFile = "${const.secretsDir}/${hostname}.sops.yaml";
-      };
+      });
       templates."hass_secrets.yaml" = {
         inherit restartUnits;
-        content = mylib.toYAML { hass_oidc_secret = config.sops.placeholder.hass_oidc_secret; };
+        content = mylib.toYAML {
+          hass_oidc_secret = config.sops.placeholder.hass_oidc_secret;
+          latitude = config.sops.placeholder.hass_latitude;
+          longitude = config.sops.placeholder.hass_longitude;
+        };
       };
     };
   systemd.services.home-assistant = {
@@ -73,7 +78,8 @@ in
       homeassistant = {
         name = "Proteus' Homo";
         unit_system = "metric"; # or "us_customary"
-        inherit (const) latitude longitude;
+        latitude = "!secret latitude";
+        longitude = "!secret longitude";
         time_zone = config.time.timeZone;
       };
       logger.default = "info";
