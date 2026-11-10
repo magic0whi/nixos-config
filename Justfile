@@ -150,26 +150,27 @@ reset-launchpad:
 ##############################################################
 
 # Remote deployment via deploy-rs
+# Use name=host to override the address of a node that isn't reachable over the overlay network yet,
+# e.g. just deploy Proteus-NixOS-0 Proteus-NixOS-6=34.1.2.3
 [group('homelab')]
-[linux]
 deploy +names:
-    #!/usr/bin/env bash
-    targets=""
-    for name in {{ names }}; do
-        targets="$targets .#$name"
-    done
-    deploy --skip-checks --auto-rollback false --magic-rollback false \
-        --targets $targets -- --verbose --show-trace
+    #!/usr/bin/env zsh
+    set -euo pipefail
+    args=(--skip-checks --auto-rollback false --magic-rollback false {{ if os() == "macos" { "--remote-build" } else { "" } }})
+    names=({{ names }})
+    # ${array:#pattern} drops the elements that match the pattern, leaving only the machines without a host
+    # override (e.g. "Proteus-NixOS-0")
+    targets=(${names:#*=*})
 
-[macos]
-deploy +names:
-    #!/usr/bin/env bash
-    targets=""
-    for name in {{ names }}; do
-        targets="$targets .#$name"
+    # The (M) flag keeps the matching elements instead, leaving only the machines with a host override
+    # (e.g. "Proteus-NixOS-6=34.1.2.3")
+    for o in ${(M)names:#*=*}; do
+        deploy $args --hostname ${o#*=} .#${o%%=*} -- --verbose --show-trace
     done
-    deploy --skip-checks --auto-rollback false --magic-rollback false \
-      --remote-build --targets $targets -- --verbose --show-trace
+
+    # Deploy the remaining machines, which have no hostname (IP) override, in a single `--targets` run
+    # $^targets applies the surrounding text to every element, so each target gets the `.#` prefix
+    if (( $#targets )); then deploy $args --targets .#$^targets -- --verbose --show-trace; fi
 
 # Local switch
 [group('homelab')]
