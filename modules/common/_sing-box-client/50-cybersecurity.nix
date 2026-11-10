@@ -24,7 +24,12 @@ let
         "zimperium.com" # Zimperium: mobile threat defense / app anti-tamper SDK
       ];
     }
-    { rule_set = "geosite-hcaptcha"; }
+    {
+      rule_set = [
+        "geosite-cloudflare"
+        "geosite-hcaptcha"
+      ];
+    }
   ];
 in
 {
@@ -64,6 +69,13 @@ in
           // {
             tag = "geoip-cloudflare";
             url = "${urlPrefix}/geo/geoip/cloudflare.srs";
+          }
+        )
+        (
+          defaultCfg
+          // {
+            tag = "geosite-cloudflare";
+            url = "${urlPrefix}/geo/geosite/cloudflare.srs";
           }
         )
         (
