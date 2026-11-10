@@ -196,13 +196,13 @@ all:
     deploy --targets \
     .#Proteus-NUC \
     .#Proteus-Desktop \
-    .#Proteus-NixOS-{0..5} \
+    .#Proteus-NixOS-{0..6} \
     -- --show-trace --verbose
 
 [group('homelab')]
 [linux]
 nodes:
-    deploy --skip-checks --targets .#Proteus-NixOS-{0..5} -- --show-trace --verbose
+    deploy --skip-checks --targets .#Proteus-NixOS-{0..6} -- --show-trace --verbose
 
 [group('homelab')]
 [linux]
