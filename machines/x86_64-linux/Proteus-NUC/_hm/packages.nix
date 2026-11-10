@@ -10,6 +10,7 @@
     witr
     intel-undervolt
   ];
+  home.persistence."/persistent".directories = [ ".config/libreoffice" ];
   programs.antigravity-cli.enable = true;
   programs.obsidian.enable = true;
 }
