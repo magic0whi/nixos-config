@@ -4,6 +4,7 @@
   features,
 
   deploy-rs,
+  impermanence,
   nixpkgs,
   noctalia-greeter,
   ...
@@ -33,7 +34,15 @@ let
           "${common}/shell.nix"
           "${common}/ssh.nix"
         ]
-        ++ [ noctalia-greeter.nixosModules.default ]
+        ++ [
+          # Shared modules declare persistent dirs; keep the option but mount nothing on the live ISO
+          impermanence.nixosModules.default
+          {
+            environment.persistence."/persistent".enable = false;
+            home-manager.sharedModules = [ { home.persistence."/persistent".enable = false; } ];
+          }
+          noctalia-greeter.nixosModules.default
+        ]
         ++ map mylib.relativeToRoot [
           "${headless}/fhs.nix"
           "${headless}/iwd.nix"
@@ -69,7 +78,7 @@ let
           "modules/nixos_hm_headless/udiskie.nix"
 
           "${nixosHmGui}/fcitx5.nix"
-          "${nixosHmGui}/gtk_and_qt.nix"
+          "${nixosHmGui}/theming.nix"
           "${nixosHmGui}/niri"
           "${nixosHmGui}/xdg.nix"
         ];
