@@ -6,51 +6,47 @@
   mylib,
   ...
 }:
+let
+  projects = [
+    "0"
+    "1"
+    "2"
+    "4"
+  ];
+in
 {
   sops = {
     secrets = lib.mkMerge (
-      map
-        (num: {
-          "project-${num}.secret.json" = {
-            sopsFile = "${const.secretsDir}/gcloud_project-${num}.secret.json.sops";
-            format = "binary";
-            path = "${config.xdg.configHome}/gcloud/project-${num}.secret.json";
-          };
-          "config_account_project-${num}" = { };
-          "config_projectid_project-${num}" = { };
-          oracle_user_ocid = { };
-          oracle_fingerprint = { };
-          oracle_tenancy = { };
-          oracle_region = { };
-          "oracle_secret.pem" = {
-            sopsFile = "${const.secretsDir}/oracle_secret.pem.sops";
-            format = "binary";
-          };
-        })
-        [
-          "0"
-          "1"
-          "2"
-        ]
+      map (num: {
+        "project-${num}.secret.json" = {
+          sopsFile = "${const.secretsDir}/gcloud_project-${num}.secret.json.sops";
+          format = "binary";
+          path = "${config.xdg.configHome}/gcloud/project-${num}.secret.json";
+        };
+        "config_account_project-${num}" = { };
+        "config_projectid_project-${num}" = { };
+        oracle_user_ocid = { };
+        oracle_fingerprint = { };
+        oracle_tenancy = { };
+        oracle_region = { };
+        "oracle_secret.pem" = {
+          sopsFile = "${const.secretsDir}/oracle_secret.pem.sops";
+          format = "binary";
+        };
+      }) projects
     );
     templates = lib.mkMerge (
-      map
-        (num: {
-          "config_project-${num}" = {
-            path = "${config.xdg.configHome}/gcloud/configurations/config_project-${num}";
-            content = mylib.toINI {
-              core = {
-                account = config.sops.placeholder."config_account_project-${num}";
-                project = config.sops.placeholder."config_projectid_project-${num}";
-              };
+      map (num: {
+        "config_project-${num}" = {
+          path = "${config.xdg.configHome}/gcloud/configurations/config_project-${num}";
+          content = mylib.toINI {
+            core = {
+              account = config.sops.placeholder."config_account_project-${num}";
+              project = config.sops.placeholder."config_projectid_project-${num}";
             };
           };
-        })
-        [
-          "0"
-          "1"
-          "2"
-        ]
+        };
+      }) projects
       ++ [
         {
           ".oci/config" = {
