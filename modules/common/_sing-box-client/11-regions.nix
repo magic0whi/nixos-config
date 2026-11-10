@@ -9,12 +9,12 @@ let
     {
       tag = "HongKong";
       type = "selector";
-      outbounds = [ "Proteus-NixOS-5" ];
+      outbounds = [ "Proteus-NixOS-6" ];
     }
     {
       tag = "UnitedKingdom";
       type = "selector";
-      outbounds = [ "Proteus-NixOS-4" ];
+      outbounds = [ "Proteus-NixOS-5" ];
     }
     {
       tag = "UnitedStates";
@@ -35,11 +35,11 @@ let
     #   type = "selector";
     #   outbounds = [ "Block" ];
     # }
-    # {
-    #   tag = "Japan";
-    #   type = "selector";
-    #   outbounds = [ "Block" ];
-    # }
+    {
+      tag = "Japan";
+      type = "selector";
+      outbounds = [ "Proteus-NixOS-4" ];
+    }
     {
       tag = "Germany";
       type = "selector";
