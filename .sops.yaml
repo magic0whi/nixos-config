@@ -10,8 +10,9 @@ keys:
   - &Proteus-NixOS-1 age14peangqx8cc42grlrffkj9n6dvjqp4zkmdxppsh9d5nx5j96256smhsgdn
   - &Proteus-NixOS-2 age1nssmjhktf7gdxatr2mysnf6t0q5e9aqzp6vnvtlxvqw4pr3y7ewslsqq6z
   - &Proteus-NixOS-3 age155dv4g43dcvjg8nk6vtz5njeajakd5zxuqszzvg0qp4rtze9v4nqgxsyxz
-  - &Proteus-NixOS-4 age1ktvdkyckex6pzprkxfutgeqhdygxfw6fl75fcntd8wzqpf8mgpuq7mk4l8
+  - &Proteus-NixOS-4 age1d5yzdxlkmvnee4sw6tu7rufhugwh4crnkngv07l7avh6phlnl9kqwuyca7
   - &Proteus-NixOS-5 age1yp5ep6qsw6k3sp9lzr890f4zqfjdeg3k2jqrmdr70vumen9kr4ashjyks6
+  - &Proteus-NixOS-6 age19hv34dhqt8rtkwpepz8mdnn7cx6egstqqfl87k2xxhrp7zu7u3rqqg2prr
 # TIP: To rotate a encrypted file with new recipients
 # updatekeys secrets/syncthing_proteus-nuc.priv.pem.age
 # TIP:Use recovery key if lost access to secret keys
@@ -33,6 +34,7 @@ creation_rules:
           - *Proteus-NixOS-3
           - *Proteus-NixOS-4
           - *Proteus-NixOS-5
+          - *Proteus-NixOS-6
   - path_regex: secrets/proteus_server\.priv\.pem\.sops$
     key_groups:
       - pgp: [*openpgp]
@@ -46,6 +48,7 @@ creation_rules:
           - *Proteus-NixOS-3
           - *Proteus-NixOS-4
           - *Proteus-NixOS-5
+          - *Proteus-NixOS-6
   - path_regex: secrets/sb_test\.json\.sops$
     key_groups:
       - pgp: [*openpgp]
@@ -62,6 +65,7 @@ creation_rules:
           - *Proteus-NixOS-3
           - *Proteus-NixOS-4
           - *Proteus-NixOS-5
+          - *Proteus-NixOS-6
   ## END Cloud Common
   ## BEGIN Proteus-NUC
   - path_regex: secrets/Proteus-NUC\.sops\.yaml$
