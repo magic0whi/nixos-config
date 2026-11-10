@@ -100,4 +100,14 @@ in
   inherit (custom_module.utils) findFirstHostBySubdomain findAllHostContains;
 
   libvirtNetCidr = "192.168.122.0/24";
+
+  cloudNodes = map (i: "Proteus-NixOS-${toString i}") [
+    0
+    1
+    2
+    3
+    4
+    5
+    6
+  ];
 }
