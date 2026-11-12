@@ -54,9 +54,9 @@
       url = "github:catppuccin/nix/ddfe53d3304399d50a89ef6503b6ca1be9349fab";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Pinned as of 2026-06-05 18:15
+    # Pinned as of 2026-11-12 10:56
     disko = {
-      url = "github:nix-community/disko/115e5211780054d8a890b41f0b7734cafad54dfe";
+      url = "github:nix-community/disko/1dd30c29c88d99ce295f15e27f93c49bc5fbae07";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # Pinned as of 2026-06-05 18:16
