@@ -29,7 +29,7 @@
     gtk3.extraConfig.gtk-application-prefer-dark-theme = true;
     gtk4.extraConfig.gtk-application-prefer-dark-theme = true;
   };
-  dconf.settings."org/gnome/desktop/interface".color-scheme = "prefer-dark"; # GTK4 prefer dark
+  dconf.settings."org/gnome/desktop/interface".color-scheme = "prefer-dark"; # prefer dark on GTK4
   qt = {
     enable = true;
     platformTheme = {
