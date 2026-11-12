@@ -77,7 +77,7 @@
       enable = true;
       settings = {
         default_session = lib.mkMerge [
-          (lib.mkIf (!config.programs.noctalia-greeter.enable) {
+          (lib.mkIf (!config.services.displayManager.noctalia-greeter.enable) {
             command = lib.mkDefault "${pkgs.tuigreet}/bin/tuigreet --time --remember --remember-session";
           })
           { user = const.username; } # Wayland Desktop Manager is installed only for user
