@@ -42,7 +42,7 @@
       url = "github:serokell/deploy-rs/1cec0527bd09074bbee6d4461900ce5d58267217";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Pinned as of 2026-10-21
+    # Pinned as of 2026-11-12
     nix-darwin = {
       url = "github:magic0whi/nix-darwin/main";
       # url = "path:/Users/proteus/Proteus/Projects-Ref/nosync/nix-darwin";
@@ -74,7 +74,7 @@
       url = "github:numtide/treefmt-nix/0d6d739a833ba9a9c93034862e4a7b061a062a1c";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Pinned as of 2026-10-27
+    # Pinned as of 2026-11-12
     niks3 = {
       url = "github:Mic92/niks3/v1.16.2";
       inputs = {
@@ -97,10 +97,12 @@
         lix.follows = "lix";
       };
     };
+    # Pinned as of 2026-11-12
     noctalia = {
       url = "github:noctalia-dev/noctalia/v5.5.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # Pinned as of 2026-11-12
     noctalia-greeter = {
       url = "github:noctalia-dev/noctalia-greeter/af0bf4b1e1c40738db917b04c9c0563b4f718953";
       inputs.nixpkgs.follows = "nixpkgs";
