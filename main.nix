@@ -86,9 +86,12 @@ in
         args = mk_machine_args system;
       };
       packages = nixos_machines.${system}.packages or { };
-      # Currently deploy-rs check broken on MacOS/riscv64-linux
-      checks = lib.optionalAttrs (system != "riscv64-linux" && (system != "aarch64-darwin")) (
-        inputs.deploy-rs.lib.${system}.deployChecks self.deploy
+      checks = inputs.deploy-rs.lib.${system}.deployChecks (
+        self.deploy
+        // {
+          # Only check configs that have the same CPU architecture as the current system
+          nodes = lib.filterAttrs (_: node: node.profiles.system.path.system == system) self.deploy.nodes;
+        }
       );
     };
 }
