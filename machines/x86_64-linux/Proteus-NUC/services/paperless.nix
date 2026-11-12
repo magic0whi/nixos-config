@@ -59,6 +59,18 @@ in
         };
       };
     };
+  # https://github.com/NixOS/nixpkgs/issues/582142
+  nixpkgs.overlays = lib.singleton (
+    _: prev: {
+      pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
+        (_: pyprev: {
+          ocrmypdf = pyprev.ocrmypdf.overrideAttrs (old: {
+            disabledTests = (old.disabledTests or [ ]) ++ [ "test_validation_performance" ];
+          });
+        })
+      ];
+    }
+  );
   services.paperless = {
     domain = "paperless.${const.domain}";
     enable = true;
