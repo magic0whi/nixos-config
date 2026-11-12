@@ -8,7 +8,7 @@
   ...
 }:
 let
-  pri = 0.26;
+  pri = 0.51;
   realip_pri = pri * const.sb.dnsFakeIpPri;
   no_sniff_pri = pri * const.sb.routeSniffPri;
   sniff_pri = pri * (2000 - const.sb.routeSniffPri) + const.sb.routeSniffPri;
