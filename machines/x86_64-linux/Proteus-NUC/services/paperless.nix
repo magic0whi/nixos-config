@@ -72,8 +72,9 @@ in
     }
   );
   services.paperless = {
-    domain = "paperless.${const.domain}";
     enable = true;
+    group = "storage";
+    domain = "paperless.${const.domain}";
     settings = {
       PAPERLESS_DBENGINE = "postgresql";
       # Unix socket if psql is on the same machines
@@ -130,7 +131,6 @@ in
         # spawns python to export the PDFs to a temporary folder, then renames it to `cfg.exporter.directory` ). If this
         # is Type=simple (the default), systemd will run ExecStartPost instantly, before the PDFs are generated, causing
         # them to be owned by paperless:paperless.
-        Group = "storage";
         Type = "oneshot";
         # As of 2026-05-01, paperless-export don't allow group to access
         ExecStartPost = [ "+${pkgs.coreutils}/bin/chmod -R g+r ${cfg.directory}" ];
