@@ -20,7 +20,9 @@
         && (lib.all (mod_name: !kernel_pkgs.${mod_name}.meta.broken) config.boot.requiredKernelModules)
       ) pkgs.linuxKernel.packages;
     in
-    lib.last (
-      lib.sort (a: b: (lib.versionOlder a.kernel.version b.kernel.version)) (builtins.attrValues compat_kernel_pkgs)
+    lib.mkDefault (
+      lib.last (
+        lib.sort (a: b: (lib.versionOlder a.kernel.version b.kernel.version)) (builtins.attrValues compat_kernel_pkgs)
+      )
     );
 }
