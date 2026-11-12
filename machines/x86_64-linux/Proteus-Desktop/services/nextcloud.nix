@@ -35,7 +35,6 @@ in
     in
     {
       nextcloud_db_password = { inherit sopsFile restartUnits; };
-      nextcloud_admin_password = { inherit sopsFile restartUnits; };
       nextcloud_oidc_client_secret = { inherit sopsFile restartUnits; };
     };
   systemd.services = lib.mkMerge [
@@ -124,7 +123,6 @@ in
       dbtype = "pgsql";
       dbhost = if hostname == hostname_psql then "/run/postgresql" else "psql.${const.domain}";
       dbpassFile = config.sops.secrets.nextcloud_db_password.path;
-      adminpassFile = config.sops.secrets.nextcloud_admin_password.path;
     };
     maxUploadSize = "20G";
 
