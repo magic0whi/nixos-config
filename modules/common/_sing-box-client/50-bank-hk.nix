@@ -33,6 +33,7 @@ let
         "geosite-ccb!cn"
         "geosite-citic!cn"
         "geosite-icbc!cn"
+        "geosite-alibaba!cn"
       ];
     }
   ];
@@ -77,6 +78,10 @@ in
         {
           tag = "geosite-icbc!cn";
           url = "${urlPrefix}/geo/geosite/icbc@!cn.srs";
+        }
+        {
+          tag = "geosite-alibaba!cn";
+          url = "${urlPrefix}/geo/geosite/alibaba@!cn.srs";
         }
       ];
   };
