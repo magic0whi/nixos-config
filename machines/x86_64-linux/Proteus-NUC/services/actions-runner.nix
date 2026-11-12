@@ -1,5 +1,4 @@
 {
-  mylib,
   config,
   lib,
   const,
@@ -7,36 +6,23 @@
   ...
 }:
 let
-  restart_runner_units = map (name: "gitea-runner-${name}.service") (
-    builtins.attrNames config.services.gitea-actions-runner.instances
+  restart_runner_units = map (name: "forgejo-runner-${name}.service") (
+    builtins.attrNames config.services.forgejo-runner.instances
   );
   clean_runner_units = map (s: lib.removeSuffix ".service" s) restart_runner_units;
 in
 {
-  sops =
-    let
-      sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
-    in
-    {
-      # Generate the runner token for the global runner
-      # `sudo -u forgejo nix run nixpkgs#forgejo -- forgejo-cli --config /var/lib/forgejo/custom/conf/app.ini actions generate-runner-token`
-      # Note this is different with `nixpgs#forgejo-cli`.
-      # The token will not change until regenerate it. To regenerate the token, go through WebUI -> Site
-      # administration -> Actions -> Runners, click the edit and check the "Regenerate token" box, them save
-      secrets.forgejo_runner_token = {
-        inherit sopsFile;
-        restartUnits = restart_runner_units;
-      };
-      templates."forgejo_runner_token.env" = {
-        restartUnits = restart_runner_units;
-        content = mylib.toEnv { TOKEN = config.sops.placeholder.forgejo_runner_token; };
-        # The module uses DynamicUser
-        # owner = config.systemd.services."gitea-runner-${builtins.head (builtins.attrNames config.services.gitea-actions-runner.instances)}".serviceConfig.User;
-      };
-    };
+  # Generate the runner token for the global runner
+  # `sudo -u forgejo nix run nixpkgs#forgejo -- forgejo-cli --config /var/lib/forgejo/custom/conf/app.ini actions generate-runner-token`
+  # Note this is different with `nixpgs#forgejo-cli`.
+  # The token will not change until regenerate it. To regenerate the token, go through WebUI -> Site
+  # administration -> Actions -> Runners, click the edit and check the "Regenerate token" box, them save
+  sops.secrets.forgejo_runner_token = {
+    sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
+    restartUnits = restart_runner_units;
+  };
 
   systemd.services = lib.genAttrs clean_runner_units (_: {
-
     serviceConfig = {
       SupplementaryGroups = [ "kvm" ];
       ExecStartPre = lib.mkAfter [
@@ -58,24 +44,24 @@ in
 
   # Local Action Runner connecting to Forgejo instance
   # Docker is required to execute Docker-based action labels
-  services.gitea-actions-runner =
+  services.forgejo-runner =
     let
       default_instance = {
         enable = true;
-        name = "${config.networking.hostName}-runner";
-        url = "https://git.${const.domain}";
-        tokenFile = config.sops.templates."forgejo_runner_token.env".path;
-        labels = [
-          # "debian-latest:docker://node:20-bookworm"
-          # Fake the ubuntu name, because node provides no ubuntu builds
-          "ubuntu-latest:docker://catthehacker/ubuntu:runner-latest"
-          # "ubuntu-24.04-arm:docker://node:20-bookworm"
-        ];
+        secrets.server.connections.default.token_url = config.sops.secrets.forgejo_runner_token.path;
         # https://gitea.com/gitea/act_runner/src/commit/40dcee0991c3bd33b657bb77aa1f2f46d69cc0e2/internal/pkg/config/config.example.yaml
         settings = {
           # The nodejs still couldn't recognize my self-signed cert
-          runner.capacity = 3; # Set to your desired number of simultaneous jobs
-          runner.envs.NODE_EXTRA_CA_CERTS = "/etc/ssl/certs/ca-certificates.crt";
+          runner = {
+            labels = [
+              # "debian-latest:docker://node:20-bookworm"
+              # Fake the ubuntu name, because node provides no ubuntu builds
+              "ubuntu-latest:docker://catthehacker/ubuntu:runner-latest"
+              # "ubuntu-24.04-arm:docker://node:20-bookworm"
+            ];
+            capacity = 3; # Simultaneous jobs
+            envs.NODE_EXTRA_CA_CERTS = "/etc/ssl/certs/ca-certificates.crt";
+          };
           container = {
             options = builtins.concatStringsSep " " [
               "-v ${config.security.pki.caBundle}:/etc/ssl/certs/ca-certificates.crt:ro"
@@ -84,6 +70,10 @@ in
             ];
             valid_volumes = [ config.security.pki.caBundle ];
             force_pull = false;
+          };
+          server.connections.default = {
+            url = "https://git.${const.domain}";
+            uuid = "22a2e4e8-3a16-4571-a7d7-8008fe62e0dc";
           };
         };
       };
