@@ -135,11 +135,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1782324651,
-        "narHash": "sha256-agGRz7TziK0M26kbFLY2QjsMKwx6ZsLT+josBHR23J8=",
+        "lastModified": 1794482038,
+        "narHash": "sha256-/rVvOQtfPIJci3w68Tur59YIDslD4dQoH3eBc5tuZ9k=",
         "owner": "magic0whi",
         "repo": "dns.nix",
-        "rev": "21758cb568569ba6e79e0573ebd7ec85facf29f6",
+        "rev": "0e07d2b03c794a801fe2030893c97fdcf9a921d9",
         "type": "github"
       },
       "original": {

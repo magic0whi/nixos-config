@@ -179,9 +179,7 @@ in
           mk_ipv4_reverse_zone =
             depth: nic_name:
             let
-              name = "${
-                lib.last (dns.lib.mkIPv4ReverseRecord' depth config.vars.hostAddrs.${hostname}.${nic_name}.ipv4NoCidr)
-              }.in-addr.arpa";
+              name = lib.last (dns.lib.mkIPv4ReverseRecord' depth config.vars.hostAddrs.${hostname}.${nic_name}.ipv4NoCidr);
             in
             shared_zone_cfg
             // {
@@ -194,9 +192,7 @@ in
           mk_ipv6_reverse_zone =
             depth: nic_name:
             let
-              name = "${
-                lib.last (dns.lib.mkIPv6ReverseRecord' depth config.vars.hostAddrs.${hostname}.${nic_name}.ipv6NoCidr)
-              }.ip6.arpa";
+              name = lib.last (dns.lib.mkIPv6ReverseRecord' depth config.vars.hostAddrs.${hostname}.${nic_name}.ipv6NoCidr);
             in
             shared_zone_cfg
             // {

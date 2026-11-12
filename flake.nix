@@ -109,7 +109,7 @@
     };
     dns = {
       url = "github:magic0whi/dns.nix";
-      # url = "path:/home/proteus/Works-References/dns.nix";
+      # url = "path:/home/proteus/Proteus/Projects-Ref/nosync/dns.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # Pinned as of 2026-11-12
