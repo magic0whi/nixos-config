@@ -86,6 +86,31 @@ in
       # https://wiki.nixos.org/wiki/Home_Assistant#Automations,_Scenes,_and_Scripts_from_the_UI
       "automation ui" = "!include automations.yaml";
       "script ui" = "!include scripts.yaml";
+      sensor = lib.singleton {
+        platform = "filter";
+        name = "NUC CPU Package Temp Smoothed";
+        unique_id = "nuc_cpu_package_temp_smoothed";
+
+        entity_id = "sensor.nuc_cpu_package_temp";
+        filters = lib.singleton {
+          filter = "time_simple_moving_average";
+          window_size = "00:05";
+          precision = 1;
+        };
+      };
+      command_line = lib.singleton {
+        sensor = {
+          name = "NUC CPU Package Temp";
+          unique_id = "nuc_cpu_package_temp";
+          # "Package id 0"; glob over hwmonN since its index isn't stable
+          command = "cat /sys/devices/platform/coretemp.0/hwmon/hwmon*/temp1_input";
+          value_template = "{{ (value | int / 1000) | round(1) }}";
+          unit_of_measurement = "°C";
+          device_class = "temperature";
+          state_class = "measurement";
+          scan_interval = 30;
+        };
+      };
       auth_oidc = {
         client_id = "hass";
         client_secret = "!secret hass_oidc_secret";
