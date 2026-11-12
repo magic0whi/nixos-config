@@ -20,7 +20,7 @@ let
         ;
       machinePath = ./.;
       specialArgs = { inherit deploy-rs; };
-      overlays = features.nixos.seat.guiOverlays;
+      overlays = with features; common.baseOverlays ++ nixos.seat.guiOverlays;
       modules =
         let
           common = "modules/common";
