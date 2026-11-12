@@ -46,4 +46,21 @@
     "udp://${Proteus-Desktop.wire.ipv4NoCidr}"
   ];
   ## END easytier.nix
+  boot.kernelPackages = pkgs.linuxPackagesFor (
+    pkgs.linuxKernel.kernels.linux_7_3.override {
+      argsOverride =
+        let
+          # Pin 7.2.15: external monitor stays black after DPMS off on 6.18, and ZFS 2.4.4 is marked broken on 7.3.
+          version = "7.2.15";
+        in
+        {
+          inherit version;
+          modDirVersion = lib.versions.pad 3 version;
+          src = pkgs.fetchurl {
+            url = "mirror://kernel/linux/kernel/v${lib.versions.major version}.x/linux-${version}.tar.xz";
+            sha256 = "1aq931l3mn0a3yix7qmkxnr1vxzw9c4afk2wxg57r4sc6bbv3xnh"; # from nixpkgs ed2b227^
+          };
+        };
+    }
+  );
 }
