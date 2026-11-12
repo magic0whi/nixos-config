@@ -1,6 +1,7 @@
 {
   config,
   const,
+  lib,
   pkgs,
   ...
 }:
@@ -11,6 +12,22 @@
 
   programs.helix = {
     enable = true;
+    # https://github.com/helix-editor/helix/issues/16431
+    package = pkgs.helix.override {
+      grammarOverlays = lib.singleton (
+        _final: previous: {
+          perl = previous.perl.overrideAttrs (_old: {
+            version = "aa5600c8df1eb9ed111db72e20c741dd73ec336a";
+            src = fetchTree {
+              type = "github";
+              owner = "tree-sitter-perl";
+              repo = "tree-sitter-perl";
+              rev = "aa5600c8df1eb9ed111db72e20c741dd73ec336a";
+            };
+          });
+        }
+      );
+    };
     defaultEditor = true;
     settings = {
       # fallback to gruvbox

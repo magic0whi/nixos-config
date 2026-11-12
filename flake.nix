@@ -1,45 +1,45 @@
 {
   description = "Proteus' nix configuration for NixOS & nix-darwin";
   inputs = {
-    # Pinned as of 2026-06-05 18:10, branch: nixos-unstable
+    # Pinned as of 2026-11-12, branch: nixos-unstable
     nixpkgs.url = "github:magic0whi/nixpkgs/nixos-unstable";
     # nixpkgs.url = "path:/Users/proteus/Proteus/Projects-Ref/nosync/nixpkgs";
-    nixpkgs-sing-box.url = "github:NixOS/nixpkgs/f9a75f41be3a74eab55d3a7679d34ad6cc0da977";
+    # nixpkgs-sing-box.url = "github:NixOS/nixpkgs/f9a75f41be3a74eab55d3a7679d34ad6cc0da977";
     # Pinned as of 2026-10-29, branch: master
     home-manager = {
-      url = "github:nix-community/home-manager/095fef2f265c3c0da4fe315efba8f8a04495ab34";
+      url = "github:nix-community/home-manager/82ce401aa350502897c3f2e85f384d61cd3b0b6d";
       # The `follows` keyword in inputs is used for inheritance.
       # Here, `inputs.nixpkgs` of home-manager is kept consistent with the
       # `inputs.nixpkgs` of the current flake, to avoid problems caused by
       # different versions of nixpkgs dependencies.
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Pinned as of 2026-10-07 16:48
+    # Pinned as of 2026-11-12
     lanzaboote = {
-      url = "github:nix-community/lanzaboote/ba33415d747d8dedd2931af107521634f1f2e8a8";
+      url = "github:nix-community/lanzaboote/c1c5edd31802d181c8aa2c71588995d93425d650";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Pinned as of 2026-06-05 18:13
+    # Pinned as of 2026-11-12
     impermanence = {
-      url = "github:nix-community/impermanence/7b1d382faf603b6d264f58627330f9faa5cba149";
+      url = "github:nix-community/impermanence/fa627f4c8b8e92f58f58a73d99ee4e1304e64eb2";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         home-manager.follows = "home-manager";
       };
     };
-    # Pinned as of 2026-06-05 18:11
+    # Pinned as of 2026-11-12
     nixpak = {
-      url = "github:nixpak/nixpak/ad5ac7d24a505db29671edadfe6a8f985aa6e94e";
+      url = "github:nixpak/nixpak/3b061c82f9ccb99973154ffced2391535da7b66b";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Pinned as of 2026-10-07 15:07
+    # Pinned as of 2026-11-12
     sops-nix = {
-      url = "github:Mic92/sops-nix/dcd241ba97088c22569d1573286e1b9daad340c0";
+      url = "github:Mic92/sops-nix/fe7b4228405aeac2ce7192c2049a6e2bc8637082";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Pinned as of 2026-10-08 08:14
+    # Pinned as of 2026-11-12
     deploy-rs = {
-      url = "github:serokell/deploy-rs/45ba3f8c5cb28396fff71671806e2550b464ac86";
+      url = "github:serokell/deploy-rs/1cec0527bd09074bbee6d4461900ce5d58267217";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # Pinned as of 2026-10-21
@@ -49,47 +49,47 @@
       # url = "path:/home/proteus/Works-References/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Pinned as of 2026-10-29
+    # Pinned as of 2026-11-12
     catppuccin = {
-      url = "github:catppuccin/nix/ddfe53d3304399d50a89ef6503b6ca1be9349fab";
+      url = "github:catppuccin/nix/5a735352cd3535d43109415bcbb512a72304226a";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Pinned as of 2026-11-12 10:56
+    # Pinned as of 2026-11-12
     disko = {
       url = "github:nix-community/disko/1dd30c29c88d99ce295f15e27f93c49bc5fbae07";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Pinned as of 2026-06-05 18:16
+    # Pinned as of 2026-11-12
     nixos-hardware = {
-      url = "github:NixOS/nixos-hardware/4ed851c979641e28597a05086332d75cdc9e395f";
+      url = "github:NixOS/nixos-hardware/b6ca87f78ec5bafc4b2aef7b29803dcf419266af";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Pinned as of 2026-10-08 08:25
+    # Pinned as of 2026-11-12
     i915-sriov-dkms = {
-      url = "github:strongtz/i915-sriov-dkms/f4cb98f4c28e1f3ac78ca88501a87c86d0c21a88";
+      url = "github:strongtz/i915-sriov-dkms/2026.11.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Pinned as of 2026-06-05 18:17
+    # Pinned as of 2026-11-12
     treefmt-nix = {
-      url = "github:numtide/treefmt-nix/db947814a175b7ca6ded66e21383d938df01c227";
+      url = "github:numtide/treefmt-nix/0d6d739a833ba9a9c93034862e4a7b061a062a1c";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # Pinned as of 2026-10-27
     niks3 = {
-      url = "github:Mic92/niks3/v1.15.0";
+      url = "github:Mic92/niks3/v1.16.2";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         treefmt-nix.follows = "treefmt-nix";
       };
     };
-    # Pinned as of 2026-06-05 17:32
-    flake-parts.url = "github:hercules-ci/flake-parts/f7c1a2d347e4c52d5fb8d10cb4d94b5884e546fb";
-    # Pinned as of 2026-10-29, branch release-2.96
+    # Pinned as of 2026-11-12
+    flake-parts.url = "github:hercules-ci/flake-parts/ea2630b7470978622c7689a1ff75d2b389175399";
+    # Pinned as of 2026-11-12, branch release-2.96
     lix = {
-      url = "https://git.lix.systems/lix-project/lix/archive/5bd6eaabd8bb9cdddadc3f8481327702e4d37cc3.tar.gz";
+      url = "https://git.lix.systems/lix-project/lix/archive/ff664d53ee6c84ca8689f16e0642c65c85aaeac5.tar.gz";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Pinned as of 2026-10-29
+    # Pinned as of 2026-11-12
     lix-module = {
       url = "https://git.lix.systems/lix-project/nixos-module/archive/9311ca94aac0ff3378ab4eea887284d11de94158.tar.gz";
       inputs = {
@@ -97,23 +97,12 @@
         lix.follows = "lix";
       };
     };
-    # https://github.com/noctalia-dev/noctalia-qs/commits/master/
-    noctalia-qs = {
-      url = "github:noctalia-dev/noctalia-qs/d52844d40a697e47fea7bc0f1ec68aae9108ddf2";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        treefmt-nix.follows = "treefmt-nix";
-      };
-    };
     noctalia = {
-      url = "github:noctalia-dev/noctalia/v4.7.7";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        noctalia-qs.follows = "noctalia-qs";
-      };
+      url = "github:noctalia-dev/noctalia/v5.5.0";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
     noctalia-greeter = {
-      url = "github:noctalia-dev/noctalia-greeter/f19b5fe2e20f1a80de178c8dedfbd838ce8eb2ca";
+      url = "github:noctalia-dev/noctalia-greeter/af0bf4b1e1c40738db917b04c9c0563b4f718953";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     dns = {
@@ -121,18 +110,18 @@
       # url = "path:/home/proteus/Works-References/dns.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # Pinned as of 2026-11-12
     NixVirt = {
-      url = "github:AshleyYakeley/NixVirt/6d213ab42f72ba41c2eb4e6bdb97581c0642d942";
+      url = "github:AshleyYakeley/NixVirt/11e2b2c0492aeff3fe3dea9000832d7694c47dfe";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixvim = {
       url = "github:nix-community/nixvim/48409beb41e8e28b64e8160ca82d8a93fb628963";
       # inputs.nixpkgs.follows = "nixpkgs"; # nixvim recommend against using follows
     };
-    # Pinned as of 2026-10-07
-    # NOTE: https://github.com/helix-editor/helix/issues/16347
+    # Pinned as of 2026-11-12
     helix = {
-      url = "github:helix-editor/helix/86d7b61520e4bbc58d1d794dae8708e544969642";
+      url = "github:helix-editor/helix/a714a818a3a4f6dd5aad3b003a78692f90a1703f";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     dev-flake = {

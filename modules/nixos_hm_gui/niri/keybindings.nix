@@ -8,10 +8,8 @@ let
   spawn = args: builtins.concatStringsSep " " (map (s: ''"${s}"'') args);
 
   noctalia_prefix = spawn [
-    "noctalia-shell"
-    "ipc"
-    "--any-display"
-    "call"
+    "noctalia"
+    "msg"
   ];
 in
 {
@@ -62,22 +60,22 @@ in
     switch-events {
       lid-close { spawn "${
         let
-          NOCTALIA_PREFIX = "noctalia-shell ipc --any-display call toast send";
+          NOCTALIA_PREFIX = "noctalia msg notification-show";
         in
         pkgs.writeShellScript "lid-close" ''
           set -euo pipefail
           MONITOR_COUNT=$(niri msg -j outputs | ${pkgs.jq}/bin/jq -e 'keys | length')
           if [ "$MONITOR_COUNT" -gt 1 ]; then
-            ${NOCTALIA_PREFIX} '{"title": "Laptop lid closed", "body": "'"$MONITOR_COUNT"' monitors connected. Not locking.", "icon": "device-laptop-off"}'
+            ${NOCTALIA_PREFIX} "Laptop lid closed: $MONITOR_COUNT monitors connected. Not locking."
           else
-            ${NOCTALIA_PREFIX} '{"title": "Laptop lid closed", "body": "Session locked.", "icon": "device-laptop-off"}'
+            ${NOCTALIA_PREFIX} "Laptop lid closed: Session locked."
             loginctl lock-session
           fi
         ''
       }"; }
       lid-open  { spawn "${pkgs.writeShellScript "lid-open" ''
         set -euo pipefail
-        noctalia-shell ipc --any-display call toast send '{"title": "The laptop lid is open!", "body": "TBD", "icon": "device-laptop"}'
+        noctalia msg notification-show "The laptop lid is open!"
       ''}"; }
     }
 
@@ -90,11 +88,11 @@ in
       Mod+E hotkey-overlay-title="Open File Manager" { spawn "xdg-terminal-exec" "yazi"; }
       Mod+Shift+C hotkey-overlay-title="Open Color Picker" { spawn "colorpicker"; }
 
-      Mod+X hotkey-overlay-title="Open Power Menu" { spawn ${noctalia_prefix} "sessionMenu" "toggle"; }
-      Mod+S hotkey-overlay-title="Open Control Center" { spawn ${noctalia_prefix} "controlCenter" "toggle"; }
-      Mod+V hotkey-overlay-title="Open Clipboard Manager" { spawn ${noctalia_prefix} "launcher" "clipboard"; }
-      Mod+Space hotkey-overlay-title="Open Menu" { spawn ${noctalia_prefix} "launcher" "toggle"; }
-      XF86Search hotkey-overlay-title="Open Menu" { spawn ${noctalia_prefix} "launcher" "toggle"; }
+      Mod+X hotkey-overlay-title="Open Power Menu" { spawn ${noctalia_prefix} "panel-toggle" "session"; }
+      Mod+S hotkey-overlay-title="Open Control Center" { spawn ${noctalia_prefix} "panel-toggle" "control-center"; }
+      Mod+V hotkey-overlay-title="Open Clipboard Manager" { spawn ${noctalia_prefix} "panel-toggle" "clipboard"; }
+      Mod+Space hotkey-overlay-title="Open Menu" { spawn ${noctalia_prefix} "panel-toggle" "launcher"; }
+      XF86Search hotkey-overlay-title="Open Menu" { spawn ${noctalia_prefix} "panel-toggle" "launcher"; }
 
       // Window management
       F11 repeat=false { toggle-overview; }
@@ -197,21 +195,21 @@ in
 
       // Media Keys (Locked & Repeating)
       // Example volume keys mappings for PipeWire & WirePlumber.
-      XF86AudioRaiseVolume allow-when-locked=true { spawn ${noctalia_prefix} "volume" "increase"; }
-      XF86AudioLowerVolume allow-when-locked=true { spawn ${noctalia_prefix} "volume" "decrease"; }
-      XF86AudioMute allow-when-locked=true        { spawn ${noctalia_prefix} "volume" "muteOutput"; }
-      XF86AudioMicMute allow-when-locked=true     { spawn ${noctalia_prefix} "volume" "muteInput"; }
+      XF86AudioRaiseVolume allow-when-locked=true { spawn ${noctalia_prefix} "volume-up" "1"; }
+      XF86AudioLowerVolume allow-when-locked=true { spawn ${noctalia_prefix} "volume-down" "1"; }
+      XF86AudioMute allow-when-locked=true        { spawn ${noctalia_prefix} "volume-mute"; }
+      XF86AudioMicMute allow-when-locked=true     { spawn ${noctalia_prefix} "mic-mute"; }
 
       // Example brightness key mappings for brightnessctl.
-      XF86MonBrightnessUp allow-when-locked=true   { spawn ${noctalia_prefix} "brightness" "increase"; }
-      XF86MonBrightnessDown allow-when-locked=true { spawn ${noctalia_prefix} "brightness" "decrease"; }
+      XF86MonBrightnessUp allow-when-locked=true   { spawn ${noctalia_prefix} "brightness-up" "3"; }
+      XF86MonBrightnessDown allow-when-locked=true { spawn ${noctalia_prefix} "brightness-down" "3"; }
 
       // Keyboard Backlight
       XF86KbdBrightnessUp allow-when-locked=true   { spawn "brightnessctl" "--device=kbd_backlight" "set" "10%+"; }
       XF86KbdBrightnessDown allow-when-locked=true { spawn "brightnessctl" "--device=kbd_backlight" "set" "10%-"; }
 
       // Audio Play
-      XF86AudioPlay allow-when-locked=true { spawn ${noctalia_prefix} "media" "playPause"; }
+      XF86AudioPlay allow-when-locked=true { spawn ${noctalia_prefix} "media" "toggle"; }
       XF86AudioStop allow-when-locked=true { spawn ${noctalia_prefix} "media" "pause"; }
       XF86AudioPrev allow-when-locked=true { spawn ${noctalia_prefix} "media" "previous"; }
       XF86AudioNext allow-when-locked=true { spawn ${noctalia_prefix} "media" "next"; }

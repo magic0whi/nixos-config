@@ -1,5 +1,6 @@
+# GUI Shell
 {
-  lib,
+  config,
   const,
   pkgs,
   ...
@@ -14,252 +15,202 @@
     # Choose one
     QT_ENABLE_HIGHDPI_SCALING = 1;
     # QT_AUTO_SCREEN_SCALE_FACTOR = 1;
-
-    # QT_QPA_PLATFORM = "wayland;xcb"; # Qt6: wayland primary, xcb fallback
-    # QT_QPA_PLATFORMTHEME = "qt6ct";
   };
 
-  # Launcher usage, notifications and last-seen changelog (shell-state.json etc.)
-  home.persistence."/persistent".directories = [ ".cache/noctalia" ];
+  # Launcher usage, clipboard/notification history, community palettes and the
+  # Settings UI overrides (settings.toml, loaded after config.toml and wins)
+  home.persistence."/persistent".directories = [ ".local/state/noctalia" ];
 
-  programs.noctalia-shell = {
+  # https://docs.noctalia.dev/noctalia/configuration/
+  # Defaults: https://github.com/noctalia-dev/noctalia/blob/v5.5.0/example.toml
+  # TIP: to adjust `noctalia msg config-set widget.taskbar.icon_scale 0.9`
+  # NOTE: Clean-up: rm ~/.local/state/noctalia/settings.toml
+  programs.noctalia = {
     enable = true;
     settings = {
-      appLauncher = {
-        customLaunchPrefixEnabled = true;
-        customLaunchPrefix = "systemd-run --user --scope -- ";
-        enableClipboardHistory = true;
-        iconMode = "native"; # Use system icon intead of default "tabler" icon
-        showIconBackground = true;
-        terminalCommand = "xdg-terminal-exec --";
-      };
-      audio = {
-        volumeStep = 1;
-      };
-      bar = {
-        backgroundOpacity = 0.2;
-        density = "comfortable";
-        hideOnOverview = true;
-        marginHorizontal = 5;
-        marginVertical = 5;
-        useSeparateOpacity = true;
-        widgets = {
-          left = [
-            {
-              id = "Launcher";
-            }
-            {
-              id = "Clock";
-            }
-            {
-              id = "SystemMonitor";
-              compactMode = false;
-              showCpuUsage = true;
-              showCpuTemp = false;
-              showDiskUsage = true;
-              diskPath = "/persistent";
-              # showGpuTemp = false;
-              showLoadAverage = true;
-              showMemoryAsPercent = true;
-              showNetworkStats = true;
-            }
-            { id = "ActiveWindow"; }
-            {
-              "id" = "MediaMini";
-              showAlbumArt = false;
-              maxWidth = 500;
-            }
-          ];
-          center = [
-            {
-              id = "Workspace";
-              showApplications = true;
-              showApplicationsHover = true;
-            }
-          ];
-          right = [
-            { id = "NotificationHistory"; }
-            {
-              id = "Battery";
-              displayMode = "icon-always";
-              showNoctaliaPerformance = true;
-              showPowerProfiles = true;
-            }
-            {
-              id = "Volume";
-              displayMode = "alwaysShow";
-            }
-            {
-              id = "Brightness";
-              displayMode = "alwaysShow";
-            }
-            {
-              id = "Tray";
-              colorizeIcons = false; # Default true. Disable to let applications use their builtin icon color
-              pinned = [
-                "tray-id" # Sunthine
-                "udiskie"
-                "virt-manager"
-              ];
-            }
-            {
-              id = "ControlCenter";
-              useDistroLogo = true;
-            }
-          ];
-        };
-      };
-      brightness = {
-        brightnessStep = 3;
-        enableDdcSupport = true;
-      };
-      colorSchemes.useWallpaperColors = true;
-      controlCenter = {
-        cards = [
-          { id = "profile-card"; }
-          { id = "shortcuts-card"; }
-          { id = "audio-card"; }
-          { id = "brightness-card"; } # enable, default false
-          { id = "weather-card"; }
-          { id = "media-sysmon-card"; }
-        ];
-        diskPath = "/persistent";
-      };
-      desktopWidgets = {
-        enabled = true;
-        gridSnap = true;
-        monitorWidgets = [
-          {
-            name = "DP-3";
-            widgets = [
+      shell = {
+        # TODO: v5 takes a local path; v4 used
+        # https://misc.s3-pub.proteus.eu.org/siameseemoji_agadmqeaaspumeu.png
+        # avatar_path = "~/.face";
+        # State is persisted, but keep the first-run wizard off on fresh installs
+        setup_wizard_enabled = false;
+        launch_apps_custom_command = "systemd-run --user --scope -- $CMD";
+        panel.transparency_mode = "soft";
+        screenshot.directory = "~/Pictures/Screenshots";
+        # Session menu: an explicit list replaces the default five actions
+        session = {
+          grid = true;
+          actions =
+            let
+              countdown_seconds = 10;
+            in
+            [
               {
-                id = "Clock";
-                clockStyle = "digital";
-                customFont = "";
-                format = ''HH =mm\nd MMMM yyyy'';
-                roundedCorners = true;
-                scale = 0.7378548922663623;
-                showBackground = true;
-                useCustomFont = false;
-                usePrimaryColor = false;
-                x = 92;
-                y = 161;
+                action = "lock";
+                shortcut = "1";
               }
               {
-                id = "MediaPlayer";
-                hideMode = "visible";
-                roundedCorners = true;
-                scale = 1.1501312913284876;
-                showAlbumArt = true;
-                showBackground = true;
-                showButtons = true;
-                showVisualizer = true;
-                visualizerType = "linear";
-                x = 92;
-                y = 299;
+                action = "suspend";
+                shortcut = "2";
+                inherit countdown_seconds;
               }
               {
-                id = "Weather";
-                scale = 1.339282355295889;
-                showBackground = true;
-                x = 230;
-                y = 161;
+                action = "command";
+                label = "Hibernate";
+                glyph = "zzz";
+                command = "systemctl hibernate";
+                shortcut = "3";
+                inherit countdown_seconds;
+              }
+              {
+                action = "reboot";
+                shortcut = "4";
+                inherit countdown_seconds;
+              }
+              {
+                action = "logout";
+                shortcut = "5";
+                inherit countdown_seconds;
+              }
+              {
+                action = "shutdown";
+                shortcut = "6";
+                variant = "destructive";
+                inherit countdown_seconds;
+              }
+              {
+                action = "reboot_uefi";
+                shortcut = "7";
+                inherit countdown_seconds;
               }
             ];
-          }
-        ];
+        };
       };
-      dock.enabled = false;
-      general.avatarImage = "https://misc.s3-pub.proteus.eu.org/siameseemoji_agadmqeaaspumeu.png";
-      # TODO this would let user cannot unlock with loginctl unlock-session ID
-      # hooks = {
-      #   enabled = true;
-      #   screenLock = "${pkgs.writeShellScript "lock-seat" ''
-      #     SESSION_ID=$(loginctl -j list-sessions | jq -r --arg user "$USER" '.[] | select(.class == "user" and .seat != null and .user == $user) | .session')
-      #     dbus-send --system --print-reply --dest=org.freedesktop.login1 \
-      #       /org/freedesktop/login1/session/$SESSION_ID \
-      #       org.freedesktop.login1.Session.SetLockedHint boolean:true
-      #   ''}";
-      # };
-      location = {
-        autoLocate = false;
-        name = const.city;
-      };
-      nightLight = {
-        enabled = true;
-        nightTemp = 2700;
-        # manualSunrise = "06:30";
-        # manualSunset = "18:30";
-      };
-      osd.enabledTypes = [
-        0
-        1
-        2
-        3
-      ];
-      sessionMenu = {
-        largeButtonsLayout = "grid";
-        powerOptions = [
-          {
-            action = "lock";
-            enabled = true;
-            keybind = "1";
-          }
-          {
-            action = "suspend";
-            countdownEnabled = true;
-            enabled = true;
-            keybind = "2";
-          }
-          {
-            action = "hibernate";
-            countdownEnabled = true;
-            enabled = true;
-            keybind = "3";
-          }
-          {
-            action = "reboot";
-            countdownEnabled = true;
-            enabled = true;
-            keybind = "4";
-          }
-          {
-            action = "logout";
-            countdownEnabled = true;
-            enabled = true;
-            keybind = "5";
-          }
-          {
-            action = "shutdown";
-            countdownEnabled = true;
-            enabled = true;
-            keybind = "6";
-          }
-          {
-            action = "rebootToUefi";
-            countdownEnabled = true;
-            enabled = true;
-            keybind = "7";
-          }
-        ];
-      };
-      systemMonitor.cpuCriticalThreshold = 95; # Hot Intel
-      ui.panelBackgroundOpacity = 0.85;
+
       wallpaper = {
-        automationEnabled = true;
-        # directory = "${config.home.homeDirectory}/Pictures/Wallpapers";
-        overviewEnabled = true;
-        randomIntervalSec = 600;
-        viewMode = "recursive";
+        directory = "${config.home.homeDirectory}/Pictures/Wallpapers";
+        automation = {
+          enabled = true;
+          interval_seconds = 600;
+          recursive = true;
+        };
       };
-    };
-    plugins.sources = lib.singleton {
-      enabled = true;
-      name = "Official Noctalia Plugins";
-      url = "https://github.com/noctalia-dev/noctalia-plugins";
+      # Blurred wallpaper in niri's overview, see the `noctalia-backdrop` layer-rule in ./niri/noctalia.nix
+      backdrop.enabled = true;
+
+      theme.source = "wallpaper";
+
+      location = {
+        auto_locate = false;
+        address = const.city;
+      };
+      weather.enabled = true;
+      nightlight = {
+        enabled = true;
+        temperature_night = 2700;
+      };
+
+      brightness.enable_ddcutil = true;
+
+      idle.behavior = {
+        lock = {
+          enabled = true;
+          timeout = 600; # 10min
+          action = "lock";
+        };
+        screen-off = {
+          enabled = true;
+          timeout = 630; # 10.5min
+          action = "screen_off";
+        };
+      };
+
+      system.monitor.cpu_usage_critical_threshold = 95; # Hot Intel
+
+      dock.enabled = false;
+
+      bar.main = {
+        background_opacity = 0.8; # Shadow alpha is multiplied by this, too transparent leaves the bar shadowless
+        margin_ends = 5;
+        margin_edge = 2;
+        padding = 3;
+        capsule = true;
+        scale = 1.1;
+        start = [
+          "launcher"
+          "clock"
+          "cpu"
+          "ram"
+          "disk"
+          "net_rx"
+          "net_tx"
+          "media"
+          "active_window"
+        ];
+        center = [ "taskbar" ];
+        end = [
+          "notifications"
+          "battery"
+          "volume"
+          "brightness"
+          "tray"
+          "control-center"
+        ];
+      };
+
+      widget = {
+        cpu = {
+          type = "sysmon";
+          stat = "cpu_usage";
+        };
+        ram = {
+          type = "sysmon";
+          stat = "ram_pct";
+        };
+        disk = {
+          type = "sysmon";
+          stat = "disk_used_pct";
+          path = "/persistent";
+        };
+        net_rx = {
+          type = "sysmon";
+          stat = "net_rx";
+          network_speed_compact = true;
+        };
+        net_tx = {
+          type = "sysmon";
+          stat = "net_tx";
+          network_speed_compact = true;
+        };
+        media = {
+          hide_album_art = true;
+          max_length = 500;
+          hide_when_no_media = true;
+        };
+        taskbar = {
+          group_by_workspace = true;
+          workspace_group_content = "icons";
+          group_single_icon_per_app = true;
+          hide_empty_workspaces = true;
+          label_source = "id";
+          # Icons are clamped to the cross space left inside capsules, and `scale`
+          # also grows the paddings (shrinking icons). Workspace groups draw their
+          # own capsules, so drop the bar's outer one and size via icon_scale
+          capsule = false;
+        };
+        tray = {
+          colorize_icons = false; # Let applications use their builtin icon color
+          drawer = true;
+          pinned = [
+            "Fcitx"
+            "Feishin"
+            "Syncthing Tray"
+          ];
+        };
+        control-center.custom_image = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
+      };
     };
   };
 
-  # recoding screen
-  home.packages = [ pkgs.gpu-screen-recorder ];
+  home.packages = [ pkgs.gpu-screen-recorder ]; # recoding screen
 }

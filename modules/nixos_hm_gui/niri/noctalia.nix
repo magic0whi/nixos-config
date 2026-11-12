@@ -1,17 +1,23 @@
 {
-  # https://docs.noctalia.dev/v4/getting-started/compositor-settings/niri/
+  # https://docs.noctalia.dev/noctalia/compositor-settings/niri/
   wayland.windowManager.niri.extraConfig = ''
     // =========================== noctalia.kdl ===============================
-    // Noctalia: use niri spawn-at-startup (systemd user service is deprecated upstream).
-    // https://docs.noctalia.dev/getting-started/compositor-settings/niri/
-    spawn-at-startup "noctalia-shell"
+    spawn-at-startup "noctalia"
+
+    // Floating Noctalia settings window.
+    window-rule {
+      match app-id="dev.noctalia.Noctalia"
+      open-floating true
+      default-column-width { fixed 1080; }
+      default-window-height { fixed 920; }
+    }
 
     // Allows notification actions and window activation from Noctalia.
     debug { honor-xdg-activation-with-invalid-serial; }
 
-    // Set the overview wallpaper on the backdrop.
+    // Blurred overview wallpaper, requires `backdrop.enabled` in Noctalia.
     layer-rule {
-      match namespace="^noctalia-overview*"
+      match namespace="^noctalia-backdrop"
       place-within-backdrop true
     }
     // ========================================================================
