@@ -35,17 +35,17 @@ let
         ''
       ];
     }
-    # # Web browsers - open in workspace 2
-    # {
-    #   action = ''
-    #     open-on-workspace "2browser"
-    #     open-maximized true
-    #   '';
-    #   matches = [
-    #     ''match app-id="firefox"''
-    #     ''match app-id="google-chrome"''
-    #   ];
-    # }
+    # Web browsers - open in workspace 2
+    {
+      action = ''
+        open-on-workspace "2browser"
+        // open-maximized true
+      '';
+      matches = [
+        ''match app-id="firefox"''
+        ''match app-id="google-chrome"''
+      ];
+    }
     # Video Picture-in-Picture, placed after the web browser rule to override its open-maximized
     {
       action = ''
