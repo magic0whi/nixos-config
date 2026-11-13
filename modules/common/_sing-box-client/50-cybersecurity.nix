@@ -22,6 +22,7 @@ let
         "medallia.com" # Medallia: customer feedback surveys & experience analytics
         "online-metrix.net" # LexisNexis ThreatMetrix: device fingerprinting & fraud scoring
         "zimperium.com" # Zimperium: mobile threat defense / app anti-tamper SDK
+        "cloudfront.com" # AWS CDN
       ];
     }
     {
