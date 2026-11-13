@@ -1,3 +1,4 @@
+# TODO use a dedicated dataset, as data on garage already compressed
 { config, const, ... }:
 {
   sops.secrets =
