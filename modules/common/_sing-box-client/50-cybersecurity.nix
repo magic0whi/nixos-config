@@ -18,17 +18,21 @@ let
     {
       domain_suffix = [
         "awswaf.com" # AWS WAF: bot-control challenge / token SDK
+        "braze-images.com" # Braze: in-app message image CDN
+        "braze.com" # Braze: marketing & push SDK (stores IP-derived location)
+        "cloudfront.com" # AWS CDN
         "eum-appdynamics.com" # Cisco AppDynamics: app performance monitoring
+        "launchdarkly.com" # LaunchDarkly: feature flags (may gate app features, don't block)
         "medallia.com" # Medallia: customer feedback surveys & experience analytics
         "online-metrix.net" # LexisNexis ThreatMetrix: device fingerprinting & fraud scoring
         "zimperium.com" # Zimperium: mobile threat defense / app anti-tamper SDK
-        "cloudfront.com" # AWS CDN
       ];
     }
     {
       rule_set = [
         "geosite-cloudflare"
         "geosite-hcaptcha"
+        "geosite-intercom" # Intercom (in-app help/messenger SDK)
       ];
     }
   ];
@@ -84,6 +88,13 @@ in
           // {
             tag = "geosite-hcaptcha";
             url = "${urlPrefix}/geo/geosite/hcaptcha.srs";
+          }
+        )
+        (
+          defaultCfg
+          // {
+            tag = "geosite-intercom";
+            url = "${urlPrefix}/geo/geosite/intercom.srs";
           }
         )
       ];
