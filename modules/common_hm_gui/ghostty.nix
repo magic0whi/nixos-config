@@ -19,7 +19,7 @@
         ];
 
         font-family = const.monospace.name;
-        font-size = 14;
+        font-size = 12;
 
         scrollback-limit = 20000;
 
