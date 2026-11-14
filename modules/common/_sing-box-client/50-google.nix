@@ -10,7 +10,7 @@
 let
   pri = 0.50;
   fakeip_pri = pri * (2000 - const.sb.dnsFakeIpPri) + const.sb.dnsFakeIpPri;
-  no_sniff_pri = pri * const.sb.routeSniffPri;
+  # no_sniff_pri = pri * const.sb.routeSniffPri;
   sniff_pri = pri * (2000 - const.sb.routeSniffPri) + const.sb.routeSniffPri;
 
   out = "Google";
@@ -45,7 +45,11 @@ in
         mkSbRules = mylib.mkSbRules false;
       in
       lib.mkMerge [
-        (lib.mkOrder no_sniff_pri (mkSbRules out [ { rule_set = [ "geoip-google" ]; } ]))
+        (lib.mkOrder
+          # no_sniff_pri
+          sniff_pri
+          (mkSbRules out [ { rule_set = [ "geoip-google" ]; } ])
+        )
         (lib.mkOrder sniff_pri (mkSbRules out rules))
       ];
     rule_set =
