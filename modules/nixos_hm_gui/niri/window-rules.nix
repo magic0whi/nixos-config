@@ -25,12 +25,11 @@ let
       action = ''
         open-on-workspace "1terminal"
         // open-maximized true
-        background-effect { blur true; }
+        // background-effect { blur true; }
       '';
       matches = [
-        ''match app-id="Alacritty"''
         ''
-          // Ghostty native blur via ext-background-effect coming in v1.4; use compositor-side blur until then
+          // Ghostty 1.4 has native blur via ext-background-effect
           match app-id="com.mitchellh.ghostty"
         ''
       ];

@@ -36,7 +36,6 @@
     extraPackages = with pkgs; [
       ripdrag
       trash-cli
-      ueberzugpp
     ];
     keymap = {
       mgr.prepend_keymap = [

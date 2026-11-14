@@ -113,10 +113,7 @@
       enable = true;
       settings = {
         # rg -L '(GenericName=Terminal)|(Keywords=.*terminal.*)' /run/current-system/etc/profiles/per-user/proteus/share/applications/
-        default = [
-          "Alacritty.desktop"
-          "com.mitchellh.ghostty.desktop"
-        ];
+        default = [ "com.mitchellh.ghostty.desktop" ];
       };
     };
   };

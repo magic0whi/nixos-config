@@ -165,7 +165,6 @@
             "${gui}/misc.nix"
             "${gui}/ghostty.nix"
             "${gui}/packages.nix"
-            "${gui}/alacritty.nix"
             "${gui}/pdf-reader.nix"
           ];
       };

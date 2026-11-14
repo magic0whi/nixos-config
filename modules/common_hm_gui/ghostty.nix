@@ -17,15 +17,18 @@
           "alt+left=unbind"
           "alt+right=unbind"
         ];
+
         font-family = const.monospace.name;
         font-size = 14;
+
         scrollback-limit = 20000;
+
+        background-opacity = 0.93;
+        background-blur = true;
       }
       # Options that only available on macOS
       (lib.optionalAttrs pkgs.stdenv.hostPlatform.isDarwin {
         macos-option-as-alt = "left";
-        background-opacity = 0.93;
-        background-blur = true;
       })
     ];
   };

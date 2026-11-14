@@ -71,7 +71,7 @@ let
           "${commonHmHeadless}/shell.nix"
           "${commonHmHeadless}/zellij.nix"
 
-          "${commonHmGui}/alacritty.nix"
+          "${commonHmGui}/ghostty.nix"
           "${commonHmGui}/misc.nix"
           "${commonHmGui}/packages.nix"
 
