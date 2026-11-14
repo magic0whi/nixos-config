@@ -20,7 +20,7 @@ in
 {
   dns.rules = lib.mkMerge [
     (lib.mkOrder realip_pri (mylib.mkSbRules true out rules))
-    (lib.mkOrder (0.51 * const.sb.dnsFakeIpPri) (
+    (lib.mkOrder ((pri + 0.01) * const.sb.dnsFakeIpPri) (
       lib.optionals (config.services.sing-box.settings.dns.final != "Direct") [
         {
           action = "evaluate";
