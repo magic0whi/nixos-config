@@ -13,7 +13,16 @@ let
   sniff_pri = pri * (2000 - const.sb.routeSniffPri) + const.sb.routeSniffPri;
 
   out = "AdsAndTelemetry";
-  rules = [ { rule_set = [ "geosite-ads-and-telemetry" ]; } ];
+  rules = [
+    {
+      domain_suffix = [
+        "datadoghq.com" # Datadog: RUM / logs / crash reports
+        "browser-intake-datadoghq.eu" # Datadog EU RUM / logs intake
+        "mixpanel.com" # product analytics
+      ];
+    }
+    { rule_set = [ "geosite-ads-and-telemetry" ]; }
+  ];
 in
 {
   dns = {
