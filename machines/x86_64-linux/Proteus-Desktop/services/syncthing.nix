@@ -47,7 +47,14 @@ in
         Documents.path = "${prefix}/Documents";
         Statistics.path = "${prefix}/Statistics";
         Games.path = "${prefix}/Games";
-        KeePassXC.path = "${prefix}/KeePassXC";
+        KeePassXC = {
+          path = "${prefix}/KeePassXC";
+          # Keep old copies of the DB when a peer overwrites it (e.g. a truncated save)
+          versioning = {
+            type = "staggered";
+            params.maxAge = toString (90 * 24 * 3600); # In seconds (90 days)
+          };
+        };
         Pictures.path = "${prefix}/Pictures";
         Projects.path = "${prefix}/Projects";
       };
