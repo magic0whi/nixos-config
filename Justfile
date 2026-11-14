@@ -101,7 +101,7 @@ verify-store:
 # Repair Nix Store Objects
 [group('nix')]
 repair-store *paths:
-    nix store repair {{ paths }}
+    sudo nix store repair --store local {{ paths }}
 
 ##############################################################
 #
