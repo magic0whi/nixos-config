@@ -100,6 +100,8 @@ lib.mkMerge (
               clash_mode = "direct";
             }
           ])
+          # The fake IP is mapped back to the domain before routing, the domain rules in `route.rules` pick the region
+          # outbound, and the exit node resolves the domain. This also makes domain matching on server side possible.
           (lib.mkOrder const.sb.dnsFakeIpPri [
             {
               server = "FakeIP";
@@ -113,8 +115,8 @@ lib.mkMerge (
       };
       experimental = {
         cache_file = {
-          enabled = true;
-          store_fakeip = true;
+          enabled = true; # Keep downloaded rule-sets across restarts
+          store_fakeip = true; # Keep FakeIP mapping across restart
           store_dns = true;
         };
         clash_api = {

@@ -73,9 +73,10 @@ rec {
   ];
 
   sb = {
+    # DNS rules ordered before this get real IPs; rules ordered after it only see non-A/AAAA queries
     dnsFakeIpPri = 0.20 * 2000;
     # NOTE: domain match rules should AFTER the sniff rule
-    routeSniffPri = 0.20 * 2000;
+    routeSniffPri = 0.19 * 2000;
     ruleSetCfg = {
       urlPrefix = "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing";
       defaultCfg = {
