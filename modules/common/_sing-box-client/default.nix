@@ -57,6 +57,8 @@ lib.mkMerge (
       };
       dns = {
         final = if isRouter then "Direct" else "Default";
+        # Let real-IP connections without SNI (e.g. SSH to proxy nodes) still match domain rules
+        reverse_mapping = isRouter;
         servers = lib.mkOrder (0.1 * 2000) [
           {
             tag = "FakeIP";
