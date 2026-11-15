@@ -1,12 +1,14 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 {
   sops.secrets = {
     mcp_context7_key = { };
     mcp_github_key = { };
+    mcp_forgejo_access_token = { };
   };
 
   programs.zsh.initContent = lib.mkAfter (
@@ -31,6 +33,16 @@
       github = {
         url = "https://api.githubcopilot.com/mcp";
         headers.Authorization = "Bearer {env:MCP_GITHUB_KEY}";
+      };
+      forgejo = {
+        command = "${lib.getExe pkgs.forgejo-mcp}";
+        args = [
+          "--transport"
+          "stdio"
+          "--url"
+          "https://git.proteus.eu.org/"
+        ];
+        env.FORGEJO_ACCESS_TOKEN.file = config.sops.secrets.mcp_forgejo_access_token.path;
       };
     };
   };

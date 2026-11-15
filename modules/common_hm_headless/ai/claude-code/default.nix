@@ -21,22 +21,23 @@
     enable = true;
     enableMcpIntegration = true;
     context = ../AGENTS.md; # ~/.claude/CLAUDE.md
-    # Claude Code only expands ${VAR} in .mcp.json headers (not {env:VAR}),
-    # so override the shared remote headers from programs.mcp.servers here;
-    # these entries replace the shared ones (merge is per-server, Claude Code
-    # takes precedence). Secrets stay out of the Nix store via runtime expansion.
-    # mcpServers = {
-    #   context7 = {
-    #     type = "http";
-    #     url = "https://mcp.context7.com/mcp";
-    #     headers.CONTEXT7_API_KEY = "\${CONTEXT7_API_KEY}";
-    #   };
-    #   github = {
-    #     type = "http";
-    #     url = "https://api.githubcopilot.com/mcp";
-    #     headers.Authorization = "Bearer \${GITHUB_MCP_PAT}";
-    #   };
-    # };
+    # Claude Code only expands ${VAR} in .mcp.json headers (not the shared
+    # {env:VAR} syntax from ../mcp.nix), so override the shared remote headers
+    # here; these entries replace the shared ones (merge is per-server, Claude
+    # Code takes precedence). Secrets stay out of the Nix store via runtime
+    # expansion; the vars themselves are exported in ../mcp.nix.
+    mcpServers = {
+      context7 = {
+        type = "http";
+        url = "https://mcp.context7.com/mcp";
+        headers.CONTEXT7_API_KEY = "\${MCP_CONTEXT7_KEY}";
+      };
+      github = {
+        type = "http";
+        url = "https://api.githubcopilot.com/mcp";
+        headers.Authorization = "Bearer \${MCP_GITHUB_KEY}";
+      };
+    };
     # ~/.claude/settings.json
     settings = {
       model = "opus";
