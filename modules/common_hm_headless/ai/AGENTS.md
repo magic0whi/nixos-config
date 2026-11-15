@@ -1,10 +1,11 @@
 # Global preferences
 
 <!--
-  NOTE: This file is managed by nixos-config (home-manager `programs.claude-code.context`).
-  Do NOT edit ~/.claude/CLAUDE.md directly — it is a read-only symlink into the nix store
-  and changes will be overwritten. Edit
-  `modules/common_hm_headless/claude-code/CLAUDE.md` in nixos-config and rebuild instead.
+  NOTE: This file is managed by nixos-config and shared with agentic coding
+  tools (Claude Code, OpenCode, ...). Do NOT edit the deployed copies (e.g.
+  ~/.claude/CLAUDE.md or ~/.config/opencode/AGENTS.md) directly — they are
+  generated from the nix store and changes will be overwritten. Edit in
+  nixos-config and rebuild instead.
 -->
 
 ## Tooling
@@ -17,9 +18,9 @@
 
 - **User uses nix.** If a needed tool/command is missing or the dev environment isn't
   ready (e.g. `command not found`), do NOT try to install it globally or work around it.
-  Instead, remind the user to **exit Claude and run the appropriate nix dev shell**, e.g.
+  Instead, remind the user to **exit the agent and run the appropriate nix dev shell**, e.g.
   `nix develop github:magic0whi/dev-flake#node` (swap `#node` for the relevant devshell),
-  then restart Claude inside it.
+  then restart the agent inside it.
 - **direnv uses its own cache.** If a project's direnv env seems stale/broken, refresh the
   flake cache first, not just reload:
   `nix flake metadata --refresh github:magic0whi/dev-flake && direnv reload`.
