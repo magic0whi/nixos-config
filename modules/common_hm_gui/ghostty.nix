@@ -17,6 +17,8 @@
           "alt+left=unbind"
           "alt+right=unbind"
           "ctrl+enter=unbind" # toggle_fullscreen is annoying on NixOS
+          "ctrl+tab=unbind" # Conflicts with OpenCode
+          "ctrl+shift+tab=unbind"
         ];
 
         font-family = const.monospace.name;
