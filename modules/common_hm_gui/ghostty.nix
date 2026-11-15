@@ -16,6 +16,7 @@
         keybind = [
           "alt+left=unbind"
           "alt+right=unbind"
+          "ctrl+enter=unbind" # toggle_fullscreen is annoying on NixOS
         ];
 
         font-family = const.monospace.name;
