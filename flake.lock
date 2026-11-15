@@ -682,6 +682,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-opencode": {
+      "locked": {
+        "lastModified": 1794696265,
+        "narHash": "sha256-XTPDQjHdIXowTMrC19TzG2jHIQoZb3+uZR1lVuWRYAw=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "97e1a088c8eea4b04750beee9eb5b26d990aa1d6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "97e1a088c8eea4b04750beee9eb5b26d990aa1d6",
+        "type": "github"
+      }
+    },
     "nixpkgs-regression": {
       "locked": {
         "lastModified": 1643052045,
@@ -852,6 +868,7 @@
         "nixos-hardware": "nixos-hardware",
         "nixpak": "nixpak",
         "nixpkgs": "nixpkgs_2",
+        "nixpkgs-opencode": "nixpkgs-opencode",
         "nixvim": "nixvim",
         "noctalia": "noctalia",
         "noctalia-greeter": "noctalia-greeter",
