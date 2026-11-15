@@ -14,11 +14,17 @@ let
 
   out = "AI";
   rules = [
-    { domain = "gspe1-ssl.ls.apple.com"; }
+    {
+      domain = [
+        "gspe1-ssl.ls.apple.com"
+        "api-siri-prod.apple.com"
+      ];
+    }
     {
       rule_set = [
         "geosite-anthropic"
         "geosite-apple-intelligence"
+        "geosite-icloudprivaterelay"
         "geosite-bing"
         "geosite-github-copilot" # NOTE: must before Microsoft rules
         "geosite-openai"
@@ -57,6 +63,10 @@ in
         {
           tag = "geosite-anthropic";
           url = "${urlPrefix}/geo/geosite/anthropic.srs";
+        }
+        {
+          tag = "geosite-icloudprivaterelay";
+          url = "${urlPrefix}/geo/geosite/icloudprivaterelay.srs";
         }
         {
           tag = "geosite-apple-intelligence";
