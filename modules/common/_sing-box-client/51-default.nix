@@ -18,6 +18,9 @@ let
       domain_suffix = [
         "redteago.com"
         "shuzijumin.com"
+
+        "braze-images.com" # Braze: in-app message image CDN
+        "cloudfront.com" # AWS CDN
       ];
     }
     { rule_set = [ "geosite-gfw" ]; }
