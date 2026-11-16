@@ -36,6 +36,7 @@
           services = "modules/services";
         in
         map mylib.relativeToRoot [
+          "${services}/authelia-online.nix"
           "${services}/garage.nix"
           "${services}/prometheus-exporters.nix"
           "${services}/sing-box.nix"

@@ -131,8 +131,14 @@ in
   };
 
   systemd.services.${config.virtualisation.oci-containers.containers.garage-ui.serviceName} = {
-    wants = [ "ldap-online.service" ];
-    after = [ "ldap-online.service" ];
+    wants = [
+      "ldap-online.service"
+      "authelia-online.service"
+    ];
+    after = [
+      "ldap-online.service"
+      "authelia-online.service"
+    ];
   };
 
   services.traefik.dynamicConfigOptions.http = {
