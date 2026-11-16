@@ -189,7 +189,7 @@ in
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
               home-manager.users."${const.username}".imports =
-                hmModules ++ lib.optional (builtins.pathExists "${machinePath}/_hm") "${machinePath}/_hm";
+                hmModules ++ lib.optional (builtins.pathExists (machinePath + "/_hm")) (machinePath + "/_hm");
             }
           ]);
       };
