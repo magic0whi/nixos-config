@@ -1,6 +1,7 @@
 {
   machineConfigs,
   mylib,
+  mypkg,
   const,
   features,
   nixpkgs,
@@ -18,6 +19,7 @@ let
             inherit
               name
               mylib
+              mypkg
               const
               machineConfigs
               ;

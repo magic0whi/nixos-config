@@ -2,6 +2,7 @@
   config,
   const,
   lib,
+  mypkg,
   pkgs,
   ...
 }:
@@ -18,24 +19,15 @@ in
       "${pkgs.writeShellScript "fetch-authelia-token" ''
         set -euo pipefail
 
-        echo "Fetching fresh token from Authelia via client_credentials..." >&2
-
-        # `audience=niks3` Explicitly request the audience, otherwise you will get `"aud": []`
-        RESPONSE="$(${pkgs.curl}/bin/curl -fsX POST \
-          -H 'Content-Type: application/x-www-form-urlencoded' \
-          -u "niks3:$(<${config.sops.secrets.niks3_client_secret.path})" \
-          -d 'grant_type=client_credentials' \
-          -d 'scope=authelia.bearer.authz' \
-          -d 'audience=niks3' \
-          'https://auth.${const.domain}/api/oidc/token')"
-
         umask 077
         mkdir -p ${runtimeDir}
-        printf '%s' "$RESPONSE" | ${pkgs.jq}/bin/jq -er '.access_token' > ${config.services.niks3-auto-upload.authTokenFile}
-        unset RESPONSE
 
-        echo "Bearer token retrieve successfully." >&2
-
+        ${lib.getExe mypkg.fetch-authelia-token} \
+          --client-id niks3 \
+          --client-secret-file ${lib.escapeShellArg config.sops.secrets.niks3_client_secret.path} \
+          --audience niks3 \
+          --domain ${lib.escapeShellArg const.domain} \
+          > ${lib.escapeShellArg config.services.niks3-auto-upload.authTokenFile}
 
         exec "$@"
       ''}"

@@ -7,15 +7,21 @@
 }:
 let
   ## BEGIN Functions
+  mk_mypkg = pkgs: import ./pkgs { inherit pkgs; };
   # The args given to machines
   mk_machine_args =
     system:
     let
       pkgs = inputs.nixpkgs.legacyPackages.${system};
+      mypkg = mk_mypkg pkgs;
     in
     inputs
     // {
-      inherit lib system;
+      inherit
+        lib
+        system
+        mypkg
+        ;
 
       const = import ./const {
         inherit
@@ -85,7 +91,7 @@ in
           ;
         args = mk_machine_args system;
       };
-      packages = nixos_machines.${system}.packages or { };
+      packages = (nixos_machines.${system}.packages or { }) // (mk_mypkg inputs.nixpkgs.legacyPackages.${system});
       checks = inputs.deploy-rs.lib.${system}.deployChecks (
         self.deploy
         // {

@@ -1,5 +1,6 @@
 {
   mylib,
+  mypkg,
   const,
   machineConfigs,
   features,
@@ -17,6 +18,7 @@ let
       inherit
         name
         mylib
+        mypkg
         const
         machineConfigs
         ;

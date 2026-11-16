@@ -153,6 +153,7 @@ in
         name,
         machineConfigs ? (throw "Are you forget to import `machineConfigs` in the machine's apex config?"),
         mylib,
+        mypkg,
         const,
         machinePath,
         system ? pkgs.stdenv.hostPlatform.system,
@@ -163,7 +164,12 @@ in
       }:
       let
         special_args = {
-          inherit machineConfigs mylib const;
+          inherit
+            machineConfigs
+            mylib
+            mypkg
+            const
+            ;
         }
         // specialArgs;
       in

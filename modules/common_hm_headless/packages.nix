@@ -1,6 +1,7 @@
 {
   deploy-rs,
   lib,
+  mypkg,
   pkgs,
   ...
 }:
@@ -100,5 +101,17 @@
         [ pkgs.deploy-rs ]
       else
         [ deploy-rs.packages.${pkgs.stdenv.hostPlatform.system}.deploy-rs ]
-    );
+    )
+    ++ (with mypkg; [
+      flatten-symlinks # Replace symlinks to from `/nix/store` to editable files for debugging
+
+      rge # Search and open editor
+
+      # Search and stitch files
+      rgsti
+      fdsti
+
+      # Export GPG primary key and subkeys
+      export-gpg-keys
+    ]);
 }

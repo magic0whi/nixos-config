@@ -1,6 +1,7 @@
 {
   lib,
   mylib,
+  mypkg,
   const,
   nixos-hardware,
   nixpkgs,
@@ -33,6 +34,7 @@ let
       inherit
         name
         mylib
+        mypkg
         const
         ;
       modules =
@@ -73,6 +75,7 @@ let
       inherit
         name
         mylib
+        mypkg
         const
         ;
       machinePath = ./.;

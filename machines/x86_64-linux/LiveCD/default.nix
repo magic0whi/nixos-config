@@ -1,5 +1,6 @@
 {
   mylib,
+  mypkg,
   const,
   features,
 
@@ -16,6 +17,7 @@ let
       inherit
         name
         mylib
+        mypkg
         const
         ;
       machinePath = ./.;

@@ -1,6 +1,7 @@
 {
   machineConfigs,
   mylib,
+  mypkg,
   const,
   features,
 
@@ -20,6 +21,7 @@ let
         name
         machineConfigs
         mylib
+        mypkg
         ;
       machinePath = ./.;
       const = const // {

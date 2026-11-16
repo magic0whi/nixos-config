@@ -135,7 +135,6 @@
             catppuccin.homeModules.catppuccin
           ]
           ++ map mylib.relativeToRoot [
-            "${headless}/custom-scripts.nix"
             "${headless}/helix.nix"
             "${headless}/misc.nix"
             "${headless}/shell.nix"

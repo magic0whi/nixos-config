@@ -2,6 +2,7 @@
   config,
   const,
   lib,
+  mypkg,
   pkgs,
   ...
 }:
@@ -41,18 +42,13 @@
           pkgs.writeShellScript "firecrawl-mcp-authelia" ''
             set -euo pipefail
 
-            echo "Fetching fresh token from Authelia via client_credentials..." >&2
-
-            RESPONSE="$(${pkgs.curl}/bin/curl -fsX POST \
-                -H 'Content-Type: application/x-www-form-urlencoded' \
-                -u "firecrawl-mcp:$(<${config.sops.secrets.firecrawl_mcp_oidc_client_secret.path})" \
-                -d 'grant_type=client_credentials' \
-                -d 'scope=authelia.bearer.authz' \
-                -d 'audience=https://firecrawl.${const.domain}' \
-                'https://auth.${const.domain}/api/oidc/token')"
-
-            export FIRECRAWL_API_KEY="$(printf '%s' "$RESPONSE" | ${pkgs.jq}/bin/jq -er '.access_token')"
-            unset RESPONSE
+            export FIRECRAWL_API_KEY="$(
+              ${lib.getExe mypkg.fetch-authelia-token} \
+                --client-id firecrawl-mcp \
+                --client-secret-file ${lib.escapeShellArg config.sops.secrets.firecrawl_mcp_oidc_client_secret.path} \
+                --audience ${lib.escapeShellArg "https://firecrawl.${const.domain}"} \
+                --domain ${lib.escapeShellArg const.domain}
+            )"
 
             exec ${lib.getExe pkgs.firecrawl-mcp}
           ''

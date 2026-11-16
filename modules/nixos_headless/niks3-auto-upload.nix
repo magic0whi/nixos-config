@@ -1,6 +1,8 @@
 {
   config,
   const,
+  lib,
+  mypkg,
   pkgs,
   ...
 }:
@@ -15,19 +17,12 @@
       "+${pkgs.writeShellScript "fetch-authelia-token" ''
         set -euo pipefail
 
-        echo "Fetching fresh token from Authelia via client_credentials..." >&2
-
-        RESPONSE="$(${pkgs.curl}/bin/curl -fsX POST \
-          -H 'Content-Type: application/x-www-form-urlencoded' \
-          -u "niks3:$(<${config.sops.secrets.niks3_client_secret.path})" \
-          -d 'grant_type=client_credentials' \
-          -d 'scope=authelia.bearer.authz' \
-          -d 'audience=niks3' \
-          'https://auth.${const.domain}/api/oidc/token')"
-
-        printf '%s' "$RESPONSE" | ${pkgs.jq}/bin/jq -er '.access_token' > $RUNTIME_DIRECTORY/niks3-oidc-token
-
-        echo "Bearer token retrieve successfully." >&2
+        ${lib.getExe mypkg.fetch-authelia-token} \
+          --client-id niks3 \
+          --client-secret-file ${lib.escapeShellArg config.sops.secrets.niks3_client_secret.path} \
+          --audience niks3 \
+          --domain ${lib.escapeShellArg const.domain} \
+          > "$RUNTIME_DIRECTORY/niks3-oidc-token"
 
         chown --reference=$RUNTIME_DIRECTORY $RUNTIME_DIRECTORY/niks3-oidc-token
       ''}"
