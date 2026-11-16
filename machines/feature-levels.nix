@@ -163,6 +163,7 @@
             "${headless}/nvim"
             "${headless}/cloud-providers.nix"
 
+            "${gui}/anki.nix"
             "${gui}/mpv.nix"
             "${gui}/misc.nix"
             "${gui}/ghostty.nix"
