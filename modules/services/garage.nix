@@ -130,6 +130,11 @@ in
     ];
   };
 
+  systemd.services.${config.virtualisation.oci-containers.containers.garage-ui.serviceName} = {
+    wants = [ "ldap-online.service" ];
+    after = [ "ldap-online.service" ];
+  };
+
   services.traefik.dynamicConfigOptions.http = {
     routers = {
       s3 = {
