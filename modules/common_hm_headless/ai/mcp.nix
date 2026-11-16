@@ -46,7 +46,7 @@
               ${lib.getExe mypkg.fetch-authelia-token} \
                 --client-id firecrawl-mcp \
                 --client-secret-file ${lib.escapeShellArg config.sops.secrets.firecrawl_mcp_oidc_client_secret.path} \
-                --audience ${lib.escapeShellArg "https://firecrawl.${const.domain}"} \
+                --resource ${lib.escapeShellArg "https://firecrawl.${const.domain}"} \
                 --domain ${lib.escapeShellArg const.domain}
             )"
 

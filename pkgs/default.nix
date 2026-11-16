@@ -11,7 +11,15 @@
         local client_id="$1"
         local client_secret_file="$2"
         local audience="$3"
-        local domain="$4"
+        local resource="$4"
+        local domain="$5"
+
+        local -a grant_args=()
+        if [[ -n "$resource" ]]; then
+          grant_args+=(-d "resource=$resource")
+        else
+          grant_args+=(-d "audience=$audience")
+        fi
 
         echo "Fetching fresh token from Authelia via client_credentials..." >&2
 
@@ -20,7 +28,7 @@
           -u "$client_id:$(<"$client_secret_file")" \
           -d 'grant_type=client_credentials' \
           -d 'scope=authelia.bearer.authz' \
-          -d "audience=$audience" \
+          "''${grant_args[@]}" \
           "https://auth.$domain/api/oidc/token" \
           | jq -er '.access_token'
 
@@ -28,13 +36,16 @@
       }
 
       usage() {
-        echo "Usage: $(basename "$0") --client-id ID --client-secret-file FILE --audience AUDIENCE --domain DOMAIN" >&2
-        echo "Values may also be supplied with AUTHELIA_CLIENT_ID, AUTHELIA_CLIENT_SECRET_FILE, AUTHELIA_AUDIENCE, and AUTHELIA_DOMAIN." >&2
+        echo "Usage: $(basename "$0") --client-id ID --client-secret-file FILE (--audience AUDIENCE | --resource RESOURCE) --domain DOMAIN" >&2
+        echo "Values may also be supplied with AUTHELIA_CLIENT_ID, AUTHELIA_CLIENT_SECRET_FILE, AUTHELIA_AUDIENCE, AUTHELIA_RESOURCE, and AUTHELIA_DOMAIN." >&2
+        echo "Use --resource for forward-auth protected URLs: since Authelia 4.39.21" >&2
+        echo "audiences match exactly (path included), while resources allow path prefixes." >&2
       }
 
       client_id="''${AUTHELIA_CLIENT_ID:-}"
       client_secret_file="''${AUTHELIA_CLIENT_SECRET_FILE:-}"
       audience="''${AUTHELIA_AUDIENCE:-}"
+      resource="''${AUTHELIA_RESOURCE:-}"
       domain="''${AUTHELIA_DOMAIN:-}"
 
       while (($# > 0)); do
@@ -49,6 +60,10 @@
             ;;
           --audience)
             audience="$2"
+            shift 2
+            ;;
+          --resource)
+            resource="$2"
             shift 2
             ;;
           --domain)
@@ -68,10 +83,18 @@
 
       : "''${client_id:?client ID is required}"
       : "''${client_secret_file:?client secret file is required}"
-      : "''${audience:?audience is required}"
       : "''${domain:?domain is required}"
 
-      fetch_authelia_token "$client_id" "$client_secret_file" "$audience" "$domain"
+      if [[ -n "$audience" && -n "$resource" ]]; then
+        echo "--audience and --resource are mutually exclusive" >&2
+        exit 2
+      fi
+      if [[ -z "$audience" && -z "$resource" ]]; then
+        echo "one of --audience or --resource is required" >&2
+        exit 2
+      fi
+
+      fetch_authelia_token "$client_id" "$client_secret_file" "$audience" "$resource" "$domain"
     '';
   };
 
