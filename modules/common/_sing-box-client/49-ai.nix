@@ -18,6 +18,7 @@ let
       domain = [
         "gspe1-ssl.ls.apple.com"
         "api-siri-prod.apple.com"
+        "opencode.ai"
       ];
     }
     {
