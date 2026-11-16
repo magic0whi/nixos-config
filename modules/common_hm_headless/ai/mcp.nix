@@ -1,5 +1,6 @@
 {
   config,
+  const,
   lib,
   pkgs,
   ...
@@ -34,7 +35,12 @@
         url = "https://api.githubcopilot.com/mcp";
         headers.Authorization = "Bearer {env:MCP_GITHUB_KEY}";
       };
-      firecrawl.url = "https://mcp.firecrawl.dev/v2/mcp";
+      # Self-hosted Firecrawl (Proteus-Desktop). No API key needed because the
+      # instance runs with USE_DB_AUTHENTICATION=false.
+      firecrawl = {
+        command = lib.getExe pkgs.firecrawl-mcp;
+        env.FIRECRAWL_API_URL = "https://firecrawl.${const.domain}";
+      };
       forgejo = {
         command = "${lib.getExe pkgs.forgejo-mcp}";
         args = [
