@@ -92,19 +92,24 @@ in
           POSTGRES_PORT = "5432";
           USE_DB_AUTHENTICATION = "false";
 
-          NUM_WORKERS_PER_QUEUE = "8";
-          CRAWL_CONCURRENT_REQUESTS = "10";
-          MAX_CONCURRENT_JOBS = "5";
-          BROWSER_POOL_SIZE = "5";
+          # Firecrawl stops accepting jobs once host-wide usage passes these fractions.
+          # Defaults are 0.8, and this host idles around 0.8, which stalled every worker.
+          MAX_RAM = "0.95";
+          MAX_CPU = "0.95";
+
+          NUM_WORKERS_PER_QUEUE = "2";
+          CRAWL_CONCURRENT_REQUESTS = "4";
+          MAX_CONCURRENT_JOBS = "2";
+          BROWSER_POOL_SIZE = "2";
         };
         dependsOn = map (lib.removePrefix "docker-") dep_svcs;
         extraOptions = [
           "--network=${network}"
           "--add-host=host.docker.internal:host-gateway"
           "--ulimit=nofile=65535:65535"
-          "--cpus=4.0"
-          "--memory=8g"
-          "--memory-swap=8g"
+          "--cpus=3.0"
+          "--memory=6g"
+          "--memory-swap=6g"
         ];
       }
     ];
@@ -116,7 +121,7 @@ in
         environment = {
           PORT = "3000";
           # BLOCK_MEDIA = "true"; # Block image metadata, screenshots, or media URLs from scrape
-          MAX_CONCURRENT_PAGES = "10";
+          MAX_CONCURRENT_PAGES = "4";
         };
         extraOptions = [
           "--network=${network}"
@@ -124,9 +129,9 @@ in
           "--security-opt=no-new-privileges"
           "--cap-drop=ALL"
           "--tmpfs=/tmp/.cache:noexec,nosuid,size=1g"
-          "--cpus=2.0"
-          "--memory=4g"
-          "--memory-swap=4g"
+          "--cpus=1.5"
+          "--memory=3g"
+          "--memory-swap=3g"
         ];
       }
     ];
