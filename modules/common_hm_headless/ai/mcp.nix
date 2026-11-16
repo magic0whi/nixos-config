@@ -34,6 +34,7 @@
         url = "https://api.githubcopilot.com/mcp";
         headers.Authorization = "Bearer {env:MCP_GITHUB_KEY}";
       };
+      firecrawl.url = "https://mcp.firecrawl.dev/v2/mcp";
       forgejo = {
         command = "${lib.getExe pkgs.forgejo-mcp}";
         args = [
