@@ -76,6 +76,21 @@ in
             read = "120s";
             write = "120s";
           };
+          # Ref: https://www.authelia.com/integration/openid-connect/oauth-2.0-bearer-token-usage/#authorization-endpoint-configuration
+          endpoints.authz.forward-auth = {
+            implementation = "ForwardAuth";
+            authn_strategies = [
+              {
+                name = "HeaderAuthorization";
+                # Default: [ Basic ]
+                schemes = [
+                  "Basic"
+                  "Bearer"
+                ];
+              }
+              { name = "CookieSession"; }
+            ];
+          };
         };
         # Default: https://www.authelia.com/reference/guides/proxy-authorization/#default-endpoints
         # Config Ref: https://www.authelia.com/configuration/miscellaneous/server-endpoints-authz/#schemes
@@ -153,6 +168,12 @@ in
               policy = "one_factor";
               domain_regex = ''^admin-api.*\.garage\.${lib.escapeRegex const.domain}$'';
               resources = [ "^/metrics$" ];
+            }
+            {
+              policy = "one_factor";
+              domain = "firecrawl.${const.domain}";
+              # Ref: https://www.authelia.com/integration/openid-connect/oauth-2.0-bearer-token-usage/#access-control-configuration
+              subject = [ [ "oauth2:client:firecrawl-mcp" ] ];
             }
             {
               policy = "one_factor";

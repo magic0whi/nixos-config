@@ -35,6 +35,8 @@ let
   };
 in
 {
+  vars.forwardAuthServices = [ "firecrawl" ];
+
   vars.hostAddrs.${hostname}.easytier.subdomains = {
     A = [ "firecrawl" ];
     AAAA = [ "firecrawl" ];
@@ -194,28 +196,14 @@ in
     )
   );
 
-  services.traefik.dynamicConfigOptions.http =
-    let
-      internalRanges = [
-        "127.0.0.1/32"
-        "10.0.0.0/8"
-        "172.16.0.0/12"
-        "192.168.0.0/16"
-        "::1/128"
-        "fd00::/8"
-      ];
-    in
-    {
-      middlewares.firecrawl-internal.ipAllowList.sourceRange = internalRanges;
-      routers.firecrawl = {
-        rule = "Host(`firecrawl.${const.domain}`)";
-        entryPoints = [ "websecure" ];
-        middlewares = [ "firecrawl-internal" ];
-        service = "firecrawl";
-        tls = { };
-      };
-      services.firecrawl.loadBalancer.servers = lib.singleton {
-        url = "http://127.0.0.1:${api_port}";
-      };
+  services.traefik.dynamicConfigOptions.http = {
+    routers.firecrawl = {
+      rule = "Host(`firecrawl.${const.domain}`)";
+      entryPoints = [ "websecure" ];
+      middlewares = [ "authelia-auth" ];
+      service = "firecrawl";
+      tls = { };
     };
+    services.firecrawl.loadBalancer.servers = [ { url = "http://127.0.0.1:${api_port}"; } ];
+  };
 }

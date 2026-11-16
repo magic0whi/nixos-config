@@ -10,6 +10,7 @@
     mcp_context7_key = { };
     mcp_github_key = { };
     mcp_forgejo_access_token = { };
+    firecrawl_mcp_oidc_client_secret.sopsFile = "${const.secretsDir}/common.sops.yaml";
   };
 
   programs.zsh.initContent = lib.mkAfter (
@@ -35,10 +36,27 @@
         url = "https://api.githubcopilot.com/mcp";
         headers.Authorization = "Bearer {env:MCP_GITHUB_KEY}";
       };
-      # Self-hosted Firecrawl (Proteus-Desktop). No API key needed because the
-      # instance runs with USE_DB_AUTHENTICATION=false.
       firecrawl = {
-        command = lib.getExe pkgs.firecrawl-mcp;
+        command = toString (
+          pkgs.writeShellScript "firecrawl-mcp-authelia" ''
+            set -euo pipefail
+
+            echo "Fetching fresh token from Authelia via client_credentials..." >&2
+
+            RESPONSE="$(${pkgs.curl}/bin/curl -fsX POST \
+                -H 'Content-Type: application/x-www-form-urlencoded' \
+                -u "firecrawl-mcp:$(<${config.sops.secrets.firecrawl_mcp_oidc_client_secret.path})" \
+                -d 'grant_type=client_credentials' \
+                -d 'scope=authelia.bearer.authz' \
+                -d 'audience=https://firecrawl.${const.domain}' \
+                'https://auth.${const.domain}/api/oidc/token')"
+
+            export FIRECRAWL_API_KEY="$(printf '%s' "$RESPONSE" | ${pkgs.jq}/bin/jq -er '.access_token')"
+            unset RESPONSE
+
+            exec ${lib.getExe pkgs.firecrawl-mcp}
+          ''
+        );
         env.FIRECRAWL_API_URL = "https://firecrawl.${const.domain}";
       };
       forgejo = {

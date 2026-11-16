@@ -20,15 +20,22 @@ in
 
         echo "Fetching fresh token from Authelia via client_credentials..." >&2
 
-        RESPONSE=$("${pkgs.curl}/bin/curl" -s -X POST "https://auth.${const.domain}/api/oidc/token" \
-          -H "Content-Type: application/x-www-form-urlencoded" \
-          -u "niks3_yajuusexnpai:$(cat ${config.sops.secrets.niks3_client_secret_yajuusexnpai.path})" \
-          -d "grant_type=client_credentials" \
-          -d "audience=niks3") # Explicitly request the audience, otherwise you will get `"aud": []`
+        # `audience=niks3` Explicitly request the audience, otherwise you will get `"aud": []`
+        RESPONSE="$(${pkgs.curl}/bin/curl -fsX POST \
+          -H 'Content-Type: application/x-www-form-urlencoded' \
+          -u "niks3:$(<${config.sops.secrets.niks3_client_secret.path})" \
+          -d 'grant_type=client_credentials' \
+          -d 'scope=authelia.bearer.authz' \
+          -d 'audience=niks3' \
+          'https://auth.${const.domain}/api/oidc/token')"
 
         umask 077
         mkdir -p ${runtimeDir}
-        echo "$RESPONSE" | ${pkgs.jq}/bin/jq -r '.access_token // empty' > ${config.services.niks3-auto-upload.authTokenFile}
+        printf '%s' "$RESPONSE" | ${pkgs.jq}/bin/jq -er '.access_token' > ${config.services.niks3-auto-upload.authTokenFile}
+        unset RESPONSE
+
+        echo "Bearer token retrieve successfully." >&2
+
 
         exec "$@"
       ''}"

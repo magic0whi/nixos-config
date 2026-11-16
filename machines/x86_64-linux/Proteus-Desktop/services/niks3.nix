@@ -82,7 +82,7 @@ in
     oidc.providers.authelia = {
       issuer = "https://auth.${const.domain}";
       audience = "niks3";
-      boundClaims.client_id = [ "niks3_yajuusexnpai" ];
+      boundClaims.client_id = [ "niks3" ];
       # We cannot modify to GitHub OIDC Subject Format:
       # identity_providers: oidc: claims_policies: niks3_git_info: custom_claims: claim with name 'sub' can't be used in a claims policy as it's a standard claim
     };
