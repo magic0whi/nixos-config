@@ -9,5 +9,6 @@
     enable = true;
     enableMcpIntegration = true;
     context = builtins.readFile ./AGENTS.md;
+    skills.git-commit = ./_skills/git-commit;
   };
 }

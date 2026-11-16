@@ -25,6 +25,17 @@
   flake cache first, not just reload:
   `nix flake metadata --refresh github:magic0whi/dev-flake && direnv reload`.
 
+## Git
+
+- **Commit messages: propose, don't execute.** When the user asks for help writing git
+  commit messages (or splitting changes into commits), only inspect the repo and propose
+  messages plus a split plan. Never run `git commit` (`git cm`), `git push`, `git amend` (`git ame`), or any
+  history-rewriting command unless the user explicitly asks to execute. Use the `git-commit`
+  skill for the full workflow.
+- **Conventional commits.** Default to `type(scope): subject` (feat, fix, chore, refactor,
+  docs, test, ci, build). Imperative mood, ~50 char target, 72 max. Keep lockfile changes
+  with the change that caused them. Include `Co-authored-by: <agent-name> <agent-email>` trailer when work is mostly done with AI.
+
 ## CLI tools (prefer these modern replacements)
 
 The user's nixos-config installs these; default to them in commands/suggestions instead
