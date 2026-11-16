@@ -110,6 +110,10 @@ renders results in the browser:
 
 - `firecrawl_scrape` with `formats: ["markdown"]`, `onlyMainContent: true`,
   `waitFor: 3000`, `maxAge: 0` returns the rendered result list and details.
+- Always pass `skipTlsVerification: true` for the local mirror. It serves a certificate
+  from a private CA, and Firecrawl's Chromium ignores the system CA bundle that the API
+  container trusts, so without this flag every HTML scrape fails with
+  `SCRAPE_ALL_ENGINES_FAILED` (HTTP 500).
 - For structured output, use `formats: ["json"]` with a schema such as
   `{"option": "string", "type": "string", "default": "string", "description": "string"}`
   and a prompt like "Extract the selected option's name, type, default, and description."
@@ -128,12 +132,16 @@ Example scrape (use the host chosen by the health check):
   "formats": ["markdown"],
   "onlyMainContent": true,
   "waitFor": 3000,
-  "maxAge": 0
+  "maxAge": 0,
+  "skipTlsVerification": true
 }
 ```
 
 If Firecrawl fails (401, outage), degrade gracefully: give the user the link and say the
 page could not be rendered. Never invent an option's type, default, or description.
+
+Empty or truncated markdown is usually the same certificate problem, not a missing option:
+retry with `skipTlsVerification: true` before concluding there are no results.
 
 ## Notes
 

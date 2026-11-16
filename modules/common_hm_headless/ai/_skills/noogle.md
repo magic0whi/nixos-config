@@ -92,6 +92,10 @@ matches:
 - `firecrawl_scrape` with `formats: ["markdown"]`, `onlyMainContent: true`,
   `waitFor: 3000`, `maxAge: 0` returns the rendered result cards (name, signature,
   description, source links).
+- Always pass `skipTlsVerification: true` for the local mirror. Its certificate comes from
+  a private CA that Firecrawl's Chromium does not trust (the API container's CA bundle is
+  not used by the browser), and the failure is silent: the scrape succeeds with an almost
+  empty result instead of an error.
 - For structured output, use `formats: ["json"]` with a schema such as
 
   ```json
@@ -118,12 +122,17 @@ Example scrape (use the host chosen by the health check):
   "formats": ["markdown"],
   "onlyMainContent": true,
   "waitFor": 3000,
-  "maxAge": 0
+  "maxAge": 0,
+  "skipTlsVerification": true
 }
 ```
 
 If Firecrawl fails (401, outage), degrade gracefully: give the user the link and say the
 page could not be rendered. Never invent a function name or signature.
+
+If the markdown is nearly empty (a few characters), that is the certificate failure mode
+described above, not "no matches": retry with `skipTlsVerification: true` before
+reporting that nothing was found.
 
 ## Notes
 
