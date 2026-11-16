@@ -49,8 +49,11 @@ Follow the repo's convention (default: Conventional Commits).
   running system touched, option semantics changed). At most 2 sentences / 40 words, each naming
   an effect, not a motive. Never list files, counts, or how the problem was found.
 - Trailers: place at the bottom of the commit message separated by a blank line.
-  - Add `Co-authored-by: <agent-name> <agent-email>` when the work/changes were mostly done with AI
-    (e.g. `Co-authored-by: OpenCode <noreply@opencode.ai>` or your agent's equivalent).
+  - Add `Co-authored-by: <agent-name> (<model-name>) <agent-email>` when the work/changes were
+    mostly done with AI, naming the model that produced the changes
+    (e.g. `Co-authored-by: OpenCode (DeepSeek V4.1 Flash 1017) <noreply@opencode.ai>`).
+  - Use the exact model name reported by the harness; if several models contributed, list them
+    in the parenthetical (e.g. `(<model-a>, <model-b>)`).
   - Other trailers (`Fixes:`, `Refs:`, `BREAKING CHANGE:`) only if the repo uses them.
 - Don't invent reasons; if a motivation is unclear, ask the user.
 
@@ -88,5 +91,6 @@ If the user approves and asks to commit:
 
 - Don't commit, push, amend, rebase, reset, or stash without explicit instruction.
 - Don't write bodies that restate the diff.
-- Don't omit AI co-author trailers (`Co-authored-by: <agent-name> <agent-email>`) when the work was mostly done with AI.
+- Don't omit AI co-author trailers (`Co-authored-by: <agent-name> (<model-name>) <agent-email>`)
+  when the work was mostly done with AI.
 - Don't guess package versions, issue numbers, or ticket IDs.
