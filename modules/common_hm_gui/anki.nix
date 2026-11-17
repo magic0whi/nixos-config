@@ -96,6 +96,66 @@ in
         }
       )
 
+      # 124672614
+      (pkgs.anki-utils.buildAnkiAddon (finalAttrs: {
+        pname = "anki-mcp-server";
+        version = "0.41.1";
+
+        # Upstream publishes the add-on with its Python dependencies vendored
+        # (mcp 1.30, pydantic 2.13, ...). nixpkgs only has mcp 2.x, which is not
+        # API-compatible, so package the release asset as-is. Its single native
+        # dependency (pydantic_core) is downloaded at first start into
+        # ~/.local/share/Anki2/ankimcp/anki-mcp-server/cache.
+        src = pkgs.fetchurl {
+          name = "anki_mcp_server-${finalAttrs.version}.zip";
+          url = "https://github.com/ankimcp/anki-mcp-server-addon/releases/download/v${finalAttrs.version}/anki_mcp_server.ankiaddon";
+          hash = "sha256-SBYQhxjDdJuN9HSe0Wb+iCXQoODGJWq+mfojx9I6ylg=";
+        };
+
+        nativeBuildInputs = [ pkgs.unzip ];
+
+        # The release asset is a plain zip with no top-level directory.
+        unpackPhase = ''
+          runHook preUnpack
+          mkdir source
+          unzip -q "$src" -d source
+          cd source
+          runHook postUnpack
+        '';
+
+        # The add-on keeps its credentials, log and user files in "user_files"
+        # next to its own modules, which is read-only in the Nix store. Point
+        # them at the persisted Anki data directory instead.
+        #
+        # Saving settings from the add-on's UI would rewrite meta.json in the
+        # store, so make that a no-op: configuration is set here in Nix.
+        postPatch = ''
+          substituteInPlace __init__.py \
+            --replace-fail \
+            'user_files_dir=Path(__file__).parent / "user_files",' \
+            'user_files_dir=Path.home() / ".local/share/Anki2/ankimcp",'
+          substituteInPlace credentials.py \
+            --replace-fail \
+            'CREDENTIALS_DIR: Path = Path(__file__).resolve().parent / "user_files"' \
+            'CREDENTIALS_DIR: Path = Path.home() / ".local/share/Anki2/ankimcp"'
+          substituteInPlace diagnostics_section.py \
+            --replace-fail \
+            '_USER_FILES_DIR = Path(__file__).resolve().parent / "user_files"' \
+            '_USER_FILES_DIR = Path.home() / ".local/share/Anki2/ankimcp"'
+          substituteInPlace config.py \
+            --replace-fail \
+            'mw.addonManager.writeConfig(self._addon_name, config.to_dict())' \
+            'pass  # config is managed by Nix; meta.json would land in the read-only store'
+        '';
+
+        meta = {
+          description = "Anki MCP Server - AI assistant integration";
+          homepage = "https://ankiweb.net/shared/info/124672614";
+          downloadPage = "https://github.com/ankimcp/anki-mcp-server-addon";
+          license = lib.licenses.agpl3Plus;
+        };
+      }))
+
       # NOTE: Jlab (2110939339) has no public source
     ];
 

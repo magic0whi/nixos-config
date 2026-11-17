@@ -14,6 +14,12 @@
   `npm install <pkg>`, `pnpm install` instead of `npm install`. Applies to every
   project unless that project explicitly requires a different package manager.
 
+## MCP servers
+
+- **Anki tools need Anki running.** The `anki` MCP server is served by the
+  `anki-mcp-server` add-on at `http://127.0.0.1:3141/`. If its tools are
+  unavailable, ask the user to start Anki and reload the MCP connection.
+
 ## Dev environment (nix)
 
 - **User uses nix.** If a needed tool/command is missing or the dev environment isn't

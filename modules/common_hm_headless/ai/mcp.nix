@@ -37,6 +37,7 @@
         url = "https://api.githubcopilot.com/mcp";
         headers.Authorization = "Bearer {env:MCP_GITHUB_KEY}";
       };
+      anki.url = "http://127.0.0.1:3141/";
       firecrawl = {
         command = toString (
           pkgs.writeShellScript "firecrawl-mcp-authelia" ''
