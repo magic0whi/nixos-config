@@ -113,20 +113,9 @@ in
       PAPERLESS_DBNAME = config.services.paperless.user;
       PAPERLESS_DBUSER = config.services.paperless.user;
 
-      # https://tesseract-ocr.github.io/tessdoc/Data-Files-in-different-versions.html
-      PAPERLESS_OCR_LANGUAGES = "chi-sim chi-tra";
-      PAPERLESS_OCR_LANGUAGE = "chi_sim+chi_tra+eng";
-      # https://dateparser.readthedocs.io/en/latest/supported_locales.html
-      PAPERLESS_DATE_PARSER_LANGUAGES = "en+zh+zh-Hant";
-      PAPERLESS_FILENAME_DATE_ORDER = "MDY"; # Check the document filename for date information
-
       PAPERLESS_ADMIN_USER = const.username;
       PAPERLESS_USE_X_FORWARD_HOST = true;
       PAPERLESS_USE_X_FORWARD_PORT = true;
-
-      APERLESS_WEBSERVER_WORKERS = 16;
-      PAPERLESS_WORKER_TIMEOUT = 300; # Default 1800 seconds (30min) is too long
-      PAPERLESS_FILENAME_FORMAT = "{{ created_year }}/{{ correspondent }}/{{ document_type }}/{{ title }}";
 
       # Enable OIDC
       REQUESTS_CA_BUNDLE = config.security.pki.caBundle;
@@ -136,8 +125,29 @@ in
       PAPERLESS_DISABLE_REGULAR_LOGIN = true; # Disable Paperless' login
       PAPERLESS_REDIRECT_LOGIN_TO_SSO = true; # Auto-redirect to Authelia, bypassing the Paperless login screen
 
+      # https://tesseract-ocr.github.io/tessdoc/Data-Files-in-different-versions.html
+      PAPERLESS_OCR_LANGUAGE = "chi_sim+chi_tra+eng";
+      # NOTE: PAPERLESS_OCR_LANGUAGES (download extra fonts) is docker-only, no-op here
+      PAPERLESS_OCR_ROTATE_PAGES_THRESHOLD = 8; # default 12; phone photos under-rotate
+      PAPERLESS_OCR_USER_ARGS.optimize = 1; # downsample 600 dpi pages in the archive
+
+      # https://dateparser.readthedocs.io/en/latest/supported_locales.html
+      PAPERLESS_DATE_PARSER_LANGUAGES = "en+zh+zh-Hant";
+      PAPERLESS_FILENAME_DATE_ORDER = "MDY"; # Check the document filename for date information
+
+      PAPERLESS_WEBSERVER_WORKERS = 4;
+      PAPERLESS_WORKER_TIMEOUT = 600; # Default 1800 seconds (30min) is too long
+      PAPERLESS_FILENAME_FORMAT = "{{ created_year }}/{{ correspondent }}/{{ document_type }}/{{ title }}";
+
       # Paperless-ngx 3.0 allows duplicate documents to be consumed by default except when this setting is enabled
       PAPERLESS_CONSUMER_DELETE_DUPLICATES = true;
+
+      # TODO: evaluate remote OCR (Azure AI); needs a sops secret for the key:
+      #   PAPERLESS_REMOTE_OCR_ENGINE = "azureai";
+      #   PAPERLESS_REMOTE_OCR_API_KEY = <sops secret>;
+      #   PAPERLESS_REMOTE_OCR_ENDPOINT = "https://<resource>.cognitiveservices.azure.com/";
+      #   PAPERLESS_REMOTE_OCR_MODE = "workflow_only"; # opt in per workflow
+
     };
     environmentFile = config.sops.templates."paperless.env".path;
     # dataDir = "/srv/paperless";
