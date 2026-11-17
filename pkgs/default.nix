@@ -132,6 +132,8 @@
     '';
   };
 
+  paperless-mcp = pkgs.callPackage ./paperless-mcp { };
+
   rge = pkgs.writeShellApplication {
     name = "rge";
     runtimeInputs = with pkgs; [

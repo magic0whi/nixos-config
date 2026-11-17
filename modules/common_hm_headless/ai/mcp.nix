@@ -11,6 +11,7 @@
     mcp_context7_key = { };
     mcp_github_key = { };
     mcp_forgejo_access_token = { };
+    mcp_paperless_api_key = { };
     firecrawl_mcp_oidc_client_secret.sopsFile = "${const.secretsDir}/common.sops.yaml";
   };
 
@@ -65,6 +66,20 @@
           "https://git.proteus.eu.org/"
         ];
         env.FORGEJO_ACCESS_TOKEN.file = config.sops.secrets.mcp_forgejo_access_token.path;
+      };
+      paperless = {
+        command = lib.getExe mypkg.paperless-mcp;
+        env = {
+          PAPERLESS_URL = "https://paperless.${const.domain}";
+          PAPERLESS_PUBLIC_URL = "https://paperless.${const.domain}";
+          PAPERLESS_API_KEY.file = config.sops.secrets.mcp_paperless_api_key.path;
+          # Restrict filesystem-mode uploads via `post_document` (colon-separated)
+          PAPERLESS_MCP_UPLOAD_PATHS = lib.concatStringsSep ":" [
+            "${config.home.homeDirectory}/Downloads"
+            "${config.home.homeDirectory}/Documents"
+            "/tmp"
+          ];
+        };
       };
     };
   };
