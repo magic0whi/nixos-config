@@ -89,20 +89,6 @@ nix-repl> (builtins.elemAt _DEBUG.nixos_systems.x86_64-linux._DEBUG.machines 1).
 "Proteus-NUC"
 ```
 
-## AI Disclosure
-
-Current AIGC has limitations: https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing#Language_and_grammar
-
-Currently I don't run vibe coding directly. I actively use AI chat to do research and always recheck.
-
-Through not frequently as now, I may:
-
-- use Claude Sonnet 4.6 to assist in
-  - Git messages
-- use Gemini 3.1 Pro to assist in
-  - Generate prototype
-  - Debugging
-
 ## References
 
 - [NixOS](https://nixos.org/)
