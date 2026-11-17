@@ -1,5 +1,12 @@
 {
-  home.persistence."/persistent".directories = [ ".cache/zellij" ]; # Keep resurrectable sessions
+  config,
+  mylib,
+  ...
+}:
+{
+  home.persistence."/persistent".directories = [
+    "${(mylib.xdgRelTo config.home.homeDirectory config.xdg).cacheHome}/zellij" # Keep resurrectable sessions
+  ];
 
   home.shellAliases."zj" = "zellij";
   programs.zellij = {

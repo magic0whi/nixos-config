@@ -2,11 +2,14 @@
   config,
   lib,
   const,
+  mylib,
   pkgs,
   ...
 }:
 {
-  home.persistence."/persistent".directories = [ ".cache/tealdeer" ];
+  home.persistence."/persistent".directories = [
+    "${(mylib.xdgRelTo config.home.homeDirectory config.xdg).cacheHome}/tealdeer"
+  ];
   home.packages = with pkgs; [
     # tlrc # Official tldr written in Rust
     tealdeer # tldr written in Rust

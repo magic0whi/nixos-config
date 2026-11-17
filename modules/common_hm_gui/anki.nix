@@ -129,24 +129,28 @@ in
         #
         # Saving settings from the add-on's UI would rewrite meta.json in the
         # store, so make that a no-op: configuration is set here in Nix.
-        postPatch = ''
-          substituteInPlace __init__.py \
-            --replace-fail \
-            'user_files_dir=Path(__file__).parent / "user_files",' \
-            'user_files_dir=Path.home() / ".local/share/Anki2/ankimcp",'
-          substituteInPlace credentials.py \
-            --replace-fail \
-            'CREDENTIALS_DIR: Path = Path(__file__).resolve().parent / "user_files"' \
-            'CREDENTIALS_DIR: Path = Path.home() / ".local/share/Anki2/ankimcp"'
-          substituteInPlace diagnostics_section.py \
-            --replace-fail \
-            '_USER_FILES_DIR = Path(__file__).resolve().parent / "user_files"' \
-            '_USER_FILES_DIR = Path.home() / ".local/share/Anki2/ankimcp"'
-          substituteInPlace config.py \
-            --replace-fail \
-            'mw.addonManager.writeConfig(self._addon_name, config.to_dict())' \
-            'pass  # config is managed by Nix; meta.json would land in the read-only store'
-        '';
+        postPatch =
+          let
+            path = "${config.xdg.dataHome}/Anki2/ankimcp";
+          in
+          ''
+            substituteInPlace __init__.py \
+              --replace-fail \
+              'user_files_dir=Path(__file__).parent / "user_files",' \
+              'user_files_dir=Path("${path}"),'
+            substituteInPlace credentials.py \
+              --replace-fail \
+              'CREDENTIALS_DIR: Path = Path(__file__).resolve().parent / "user_files"' \
+              'CREDENTIALS_DIR: Path = Path("${path}")'
+            substituteInPlace diagnostics_section.py \
+              --replace-fail \
+              '_USER_FILES_DIR = Path(__file__).resolve().parent / "user_files"' \
+              '_USER_FILES_DIR = Path("${path}")'
+            substituteInPlace config.py \
+              --replace-fail \
+              'mw.addonManager.writeConfig(self._addon_name, config.to_dict())' \
+              'pass  # config is managed by Nix; meta.json would land in the read-only store'
+          '';
 
         meta = {
           description = "Anki MCP Server - AI assistant integration";

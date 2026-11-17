@@ -2,6 +2,7 @@
   config,
   lib,
   const,
+  mylib,
   pkgs,
   ...
 }:
@@ -109,7 +110,14 @@
   ## BEGIN misc.nix
   programs.dconf.enable = true;
   # Persist app state (virt-manager, blueman, ...)
-  environment.persistence."/persistent".users.${const.username}.directories = [ ".config/dconf" ];
+  environment.persistence."/persistent".users.${const.username}.directories = [
+    "${
+      let
+        hm_cfg = config.home-manager.users.${const.username};
+      in
+      (mylib.xdgRelTo hm_cfg.home.homeDirectory hm_cfg.xdg).configHome
+    }/dconf"
+  ];
   services = {
     gvfs.enable = true; # Mount, trash, and other functionalities
     tumbler.enable = true; # Thumbnail support for images

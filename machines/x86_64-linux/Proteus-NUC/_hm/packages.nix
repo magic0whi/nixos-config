@@ -1,4 +1,9 @@
-{ pkgs, ... }:
+{
+  config,
+  mylib,
+  pkgs,
+  ...
+}:
 {
   home.packages = with pkgs; [
     (nvtopPackages.intel.override { nvidia = true; })
@@ -10,7 +15,9 @@
     witr
     intel-undervolt
   ];
-  home.persistence."/persistent".directories = [ ".config/libreoffice" ];
+  home.persistence."/persistent".directories = [
+    "${(mylib.xdgRelTo config.home.homeDirectory config.xdg).configHome}/libreoffice"
+  ];
   programs.antigravity-cli.enable = true;
   programs.obsidian.enable = true;
 }

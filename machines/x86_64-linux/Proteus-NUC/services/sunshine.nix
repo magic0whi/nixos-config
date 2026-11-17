@@ -2,6 +2,7 @@
   config,
   lib,
   const,
+  mylib,
   pkgs,
   ...
 }:
@@ -53,7 +54,14 @@ in
     '';
   };
 
-  environment.persistence."/persistent".users.${const.username}.directories = [ ".config/sunshine" ];
+  environment.persistence."/persistent".users.${const.username}.directories = [
+    "${
+      let
+        hm_cfg = config.home-manager.users.${const.username};
+      in
+      (mylib.xdgRelTo hm_cfg.home.homeDirectory hm_cfg.xdg).configHome
+    }/sunshine"
+  ];
 
   services.sunshine = {
     enable = true;

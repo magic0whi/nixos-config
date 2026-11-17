@@ -1,4 +1,10 @@
-{ lib, pkgs, ... }:
+{
+  config,
+  lib,
+  mylib,
+  pkgs,
+  ...
+}:
 {
   ## BEGIN peripherals.nix
   services.playerctld.enable = true; # playerctl
@@ -17,7 +23,7 @@
   ## BEGIN syncthing_tray.nix
   services.syncthing.tray.enable = true; # Only supports Linux platform
   home.persistence."/persistent".files = lib.singleton {
-    file = ".config/syncthingtray.ini";
+    file = "${(mylib.xdgRelTo config.home.homeDirectory config.xdg).configHome}/syncthingtray.ini";
     # QSettings saves via write-temp-then-rename, which fails on a bind-mounted file but follows a symlink
     method = "symlink";
   };

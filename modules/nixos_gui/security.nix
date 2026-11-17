@@ -1,6 +1,19 @@
-{ const, pkgs, ... }:
 {
-  environment.persistence."/persistent".users.${const.username}.directories = [ ".config/keepassxc" ];
+  config,
+  const,
+  mylib,
+  pkgs,
+  ...
+}:
+{
+  environment.persistence."/persistent".users.${const.username}.directories =
+    let
+      hm_cfg = config.home-manager.users.${const.username};
+      xdg = mylib.xdgRelTo hm_cfg.home.homeDirectory hm_cfg.xdg;
+    in
+    [
+      "${xdg.configHome}/keepassxc"
+    ];
   security.soteria.enable = true; # Polkit authentication agent
   # polkitd only reads actions from the system profile (`/run/current-system/sw/share/polkit-1/actions`), so the one
   # shipped by home-manager is invisible, which breaks KeePassXC's Quick Unlock ("Polkit authorisation failed").

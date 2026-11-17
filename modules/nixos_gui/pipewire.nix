@@ -1,6 +1,19 @@
-{ const, pkgs, ... }:
 {
-  environment.persistence."/persistent".users.${const.username}.directories = [ ".config/pulse" ];
+  config,
+  const,
+  mylib,
+  pkgs,
+  ...
+}:
+{
+  environment.persistence."/persistent".users.${const.username}.directories = [
+    "${
+      let
+        hm_cfg = config.home-manager.users.${const.username};
+      in
+      (mylib.xdgRelTo hm_cfg.home.homeDirectory hm_cfg.xdg).configHome
+    }/pulse"
+  ];
 
   environment.systemPackages = [
     pkgs.pulseaudio # Provides `pactl`, which is required by some apps (e.g. sonic-pi)

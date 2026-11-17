@@ -29,6 +29,21 @@ in
           (builtins.readDir path)
       )
     );
+
+  # `home.persistence` and `environment.persistence.*.users` entries are always resolved
+  # relative to the user's home directory, so an XDG path has to be rewritten that way
+  xdgRelTo =
+    homeDir: xdgCfg:
+    let
+      rel = lib.removePrefix "${toString homeDir}/";
+    in
+    {
+      configHome = rel xdgCfg.configHome;
+      dataHome = rel xdgCfg.dataHome;
+      cacheHome = rel xdgCfg.cacheHome;
+      stateHome = rel xdgCfg.stateHome;
+    };
+
   getUriPort =
     uri:
     let

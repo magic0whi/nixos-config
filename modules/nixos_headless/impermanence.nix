@@ -21,6 +21,7 @@
   config,
   lib,
   const,
+  mylib,
   ...
 }:
 let
@@ -44,26 +45,31 @@ in
     ];
     files = [ "/etc/machine-id" ];
 
-    users = lib.mkIf hm_enabled {
-      # The following directories will be passed to /persistent/home/$USER
-      ${const.username}.directories = [
-        {
-          directory = ".ssh";
-          mode = "0700";
-        }
-        ".pki"
+    users =
+      let
+        hm_cfg = config.home-manager.users.${const.username};
+        xdg = mylib.xdgRelTo hm_cfg.home.homeDirectory hm_cfg.xdg;
+      in
+      lib.mkIf hm_enabled {
+        # The following directories will be passed to /persistent/home/$USER
+        ${const.username}.directories = [
+          {
+            directory = ".ssh";
+            mode = "0700";
+          }
+          ".pki"
 
-        # TODO: Try emacs
-        # doom-emacs
-        # ".config/emacs"
+          # TODO: Try emacs
+          # doom-emacs
+          # ".config/emacs"
 
-        # neovim / flatpak / ...
-        # `$XDG_DATA_HOME/Trash` is usually `~/.local/share/Trash` and programs following
-        # freedesktop.org trash spec refuse to trash files that are not coverd by impermanence
-        ".local/share"
-        ".local/state"
-      ];
-      # files = [".wakatime.cfg"];
-    };
+          # neovim / flatpak / ...
+          # `$XDG_DATA_HOME/Trash` is usually `~/.local/share/Trash` and programs following
+          # freedesktop.org trash spec refuse to trash files that are not coverd by impermanence
+          xdg.dataHome
+          xdg.stateHome
+        ];
+        # files = [".wakatime.cfg"];
+      };
   };
 }

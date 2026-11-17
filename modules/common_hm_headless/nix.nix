@@ -5,7 +5,9 @@
   ...
 }:
 {
-  home.persistence."/persistent".directories = [ ".cache/nix" ]; # Keep flake input caches
+  home.persistence."/persistent".directories = [
+    "${(mylib.xdgRelTo config.home.homeDirectory config.xdg).cacheHome}/nix" # Keep flake input caches
+  ];
 
   xdg.configFile."nix/public.key".text = const.nixCache.publicKey;
   sops = {
