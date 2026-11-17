@@ -14,6 +14,16 @@
   `npm install <pkg>`, `pnpm install` instead of `npm install`. Applies to every
   project unless that project explicitly requires a different package manager.
 
+## Skills
+
+- **Load the matching skill before doing the task.** If a request matches an
+  available skill's description, load it first and follow its workflow instead
+  of answering from memory or improvising an equivalent approach.
+  - NixOS / Home Manager / nix-darwin option or nixpkgs package lookup → `nixos-search`
+  - Nix builtin / `lib` function lookup → `noogle`
+  - Commit message drafting or splitting commits → `git-commit`
+- If you deliberately skip an applicable skill, say so and why.
+
 ## MCP servers
 
 - **Anki tools need Anki running.** The `anki` MCP server is served by the
