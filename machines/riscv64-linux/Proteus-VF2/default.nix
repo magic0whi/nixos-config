@@ -12,7 +12,7 @@ let
   name = baseNameOf ./.;
   # TODO: import common modules here is bad practice, blacklist from
   # `const.features` instead
-  modules = map mylib.relativeToRoot [
+  modules = map mylib.relToRoot [
     "modules/variables"
     # "modules/common/easytier.nix"
     # "modules/common/misc.nix"

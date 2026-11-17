@@ -17,7 +17,7 @@ in
     map (rule: defCfg // rule) (if filterIPRule then builtins.filter ip_rule_filter rules else rules);
 
   # Use path relative to the root of the project
-  relativeToRoot = lib.path.append ../.;
+  relToRoot = lib.path.append ../.;
 
   scanPath =
     path:

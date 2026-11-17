@@ -44,7 +44,7 @@ in
   services.resolved.settings.Resolve.DNSStubListenerExtra = [ config.vars.hostAddrs.${hostname}.wire.ipv4NoCidr ]; # for split DNS
   # lib.mkForce to prevent merge
   services.sing-box.settings = lib.mkForce (
-    import (mylib.relativeToRoot "modules/common/_sing-box-client") {
+    import (mylib.relToRoot "modules/common/_sing-box-client") {
       inherit
         config
         lib

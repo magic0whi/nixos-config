@@ -5,7 +5,7 @@
       common = "modules/common";
     in
     {
-      base = map mylib.relativeToRoot [
+      base = map mylib.relToRoot [
         "modules/variables"
         "${common}/debug.nix"
         "${common}/easytier.nix"
@@ -22,12 +22,12 @@
         # Take opencode 2.3.0 from a newer nixpkgs
         (_: prev: { inherit (nixpkgs-opencode.legacyPackages.${prev.stdenv.hostPlatform.system}) opencode; })
       ];
-      seat = map mylib.relativeToRoot [
+      seat = map mylib.relToRoot [
         "${common}/sing-box-client.nix"
         "${common}/fonts.nix"
         "${common}/packages.nix"
       ];
-      extra = map mylib.relativeToRoot [
+      extra = map mylib.relToRoot [
         "${common}/sing-box-client-mobile.nix"
         "${common}/ssh.nix"
       ];
@@ -35,7 +35,7 @@
         let
           services = "modules/services";
         in
-        map mylib.relativeToRoot [
+        map mylib.relToRoot [
           "${services}/authelia-online.nix"
           "${services}/garage.nix"
           "${services}/prometheus-exporters.nix"
@@ -58,7 +58,7 @@
           niks3.nixosModules.niks3-auto-upload
           sops-nix.nixosModules.sops
         ])
-        ++ map mylib.relativeToRoot [
+        ++ map mylib.relToRoot [
           "${headless}/easytier.nix"
           "${headless}/firewall-common.nix"
           "${headless}/impermanence.nix"
@@ -69,7 +69,7 @@
         ];
 
       seat = {
-        tui = map mylib.relativeToRoot [
+        tui = map mylib.relToRoot [
           "${headless}/firewall-client.nix"
           "${headless}/fhs.nix"
           "${headless}/fonts.nix"
@@ -79,7 +79,7 @@
 
         gui =
           (with inputs; [ noctalia-greeter.nixosModules.default ])
-          ++ map mylib.relativeToRoot [
+          ++ map mylib.relToRoot [
             "${gui}/security.nix"
             "${gui}/steam.nix"
             "${gui}/wayland.nix"
@@ -89,7 +89,7 @@
           inputs.noctalia-greeter.overlays.default
         ]
         ++ map (file: import file) (
-          map mylib.relativeToRoot [
+          map mylib.relToRoot [
             "modules/overlays/localsend.nix"
             "modules/overlays/nixpaks"
           ]
@@ -99,7 +99,7 @@
       extra = [
         inputs.lanzaboote.nixosModules.default
       ]
-      ++ map mylib.relativeToRoot [
+      ++ map mylib.relToRoot [
         "${headless}/binfmt.nix"
         "${headless}/krnl-compat.nix"
         "${headless}/packages.nix"
@@ -121,7 +121,7 @@
       sops-nix.darwinModules.sops
       niks3.darwinModules.niks3-auto-upload
     ]
-    ++ map mylib.relativeToRoot [ "modules/darwin" ];
+    ++ map mylib.relToRoot [ "modules/darwin" ];
 
   hm = {
     common =
@@ -135,7 +135,7 @@
           [
             catppuccin.homeModules.catppuccin
           ]
-          ++ map mylib.relativeToRoot [
+          ++ map mylib.relToRoot [
             "${headless}/helix.nix"
             "${headless}/misc.nix"
             "${headless}/shell.nix"
@@ -148,7 +148,7 @@
             noctalia.homeModules.default
             nixvim.homeModules.nixvim
           ]
-          ++ map mylib.relativeToRoot [
+          ++ map mylib.relToRoot [
             "${headless}/ai"
             # "${headless}/debug.nix"
             "${headless}/dev-env.nix"
@@ -177,7 +177,7 @@
         headless = "modules/nixos_hm_headless";
         gui = "modules/nixos_hm_gui";
       in
-      map mylib.relativeToRoot [
+      map mylib.relToRoot [
         "${headless}/udiskie.nix"
 
         "${gui}/fcitx5.nix"
@@ -190,6 +190,6 @@
         "${gui}/xdg.nix"
       ];
 
-    darwin = map mylib.relativeToRoot [ "modules/darwin_hm" ];
+    darwin = map mylib.relToRoot [ "modules/darwin_hm" ];
   };
 }

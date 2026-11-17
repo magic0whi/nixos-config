@@ -11,7 +11,7 @@ rec {
   nixosStateVersion = "26.05";
   darwinStateVersion = 7;
   githubUsername = "magic0whi";
-  secretsDir = mylib.relativeToRoot "secrets";
+  secretsDir = mylib.relToRoot "secrets";
 
   city = "Suzhou, China";
   timeZone = "Asia/Hong_Kong";

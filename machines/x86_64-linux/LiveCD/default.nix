@@ -29,7 +29,7 @@ let
           headless = "modules/nixos_headless";
           gui = "modules/nixos_gui";
         in
-        map mylib.relativeToRoot [
+        map mylib.relToRoot [
           "${common}/fonts.nix"
           "${common}/misc.nix"
           "${common}/packages.nix"
@@ -45,7 +45,7 @@ let
           }
           noctalia-greeter.nixosModules.default
         ]
-        ++ map mylib.relativeToRoot [
+        ++ map mylib.relToRoot [
           "${headless}/fhs.nix"
           "${headless}/iwd.nix"
           "${headless}/krnl-compat.nix"
@@ -66,7 +66,7 @@ let
           nixosHmGui = "modules/nixos_hm_gui";
         in
         features.hm.common.base
-        ++ map mylib.relativeToRoot [
+        ++ map mylib.relToRoot [
           "${commonHmHeadless}/helix.nix"
           "${commonHmHeadless}/misc.nix"
           "${commonHmHeadless}/packages.nix"

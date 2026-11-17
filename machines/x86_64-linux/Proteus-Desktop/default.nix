@@ -29,7 +29,7 @@ let
         (with features.common; base ++ seat)
         ++ (with features.nixos; base ++ seat.tui)
         ++ [ niks3.nixosModules.niks3 ]
-        ++ (map mylib.relativeToRoot [
+        ++ (map mylib.relToRoot [
           "modules/nixos_headless/krnl-compat.nix"
           "modules/nixos_headless/packages.nix"
           "modules/nixos_headless/zfs.nix"
@@ -46,7 +46,7 @@ let
       hmModules =
         features.hm.common.base
         ++ [ sops-nix.homeManagerModules.sops ]
-        ++ map mylib.relativeToRoot [ "modules/common_hm_headless/nix.nix" ];
+        ++ map mylib.relToRoot [ "modules/common_hm_headless/nix.nix" ];
     }
   );
 in

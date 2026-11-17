@@ -48,7 +48,7 @@ let
           i915-sriov-dkms.nixosModules.default
           NixVirt.nixosModules.default
         ]
-        ++ map mylib.relativeToRoot [
+        ++ map mylib.relToRoot [
           "modules/nixos_headless/iwd.nix"
           "modules/services/traefik.nix"
           "modules/services/docker.nix"
