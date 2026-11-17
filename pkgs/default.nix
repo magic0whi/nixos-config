@@ -12,7 +12,17 @@
         local client_secret_file="$2"
         local audience="$3"
         local resource="$4"
-        local domain="$5"
+        local auth_url="$5"
+
+        # Accept a full base URL or a bare host, with or without a trailing slash.
+        while [[ "$auth_url" == */ ]]; do
+          auth_url="''${auth_url%/}"
+        done
+        [[ "$auth_url" == *://* ]] || auth_url="https://$auth_url"
+        if [[ ! "$auth_url" =~ ^https?://[^/]+ ]]; then
+          echo "invalid Authelia URL: $auth_url" >&2
+          return 2
+        fi
 
         local -a grant_args=()
         if [[ -n "$resource" ]]; then
@@ -29,15 +39,16 @@
           -d 'grant_type=client_credentials' \
           -d 'scope=authelia.bearer.authz' \
           "''${grant_args[@]}" \
-          "https://auth.$domain/api/oidc/token" \
+          "$auth_url/api/oidc/token" \
           | jq -er '.access_token'
 
         echo "Bearer token retrieved successfully." >&2
       }
 
       usage() {
-        echo "Usage: $(basename "$0") --client-id ID --client-secret-file FILE (--audience AUDIENCE | --resource RESOURCE) --domain DOMAIN" >&2
-        echo "Values may also be supplied with AUTHELIA_CLIENT_ID, AUTHELIA_CLIENT_SECRET_FILE, AUTHELIA_AUDIENCE, AUTHELIA_RESOURCE, and AUTHELIA_DOMAIN." >&2
+        echo "Usage: $(basename "$0") --client-id ID --client-secret-file FILE (--audience AUDIENCE | --resource RESOURCE) --auth-url URL" >&2
+        echo "Values may also be supplied with AUTHELIA_CLIENT_ID, AUTHELIA_CLIENT_SECRET_FILE, AUTHELIA_AUDIENCE, AUTHELIA_RESOURCE, and AUTHELIA_AUTH_URL." >&2
+        echo "URL is the Authelia base URL, e.g. https://auth.example.com (the scheme is optional)." >&2
         echo "Use --resource for forward-auth protected URLs: since Authelia 4.39.21" >&2
         echo "audiences match exactly (path included), while resources allow path prefixes." >&2
       }
@@ -46,7 +57,7 @@
       client_secret_file="''${AUTHELIA_CLIENT_SECRET_FILE:-}"
       audience="''${AUTHELIA_AUDIENCE:-}"
       resource="''${AUTHELIA_RESOURCE:-}"
-      domain="''${AUTHELIA_DOMAIN:-}"
+      auth_url="''${AUTHELIA_AUTH_URL:-}"
 
       while (($# > 0)); do
         case "$1" in
@@ -66,8 +77,8 @@
             resource="$2"
             shift 2
             ;;
-          --domain)
-            domain="$2"
+          --auth-url)
+            auth_url="$2"
             shift 2
             ;;
           -h | --help)
@@ -83,7 +94,7 @@
 
       : "''${client_id:?client ID is required}"
       : "''${client_secret_file:?client secret file is required}"
-      : "''${domain:?domain is required}"
+      : "''${auth_url:?auth URL is required}"
 
       if [[ -n "$audience" && -n "$resource" ]]; then
         echo "--audience and --resource are mutually exclusive" >&2
@@ -94,7 +105,7 @@
         exit 2
       fi
 
-      fetch_authelia_token "$client_id" "$client_secret_file" "$audience" "$resource" "$domain"
+      fetch_authelia_token "$client_id" "$client_secret_file" "$audience" "$resource" "$auth_url"
     '';
   };
 
