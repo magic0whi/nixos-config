@@ -4,12 +4,13 @@
 #   https://www.freedesktop.org/wiki/Specifications/
 {
   config,
+  lib,
   pkgs,
   ...
 }:
 {
   home = {
-    persistence."/persistent".directories = map baseNameOf (
+    persistence."/persistent".directories = map (dir: lib.removePrefix "${config.home.homeDirectory}/" dir) (
       with config.xdg.userDirs;
       [
         desktop
