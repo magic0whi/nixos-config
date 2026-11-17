@@ -21,7 +21,7 @@
           --client-id niks3 \
           --client-secret-file ${lib.escapeShellArg config.sops.secrets.niks3_client_secret.path} \
           --audience niks3 \
-          --domain ${lib.escapeShellArg const.domain} \
+          --auth-url ${lib.escapeShellArg "https://auth.${const.domain}"} \
           > "$RUNTIME_DIRECTORY/niks3-oidc-token"
 
         chown --reference=$RUNTIME_DIRECTORY $RUNTIME_DIRECTORY/niks3-oidc-token

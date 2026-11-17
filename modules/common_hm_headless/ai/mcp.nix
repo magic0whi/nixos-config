@@ -49,7 +49,7 @@
                 --client-id firecrawl-mcp \
                 --client-secret-file ${lib.escapeShellArg config.sops.secrets.firecrawl_mcp_oidc_client_secret.path} \
                 --resource ${lib.escapeShellArg "https://firecrawl.${const.domain}"} \
-                --domain ${lib.escapeShellArg const.domain}
+                --auth-url ${lib.escapeShellArg "https://auth.${const.domain}"}
             )"
 
             exec ${lib.getExe pkgs.firecrawl-mcp}

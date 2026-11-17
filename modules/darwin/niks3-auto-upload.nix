@@ -26,7 +26,7 @@ in
           --client-id niks3 \
           --client-secret-file ${lib.escapeShellArg config.sops.secrets.niks3_client_secret.path} \
           --audience niks3 \
-          --domain ${lib.escapeShellArg const.domain} \
+          --auth-url ${lib.escapeShellArg "https://auth.${const.domain}"} \
           > ${lib.escapeShellArg config.services.niks3-auto-upload.authTokenFile}
 
         exec "$@"
