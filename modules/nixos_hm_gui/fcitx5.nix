@@ -1,13 +1,6 @@
+{ pkgs, xdgRel, ... }:
 {
-  config,
-  mylib,
-  pkgs,
-  ...
-}:
-{
-  home.persistence."/persistent".directories = [
-    "${(mylib.xdgRelTo config.home.homeDirectory config.xdg).configHome}/mozc"
-  ];
+  home.persistence."/persistent".directories = [ "${xdgRel.configHome}/mozc" ];
 
   i18n.inputMethod = {
     enable = true;

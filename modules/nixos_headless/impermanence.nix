@@ -48,7 +48,7 @@ in
     users =
       let
         hm_cfg = config.home-manager.users.${const.username};
-        xdg = mylib.xdgRelTo hm_cfg.home.homeDirectory hm_cfg.xdg;
+        xdg = mylib.xdgRelTo hm_cfg.xdg hm_cfg.home.homeDirectory;
       in
       lib.mkIf hm_enabled {
         # The following directories will be passed to /persistent/home/$USER

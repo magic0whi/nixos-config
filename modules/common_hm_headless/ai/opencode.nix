@@ -1,14 +1,10 @@
-{ config, mylib, ... }:
+{ xdgRel, ... }:
 {
-  home.persistence."/persistent".directories =
-    let
-      xdg = mylib.xdgRelTo config.home.homeDirectory config.xdg;
-    in
-    [
-      "${xdg.configHome}/opencode"
-      "${xdg.dataHome}/opencode"
-      "${xdg.stateHome}/opencode"
-    ];
+  home.persistence."/persistent".directories = [
+    "${xdgRel.configHome}/opencode"
+    "${xdgRel.dataHome}/opencode"
+    "${xdgRel.stateHome}/opencode"
+  ];
 
   programs.opencode = {
     enable = true;

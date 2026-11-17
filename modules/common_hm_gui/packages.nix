@@ -1,8 +1,7 @@
 {
-  config,
   lib,
-  mylib,
   pkgs,
+  xdgRel,
   ...
 }:
 {
@@ -51,14 +50,10 @@
         super-productivity
       ]
     );
-  home.persistence."/persistent".directories =
-    let
-      xdg = mylib.xdgRelTo config.home.homeDirectory config.xdg;
-    in
-    [
-      "${xdg.configHome}/blender"
-      "${xdg.configHome}/feishin"
-      "${xdg.configHome}/superProductivity"
-    ];
+  home.persistence."/persistent".directories = [
+    "${xdgRel.configHome}/blender"
+    "${xdgRel.configHome}/feishin"
+    "${xdgRel.configHome}/superProductivity"
+  ];
   programs.discord.enable = true; # Update too frequently, it is recommend to use the web version instead
 }

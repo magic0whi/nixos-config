@@ -11,7 +11,7 @@
       let
         hm_cfg = config.home-manager.users.${const.username};
       in
-      (mylib.xdgRelTo hm_cfg.home.homeDirectory hm_cfg.xdg).configHome
+      (mylib.xdgRelTo hm_cfg.xdg hm_cfg.home.homeDirectory).configHome
     }/pulse"
   ];
 

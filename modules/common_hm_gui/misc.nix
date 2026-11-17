@@ -1,24 +1,19 @@
 {
-  config,
   lib,
-  mylib,
   pkgs,
+  xdgRel,
   ...
 }:
 {
-  home.persistence."/persistent".directories =
-    let
-      xdg = mylib.xdgRelTo config.home.homeDirectory config.xdg;
-    in
-    [
-      # Browsers
-      ".mozilla"
-      "${xdg.configHome}/google-chrome"
+  home.persistence."/persistent".directories = [
+    # Browsers
+    ".mozilla"
+    "${xdgRel.configHome}/google-chrome"
 
-      # VSCode
-      ".vscode"
-      "${xdg.configHome}/Code/User"
-    ];
+    # VSCode
+    ".vscode"
+    "${xdgRel.configHome}/Code/User"
+  ];
   ## BEGIN browsers.nix
   # https://github.com/nix-community/home-manager/blob/master/modules/programs/chromium.nix
   programs.google-chrome = lib.mkIf (!pkgs.stdenv.hostPlatform.isDarwin) {

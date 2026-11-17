@@ -9,7 +9,7 @@
   environment.persistence."/persistent".users.${const.username}.directories =
     let
       hm_cfg = config.home-manager.users.${const.username};
-      xdg = mylib.xdgRelTo hm_cfg.home.homeDirectory hm_cfg.xdg;
+      xdg = mylib.xdgRelTo hm_cfg.xdg hm_cfg.home.homeDirectory;
     in
     [
       "${xdg.configHome}/keepassxc"

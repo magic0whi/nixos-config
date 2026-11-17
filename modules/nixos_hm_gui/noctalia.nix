@@ -2,8 +2,8 @@
 {
   config,
   const,
-  mylib,
   pkgs,
+  xdgRel,
   ...
 }:
 {
@@ -20,9 +20,7 @@
 
   # Launcher usage, clipboard/notification history, community palettes and the
   # Settings UI overrides (settings.toml, loaded after config.toml and wins)
-  home.persistence."/persistent".directories = [
-    "${(mylib.xdgRelTo config.home.homeDirectory config.xdg).stateHome}/noctalia"
-  ];
+  home.persistence."/persistent".directories = [ "${xdgRel.stateHome}/noctalia" ];
 
   # https://docs.noctalia.dev/noctalia/configuration/
   # Defaults: https://github.com/noctalia-dev/noctalia/blob/v5.5.0/example.toml

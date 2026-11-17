@@ -1,7 +1,5 @@
-{ config, mylib, ... }:
+{ xdgRel, ... }:
 {
   programs.rclone.enable = true;
-  home.persistence."/persistent".directories = [
-    "${(mylib.xdgRelTo config.home.homeDirectory config.xdg).configHome}/rclone"
-  ];
+  home.persistence."/persistent".directories = [ "${xdgRel.configHome}/rclone" ];
 }

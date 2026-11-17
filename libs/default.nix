@@ -33,7 +33,7 @@ in
   # `home.persistence` and `environment.persistence.*.users` entries are always resolved
   # relative to the user's home directory, so an XDG path has to be rewritten that way
   xdgRelTo =
-    homeDir: xdgCfg:
+    xdgCfg: homeDir:
     let
       rel = lib.removePrefix "${toString homeDir}/";
     in
@@ -207,6 +207,13 @@ in
             {
               home-manager.backupFileExtension = "home-manager.backup";
               home-manager.extraSpecialArgs = special_args;
+              # `_module.args` (not `extraSpecialArgs`): shared modules are
+              # evaluated once per Home Manager user, so `config` below is that
+              # user's own config and every user gets its own `$HOME`/`xdg` values.
+              # `mylib.xdgRelTo` stays available for the system modules.
+              home-manager.sharedModules = lib.singleton (
+                { config, ... }: { _module.args.xdgRel = mylib.xdgRelTo config.xdg config.home.homeDirectory; }
+              );
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
               home-manager.users."${const.username}".imports =
