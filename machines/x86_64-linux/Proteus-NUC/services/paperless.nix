@@ -9,6 +9,7 @@
 let
   hostname = config.networking.hostName;
   hostname_psql = const.networking.findFirstHostBySubdomain "psql";
+
 in
 {
   vars.hostAddrs.${hostname}.easytier.subdomains =
@@ -68,37 +69,6 @@ in
           });
         })
       ];
-
-      # Tesseract "best" LSTM models instead of the nixpkgs default ("standard")
-      # tessdata: better on dense CJK layouts, at the cost of slower OCR.
-      # Upstream: https://github.com/tesseract-ocr/tessdata_best
-      tesseract5 = prev.tesseract5.override {
-        tessdata = prev.runCommand "tessdata-best" { } (
-          ''
-            mkdir -p $out
-          ''
-          + lib.concatStrings (
-            lib.mapAttrsToList
-              (lang: hash: ''
-                ln -s ${
-                  prev.fetchurl {
-                    url = "https://raw.githubusercontent.com/tesseract-ocr/tessdata_best/e12c65a915945e4c28e237a9b52bc4a8f39a0cec/${lang}.traineddata";
-                    inherit hash;
-                  }
-                } $out/${lang}.traineddata
-              '')
-              {
-                eng = "sha256-goCu0Hgv4nJXpo6hD+fvMkyg+Nhb0v0UXRwrVgvLZro=";
-                chi_sim = "sha256-T+8tEwbI6HYW1NPkxsZ/r11EvjNCKQz48vD246p+c1s=";
-                chi_tra = "sha256-GqYEiFdMr6aUhtkZKE8HnKm2j8x/atjcH/GzGN/ZcCg=";
-                # osd/equ are byte-identical to nixpkgs', but listing them keeps the
-                # tessdata dir self-contained (osd is required for --rotate-pages).
-                osd = "sha256-nPXVdvzEdWTxEmWEHlyoOQAefm84/396rPRtFalrAP8=";
-                equ = "sha256-j2YDI9int6Do0vrho0OebkcCIr+7mQsqt/6eH7R5HAs=";
-              }
-          )
-        );
-      };
     }
   );
   services.paperless = {
