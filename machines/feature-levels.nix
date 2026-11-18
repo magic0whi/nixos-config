@@ -10,7 +10,6 @@
         "${common}/debug.nix"
         "${common}/easytier.nix"
         "${common}/misc.nix"
-        "${common}/niks3-auto-upload.nix"
         "${common}/nix.nix"
         "${common}/secrets.nix"
         "${common}/shell.nix"
@@ -25,6 +24,7 @@
       seat = map mylib.relToRoot [
         "${common}/sing-box-client.nix"
         "${common}/fonts.nix"
+        "${common}/niks3-auto-upload.nix"
         "${common}/packages.nix"
       ];
       extra = map mylib.relToRoot [
@@ -55,7 +55,6 @@
           disko.nixosModules.disko
           impermanence.nixosModules.default
           lix-module.nixosModules.default
-          niks3.nixosModules.niks3-auto-upload
           sops-nix.nixosModules.sops
         ])
         ++ map mylib.relToRoot [
@@ -63,17 +62,20 @@
           "${headless}/firewall-common.nix"
           "${headless}/impermanence.nix"
           "${headless}/misc.nix"
-          "${headless}/niks3-auto-upload.nix"
           "${headless}/sssd.nix"
           "${headless}/systemd-resolved.nix"
         ];
 
       seat = {
-        tui = map mylib.relToRoot [
-          "${headless}/firewall-client.nix"
+        tui = [
+          inputs.niks3.nixosModules.niks3-auto-upload
+        ]
+        ++ map mylib.relToRoot [
           "${headless}/fhs.nix"
+          "${headless}/firewall-client.nix"
           "${headless}/fonts.nix"
           "${headless}/scx-loader.nix"
+
           "${gui}/kmscon.nix"
         ];
 
@@ -108,6 +110,7 @@
         "${headless}/secureboot.nix"
         "${headless}/sing-box-client-mobile.nix"
         "${headless}/zfs.nix"
+
         "${gui}/peripherals.nix"
         "${gui}/bluetooth.nix"
         "${gui}/pipewire.nix"
@@ -150,18 +153,19 @@
           ]
           ++ map mylib.relToRoot [
             "${headless}/ai"
-            # "${headless}/debug.nix"
+            "${headless}/cloud-providers.nix"
             "${headless}/dev-env.nix"
             "${headless}/file_sharing.nix"
             "${headless}/git.nix"
             "${headless}/gpg.nix"
             "${headless}/nix.nix"
+            "${headless}/nvim"
             "${headless}/packages.nix"
+            "${headless}/secrets.nix"
             "${headless}/ssh.nix"
             "${headless}/syncthing.nix"
             "${headless}/zellij.nix"
-            "${headless}/nvim"
-            "${headless}/cloud-providers.nix"
+            # "${headless}/debug.nix"
 
             "${gui}/anki.nix"
             "${gui}/mpv.nix"
