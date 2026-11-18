@@ -42,10 +42,20 @@ jobs:
 
       - name: Run nix flake check
         run: |
+          input_overrides=()
+          if [[ "$GITHUB_SERVER_URL" == "https://github.com" ]]; then
+            input_overrides=(
+              --override-input nix-darwin github:magic0whi/nix-darwin/main
+              --override-input dns github:magic0whi/dns.nix
+              --override-input dev-flake github:magic0whi/dev-flake
+            )
+          fi
+
           # Disable deploy-* since they are very huge and prone to exhaust rate limit
-          nix eval .#checks.${{ matrix.system }} --apply builtins.attrNames --json \
+          nix eval "${input_overrides[@]}" .#checks.${{ matrix.system }} \
+            --apply builtins.attrNames --json \
             | jq -r '.[] | select(startswith("deploy-") | not) | ".#checks.${{ matrix.system }}.\(.)"' \
-            | xargs nix build --no-link
+            | xargs -I{} nix build "${input_overrides[@]}" --no-link {}
 
   check-macos:
     name: Run Flake checks (aarch64-darwin)

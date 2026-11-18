@@ -93,17 +93,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1786961245,
-        "narHash": "sha256-39yS+0CuNmHswvjMJs/DxgfMahw35VMEoyY/fiAVgzA=",
-        "owner": "magic0whi",
-        "repo": "dev_flake",
-        "rev": "c988b1b1883dd3e01ad47f19debce9a591c82c08",
-        "type": "github"
+        "lastModified": 1780758376,
+        "narHash": "sha256-QsVP17wBg5nmiLeRmlyMxCpVPFpDmd2SrqSAKTGI/j4=",
+        "ref": "refs/heads/main",
+        "rev": "05c5d55088b4eef7c7e0e5018597c8c6b77ee9c2",
+        "revCount": 27,
+        "type": "git",
+        "url": "https://git.proteus.eu.org/proteus/dev-flake"
       },
       "original": {
-        "owner": "magic0whi",
-        "repo": "dev_flake",
-        "type": "github"
+        "type": "git",
+        "url": "https://git.proteus.eu.org/proteus/dev-flake"
       }
     },
     "disko": {
@@ -137,15 +137,15 @@
       "locked": {
         "lastModified": 1794482038,
         "narHash": "sha256-/rVvOQtfPIJci3w68Tur59YIDslD4dQoH3eBc5tuZ9k=",
-        "owner": "magic0whi",
-        "repo": "dns.nix",
+        "ref": "refs/heads/master",
         "rev": "0e07d2b03c794a801fe2030893c97fdcf9a921d9",
-        "type": "github"
+        "revCount": 112,
+        "type": "git",
+        "url": "https://git.proteus.eu.org/proteus/dns.nix"
       },
       "original": {
-        "owner": "magic0whi",
-        "repo": "dns.nix",
-        "type": "github"
+        "type": "git",
+        "url": "https://git.proteus.eu.org/proteus/dns.nix"
       }
     },
     "flake-compat": {
@@ -551,16 +551,16 @@
       "locked": {
         "lastModified": 1794473171,
         "narHash": "sha256-Nf/U2oihVXYM5mhqQJ5sjCKtrZIIPhiTxf4XIk/B4lQ=",
-        "owner": "magic0whi",
-        "repo": "nix-darwin",
+        "ref": "main",
         "rev": "60f1c426bab45caf815558a64d2439f4fd5a9329",
-        "type": "github"
+        "revCount": 2445,
+        "type": "git",
+        "url": "https://git.proteus.eu.org/proteus/nix-darwin/"
       },
       "original": {
-        "owner": "magic0whi",
         "ref": "main",
-        "repo": "nix-darwin",
-        "type": "github"
+        "type": "git",
+        "url": "https://git.proteus.eu.org/proteus/nix-darwin/"
       }
     },
     "nix2container": {

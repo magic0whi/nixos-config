@@ -53,8 +53,8 @@
       # 1. per IDE, such as `programs.neovim.extraPackages`
       # 2. per-project, see https://github.com/the-nix-way/dev-templates
 
-      # python313 # I use `nix develop github:magic0whi/dev_flake#python` instead
-      # yarn # I use `nix develop github:magic0whi/dev_flake#node` instead
+      # python313 # I use `nix develop github:magic0whi/dev-flake#python` instead
+      # yarn # I use `nix develop github:magic0whi/dev-flake#node` instead
       # mitmproxy # HTTP/HTTPS proxy tool
       # DB related
       # mycli

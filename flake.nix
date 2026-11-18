@@ -3,6 +3,7 @@
   inputs = {
     # Pinned as of 2026-11-12, branch: nixos-unstable
     nixpkgs.url = "github:magic0whi/nixpkgs/nixos-unstable";
+    # nixpkgs.url = "git+https://git.proteus.eu.org/proteus/nixpkgs/?ref=nixos-unstable";
     # nixpkgs.url = "path:/Users/proteus/Proteus/Projects-Ref/nosync/nixpkgs";
     # Take sing-box from a newer nixpkgs
     # nixpkgs-sing-box.url = "github:NixOS/nixpkgs/f9a75f41be3a74eab55d3a7679d34ad6cc0da977";
@@ -47,7 +48,7 @@
     };
     # Pinned as of 2026-11-12
     nix-darwin = {
-      url = "github:magic0whi/nix-darwin/main";
+      url = "git+https://git.proteus.eu.org/proteus/nix-darwin/?ref=main";
       # url = "path:/Users/proteus/Proteus/Projects-Ref/nosync/nix-darwin";
       # url = "path:/home/proteus/Works-References/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -111,7 +112,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     dns = {
-      url = "github:magic0whi/dns.nix";
+      url = "git+https://git.proteus.eu.org/proteus/dns.nix";
       # url = "path:/home/proteus/Proteus/Projects-Ref/nosync/dns.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
@@ -130,7 +131,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     dev-flake = {
-      url = "github:magic0whi/dev_flake";
+      url = "git+https://git.proteus.eu.org/proteus/dev-flake";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         treefmt-nix.follows = "treefmt-nix";
