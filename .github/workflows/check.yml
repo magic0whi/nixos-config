@@ -18,27 +18,10 @@ jobs:
       - name: Set up Git repository
         uses: actions/checkout@v6.0.2
 
-      - name: Enable unprivileged user namespaces
-        if: github.server_url == 'https://github.com' && matrix.system != 'aarch64-darwin'
-        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
-
-      - name: Install Lix
-        if: github.server_url == 'https://github.com'
-        uses: samueldr/lix-gha-installer-action@f5e94192f565f53d84f41a056956dc0d3183b343
-
-      - name: Install Lix (Single User)
-        if: github.server_url != 'https://github.com'
-        uses: canidae-solutions/lix-quick-install-action@v4.0.1
+      - name: Common setup
+        uses: ./.github/actions/common-setup
         with:
-          github_access_token: ${{ secrets.ACCESS_TOKEN_GITHUB }}
-          # TODO(2026-11-23): Drop the legacy `s3.proteus.eu.org-1` key, see const/default.nix
-          lix_conf: |
-            extra-substituters = https://nix-cache.Proteus-Desktop.s3-pub.proteus.eu.org/
-            extra-trusted-public-keys = Proteus-Desktop.s3.proteus.eu.org-1:IxrRwk4uC5ittHeG9menkuajABnrX9cboEWwZz/m4+E= s3.proteus.eu.org-1:IxrRwk4uC5ittHeG9menkuajABnrX9cboEWwZz/m4+E=
-
-      - name: Magic Nix Cache
-        if: github.server_url == 'https://github.com'
-        uses: DeterminateSystems/magic-nix-cache-action@v13
+          github_token: ${{ secrets.ACCESS_TOKEN_GITHUB }}
 
       - name: Run nix flake check
         run: |
