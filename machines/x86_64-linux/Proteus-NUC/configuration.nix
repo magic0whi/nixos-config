@@ -18,6 +18,7 @@
   services.sing-box.generateMobileConfig.enable = true;
   # Since NUC is now under a sing-box gateway, don't autostart
   systemd.services.sing-box.wantedBy = lib.mkForce [ ];
+  services.networkd-dispatcher.rules.restart-sing-box.onState = lib.mkForce [ ];
 
   environment.systemPackages = with pkgs; [ bpftrace ]; # powerful tracing tool, ref: https://github.com/bpftrace/bpftrace
   ## BEGIN zfs.nix
