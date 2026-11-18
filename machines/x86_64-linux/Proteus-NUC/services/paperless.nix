@@ -141,16 +141,44 @@ in
 
       # Paperless-ngx 3.0 allows duplicate documents to be consumed by default except when this setting is enabled
       PAPERLESS_CONSUMER_DELETE_DUPLICATES = true;
-
-      # TODO: evaluate remote OCR (Azure AI); needs a sops secret for the key:
-      #   PAPERLESS_REMOTE_OCR_ENGINE = "azureai";
-      #   PAPERLESS_REMOTE_OCR_API_KEY = <sops secret>;
-      #   PAPERLESS_REMOTE_OCR_ENDPOINT = "https://<resource>.cognitiveservices.azure.com/";
-      #   PAPERLESS_REMOTE_OCR_MODE = "workflow_only"; # opt in per workflow
-
     };
     environmentFile = config.sops.templates."paperless.env".path;
     # dataDir = "/srv/paperless";
+
+    # Local OCR plugin: RapidOCR.
+    # Takes photos/scans, including scans that already carry an old text layer
+    # (it is replaced); born-digital PDFs and non-CJK scans stay on Tesseract.
+    extraPythonPackages =
+      ps:
+      let
+        p = ps.overrideScope (
+          final: prev: {
+            # They're not duplicates, the outer onnxruntime is a python wheel, insides are C++ libs
+            onnxruntime = prev.onnxruntime.override {
+              onnxruntime = pkgs.onnxruntime.override {
+                cudaSupport = true;
+                ncclSupport = false;
+                tensorrtSupport = false;
+              };
+            };
+            rapidocr-onnxruntime = prev.rapidocr-onnxruntime.override { onnxruntime = final.onnxruntime; };
+          }
+        );
+      in
+      [
+        (pkgs.callPackage (mylib.relToRoot "pkgs/paperless-rapidocr") { pythonPackages = p; })
+        p.numpy
+        p.onnxruntime
+        p.opencv-python
+        p.pillow
+        p.pyclipper
+        p.pymupdf
+        p.pyyaml
+        p.rapidocr-onnxruntime
+        p.shapely
+        p.six
+        p.tqdm
+      ];
 
     exporter = {
       enable = true;
@@ -161,21 +189,53 @@ in
     };
   };
 
-  systemd.services =
-    let
-      cfg = config.services.paperless.exporter;
-    in
-    lib.mkIf cfg.enable {
-      paperless-exporter.serviceConfig = {
-        # Type=oneshot forces systemd to wait until the paperless-exporter-start script completely finishes (which
-        # spawns python to export the PDFs to a temporary folder, then renames it to `cfg.exporter.directory` ). If this
-        # is Type=simple (the default), systemd will run ExecStartPost instantly, before the PDFs are generated, causing
-        # them to be owned by paperless:paperless.
-        Type = "oneshot";
-        # As of 2026-05-01, paperless-export don't allow group to access
-        ExecStartPost = [ "+${pkgs.coreutils}/bin/chmod -R g+r ${cfg.directory}" ];
-      };
-    };
+  systemd.services = lib.mkMerge [
+    (
+      let
+        cfg = config.services.paperless.exporter;
+      in
+      lib.mkIf cfg.enable {
+        paperless-exporter.serviceConfig = {
+          # Type=oneshot forces systemd to wait until the paperless-exporter-start
+          # script completely finishes (which spawns python to export the PDFs
+          # to a temporary folder, then renames it to `cfg.exporter.directory`).
+          # If this is Type=simple (the default), systemd will run ExecStartPost
+          # instantly, before the PDFs are generated, causing them to be owned
+          # by paperless:paperless.
+          Type = "oneshot";
+          # As of 2026-05-01, paperless-export don't allow group to access
+          ExecStartPost = [ "+${pkgs.coreutils}/bin/chmod -R g+r ${cfg.directory}" ];
+        };
+      }
+    )
+
+    (lib.genAttrs
+      [
+        "paperless-task-queue"
+        "paperless-consumer"
+      ]
+      (_: {
+        # The CUDA driver library (libcuda.so.1) is provided by /run/opengl-driver/lib,
+        # which system services do not inherit from the session.
+        environment.LD_LIBRARY_PATH = "/run/opengl-driver/lib";
+        serviceConfig = {
+          # PrivateDevices replaces /dev with a minimal set; the real nodes
+          # cannot be re-added by DeviceAllow, so it must stay off.
+          PrivateDevices = lib.mkForce false;
+          DevicePolicy = lib.mkForce "closed";
+          DeviceAllow = lib.mkForce [
+            "char-nvidia rw"
+            "char-nvidiactl rw"
+            "char-nvidia-modeset rw"
+            "char-nvidia-uvm rw"
+          ];
+          # ProcSubset=pid hides /proc/cpuinfo, which makes ONNX Runtime's
+          # cpuinfo_initialize() fail and disables CPU feature detection.
+          ProcSubset = lib.mkForce "all";
+        };
+      })
+    )
+  ];
 
   services.traefik.dynamicConfigOptions.http = {
     routers.paperless = {

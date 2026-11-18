@@ -1,0 +1,16 @@
+[build-system]
+requires = [ "setuptools>=68" ]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "paperless-rapidocr"
+version = "0.3.2"
+description = "Paperless-ngx parser plugin using RapidOCR (PaddleOCR PP-OCRv4, ONNX)"
+requires-python = ">=3.11"
+dependencies = [ ]
+
+[project.entry-points."paperless_ngx.parsers"]
+rapidocr = "paperless_rapidocr.parser:RapidOcrDocumentParser"
+
+[tool.setuptools.packages.find]
+where = [ "src" ]
