@@ -11,24 +11,27 @@
 
   xdg.configFile."nix/public.key".text = const.nixCache.publicKey;
   sops = {
-    defaultSopsFile = "${const.secretsDir}/common_hm.sops.yaml";
-    secrets = {
-      github_access_tokens = { };
-      "nix_secret.key" = {
-        sopsFile = "${const.secretsDir}/nix_secret.key.sops";
-        format = "binary";
-        path = "${config.xdg.configHome}/nix/secret.key";
+    secrets =
+      let
+        sopsFile = "${const.secretsDir}/${const.networking.findFirstHostBySubdomain "niks3"}_shared.sops.yaml";
+      in
+      {
+        github_access_tokens = { };
+        "nix_secret.key" = {
+          sopsFile = "${const.secretsDir}/nix_secret.key.sops";
+          format = "binary";
+          path = "${config.xdg.configHome}/nix/secret.key";
+        };
+        nix-cache_access_key = { inherit sopsFile; };
+        nix-cache_secret_key = { inherit sopsFile; };
       };
-      aws_access_key = { };
-      aws_secret_key = { };
-    };
     templates = {
       aws_credentials = {
         path = "${config.home.homeDirectory}/.aws/credentials";
         content = mylib.toINI {
           nixbuilder = {
-            aws_access_key_id = config.sops.placeholder.aws_access_key;
-            aws_secret_access_key = config.sops.placeholder.aws_secret_key;
+            aws_access_key_id = config.sops.placeholder.nix-cache_access_key;
+            aws_secret_access_key = config.sops.placeholder.nix-cache_secret_key;
           };
         };
       };

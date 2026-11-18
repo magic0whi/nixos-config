@@ -15,7 +15,8 @@ in
   sops =
     let
       restartUnits = [ "niks3.service" ];
-      sopsFile = "${const.secretsDir}/common_hm.sops.yaml";
+      sopsFile = "${const.secretsDir}/${hostname}_shared.sops.yaml";
+      owner = "niks3";
     in
     {
       secrets = {
@@ -23,24 +24,13 @@ in
           sopsFile = "${const.secretsDir}/${hostname}.sops.yaml";
           inherit restartUnits;
         };
-        aws_access_key = {
-          inherit sopsFile restartUnits;
-          owner = "niks3";
-        };
-        aws_secret_key = {
-          inherit sopsFile restartUnits;
-          owner = "niks3";
-        };
-        niks3_api_token = {
-          sopsFile = "${const.secretsDir}/${hostname}.sops.yaml";
-          owner = "niks3";
-          inherit restartUnits;
-        };
+        nix-cache_access_key = { inherit sopsFile restartUnits owner; };
+        nix-cache_secret_key = { inherit sopsFile restartUnits owner; };
+        niks3_api_token = { inherit sopsFile restartUnits owner; };
         "nix_secret.key" = {
           sopsFile = "${const.secretsDir}/nix_secret.key.sops";
           format = "binary";
-          owner = "niks3";
-          inherit restartUnits;
+          inherit restartUnits owner;
         };
       };
       templates.niks3_db_dsn = {
@@ -67,8 +57,8 @@ in
       bucket = "nix-cache";
       region = config.services.garage.settings.s3_api.s3_region;
       useSSL = true;
-      accessKeyFile = config.sops.secrets.aws_access_key.path;
-      secretKeyFile = config.sops.secrets.aws_secret_key.path;
+      accessKeyFile = config.sops.secrets.nix-cache_access_key.path;
+      secretKeyFile = config.sops.secrets.nix-cache_secret_key.path;
     };
 
     apiTokenFile = config.sops.secrets.niks3_api_token.path;
