@@ -5,7 +5,7 @@
   ...
 }:
 {
-  services.trafficQuota.enable = true;
+  services.trafficQuota.enable = lib.mkDefault true;
   # To test, run `nix run .#nixosConfigurations.<name>.config.system.build.vmWithDisk`
   # Configurations only apply to vmWithDisko
   virtualisation.vmVariantWithDisko = {

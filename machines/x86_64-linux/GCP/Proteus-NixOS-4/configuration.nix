@@ -3,6 +3,7 @@ let
   hostname = config.networking.hostName;
 in
 {
+  services.trafficQuota.enable = false;
   vars.hostAddrs.${hostname}.easytier = {
     regHost = true;
     ipv4 = "10.0.0.8/24";
