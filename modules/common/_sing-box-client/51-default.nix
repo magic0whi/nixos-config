@@ -14,7 +14,10 @@ let
   out = "Default";
   rules = [
     {
-      domain = "cache.nixos.org";
+      domain = [
+        "cache.nixos.org"
+        "repology.org"
+      ];
       domain_suffix = [
         "redteago.com"
         "shuzijumin.com"
