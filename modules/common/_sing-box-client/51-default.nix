@@ -21,6 +21,8 @@ let
 
         "braze-images.com" # Braze: in-app message image CDN
         "cloudfront.com" # AWS CDN
+
+        "cachix.org"
       ];
     }
     { rule_set = [ "geosite-gfw" ]; }
