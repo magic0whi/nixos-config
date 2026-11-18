@@ -1,13 +1,9 @@
 #!/usr/bin/env sh
 ERRORS_FOUND=0
 
-# nix build .#checks.x86_64-linux.mylib_tests || ERRORS_FOUND=1
-nix build .#checks."$(nix eval --impure --raw --expr 'builtins.currentSystem')".treefmt || ERRORS_FOUND=1
-
 # Run Git's built-in whitespace check on staged changes
 if ! git --no-pager diff --cached --check; then
-  echo "❌ Commit rejected: Trailing whitespace found in your staged changes."
-  echo "Please fix the whitespace errors and stage the files again."
+  echo "❌ Staged changes contain whitespace errors."
   exit 1
 fi
 

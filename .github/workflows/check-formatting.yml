@@ -1,0 +1,34 @@
+name: Check Formatting
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  check-formatting:
+    name: Check formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Git repository
+        uses: actions/checkout@v6.0.2
+
+      - name: Common setup
+        uses: ./.github/actions/common-setup
+        with:
+          github_token: ${{ secrets.ACCESS_TOKEN_GITHUB }}
+
+      - name: Check formatting
+        run: |
+          input_overrides=()
+          if [[ "$GITHUB_SERVER_URL" == "https://github.com" ]]; then
+            input_overrides=(
+              --override-input nix-darwin github:magic0whi/nix-darwin/main
+              --override-input dns github:magic0whi/dns.nix
+              --override-input dev-flake github:magic0whi/dev-flake
+            )
+          fi
+
+          nix build "${input_overrides[@]}" --no-link \
+            ".#checks.$(nix eval --impure --raw --expr 'builtins.currentSystem').treefmt"
