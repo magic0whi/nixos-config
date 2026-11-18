@@ -7,7 +7,6 @@
 
   niks3,
   nixpkgs,
-  sops-nix,
   dns,
   ...
 }:
@@ -26,27 +25,39 @@ let
       specialArgs = { inherit dns; };
       overlays = (with features; common.baseOverlays);
       modules =
-        (with features.common; base ++ seat)
-        ++ (with features.nixos; base ++ seat.tui)
+        (with features.common; base)
+        ++ (with features.nixos; base)
         ++ [ niks3.nixosModules.niks3 ]
-        ++ (map mylib.relToRoot [
-          "modules/nixos_headless/krnl-compat.nix"
-          "modules/nixos_headless/packages.nix"
-          "modules/nixos_headless/zfs.nix"
+        ++ (map mylib.relToRoot (
+          let
+            common = "modules/common";
+            headless = "modules/nixos_headless";
+            services = "modules/services";
+          in
+          [
+            "${common}/sing-box-client.nix"
+            "${common}/fonts.nix"
+            "${common}/packages.nix"
 
-          "modules/services/authelia-online.nix"
-          "modules/services/darknet.nix"
-          "modules/services/docker.nix"
-          "modules/services/garage.nix"
-          "modules/services/ldap-online.nix"
-          "modules/services/prometheus-exporters.nix"
-          "modules/services/restic.nix"
-          "modules/services/traefik.nix"
-        ]);
-      hmModules =
-        features.hm.common.base
-        ++ [ sops-nix.homeManagerModules.sops ]
-        ++ map mylib.relToRoot [ "modules/common_hm_headless/nix.nix" ];
+            "${headless}/firewall-client.nix"
+            "${headless}/krnl-compat.nix"
+            "${headless}/packages.nix"
+            "${headless}/scx-loader.nix"
+            "${headless}/zfs.nix"
+
+            "modules/nixos_gui/kmscon.nix"
+
+            "${services}/authelia-online.nix"
+            "${services}/darknet.nix"
+            "${services}/docker.nix"
+            "${services}/garage.nix"
+            "${services}/ldap-online.nix"
+            "${services}/prometheus-exporters.nix"
+            "${services}/restic.nix"
+            "${services}/traefik.nix"
+          ]
+        ));
+      hmModules = features.hm.common.base;
     }
   );
 in
