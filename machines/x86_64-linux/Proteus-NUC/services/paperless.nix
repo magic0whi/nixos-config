@@ -59,7 +59,7 @@ in
         };
       };
     };
-  # https://github.com/NixOS/nixpkgs/issues/582142
+  # TODO: https://github.com/NixOS/nixpkgs/issues/582142
   nixpkgs.overlays = lib.singleton (
     _: prev: {
       pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
