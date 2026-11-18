@@ -12,6 +12,7 @@
     mcp_github_key = { };
     mcp_forgejo_access_token = { };
     mcp_paperless_api_key = { };
+    mcp_exa_key = { };
     firecrawl-mcp_oidc_client_secret.sopsFile = "${const.secretsDir}/${const.networking.findFirstHostBySubdomain "firecrawl"}_shared.sops.yaml";
   };
 
@@ -23,6 +24,9 @@
       fi
       if [[ -r ${mcp_github_key.path} ]]; then
         export MCP_GITHUB_KEY="$(<${mcp_github_key.path})"
+      fi
+      if [[ -r ${mcp_exa_key.path} ]]; then
+        export MCP_EXA_KEY="$(<${mcp_exa_key.path})"
       fi
     ''
   );
@@ -80,6 +84,10 @@
             "/tmp"
           ];
         };
+      };
+      exa = {
+        url = "https://mcp.exa.ai/mcp?tools=web_search_exa,web_fetch_exa,web_search_advanced_exa";
+        headers.Authorization = "Bearer {env:MCP_EXA_KEY}";
       };
     };
   };
