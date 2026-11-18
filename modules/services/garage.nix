@@ -48,7 +48,7 @@ in
       secrets = {
         garage_rpc_secret = { inherit restartUnits; };
         garage_admin_token = { inherit restartUnits; };
-        prometheus_bearer_token = { inherit restartUnits; };
+        prometheus-exporter_token = { inherit restartUnits; };
         garage_ui_oidc_client_secret.restartUnits = [
           "${config.virtualisation.oci-containers.containers.garage-ui.serviceName}.service"
         ];
@@ -58,7 +58,7 @@ in
         content = mylib.toEnv {
           GARAGE_RPC_SECRET = config.sops.placeholder.garage_rpc_secret;
           GARAGE_ADMIN_TOKEN = config.sops.placeholder.garage_admin_token;
-          GARAGE_METRICS_TOKEN = config.sops.placeholder.prometheus_bearer_token;
+          GARAGE_METRICS_TOKEN = config.sops.placeholder.prometheus-exporter_token;
         };
       };
       templates."garage-ui.env" = {

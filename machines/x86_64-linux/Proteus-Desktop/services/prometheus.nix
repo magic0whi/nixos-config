@@ -11,7 +11,7 @@
       owner = "prometheus";
     in
     {
-      prometheus_bearer_token = { inherit owner; };
+      prometheus-exporter_token = { inherit owner; };
       prometheus_password = {
         sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
         inherit owner;
@@ -103,7 +103,7 @@
         ];
         auth_cfg.authorization = {
           type = "Bearer";
-          credentials_file = config.sops.secrets.prometheus_bearer_token.path;
+          credentials_file = config.sops.secrets.prometheus-exporter_token.path;
         };
       });
   };

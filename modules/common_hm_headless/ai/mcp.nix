@@ -12,7 +12,7 @@
     mcp_github_key = { };
     mcp_forgejo_access_token = { };
     mcp_paperless_api_key = { };
-    firecrawl_mcp_oidc_client_secret.sopsFile = "${const.secretsDir}/common.sops.yaml";
+    firecrawl-mcp_oidc_client_secret.sopsFile = "${const.secretsDir}/${const.networking.findFirstHostBySubdomain "firecrawl"}_shared.sops.yaml";
   };
 
   programs.zsh.initContent = lib.mkAfter (
@@ -47,7 +47,7 @@
             export FIRECRAWL_API_KEY="$(
               ${lib.getExe mypkg.fetch-authelia-token} \
                 --client-id firecrawl-mcp \
-                --client-secret-file ${lib.escapeShellArg config.sops.secrets.firecrawl_mcp_oidc_client_secret.path} \
+                --client-secret-file ${lib.escapeShellArg config.sops.secrets.firecrawl-mcp_oidc_client_secret.path} \
                 --resource ${lib.escapeShellArg "https://firecrawl.${const.domain}"} \
                 --auth-url ${lib.escapeShellArg "https://auth.${const.domain}"}
             )"
