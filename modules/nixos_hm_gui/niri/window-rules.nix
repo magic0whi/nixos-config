@@ -1,6 +1,7 @@
 # TIP: `niri msg pick-window`
-{ lib, ... }:
+{ const, lib, ... }:
 let
+  wsAt = builtins.elemAt const.workspaces;
   super_rules = [
     # LaTeX viewer
     {
@@ -23,7 +24,7 @@ let
     # Terminal applications - open in workspace 1, with blur
     {
       action = ''
-        open-on-workspace "1terminal"
+        open-on-workspace "${wsAt 1}"
         // open-maximized true
         // background-effect { blur true; }
       '';
@@ -37,7 +38,7 @@ let
     # Web browsers - open in workspace 2
     {
       action = ''
-        open-on-workspace "2browser"
+        open-on-workspace "${wsAt 2}"
         // open-maximized true
       '';
       matches = [
@@ -66,7 +67,7 @@ let
     }
     # Chat applications - open in workspace 3
     {
-      action = ''open-on-workspace "3chat"'';
+      action = ''open-on-workspace "${wsAt 3}"'';
       matches = [
         ''
           // match app-id="org.telegram.desktop"
@@ -78,7 +79,7 @@ let
     }
     # Gaming applications - open in workspace 4
     {
-      action = ''open-on-workspace "4gaming"'';
+      action = ''open-on-workspace "${wsAt 4}"'';
       matches = [
         ''match app-id="steam"''
         ''match app-id="steam_app_default"''
@@ -91,7 +92,7 @@ let
     }
     # Music applications - open in workspace 5
     {
-      action = ''open-on-workspace "5music"'';
+      action = ''open-on-workspace "${wsAt 5}"'';
       matches = [ ''match app-id="feishin"'' ];
     }
     # File management applications - open in workspace 6
@@ -102,6 +103,10 @@ let
         ''match app-id="thunar"''
         ''match app-id="anki"''
       ];
+    }
+    {
+      action = ''open-on-workspace "${wsAt 7}"'';
+      matches = [ ''match app-id="superproductivity"'' ];
     }
     # VM - open in workspace 8vm
     {
