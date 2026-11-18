@@ -51,6 +51,12 @@
 - **Conventional commits.** Default to `type(scope): subject` (feat, fix, chore, refactor,
   docs, test, ci, build). Imperative mood, ~50 char target, 72 max. Keep lockfile changes
   with the change that caused them. Include `Co-authored-by: <agent-name> <agent-email>` trailer when work is mostly done with AI.
+- **Never `git add` (or stage) tracked files.** Flake builds already see working-tree
+  changes to tracked files; staging them only pollutes the user's index.
+  - New files that a flake build must see are the only exception: `git add -N <path>`
+    (intent-to-add) is sufficient — Nix includes intent-to-add entries, so a real
+    `git add` is never needed.
+  - Only modify the index when the user explicitly asks.
 
 ## CLI tools (prefer these modern replacements)
 
