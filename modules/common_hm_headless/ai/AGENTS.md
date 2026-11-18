@@ -58,6 +58,24 @@
     `git add` is never needed.
   - Only modify the index when the user explicitly asks.
 
+## Secrets
+
+- **Never modify, create, rotate, or add secrets. Ever.** Do not write to anything under
+  `secrets/` (sops files, age/GPG keys, private keys, token/password files), and do not run
+  `sops` in a way that writes or re-encrypts them.
+- **Never decrypt or print secret values.** Do not run `sops -d`, `--extract`, `sops edit`, or
+  anything else that exposes plaintext, and never copy a secret value into another file,
+  commit, command line, or output. Inspecting a sops file for _key names_ while it stays
+  encrypted is fine.
+- **Never generate secrets of any kind** — tokens, API keys, passwords, signing keys, age
+  keys — not even as placeholders or "just for the example".
+- **Wiring is allowed, provisioning is not.** You may add `sops.secrets.<name>` declarations
+  and point services at `config.sops.secrets.<name>.path`, but when a new key is required,
+  stop and tell the user the exact key name and file it belongs in, plus the command to add
+  it. The user runs it, not you.
+- **Diagnose, don't patch.** If a secret-backed service is broken because a key is missing or
+  wrong, report what is missing and hand the fix to the user.
+
 ## CLI tools (prefer these modern replacements)
 
 The user's nixos-config installs these; default to them in commands/suggestions instead
