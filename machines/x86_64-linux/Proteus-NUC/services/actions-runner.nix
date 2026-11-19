@@ -55,8 +55,7 @@ in
         secrets.server.connections.default.token_url = config.sops.secrets.forgejo_runner_token.path;
         # https://gitea.com/gitea/act_runner/src/commit/40dcee0991c3bd33b657bb77aa1f2f46d69cc0e2/internal/pkg/config/config.example.yaml
         settings = {
-          cache = rec {
-            enabled = true;
+          cache = {
             # The job containers reach the runner's cache proxy through the Docker
             # bridge, so it needs a fixed port (the default is a random one picked at
             # every start) and a hole in the host firewall. Without both, every
@@ -64,7 +63,7 @@ in
             # `reserveCache failed: connect ETIMEDOUT <lan ip>:<random port>`.
             proxy_port = cache_port;
             # The cache proxy that ACTIONS_CACHE_URL points at.
-            actions_cache_url_override = "http://${const.networking.dockerIP}:${toString proxy_port}";
+            actions_cache_url_override = "http://${const.networking.dockerIP}:${toString cache_port}";
           };
           # The nodejs cannot recognize my self-signed cert
           runner = {
