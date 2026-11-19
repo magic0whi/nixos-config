@@ -21,10 +21,10 @@ in
         ]
       )
       {
-        "sing-box_config.json" = {
-          sopsFile = "${const.secretsDir}/sing-box_config.json.sops";
-          format = "binary";
-        };
+        # "sing-box_config.json" = {
+        #   sopsFile = "${const.secretsDir}/sing-box_config.json.sops";
+        #   format = "binary";
+        # };
         sing-box_anytls_password = { };
       };
 
