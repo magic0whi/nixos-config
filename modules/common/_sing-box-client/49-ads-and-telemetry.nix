@@ -16,9 +16,20 @@ let
   rules = [
     {
       domain_suffix = [
-        "datadoghq.com" # Datadog: RUM / logs / crash reports
+        "appcues.com" # Appcues product tours
+        "appcues.net" # Appcues API / websocket
+        "birdie.so" # Birdie support widget
         "browser-intake-datadoghq.eu" # Datadog EU RUM / logs intake
+        "bugsnag.com" # Bugsnag: error + session telemetry
+        "datadoghq.com" # Datadog: RUM / logs / crash reports
+        "heap-api.com" # Heap ingest
+        "heapanalytics.com" # Heap analytics
+        "honeycomb.io" # Honeycomb telemetry
+        "hs-analytics.net" # HubSpot analytics
         "mixpanel.com" # product analytics
+        "onmaven.app" # Maven support chat
+        "sentry-cdn.com" # Sentry JS SDK CDN
+        "sentry10.bynder.cloud" # Bynder Sentry: error + CSP report ingest
       ];
     }
     { rule_set = [ "geosite-ads-and-telemetry" ]; }
