@@ -62,7 +62,9 @@ let
                         enable_ssl = true;
                         # trust_all = true;
                         verify_hostnames = false;
-                        pemtrustedcas_filepath = config.security.pki.caBundle;
+                        # Java's X509 parser rejects the BEGIN TRUSTED CERTIFICATE
+                        # (OpenSSL AUX) blocks in security.pki.caBundle
+                        pemtrustedcas_filepath = "${const.secretsDir}/proteus_ca.pub.pem";
                       };
                     };
                   };
