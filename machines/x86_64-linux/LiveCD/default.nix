@@ -67,7 +67,7 @@ let
         in
         features.hm.common.base
         ++ map mylib.relToRoot [
-          "${commonHmHeadless}/helix.nix"
+          "${commonHmHeadless}/helix"
           "${commonHmHeadless}/misc.nix"
           "${commonHmHeadless}/packages.nix"
           "${commonHmHeadless}/shell.nix"

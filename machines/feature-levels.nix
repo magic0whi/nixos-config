@@ -137,7 +137,7 @@
           ++ map mylib.relToRoot [
             "modules/vars_hm/hm-firewall.nix"
 
-            "${headless}/helix.nix"
+            "${headless}/helix"
             "${headless}/misc.nix"
             "${headless}/shell.nix"
           ];
