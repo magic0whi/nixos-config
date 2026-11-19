@@ -72,6 +72,8 @@
           inputs.niks3.nixosModules.niks3-auto-upload
         ]
         ++ map mylib.relToRoot [
+          "modules/vars/hm-firewall.nix"
+
           "${headless}/binfmt.nix"
           "${headless}/fhs.nix"
           "${headless}/fonts.nix"
@@ -146,6 +148,8 @@
             nixvim.homeModules.nixvim
           ]
           ++ map mylib.relToRoot [
+            "modules/vars_hm/hm-firewall.nix"
+
             "${headless}/ai"
             "${headless}/cloud-providers.nix"
             "${headless}/dev-env.nix"

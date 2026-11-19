@@ -5,6 +5,14 @@
   ...
 }:
 {
+  networking.firewall =
+    let
+      localsend_port = 53317;
+    in
+    {
+      allowedTCPPorts = [ localsend_port ];
+      allowedUDPPorts = [ localsend_port ];
+    };
   home.packages =
     (with pkgs; [
       feishin

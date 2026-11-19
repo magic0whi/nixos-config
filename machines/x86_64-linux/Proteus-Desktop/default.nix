@@ -39,7 +39,6 @@ let
             "${common}/fonts.nix"
             "${common}/packages.nix"
 
-            "${headless}/firewall-client.nix"
             "${headless}/krnl-compat.nix"
             "${headless}/packages.nix"
             "${headless}/scx-loader.nix"
