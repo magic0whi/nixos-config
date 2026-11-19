@@ -57,8 +57,7 @@
     # Environment variables must be strings in Nix
     environment = {
       APP_BASE_URL = "https://papra.${const.domain}";
-      # NODE_EXTRA_CA_CERTS = "/etc/ssl/certs/proteus_ca.pub.pem";
-      NODE_EXTRA_CA_CERTS = "/etc/ssl/certs/ca-certificates.crt";
+      NODE_USE_SYSTEM_CA = "1";
       DOCUMENTS_OCR_LANGUAGES = "chi_sim,chi_tra,eng";
       MAX_ORGANIZATION_COUNT_PER_USER = "40";
       DOCUMENT_STORAGE_MAX_UPLOAD_SIZE = "104857600";

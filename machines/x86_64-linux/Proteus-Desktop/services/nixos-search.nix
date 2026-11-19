@@ -6,7 +6,7 @@
   ...
 }:
 let
-  certs_dir = "/var/lib/opensearch/config/certs";
+  certs_dir = "/var/lib/opensearch/config/certs"; # peer certificates
   sec_cfg =
     let
       gen_empt_yml =
@@ -62,7 +62,7 @@ let
                         enable_ssl = true;
                         # trust_all = true;
                         verify_hostnames = false;
-                        pemtrustedcas_filepath = "${const.secretsDir}/proteus_ca.pub.pem";
+                        pemtrustedcas_filepath = config.security.pki.caBundle;
                       };
                     };
                   };

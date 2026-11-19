@@ -41,9 +41,8 @@ in
             ssl.enabled = false;
           };
 
-          # opensearch.ssl.verificationMode: none
           opensearch = {
-            # ssl.certificateAuthorities: [ "/etc/ssl/certs/ca-certificates.crt" ]
+            # ssl.certificateAuthorities = [ "/etc/ssl/certs/ca-certificates.crt" ]; # Sets for OpenSearch client only
             hosts = [ "https://nixos-search.${const.domain}/backend" ];
             username = "kibanaserver";
             # NOTE opensearch-dashboards don't suppport urlencode
@@ -71,7 +70,7 @@ in
               client_id = "opensearch-dashboards";
               client_secret = config.sops.placeholder.opensearch-dashboards_client_secret;
               scope = "openid profile email groups";
-              # root_ca: /etc/ssl/certs/ca-certificates.crt
+              # root_ca = "/etc/ssl/certs/ca-certificates.crt";
             };
           };
         };
@@ -82,6 +81,7 @@ in
     containers.opensearch-dashboards = {
       image = "opensearchproject/opensearch-dashboards:3.6.0";
       ports = [ "127.0.0.1:${toString opensearch_dashboards_port}:5601" ];
+      # Cannot use NODE_USE_SYSTEM_CA=1, Node 20.18.3 < 22.15 / 23.9
       environment.NODE_EXTRA_CA_CERTS = "/etc/ssl/certs/ca-certificates.crt";
       volumes = [
         "${config.security.pki.caBundle}:/etc/ssl/certs/ca-certificates.crt:ro"

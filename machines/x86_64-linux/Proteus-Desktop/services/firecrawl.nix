@@ -30,6 +30,7 @@ let
     environment = {
       ALLOW_LOCAL_WEBHOOKS = "true"; # Allow scraping internal/private addresses and trusting the self-signed
       NODE_EXTRA_CA_CERTS = "/etc/ssl/certs/ca-certificates.crt";
+      # Cannot use NODE_USE_SYSTEM_CA=1, in that container there is no /etc/ssl at all
     };
     volumes = [ "${config.security.pki.caBundle}:/etc/ssl/certs/ca-certificates.crt:ro" ];
   };

@@ -193,7 +193,7 @@ in
                     sslmode = "verify-full"; # require/verify-ca/verify-full
                     # tls
                     tlsConfigurationMethod = "file-path";
-                    sslRootCertFile = "${const.secretsDir}/proteus_ca.pub.pem";
+                    sslRootCertFile = config.security.pki.caBundle;
                   };
                 }
             )

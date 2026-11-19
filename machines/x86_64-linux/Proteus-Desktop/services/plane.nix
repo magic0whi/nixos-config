@@ -12,7 +12,7 @@ let
 
   backend_volumes = [
     "${./plane_gitea_authelia.py}:/code/plane/authentication/provider/oauth/gitea.py"
-    "${const.secretsDir}/proteus_ca.pub.pem:/usr/local/share/ca-certificates/proteus_ca.crt:ro"
+    "${config.security.pki.caBundle}:/etc/ssl/certs/ca-certificates.crt:ro"
   ];
 
   pgdata = "/var/lib/postgresql/data";
@@ -96,8 +96,7 @@ in
               # https://github.com/makeplane/plane/blob/1e8f3630c7697129b61eb57f2453f0bf09224920/apps/api/plane/settings/common.py
               WEB_URL = "https://plane.${const.domain}";
               CORS_ALLOWED_ORIGINS = "https://plane.${const.domain}";
-              REQUESTS_CA_BUNDLE = "/usr/local/share/ca-certificates/proteus_ca.crt";
-              NODE_EXTRA_CA_CERTS = "/usr/local/share/ca-certificates/proteus_ca.crt";
+              REQUESTS_CA_BUNDLE = "/etc/ssl/certs/ca-certificates.crt";
               # DEBUG = 1;
               GUNICORN_WORKERS = 5;
 
