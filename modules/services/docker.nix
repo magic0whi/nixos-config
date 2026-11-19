@@ -6,9 +6,10 @@
   ...
 }:
 {
-  services.resolved.settings.Resolve.DNSStubListenerExtra = [ "172.17.0.1" ]; # for split DNS
+  services.resolved.settings.Resolve.DNSStubListenerExtra = [ const.networking.dockerIP ]; # for split DNS
   networking.firewall.extraInputRules = ''
-    iifname { "docker0", "br-*" } ip daddr 172.17.0.1 meta l4proto { tcp, udp } th dport 53 accept comment "Docker containers to systemd-resolved"
+    iifname { "docker0", "br-*" } ip daddr ${const.networking.dockerIP} meta l4proto { tcp, udp }
+      th dport 53 accept comment "Docker containers to systemd-resolved"
   '';
   users.users.${const.username}.extraGroups = [ "docker" ];
   systemd.services.docker.path = lib.mkIf (config.virtualisation.docker.daemon.settings.firewall-backend == "nftables") [
@@ -23,7 +24,7 @@
       # Enables pulling using containerd, which supports restarting from a partial pull.
       # Ref https://docs.docker.com/storage/containerd/
       features.containerd-snapshotter = true;
-      dns = [ "172.17.0.1" ]; # systemd-resolved for split DNS
+      dns = [ const.networking.dockerIP ]; # systemd-resolved for split DNS
     };
   };
 }

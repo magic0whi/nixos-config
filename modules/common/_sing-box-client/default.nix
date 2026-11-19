@@ -158,8 +158,8 @@ lib.mkMerge (
               in
               lib.optional (hostAddrs ? wire && hostAddrs.wire.ipv4 != null) hostAddrs.wire.ipv4
             )
-            # I have split DNS listen on 172.17.0.1 when docker is enabled
-            ++ lib.optional (config.virtualisation.docker.enable or false) "172.17.0.1/32";
+            # I have split DNS listening when docker is enabled
+            ++ lib.optional (config.virtualisation.docker.enable or false) "${const.networking.dockerIP}/32";
           })
           # FakeIP-only mode
           (lib.mkIf isServer {
