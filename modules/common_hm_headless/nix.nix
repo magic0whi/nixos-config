@@ -13,7 +13,7 @@
   sops = {
     secrets =
       let
-        sopsFile = "${const.secretsDir}/${const.networking.findFirstHostBySubdomain "niks3"}_shared.sops.yaml";
+        sopsFile = const.secretsDir + "/services/niks3_shared.sops.yaml";
       in
       {
         github_access_tokens = { };
