@@ -15,20 +15,20 @@ in
   sops =
     let
       restartUnits = [ "niks3.service" ];
-      sopsFile = "${const.secretsDir}/${hostname}_shared.sops.yaml";
+      sopsFile = const.secretsDir + "/services/niks3_shared.sops.yaml";
       owner = "niks3";
     in
     {
       secrets = {
         niks3_db_password = {
-          sopsFile = "${const.secretsDir}/${hostname}.sops.yaml";
+          sopsFile = const.secretsDir + "/services/niks3.sops.yaml";
           inherit restartUnits;
         };
         niks3_cache_access_key = { inherit sopsFile restartUnits owner; };
         niks3_cache_secret_key = { inherit sopsFile restartUnits owner; };
         niks3_api_token = { inherit sopsFile restartUnits owner; };
         "nix_secret.key" = {
-          sopsFile = "${const.secretsDir}/nix_secret.key.sops";
+          sopsFile = const.secretsDir + "/nix_secret.key.sops";
           format = "binary";
           inherit restartUnits owner;
         };

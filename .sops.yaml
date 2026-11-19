@@ -80,8 +80,6 @@ creation_rules:
   ## BEGIN Proteus-MBP14M4P
   ## END Proteus-MBP14M4P
   ## BEGIN Proteus-Desktop
-  - path_regex: secrets/authelia_oidc_rsa\.pem.sops$
-    key_groups: [{ pgp: [*openpgp], age: [*Proteus-Desktop] }]
   - path_regex: secrets/Proteus-Desktop\.sops\.yaml$
     key_groups: [{ pgp: [*openpgp], age: [*Proteus-Desktop] }]
   - path_regex: secrets/Proteus-Desktop_syncthing\.priv\.pem\.sops$
@@ -194,5 +192,17 @@ creation_rules:
           - *Proteus-NixOS-5
           - *Proteus-NixOS-6
   - path_regex: secrets/services/grafana\.sops\.yaml
+    key_groups: [{ pgp: [*openpgp], age: [*Proteus-Desktop] }]
+  - path_regex: secrets/services/plane\.sops\.yaml
+    key_groups: [{ pgp: [*openpgp], age: [*Proteus-Desktop] }]
+  - path_regex: secrets/services/authelia\.sops\.yaml
+    key_groups: [{ pgp: [*openpgp], age: [*Proteus-Desktop] }]
+  - path_regex: secrets/services/authelia_oidc_rsa\.pem.sops$
+    key_groups: [{ pgp: [*openpgp], age: [*Proteus-Desktop] }]
+  - path_regex: secrets/services/garage\.sops\.yaml
+    key_groups: [{ pgp: [*openpgp], age: [*Proteus-Desktop] }]
+  - path_regex: secrets/services/niks3\.sops\.yaml
+    key_groups: [{ pgp: [*openpgp], age: [*Proteus-Desktop] }]
+  - path_regex: secrets/services/niks3_shared\.sops\.yaml
     key_groups: [{ pgp: [*openpgp], age: [*Proteus-Desktop] }]
   ## END Services

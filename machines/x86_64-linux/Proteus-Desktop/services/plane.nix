@@ -46,7 +46,7 @@ in
 
   sops =
     let
-      sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
+      sopsFile = const.secretsDir + "/services/plane.sops.yaml";
 
       backend_units = with restart_units; [
         plane-api
@@ -58,6 +58,18 @@ in
     {
       secrets = {
         # TIP: generate a random secret key using: openssl rand -hex 32
+        plane_aws_secret_access_key = {
+          inherit sopsFile;
+          restartUnits = [ restart_units.plane-minio ] ++ backend_units;
+        };
+        plane_gitea_client_secret = {
+          inherit sopsFile;
+          restartUnits = backend_units;
+        };
+        plane_live_server_secret_key = {
+          inherit sopsFile;
+          restartUnits = [ restart_units.plane-live ] ++ backend_units;
+        };
         plane_postgres_password = {
           inherit sopsFile;
           restartUnits = [ restart_units.plane-db ] ++ backend_units;
@@ -67,18 +79,6 @@ in
           restartUnits = [ restart_units.plane-mq ] ++ backend_units;
         };
         plane_secret_key = {
-          inherit sopsFile;
-          restartUnits = backend_units;
-        };
-        plane_aws_secret_access_key = {
-          inherit sopsFile;
-          restartUnits = [ restart_units.plane-minio ] ++ backend_units;
-        };
-        plane_live_server_secret_key = {
-          inherit sopsFile;
-          restartUnits = [ restart_units.plane-live ] ++ backend_units;
-        };
-        plane_gitea_client_secret = {
           inherit sopsFile;
           restartUnits = backend_units;
         };

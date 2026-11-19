@@ -18,18 +18,18 @@ in
   };
   sops.secrets =
     let
-      sopsFile = "${const.secretsDir}/${hostname}.sops.yaml";
+      sopsFile = const.secretsDir + "/services/authelia.sops.yaml";
       owner = config.services.authelia.instances.main.user;
     in
     {
       authelia_jwt_secret = { inherit sopsFile owner restartUnits; };
-      authelia_session_secret = { inherit sopsFile owner restartUnits; };
-      authelia_storage_encryption_key = { inherit sopsFile owner restartUnits; };
       authelia_ldap_password = { inherit sopsFile owner restartUnits; };
       authelia_oidc_hmac = { inherit sopsFile owner restartUnits; };
+      authelia_session_secret = { inherit sopsFile owner restartUnits; };
+      authelia_storage_encryption_key = { inherit sopsFile owner restartUnits; };
       "authelia_oidc_rsa.pem" = {
         inherit owner restartUnits;
-        sopsFile = "${const.secretsDir}/authelia_oidc_rsa.pem.sops";
+        sopsFile = const.secretsDir + "/services/authelia_oidc_rsa.pem.sops";
         format = "binary";
       };
     };

@@ -1,13 +1,13 @@
 # TODO use a dedicated dataset, as data on garage already compressed
-{ config, const, ... }:
+{ const, ... }:
 {
   sops.secrets =
     let
-      sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
+      sopsFile = const.secretsDir + "/services/garage.sops.yaml";
     in
     {
-      garage_rpc_secret = { inherit sopsFile; };
       garage_admin_token = { inherit sopsFile; };
+      garage_rpc_secret = { inherit sopsFile; };
       garage_ui_oidc_client_secret = { inherit sopsFile; };
     };
 
