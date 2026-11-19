@@ -71,7 +71,6 @@ in
               # "debian-latest:docker://node:20-bookworm"
               # Fake the ubuntu name, because node provides no ubuntu builds
               "ubuntu-latest:docker://catthehacker/ubuntu:runner-latest"
-              # "ubuntu-24.04-arm:docker://node:20-bookworm"
             ];
             capacity = 3; # Simultaneous jobs
             envs.NODE_EXTRA_CA_CERTS = "/etc/ssl/certs/ca-certificates.crt";
