@@ -6,6 +6,8 @@
   ...
 }:
 let
+  cache_port = 44221;
+
   runner_units = map (name: "forgejo-runner-${name}") (builtins.attrNames config.services.forgejo-runner.instances);
 in
 {
@@ -39,6 +41,11 @@ in
     };
   });
 
+  networking.firewall.extraInputRules = ''
+    iifname { "docker0", "br-*" } ip daddr ${const.networking.dockerIP}
+      tcp dport ${toString cache_port} accept comment "Forgejo runner cache proxy"
+  '';
+
   # Local Action Runner connecting to Forgejo instance
   # Docker is required to execute Docker-based action labels
   services.forgejo-runner =
@@ -48,7 +55,18 @@ in
         secrets.server.connections.default.token_url = config.sops.secrets.forgejo_runner_token.path;
         # https://gitea.com/gitea/act_runner/src/commit/40dcee0991c3bd33b657bb77aa1f2f46d69cc0e2/internal/pkg/config/config.example.yaml
         settings = {
-          # The nodejs still couldn't recognize my self-signed cert
+          cache = rec {
+            enabled = true;
+            # The job containers reach the runner's cache proxy through the Docker
+            # bridge, so it needs a fixed port (the default is a random one picked at
+            # every start) and a hole in the host firewall. Without both, every
+            # actions/cache run dies with
+            # `reserveCache failed: connect ETIMEDOUT <lan ip>:<random port>`.
+            proxy_port = cache_port;
+            # The cache proxy that ACTIONS_CACHE_URL points at.
+            actions_cache_url_override = "http://${const.networking.dockerIP}:${toString proxy_port}";
+          };
+          # The nodejs cannot recognize my self-signed cert
           runner = {
             labels = [
               # "debian-latest:docker://node:20-bookworm"
