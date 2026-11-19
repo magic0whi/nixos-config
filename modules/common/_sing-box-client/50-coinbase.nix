@@ -14,6 +14,7 @@ let
   out = "Coinbase";
   rules = lib.singleton {
     domain_suffix = [
+      "cb-device-intelligence.com" # Coinbase: device fingerprinting / fraud scoring
       "coinbase.com"
       "wallet.elephant-blue.org"
     ];
