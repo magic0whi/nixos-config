@@ -30,6 +30,7 @@ let
         "onmaven.app" # Maven support chat
         "sentry-cdn.com" # Sentry JS SDK CDN
         "sentry10.bynder.cloud" # Bynder Sentry: error + CSP report ingest
+        "sprig.com" # Sprig: in-product surveys
       ];
     }
     { rule_set = [ "geosite-ads-and-telemetry" ]; }

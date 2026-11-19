@@ -23,6 +23,15 @@ let
         "launchdarkly.com" # LaunchDarkly: feature flags (may gate app features, don't block)
         "medallia.com" # Medallia: customer feedback surveys & experience analytics
         "online-metrix.net" # LexisNexis ThreatMetrix: device fingerprinting & fraud scoring
+
+        "statsig.com" # Statsig: feature flags / experiments (rotating domains, don't block)
+        "statsigapi.net" # Statsig: events + config API
+        "statsigcdn.com" # Statsig: CDN
+        "assetsconfigcdn.org" # Statsig: config (rotating domain)
+        "featureassets.org" # Statsig: initialize (rotating domain)
+        "prodregistryv2.org" # Statsig: event log (rotating domain)
+        "beyondwickedmapping.org" # Statsig: fallback (rotating domain)
+
         "zimperium.com" # Zimperium: mobile threat defense / app anti-tamper SDK
       ];
     }
