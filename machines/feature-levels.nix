@@ -108,6 +108,7 @@
         "${headless}/power-mgmt.nix"
         "${headless}/remote-build.nix"
         "${headless}/secureboot.nix"
+        "${headless}/sing-box-client.nix"
         "${headless}/sing-box-client-mobile.nix"
         "${headless}/zfs.nix"
 

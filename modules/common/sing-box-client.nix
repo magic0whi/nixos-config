@@ -9,7 +9,6 @@
 let
   not_darwin = !pkgs.stdenv.hostPlatform.isDarwin;
 in
-
 {
   sops.secrets =
     # Add conditional restartUnits to the secrets
