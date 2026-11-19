@@ -42,8 +42,8 @@ let
           ;
       };
       modules =
-        (with features.common; base ++ seat ++ extra)
-        ++ (with features.nixos; base ++ seat.tui ++ seat.gui ++ extra)
+        (with features.common; base ++ seat)
+        ++ (with features.nixos; base ++ seat.tui ++ seat.gui)
         ++ [
           i915-sriov-dkms.nixosModules.default
           NixVirt.nixosModules.default

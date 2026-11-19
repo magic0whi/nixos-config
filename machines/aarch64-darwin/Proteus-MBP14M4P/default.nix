@@ -25,7 +25,7 @@ let
       overlays = with features; common.baseOverlays;
       machinePath = ./.;
       specialArgs = { inherit deploy-rs nixvim dev-flake; };
-      modules = (with features.common; base ++ seat ++ extra) ++ features.darwin;
+      modules = (with features.common; base ++ seat) ++ features.darwin;
       hmModules = (with features.hm.common; base ++ seat) ++ features.hm.darwin;
     }
   );

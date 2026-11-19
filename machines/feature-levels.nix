@@ -24,13 +24,11 @@
         (_: prev: { inherit (nixpkgs-opencode.legacyPackages.${prev.stdenv.hostPlatform.system}) opencode; })
       ];
       seat = map mylib.relToRoot [
-        "${common}/sing-box-client.nix"
         "${common}/fonts.nix"
         "${common}/niks3-auto-upload.nix"
         "${common}/packages.nix"
-      ];
-      extra = map mylib.relToRoot [
         "${common}/sing-box-client-mobile.nix"
+        "${common}/sing-box-client.nix"
         "${common}/ssh.nix"
       ];
       services =
@@ -70,13 +68,22 @@
 
       seat = {
         tui = [
+          inputs.lanzaboote.nixosModules.default
           inputs.niks3.nixosModules.niks3-auto-upload
         ]
         ++ map mylib.relToRoot [
+          "${headless}/binfmt.nix"
           "${headless}/fhs.nix"
-          "${headless}/firewall-client.nix"
           "${headless}/fonts.nix"
+          "${headless}/krnl-compat.nix"
+          "${headless}/packages.nix"
+          "${headless}/power-mgmt.nix"
+          "${headless}/remote-build.nix"
           "${headless}/scx-loader.nix"
+          "${headless}/secureboot.nix"
+          "${headless}/sing-box-client-mobile.nix"
+          "${headless}/sing-box-client.nix"
+          "${headless}/zfs.nix"
 
           "${gui}/kmscon.nix"
         ];
@@ -84,6 +91,9 @@
         gui =
           (with inputs; [ noctalia-greeter.nixosModules.default ])
           ++ map mylib.relToRoot [
+            "${gui}/bluetooth.nix"
+            "${gui}/peripherals.nix"
+            "${gui}/pipewire.nix"
             "${gui}/security.nix"
             "${gui}/steam.nix"
             "${gui}/wayland.nix"
@@ -99,25 +109,6 @@
           ]
         );
       };
-
-      extra = [
-        inputs.lanzaboote.nixosModules.default
-      ]
-      ++ map mylib.relToRoot [
-        "${headless}/binfmt.nix"
-        "${headless}/krnl-compat.nix"
-        "${headless}/packages.nix"
-        "${headless}/power-mgmt.nix"
-        "${headless}/remote-build.nix"
-        "${headless}/secureboot.nix"
-        "${headless}/sing-box-client.nix"
-        "${headless}/sing-box-client-mobile.nix"
-        "${headless}/zfs.nix"
-
-        "${gui}/peripherals.nix"
-        "${gui}/bluetooth.nix"
-        "${gui}/pipewire.nix"
-      ];
     };
 
   darwin =
