@@ -58,6 +58,8 @@
           sops-nix.nixosModules.sops
         ])
         ++ map mylib.relToRoot [
+          "modules/vars/hm-firewall.nix"
+
           "${headless}/easytier.nix"
           "${headless}/firewall-common.nix"
           "${headless}/impermanence.nix"
@@ -72,8 +74,6 @@
           inputs.niks3.nixosModules.niks3-auto-upload
         ]
         ++ map mylib.relToRoot [
-          "modules/vars/hm-firewall.nix"
-
           "${headless}/binfmt.nix"
           "${headless}/fhs.nix"
           "${headless}/fonts.nix"
@@ -135,6 +135,8 @@
             catppuccin.homeModules.catppuccin
           ]
           ++ map mylib.relToRoot [
+            "modules/vars_hm/hm-firewall.nix"
+
             "${headless}/helix.nix"
             "${headless}/misc.nix"
             "${headless}/shell.nix"
@@ -148,8 +150,6 @@
             nixvim.homeModules.nixvim
           ]
           ++ map mylib.relToRoot [
-            "modules/vars_hm/hm-firewall.nix"
-
             "${headless}/ai"
             "${headless}/cloud-providers.nix"
             "${headless}/dev-env.nix"

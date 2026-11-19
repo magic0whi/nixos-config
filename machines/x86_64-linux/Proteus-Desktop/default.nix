@@ -42,6 +42,7 @@ let
             "${headless}/krnl-compat.nix"
             "${headless}/packages.nix"
             "${headless}/scx-loader.nix"
+            "${headless}/sing-box-client.nix"
             "${headless}/zfs.nix"
 
             "modules/nixos_gui/kmscon.nix"
