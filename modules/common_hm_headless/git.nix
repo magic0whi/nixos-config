@@ -2,6 +2,7 @@
   config,
   lib,
   const,
+  osConfig,
   pkgs,
   ...
 }:
@@ -30,6 +31,7 @@
     package = pkgs.emptyDirectory; # Already in `environment.systemPackages`, set to dummy package
     lfs.enable = true; # Used by huggingface models
     settings = {
+      http.sslCAInfo = osConfig.security.pki.caBundle;
       user = {
         name = const.userFullName;
         inherit (const) email;
