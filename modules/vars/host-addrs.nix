@@ -1,6 +1,7 @@
 # Custom options as global variables
 args@{ config, lib, ... }:
 let
+  # Workaround as mergeing the os configurations cause readOnly options being set multiple times, which is disallowed
   isGlobal = args.isGlobal or false;
   subdomainsCfg = hostname: _nicCfg: {
     options = {
@@ -112,6 +113,7 @@ in
   };
 
   # NOTE: assertions is a nixpkgs option and does not exist on custom modules
+  # Implementation is in const/networking.nix
   config = lib.optionalAttrs (!isGlobal) (
     let
       hostname = config.networking.hostName;

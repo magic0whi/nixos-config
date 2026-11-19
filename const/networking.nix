@@ -11,7 +11,7 @@ let
       modules = [
         (
           { config, lib, ... }:
-          import (mylib.relToRoot "modules/variables/host-addrs.nix") {
+          import (mylib.relToRoot "modules/vars/host-addrs.nix") {
             inherit config lib;
             isGlobal = true;
           }
@@ -23,7 +23,7 @@ let
             }) (nixosConfigurations // darwinConfigurations)
           );
         }
-        (mylib.relToRoot "modules/variables/forward-auth-services.nix")
+        (mylib.relToRoot "modules/vars/forward-auth-services.nix")
         {
           config.vars.forwardAuthServices = lib.mkMerge (
             lib.mapAttrsToList (_: host: host.config.vars.forwardAuthServices or [ ]) (nixosConfigurations // darwinConfigurations)
