@@ -21,7 +21,17 @@
   '';
   ## END ssh.nix
   ## BEGIN security.nix
-  security.pam.services.sudo_local.touchIdAuth = true; # Add ability to used TouchID for sudo authentication
+  security.pam.services.sudo_local = {
+    touchIdAuth = true;
+
+    # Enable rssh, `mkBefore` runs it before the Touch ID rule.
+    # Ref:
+    # https://github.com/NixOS/nixpkgs/blob/177d0540942fb205af6993b1d5fa0b57799e09f8/nixos/modules/security/pam.nix#L1107
+    # https://github.com/NixOS/nixpkgs/blob/177d0540942fb205af6993b1d5fa0b57799e09f8/nixos/modules/security/pam.nix#L2057-L2083
+    text = lib.mkBefore ''
+      auth       sufficient     ${pkgs.pam_rssh}/lib/libpam_rssh.dylib auth_key_file=/etc/ssh/nix_authorized_keys.d/''${ruser:${const.username}}
+    '';
+  };
 
   # NOTE: `nix-darwin` only executes hardcoded list of script names during the rebuild process
   # https://github.com/nix-darwin/nix-darwin/issues/663
