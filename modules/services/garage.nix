@@ -48,7 +48,10 @@ in
       secrets = {
         garage_rpc_secret = { inherit restartUnits; };
         garage_admin_token = { inherit restartUnits; };
-        prometheus-exporter_token = { inherit restartUnits; };
+        prometheus-exporter_token = {
+          inherit restartUnits;
+          sopsFile = const.secretsDir + "/services/prometheus-exporter.sops.yaml";
+        };
         garage_ui_oidc_client_secret.restartUnits = [
           "${config.virtualisation.oci-containers.containers.garage-ui.serviceName}.service"
         ];

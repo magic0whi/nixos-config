@@ -11,10 +11,13 @@
       owner = "prometheus";
     in
     {
-      prometheus-exporter_token = { inherit owner; };
-      prometheus_password = {
-        sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
+      prometheus-exporter_token = {
         inherit owner;
+        sopsFile = const.secretsDir + "/services/prometheus-exporter.sops.yaml";
+      };
+      prometheus_password = {
+        inherit owner;
+        sopsFile = const.secretsDir + "/services/prometheus.sops.yaml";
       };
     };
 

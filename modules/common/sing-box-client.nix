@@ -25,7 +25,7 @@ in
         #   sopsFile = "${const.secretsDir}/sing-box_config.json.sops";
         #   format = "binary";
         # };
-        sing-box_anytls_password = { };
+        sing-box_anytls_password.sopsFile = const.secretsDir + "/services/sing-box.sops.yaml";
       };
 
   services = lib.mkMerge [

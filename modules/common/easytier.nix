@@ -17,7 +17,10 @@ in
       };
     in
     {
-      secrets.easytier_network_secret = mkRestartUnits;
+      secrets.easytier_network_secret = lib.mkMerge [
+        { sopsFile = const.secretsDir + "/services/easytier.sops.yaml"; }
+        mkRestartUnits
+      ];
       templates."easytier.env" = lib.mkMerge [
         mkRestartUnits
         { content = mylib.toEnv { ET_NETWORK_SECRET = config.sops.placeholder.easytier_network_secret; }; }

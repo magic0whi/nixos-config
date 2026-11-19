@@ -123,4 +123,76 @@ creation_rules:
   # SOPS_AGE_KEY=$(nix run nixpkgs#ssh-to-age -- -private-key -i ~/Secrets/Backup/proteus@agenix-recovery.ssh.priv.key) sops -- edit secrets/syncthing_proteus-nuc.priv.pem.age
   - path_regex: secrets/Proteus-MBP14M4P_syncthing\.priv\.pem\.sops$
     key_groups: [pgp: [*openpgp]]
-## END Proteus-MBP14M4P (HM)
+  ## END Proteus-MBP14M4P (HM)
+  ## BEGIN Services
+  - path_regex: secrets/services/ddclient\.sops\.yaml
+    key_groups:
+      - pgp: [*openpgp]
+        age:
+          - *Proteus-NixOS-0
+          - *Proteus-NixOS-1
+          - *Proteus-NixOS-2
+          - *Proteus-NixOS-3
+          - *Proteus-NixOS-4
+          - *Proteus-NixOS-5
+          - *Proteus-NixOS-6
+  - path_regex: secrets/services/sing-box\.sops\.yaml
+    key_groups:
+      - pgp: [*openpgp]
+        age:
+          - *Proteus-Desktop
+          - *Proteus-MBP14M4P
+          - *Proteus-NUC
+          - *Proteus-NixOS-0
+          - *Proteus-NixOS-1
+          - *Proteus-NixOS-2
+          - *Proteus-NixOS-3
+          - *Proteus-NixOS-4
+          - *Proteus-NixOS-5
+          - *Proteus-NixOS-6
+  - path_regex: secrets/services/easytier\.sops\.yaml
+    key_groups:
+      - pgp: [*openpgp]
+        age:
+          - *Proteus-Desktop
+          - *Proteus-MBP14M4P
+          - *Proteus-NUC
+          - *Proteus-NixOS-0
+          - *Proteus-NixOS-1
+          - *Proteus-NixOS-2
+          - *Proteus-NixOS-3
+          - *Proteus-NixOS-4
+          - *Proteus-NixOS-5
+          - *Proteus-NixOS-6
+  - path_regex: secrets/services/prometheus-exporter\.sops\.yaml
+    key_groups:
+      - pgp: [*openpgp]
+        age:
+          - *Proteus-Desktop
+          - *Proteus-NUC
+          - *Proteus-NixOS-0
+          - *Proteus-NixOS-1
+          - *Proteus-NixOS-2
+          - *Proteus-NixOS-3
+          - *Proteus-NixOS-4
+          - *Proteus-NixOS-5
+          - *Proteus-NixOS-6
+  - path_regex: secrets/services/prometheus\.sops\.yaml
+    key_groups: [{ pgp: [*openpgp], age: [*Proteus-Desktop] }]
+  - path_regex: secrets/services/sssd\.sops\.yaml
+    key_groups:
+      - pgp: [*openpgp]
+        age:
+          - *Proteus-Desktop
+          - *Proteus-MBP14M4P
+          - *Proteus-NUC
+          - *Proteus-NixOS-0
+          - *Proteus-NixOS-1
+          - *Proteus-NixOS-2
+          - *Proteus-NixOS-3
+          - *Proteus-NixOS-4
+          - *Proteus-NixOS-5
+          - *Proteus-NixOS-6
+  - path_regex: secrets/services/grafana\.sops\.yaml
+    key_groups: [{ pgp: [*openpgp], age: [*Proteus-Desktop] }]
+  ## END Services

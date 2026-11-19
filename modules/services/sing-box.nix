@@ -21,11 +21,14 @@
       restartUnits = [ "sing-box.service" ];
     in
     {
-      sing-box_anytls_password = { inherit restartUnits; };
+      sing-box_anytls_password = {
+        inherit restartUnits;
+        sopsFile = const.secretsDir + "/services/sing-box.sops.yaml";
+      };
       # Shared with ddclient (Cloudflare "Edit zone DNS" token), used for ACME DNS-01
       ddclient_cloudflare_password = {
         inherit restartUnits;
-        sopsFile = "${const.secretsDir}/cloud.sops.yaml";
+        sopsFile = const.secretsDir + "/services/ddclient.sops.yaml";
       };
     };
   services.sing-box = {

@@ -11,7 +11,10 @@
       restartUnits = [ "sssd.service" ];
     in
     {
-      secrets."sssd_ldap_default_authtok" = { inherit restartUnits; };
+      secrets.sssd_ldap_default_authtok = {
+        inherit restartUnits;
+        sopsFile = const.secretsDir + "/services/sssd.sops.yaml";
+      };
       templates."sssd.env" = {
         inherit restartUnits;
         # https://github.com/NixOS/nixpkgs/blob/15f4ee454b1dce334612fa6843b3e05cf546efab/nixos/modules/services/misc/sssd.nix#L111-L113
