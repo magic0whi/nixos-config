@@ -6,10 +6,7 @@
   ...
 }:
 let
-  restart_runner_units = map (name: "forgejo-runner-${name}.service") (
-    builtins.attrNames config.services.forgejo-runner.instances
-  );
-  clean_runner_units = map (s: lib.removeSuffix ".service" s) restart_runner_units;
+  runner_units = map (name: "forgejo-runner-${name}") (builtins.attrNames config.services.forgejo-runner.instances);
 in
 {
   # Generate the runner token for the global runner
@@ -19,10 +16,10 @@ in
   # administration -> Actions -> Runners, click the edit and check the "Regenerate token" box, them save
   sops.secrets.forgejo_runner_token = {
     sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
-    restartUnits = restart_runner_units;
+    restartUnits = map (u: "${u}.service") runner_units;
   };
 
-  systemd.services = lib.genAttrs clean_runner_units (_: {
+  systemd.services = lib.genAttrs runner_units (_: {
     serviceConfig = {
       SupplementaryGroups = [ "kvm" ];
       ExecStartPre = lib.mkAfter [
