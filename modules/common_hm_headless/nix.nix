@@ -22,16 +22,16 @@
           format = "binary";
           path = "${config.xdg.configHome}/nix/secret.key";
         };
-        nix-cache_access_key = { inherit sopsFile; };
-        nix-cache_secret_key = { inherit sopsFile; };
+        niks3_cache_access_key = { inherit sopsFile; };
+        niks3_cache_secret_key = { inherit sopsFile; };
       };
     templates = {
       aws_credentials = {
         path = "${config.home.homeDirectory}/.aws/credentials";
         content = mylib.toINI {
           nixbuilder = {
-            aws_access_key_id = config.sops.placeholder.nix-cache_access_key;
-            aws_secret_access_key = config.sops.placeholder.nix-cache_secret_key;
+            aws_access_key_id = config.sops.placeholder.niks3_cache_access_key;
+            aws_secret_access_key = config.sops.placeholder.niks3_cache_secret_key;
           };
         };
       };

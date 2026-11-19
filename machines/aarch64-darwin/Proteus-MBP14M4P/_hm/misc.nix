@@ -1,19 +1,20 @@
 {
   config,
   const,
+  lib,
   pkgs,
   ...
 }:
 {
-  sops.secrets.llama-server_key.sopsFile = "${const.secretsDir}/common_hm.sops.yaml";
+  sops.secrets.llama-server_api_token.sopsFile = "${const.secretsDir}/common_hm.sops.yaml";
 
   # Unified memory caps at an 8B Q4 (~5 GB) as the always-on default; a 14B Q4
   # needs ~9 GB and is a deliberate swap, not a second service.
   launchd.agents.llama-server = {
     enable = true;
     config = {
-      ProgramArguments = [
-        "${pkgs.writeShellScript "llama-server" ''
+      ProgramArguments = lib.singleton (
+        pkgs.writeShellScript "llama-server" ''
           set -eu
           # -a = API model name; -ngl 99 = all layers on Metal; -c 8192 = context;
           # -fa on = flash attention; --cache-type-k/v q8_0 = half-size KV cache;
@@ -33,12 +34,12 @@
             } \
             -a qwen3-8b \
             --host 0.0.0.0 --port 8080 \
-            --api-key-file ${config.sops.secrets.llama-server_key.path} \
+            --api-key-file ${config.sops.secrets.llama-server_api_token.path} \
             -ngl 99 -c 8192 -fa on \
             --cache-type-k q8_0 --cache-type-v q8_0 \
             --jinja --reasoning off
-        ''}"
-      ];
+        ''
+      );
       KeepAlive = true;
       RunAtLoad = true;
       ThrottleInterval = 10;

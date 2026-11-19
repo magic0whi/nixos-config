@@ -24,8 +24,8 @@ in
           sopsFile = "${const.secretsDir}/${hostname}.sops.yaml";
           inherit restartUnits;
         };
-        nix-cache_access_key = { inherit sopsFile restartUnits owner; };
-        nix-cache_secret_key = { inherit sopsFile restartUnits owner; };
+        niks3_cache_access_key = { inherit sopsFile restartUnits owner; };
+        niks3_cache_secret_key = { inherit sopsFile restartUnits owner; };
         niks3_api_token = { inherit sopsFile restartUnits owner; };
         "nix_secret.key" = {
           sopsFile = "${const.secretsDir}/nix_secret.key.sops";
@@ -57,8 +57,8 @@ in
       bucket = "nix-cache";
       region = config.services.garage.settings.s3_api.s3_region;
       useSSL = true;
-      accessKeyFile = config.sops.secrets.nix-cache_access_key.path;
-      secretKeyFile = config.sops.secrets.nix-cache_secret_key.path;
+      accessKeyFile = config.sops.secrets.niks3_cache_access_key.path;
+      secretKeyFile = config.sops.secrets.niks3_cache_secret_key.path;
     };
 
     apiTokenFile = config.sops.secrets.niks3_api_token.path;

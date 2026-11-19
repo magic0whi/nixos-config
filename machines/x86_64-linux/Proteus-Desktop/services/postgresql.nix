@@ -47,7 +47,7 @@ in
         format = "binary";
         owner = config.systemd.services.postgresql.serviceConfig.User;
       };
-      psql_ldap_bind_pw = {
+      psql_ldap_bind_password = {
         inherit restartUnits;
         sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
       };
@@ -63,7 +63,7 @@ in
           ldap_opts = builtins.concatStringsSep " " [
             ''ldapurl="ldaps://ldap.${const.domain}/${base_dn}?uid?sub"''
             ''ldapbinddn="uid=${config.systemd.services.postgresql.serviceConfig.User},ou=ServiceAccounts,${base_dn}"''
-            ''ldapbindpasswd="${config.sops.placeholder.psql_ldap_bind_pw}"''
+            ''ldapbindpasswd="${config.sops.placeholder.psql_ldap_bind_password}"''
           ];
         in
         ''

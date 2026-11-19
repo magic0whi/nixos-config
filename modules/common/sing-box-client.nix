@@ -21,11 +21,11 @@ in
         ]
       )
       {
-        "sb_test.json" = {
-          sopsFile = "${const.secretsDir}/sb_test.json.sops";
+        "sing-box_config.json" = {
+          sopsFile = "${const.secretsDir}/sing-box_config.json.sops";
           format = "binary";
         };
-        sb_nodes_anytls_password = { };
+        sing-box_anytls_password = { };
       };
 
   services = lib.mkMerge [
@@ -34,7 +34,7 @@ in
         enable = true;
         # Full config.json encryption, to ease the debugging
         # settings = {
-        #   _secret = config.sops.secrets."sb_test.json".path;
+        #   _secret = config.sops.secrets."sing-box_config.json".path;
         #   quote = false;
         # };
 

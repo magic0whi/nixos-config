@@ -21,7 +21,7 @@ let
                   type = "naive";
                   server_port = 443;
                   username = "proteus";
-                  password._secret = config.sops.secrets.sb_nodes_anytls_password.path;
+                  password._secret = config.sops.secrets.sing-box_anytls_password.path;
                   tls.enabled = true;
                   # NOTE: China Mobile heavily throttles QUIC traffic
                   # quic = true;

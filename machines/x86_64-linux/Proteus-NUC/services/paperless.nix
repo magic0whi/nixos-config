@@ -32,7 +32,7 @@ in
     in
     {
       secrets = {
-        paperless_dbpass = { inherit sopsFile restartUnits; };
+        paperless_db_password = { inherit sopsFile restartUnits; };
         paperless_admin_password = { inherit sopsFile restartUnits; };
         paperless_authelia_secret = { inherit sopsFile restartUnits; };
       };
@@ -43,7 +43,7 @@ in
         owner = config.services.paperless.user;
         content = mylib.toEnv {
           # paperless-manage use bash `souece` to import environments
-          PAPERLESS_DBPASS = mylib.escapeStr config.sops.placeholder.paperless_dbpass;
+          PAPERLESS_DBPASS = mylib.escapeStr config.sops.placeholder.paperless_db_password;
           PAPERLESS_ADMIN_PASSWORD = mylib.escapeStr config.sops.placeholder.paperless_admin_password;
           PAPERLESS_SOCIALACCOUNT_PROVIDERS = mylib.escapeStr (
             builtins.toJSON {

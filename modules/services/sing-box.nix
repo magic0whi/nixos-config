@@ -21,7 +21,7 @@
       restartUnits = [ "sing-box.service" ];
     in
     {
-      sb_nodes_anytls_password = { inherit restartUnits; };
+      sing-box_anytls_password = { inherit restartUnits; };
       # Shared with ddclient (Cloudflare "Edit zone DNS" token), used for ACME DNS-01
       ddclient_cloudflare_password = {
         inherit restartUnits;
@@ -85,7 +85,7 @@
         # network = "tcp"; # tcp for HTTP/2, udp for QUIC, leave empty for both
         users = lib.singleton {
           username = "proteus";
-          password._secret = config.sops.secrets.sb_nodes_anytls_password.path;
+          password._secret = config.sops.secrets.sing-box_anytls_password.path;
         };
         tls = {
           enabled = true;
