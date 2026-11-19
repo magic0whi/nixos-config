@@ -36,6 +36,7 @@
         # State is persisted, but keep the first-run wizard off on fresh installs
         setup_wizard_enabled = false;
         launch_apps_custom_command = "systemd-run --user --scope -- $CMD";
+        clipboard_keep_from_closed_apps = false; # disable as it race condition with LibreOffice
         panel.transparency_mode = "soft";
         screenshot.directory = "~/Pictures/Screenshots";
         # Session menu: an explicit list replaces the default five actions
