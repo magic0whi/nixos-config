@@ -13,7 +13,8 @@ let
   # TODO: import common modules here is bad practice, blacklist from
   # `const.features` instead
   modules = map mylib.relToRoot [
-    "modules/vars"
+    "modules/vars/forward-auth-services.nix"
+    "modules/vars/host-addrs.nix"
     # "modules/common/easytier.nix"
     # "modules/common/misc.nix"
     # "modules/common/nix.nix"

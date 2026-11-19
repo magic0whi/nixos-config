@@ -6,7 +6,9 @@
     in
     {
       base = map mylib.relToRoot [
-        "modules/vars"
+        "modules/vars/forward-auth-services.nix"
+        "modules/vars/host-addrs.nix"
+
         "${common}/debug.nix"
         "${common}/easytier.nix"
         "${common}/misc.nix"
