@@ -136,6 +136,10 @@
         flake-parts.follows = "flake-parts";
       };
     };
+    agent-skills = {
+      url = "git+ssh://forgejo@git.proteus.eu.org/proteus/agent-skills";
+      flake = false;
+    };
   };
   outputs =
     inputs:

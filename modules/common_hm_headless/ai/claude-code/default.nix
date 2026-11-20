@@ -1,4 +1,5 @@
 {
+  agent-skills,
   config,
   const,
   lib,
@@ -25,7 +26,8 @@
   programs.claude-code = {
     enable = true;
     enableMcpIntegration = true;
-    context = ../AGENTS.md; # ~/.claude/CLAUDE.md
+    context = agent-skills + "/AGENTS.md"; # ~/.claude/CLAUDE.md
+    skills = agent-skills + "/skills";
     # Claude Code only expands ${VAR} in .mcp.json headers (not the shared
     # {env:VAR} syntax from ../mcp.nix), so override the shared remote headers
     # here; these entries replace the shared ones (merge is per-server, Claude

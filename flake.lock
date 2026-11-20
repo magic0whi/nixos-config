@@ -21,6 +21,22 @@
         "type": "github"
       }
     },
+    "agent-skills": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1795180235,
+        "narHash": "sha256-J23JrAzXqqUYFx+L7URJq8wfO0108QYVogDk+zxBHE4=",
+        "ref": "refs/heads/main",
+        "rev": "8cc6f859c70ca0f157c3c4a69eb3258b3c086da1",
+        "revCount": 1500,
+        "type": "git",
+        "url": "ssh://forgejo@git.proteus.eu.org/proteus/agent-skills"
+      },
+      "original": {
+        "type": "git",
+        "url": "ssh://forgejo@git.proteus.eu.org/proteus/agent-skills"
+      }
+    },
     "catppuccin": {
       "inputs": {
         "nixpkgs": [
@@ -834,6 +850,7 @@
     "root": {
       "inputs": {
         "NixVirt": "NixVirt",
+        "agent-skills": "agent-skills",
         "catppuccin": "catppuccin",
         "deploy-rs": "deploy-rs",
         "dev-flake": "dev-flake",

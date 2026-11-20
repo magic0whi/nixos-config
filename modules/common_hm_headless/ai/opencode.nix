@@ -1,4 +1,4 @@
-{ xdgRel, ... }:
+{ agent-skills, xdgRel, ... }:
 {
   home.persistence."/persistent".directories = [
     "${xdgRel.configHome}/opencode"
@@ -9,11 +9,7 @@
   programs.opencode = {
     enable = true;
     enableMcpIntegration = true;
-    context = builtins.readFile ./AGENTS.md;
-    skills = {
-      git-commit = ./_skills/git-commit.md;
-      nixos-search = ./_skills/nixos-search.md;
-      noogle = ./_skills/noogle.md;
-    };
+    context = builtins.readFile (agent-skills + "/AGENTS.md");
+    skills = agent-skills + "/skills";
   };
 }

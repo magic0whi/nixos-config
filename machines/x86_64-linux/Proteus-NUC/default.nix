@@ -6,6 +6,7 @@
   features,
 
   NixVirt,
+  agent-skills,
   deploy-rs,
   dev-flake,
   i915-sriov-dkms,
@@ -36,6 +37,7 @@ let
       specialArgs = {
         inherit
           NixVirt
+          agent-skills
           deploy-rs
           dev-flake
           nixvim

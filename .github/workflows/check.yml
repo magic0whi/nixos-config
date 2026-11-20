@@ -25,9 +25,12 @@ jobs:
 
       - name: Run nix flake check
         run: |
-          input_overrides=()
+          input_overrides=(
+            # The skills repo is private; CI only needs the input to evaluate.
+            --override-input agent-skills path:./.github/stubs/agent-skills
+          )
           if [[ "$GITHUB_SERVER_URL" == "https://github.com" ]]; then
-            input_overrides=(
+            input_overrides+=(
               --override-input nix-darwin github:magic0whi/nix-darwin/main
               --override-input dns github:magic0whi/dns.nix
               --override-input dev-flake github:magic0whi/dev-flake
