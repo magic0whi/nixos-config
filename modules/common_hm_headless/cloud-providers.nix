@@ -8,8 +8,8 @@
   ...
 }:
 let
-  gcloud_sops_file = "${const.secretsDir}/gcloud.sops.yaml";
-  oracle_sops_file = "${const.secretsDir}/oracle.sops.yaml";
+  gcloud_sops_file = const.secretsDir + "/cloud-providers/gcloud.sops.yaml";
+  oracle_sops_file = const.secretsDir + "/cloud-providers/oracle.sops.yaml";
   projects = [
     "0"
     "1"
@@ -20,52 +20,53 @@ in
 {
   sops = {
     secrets = lib.mkMerge (
-      map (num: {
-        "project-${num}.secret.json" = {
-          sopsFile = "${const.secretsDir}/gcloud_project-${num}.secret.json.sops";
+      (map (num: {
+        "gcloud_project-${num}_secret" = {
+          sopsFile = const.secretsDir + "/cloud-providers/gcloud_project-${num}.secret.json.sops";
           format = "binary";
-          path = "${config.xdg.configHome}/gcloud/project-${num}.secret.json";
+          path = config.xdg.configHome + "/gcloud/project-${num}.secret.json";
         };
-        "config_account_project-${num}".sopsFile = gcloud_sops_file;
-        "config_projectid_project-${num}".sopsFile = gcloud_sops_file;
+        "gcloud_project-${num}_config_account".sopsFile = gcloud_sops_file;
+        "gcloud_project-${num}_config_projectid".sopsFile = gcloud_sops_file;
+      }) projects)
+      ++ lib.singleton {
         oracle_user_ocid.sopsFile = oracle_sops_file;
         oracle_fingerprint.sopsFile = oracle_sops_file;
         oracle_tenancy.sopsFile = oracle_sops_file;
         oracle_region.sopsFile = oracle_sops_file;
+
         "oracle_secret.pem" = {
-          sopsFile = "${const.secretsDir}/oracle_secret.pem.sops";
+          sopsFile = const.secretsDir + "/cloud-providers/oracle_secret.pem.sops";
           format = "binary";
         };
-      }) projects
+      }
     );
     templates = lib.mkMerge (
       map (num: {
-        "config_project-${num}" = {
-          path = "${config.xdg.configHome}/gcloud/configurations/config_project-${num}";
+        "gcloud_project-${num}_config" = {
+          path = config.xdg.configHome + "/gcloud/configurations/config_project-${num}";
           content = mylib.toINI {
             core = {
-              account = config.sops.placeholder."config_account_project-${num}";
-              project = config.sops.placeholder."config_projectid_project-${num}";
+              account = config.sops.placeholder."gcloud_project-${num}_config_account";
+              project = config.sops.placeholder."gcloud_project-${num}_config_projectid";
             };
           };
         };
       }) projects
-      ++ [
-        {
-          ".oci/config" = {
-            path = "${config.home.homeDirectory}/.oci/config";
-            content = mylib.toINI {
-              DEFAULT = {
-                user = config.sops.placeholder.oracle_user_ocid;
-                fingerprint = config.sops.placeholder.oracle_fingerprint;
-                tenancy = config.sops.placeholder.oracle_tenancy;
-                region = config.sops.placeholder.oracle_region;
-                key_file = config.sops.secrets."oracle_secret.pem".path;
-              };
+      ++ lib.singleton {
+        ".oci/config" = {
+          path = config.home.homeDirectory + "/.oci/config";
+          content = mylib.toINI {
+            DEFAULT = {
+              user = config.sops.placeholder.oracle_user_ocid;
+              fingerprint = config.sops.placeholder.oracle_fingerprint;
+              tenancy = config.sops.placeholder.oracle_tenancy;
+              region = config.sops.placeholder.oracle_region;
+              key_file = config.sops.secrets."oracle_secret.pem".path;
             };
           };
-        }
-      ]
+        };
+      }
     );
   };
   home = {
