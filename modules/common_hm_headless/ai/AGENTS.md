@@ -41,6 +41,15 @@
   flake cache first, not just reload:
   `nix flake metadata --refresh github:magic0whi/dev-flake && direnv reload`.
 
+## Nix formatting
+
+- **Keep single-element lists on one line** (`servers = [ { url = "..."; } ];`) when they fit,
+  and never reflow lines you didn't otherwise touch. nixfmt preserves authored line breaks,
+  so a hand-wrapped list stays wrapped permanently and turns into diff noise.
+- **Format only via the repo's treefmt** (`nix fmt`, or `treefmt --no-cache <file>`), so the
+  pinned `nixfmt-rs` and configured width are used. A bare `nixfmt`/`alejandra` from another
+  nixpkgs compacts or reflows differently and adds unrelated changes.
+
 ## Git
 
 - **Commit messages: propose, don't execute.** When the user asks for help writing git
