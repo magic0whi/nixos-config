@@ -179,8 +179,8 @@ in
                 postgresVersion =
                   let
                     psqlVer = machine_config_psql.services.postgresql.package.version;
-                    major = builtins.trace (lib.versions.major psqlVer) "17";
-                    minor = builtins.trace (lib.fixedWidthString 2 "0" (lib.versions.minor psqlVer)) "10";
+                    major = lib.versions.major psqlVer;
+                    minor = lib.fixedWidthString 2 "0" (lib.versions.minor psqlVer);
                   in
                   lib.toInt "${major}${minor}"; # Current postgresql version 17.10
               };
