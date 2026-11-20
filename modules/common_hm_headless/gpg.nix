@@ -14,7 +14,10 @@
     # https://www.gnupg.org/gph/en/manual/x334.html
     publicKeys = [
       {
-        source = "${const.secretsDir + "/${const.email}.pub.asc"}";
+        source = builtins.path {
+          path = const.secretsDir + "/${const.email}.pub.asc"; # email contains illegal character '@'
+          name = "${const.username}.pub.asc";
+        };
         trust = 5; # Ultimate trust
       }
     ];
