@@ -48,14 +48,20 @@ let
           i915-sriov-dkms.nixosModules.default
           NixVirt.nixosModules.default
         ]
-        ++ map mylib.relToRoot [
-          "modules/nixos_headless/iwd.nix"
-          "modules/services/traefik.nix"
-          "modules/services/docker.nix"
-          "modules/services/prometheus-exporters.nix"
-          "modules/services/darknet.nix"
-          "modules/services/restic.nix"
-        ];
+        ++ map mylib.relToRoot (
+          let
+            services = "modules/services";
+          in
+          [
+            "modules/nixos_headless/iwd.nix"
+
+            "${services}/darknet.nix"
+            "${services}/docker.nix"
+            "${services}/prometheus-exporters.nix"
+            "${services}/restic.nix"
+            "${services}/traefik.nix"
+          ]
+        );
 
       hmModules = (with features.hm.common; base ++ seat) ++ features.hm.nixos;
     }
