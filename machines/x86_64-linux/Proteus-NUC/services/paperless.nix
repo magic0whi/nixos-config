@@ -111,6 +111,9 @@ in
 
       # Paperless-ngx 3.0 allows duplicate documents to be consumed by default except when this setting is enabled
       PAPERLESS_CONSUMER_DELETE_DUPLICATES = true;
+
+      PAPERLESS_MAX_IMAGE_PIXELS = 400000000; # Default: 178,956,970 px
+      PAPERLESS_OCR_MAX_IMAGE_PIXELS = 400000000;
     };
     environmentFile = config.sops.templates."paperless.env".path;
     # dataDir = "/srv/paperless";
