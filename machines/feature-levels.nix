@@ -124,10 +124,7 @@
       in
       {
         base =
-          with inputs;
-          [
-            catppuccin.homeModules.catppuccin
-          ]
+          (with inputs; [ catppuccin.homeModules.catppuccin ])
           ++ map mylib.relToRoot [
             "modules/vars_hm/hm-firewall.nix"
 
