@@ -1,14 +1,16 @@
 {
+  # system,
+  const,
+  features,
+  machineConfigs,
   mylib,
   mypkg,
-  const,
-  machineConfigs,
-  features,
-  nix-darwin,
+
+  agent-skills,
   deploy-rs,
-  nixvim,
   dev-flake,
-  # system,
+  nix-darwin,
+  nixvim,
   ...
 }:
 let
@@ -24,7 +26,14 @@ let
         ;
       overlays = with features; common.baseOverlays;
       machinePath = ./.;
-      specialArgs = { inherit deploy-rs nixvim dev-flake; };
+      specialArgs = {
+        inherit
+          agent-skills
+          deploy-rs
+          dev-flake
+          nixvim
+          ;
+      };
       modules = (with features.common; base ++ seat) ++ features.darwin;
       hmModules = (with features.hm.common; base ++ seat) ++ features.hm.darwin;
     }
