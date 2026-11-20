@@ -144,7 +144,7 @@ in
         POSTGRES_USER = "postgres";
         POSTGRES_DB = "postgres";
       };
-      volumes = [ "${mount_path}/postgres:/var/lib/postgresql/data" ];
+      volumes = [ "${mount_path}/pgdata:/var/lib/postgresql/data" ];
       extraOptions = [
         "--network=${network}"
         "--health-cmd=pg_isready -U postgres -d postgres"
