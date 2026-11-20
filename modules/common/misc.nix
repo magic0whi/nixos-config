@@ -9,7 +9,7 @@
   system.stateVersion = if pkgs.stdenv.hostPlatform.isDarwin then const.darwinStateVersion else const.nixosStateVersion;
 
   # Add my self-signed CA certificate to the system-wide trust store.
-  security.pki.certificateFiles = [ "${const.secretsDir}/proteus_ca.pub.pem" ];
+  security.pki.certificateFiles = [ (const.secretsDir + "/www/proteus_ca.pub.pem") ];
 
   nixpkgs.config.allowUnfree = true; # Allow chrome, vscode to install
 

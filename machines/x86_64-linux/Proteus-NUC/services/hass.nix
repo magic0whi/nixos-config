@@ -23,14 +23,14 @@ in
       restartUnits = [ "home-assistant.service" ];
     in
     {
-      secrets = lib.genAttrs [ "hass_oidc_secret" "hass_latitude" "hass_longitude" ] (_: {
+      secrets = lib.genAttrs [ "hass_client_secret" "hass_latitude" "hass_longitude" ] (_: {
         inherit restartUnits;
-        sopsFile = const.secretsDir + "/services/hass.sops.yaml";
+        sopsFile = const.secretsDir + "/${hostname}/hass.sops.yaml";
       });
       templates."hass_secrets.yaml" = {
         inherit restartUnits;
         content = mylib.toYAML {
-          hass_oidc_secret = config.sops.placeholder.hass_oidc_secret;
+          inherit (config.sops.placeholder) hass_client_secret;
           latitude = config.sops.placeholder.hass_latitude;
           longitude = config.sops.placeholder.hass_longitude;
         };
@@ -113,7 +113,7 @@ in
       };
       auth_oidc = {
         client_id = "hass";
-        client_secret = "!secret hass_oidc_secret";
+        client_secret = "!secret hass_client_secret";
         discovery_url = "https://auth.${const.domain}/.well-known/openid-configuration";
         display_name = "Authelia";
         features = {

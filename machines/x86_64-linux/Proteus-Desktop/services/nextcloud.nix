@@ -31,11 +31,11 @@ in
     };
   sops.secrets =
     let
-      sopsFile = const.secretsDir + "/services/nextcloud.sops.yaml";
+      sopsFile = const.secretsDir + "/${hostname}/nextcloud.sops.yaml";
     in
     {
       nextcloud_db_password = { inherit sopsFile restartUnits; };
-      nextcloud_oidc_client_secret = { inherit sopsFile restartUnits; };
+      nextcloud_client_secret = { inherit sopsFile restartUnits; };
     };
   systemd.services = lib.mkMerge [
     (
@@ -126,7 +126,7 @@ in
     };
     maxUploadSize = "20G";
 
-    secrets.oidc_login_client_secret = config.sops.secrets.nextcloud_oidc_client_secret.path;
+    secrets.oidc_login_client_secret = config.sops.secrets.nextcloud_client_secret.path;
     settings = {
       serverid = "0";
       trusted_proxies = [
@@ -154,7 +154,7 @@ in
       oidc_login_use_id_token = false; # Use ID Token instead of UserInfo
 
       # TIP: To get OIDC claims and attributes from Authelia:
-      # sudo AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD="$(sudo cat /run/secrets/authelia_ldap_password)" \
+      # sudo AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD="$(sudo cat /run/secrets/authelia_ldap_bind_password)" \
       #   nix run --impure nixpkgs#authelia -- debug oidc claims proteus \
       #     --policy nextcloud_userinfo \
       #     --scopes "openid,profile,email,groups,nextcloud_userinfo" \

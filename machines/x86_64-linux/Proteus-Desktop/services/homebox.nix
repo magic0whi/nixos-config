@@ -26,17 +26,17 @@ in
   sops =
     let
       restartUnits = [ "homebox.service" ];
-      sopsFile = const.secretsDir + "/services/homebox.sops.yaml";
+      sopsFile = const.secretsDir + "/${hostname}/homebox.sops.yaml";
     in
     {
       secrets = {
-        homebox_oidc_client_secret = { inherit restartUnits sopsFile; };
+        homebox_client_secret = { inherit restartUnits sopsFile; };
         homebox_db_password = { inherit restartUnits sopsFile; };
       };
       templates."homebox.env" = {
         inherit restartUnits;
         content = mylib.toEnv {
-          HBOX_OIDC_CLIENT_SECRET = config.sops.placeholder.homebox_oidc_client_secret;
+          HBOX_OIDC_CLIENT_SECRET = config.sops.placeholder.homebox_client_secret;
           HBOX_DATABASE_PASSWORD = config.sops.placeholder.homebox_db_password;
         };
       };

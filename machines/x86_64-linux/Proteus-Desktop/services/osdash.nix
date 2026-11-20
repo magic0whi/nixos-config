@@ -7,10 +7,10 @@
 }:
 let
   osdash_port = 5601;
-
+  hostname = config.networking.hostName;
 in
 {
-  vars.hostAddrs.${config.networking.hostName}.easytier.subdomains =
+  vars.hostAddrs.${hostname}.easytier.subdomains =
     let
       subs = [ "osdash" ];
     in
@@ -21,7 +21,7 @@ in
   sops =
     let
       restartUnits = [ "${config.virtualisation.oci-containers.containers.osdash.serviceName}.service" ];
-      sopsFile = const.secretsDir + "/services/osdash.sops.yaml";
+      sopsFile = const.secretsDir + "/${hostname}/osdash.sops.yaml";
     in
     {
       secrets = {
@@ -34,7 +34,7 @@ in
         # https://github.com/opensearch-project/OpenSearch-Dashboards/blob/3.6.0/config/opensearch_dashboards.yml
         content = mylib.toYAML {
           server = {
-            name = config.networking.hostName;
+            name = hostname;
             host = "0.0.0.0";
             port = 5601;
             customResponseHeaders.Access-Control-Allow-Credentials = true;

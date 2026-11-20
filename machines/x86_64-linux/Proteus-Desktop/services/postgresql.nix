@@ -1,3 +1,4 @@
+# TODO: rename to psql.nix
 ## TIP: To restore a clean backup:
 # 1. psql "host=psql.proteus.eu.org port=5432 user=postgres dbname=postgres sslmode=require" -t -A -c "
 #   SELECT 'DROP DATABASE IF EXISTS ' || quote_ident(datname) || ';'
@@ -26,9 +27,10 @@
 }:
 let
   machine_cfg_authelia = machineConfigs.${const.networking.findFirstHostBySubdomain "auth"}.config;
+  hostname = config.networking.hostName;
 in
 {
-  vars.hostAddrs.${config.networking.hostName}.easytier.subdomains = {
+  vars.hostAddrs.${hostname}.easytier.subdomains = {
     A = [ "psql" ];
     AAAA = [ "psql" ];
   };
@@ -43,13 +45,13 @@ in
     {
       "psql_server.priv.pem" = {
         inherit restartUnits;
-        sopsFile = "${const.secretsDir}/proteus_server.priv.pem.sops";
+        sopsFile = const.secretsDir + "/www/proteus_server.priv.pem.sops";
         format = "binary";
         owner = config.systemd.services.postgresql.serviceConfig.User;
       };
       psql_ldap_bind_password = {
         inherit restartUnits;
-        sopsFile = const.secretsDir + "/services/postgresql.sops.yaml";
+        sopsFile = const.secretsDir + "/${hostname}/postgresql.sops.yaml";
       };
     };
   # Ref: https://github.com/NixOS/nixpkgs/blob/549bd84d6279f9852cae6225e372cc67fb91a4c1/nixos/modules/services/databases/postgresql.nix#L684
@@ -97,7 +99,7 @@ in
     settings = {
       ssl = true;
       ssl_min_protocol_version = "TLSv1.3";
-      ssl_cert_file = "${const.secretsDir}/proteus_server.pub.pem";
+      ssl_cert_file = "${const.secretsDir + "/www/proteus_server.pub.pem"}";
       ssl_key_file = config.sops.secrets."psql_server.priv.pem".path;
       hba_file = lib.mkForce config.sops.templates."pg_hba_auth.conf".path;
     };

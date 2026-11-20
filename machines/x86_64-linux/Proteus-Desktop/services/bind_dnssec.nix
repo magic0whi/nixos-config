@@ -36,7 +36,7 @@
   # nix run nixpkgs#dig -- @10.0.0.3 0.0.10.in-addr.arpa DNSKEY +noall +answer | nix shell nixpkgs#ldns.examples --command ldns-key2ds -n /dev/stdin
   sops =
     let
-      sopsFile = const.secretsDir + "/services/bind.sops.yaml";
+      sopsFile = const.secretsDir + "/${config.networking.hostName}/bind.sops.yaml";
       restartUnits = [ "bind.service" ];
       owner = config.systemd.services.bind.serviceConfig.User;
       mode = "0600";

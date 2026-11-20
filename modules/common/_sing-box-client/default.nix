@@ -48,7 +48,7 @@ in
 lib.mkMerge (
   [
     (lib.mkIf (isMobile && isLinux) {
-      certificate.certificate = [ (builtins.readFile "${const.secretsDir}/proteus_ca.pub.pem") ];
+      certificate.certificate = [ (builtins.readFile (const.secretsDir + "/www/proteus_ca.pub.pem")) ];
     })
     {
       log = {

@@ -28,7 +28,7 @@
       # Shared with ddclient (Cloudflare "Edit zone DNS" token), used for ACME DNS-01
       ddclient_cloudflare_password = {
         inherit restartUnits;
-        sopsFile = const.secretsDir + "/services/ddclient.sops.yaml";
+        sopsFile = const.secretsDir + "/Cloud/ddclient.sops.yaml";
       };
     };
   services.sing-box = {

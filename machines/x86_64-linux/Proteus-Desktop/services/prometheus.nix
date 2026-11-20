@@ -5,6 +5,9 @@
   machineConfigs,
   ...
 }:
+let
+  hostname = config.networking.hostName;
+in
 {
   sops.secrets =
     let
@@ -17,7 +20,7 @@
       };
       prometheus_password = {
         inherit owner;
-        sopsFile = const.secretsDir + "/services/prometheus.sops.yaml";
+        sopsFile = const.secretsDir + "/${hostname}/prometheus.sops.yaml";
       };
     };
 

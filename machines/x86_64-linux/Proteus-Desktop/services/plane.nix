@@ -33,9 +33,10 @@ let
     plane-proxy = "${plane-proxy.serviceName}.service";
   };
 
+  hostname = config.networking.hostName;
 in
 {
-  vars.hostAddrs.${config.networking.hostName}.easytier.subdomains =
+  vars.hostAddrs.${hostname}.easytier.subdomains =
     let
       subs = [ "plane" ];
     in
@@ -46,7 +47,7 @@ in
 
   sops =
     let
-      sopsFile = const.secretsDir + "/services/plane.sops.yaml";
+      sopsFile = const.secretsDir + "/${hostname}/plane.sops.yaml";
 
       backend_units = with restart_units; [
         plane-api
@@ -66,7 +67,7 @@ in
           inherit sopsFile;
           restartUnits = backend_units;
         };
-        plane_live_server_secret_key = {
+        plane-live_app_secret = {
           inherit sopsFile;
           restartUnits = [ restart_units.plane-live ] ++ backend_units;
         };
@@ -78,7 +79,7 @@ in
           inherit sopsFile;
           restartUnits = [ restart_units.plane-mq ] ++ backend_units;
         };
-        plane_secret_key = {
+        plane_app_secret = {
           inherit sopsFile;
           restartUnits = backend_units;
         };
@@ -89,7 +90,7 @@ in
           AWS_ACCESS_KEY_ID = "access-key";
         in
         {
-          "plane-app.env" = {
+          "plane_app.env" = {
             restartUnits = backend_units;
             content = mylib.toEnv {
               # For default values, Ref:
@@ -102,12 +103,12 @@ in
 
               # DB & Auth Secrets
               # Secret Key (Primary cryptographic key for the main backend application)
-              SECRET_KEY = config.sops.placeholder.plane_secret_key;
+              SECRET_KEY = config.sops.placeholder.plane_app_secret;
               DATABASE_URL = "postgresql://plane:${config.sops.placeholder.plane_postgres_password}@plane-db/plane";
               AMQP_URL = "amqp://plane:${config.sops.placeholder.plane_rabbitmq_password}@plane-mq:5672/plane";
 
               # Live server environment variables (Shared auth key for real-time WebSocket architecture)
-              LIVE_SERVER_SECRET_KEY = config.sops.placeholder.plane_live_server_secret_key;
+              LIVE_SERVER_SECRET_KEY = config.sops.placeholder.plane-live_app_secret;
 
               # Authelia SSO
               IS_GITEA_ENABLED = 1;
@@ -175,7 +176,7 @@ in
             restartUnits = [ restart_units.plane-live ];
             content = mylib.toEnv {
               API_BASE_URL = "http://plane-api:8000";
-              LIVE_SERVER_SECRET_KEY = config.sops.placeholder.plane_live_server_secret_key;
+              LIVE_SERVER_SECRET_KEY = config.sops.placeholder.plane-live_app_secret;
             };
           };
         };
@@ -232,7 +233,7 @@ in
       hostname = "api";
       cmd = [ "./bin/docker-entrypoint-api.sh" ];
       environmentFiles = with config.sops; [
-        templates."plane-app.env".path
+        templates."plane_app.env".path
         templates."plane-redis.env".path
         templates."plane-proxy.env".path
       ];
@@ -249,7 +250,7 @@ in
       image = "makeplane/plane-backend:${app_release}";
       cmd = [ "./bin/docker-entrypoint-worker.sh" ];
       environmentFiles = with config.sops; [
-        templates."plane-app.env".path
+        templates."plane_app.env".path
         templates."plane-redis.env".path
         templates."plane-proxy.env".path
       ];
@@ -267,7 +268,7 @@ in
       image = "makeplane/plane-backend:${app_release}";
       cmd = [ "./bin/docker-entrypoint-beat.sh" ];
       environmentFiles = with config.sops; [
-        templates."plane-app.env".path
+        templates."plane_app.env".path
         templates."plane-redis.env".path
         templates."plane-proxy.env".path
       ];
@@ -285,7 +286,7 @@ in
       image = "makeplane/plane-backend:${app_release}";
       cmd = [ "./bin/docker-entrypoint-migrator.sh" ];
       environmentFiles = with config.sops; [
-        templates."plane-app.env".path
+        templates."plane_app.env".path
         templates."plane-redis.env".path
         templates."plane-proxy.env".path
       ];

@@ -30,12 +30,12 @@ let
 
 in
 {
-  sops.secrets."${hostname}_syncthing.priv.pem" = lib.mkMerge [
+  sops.secrets."${hostname}/syncthing.priv.pem" = lib.mkMerge [
     (lib.optionalAttrs isNixOSModule { restartUnits = [ "syncthing.service" ]; })
     {
-      sopsFile = "${const.secretsDir}/${hostname}_syncthing.priv.pem.sops";
+      sopsFile = const.secretsDir + "/${hostname}/syncthing.priv.pem.sops";
       format = "binary"; # Required when loading raw files instead of yaml/json structures
-      # sops-nix dnn't have restartUnits for home manager
+      # sops-nix doesn't have restartUnits for home manager
       # https://github.com/ryantm/agenix/issues/84
       # restartUnits = ["syncthing-init.service" "syncthing.service"];
     }
@@ -48,7 +48,7 @@ in
     {
       enable = true;
       # nix run nixpkgs#syncthing -- generate --config myconfig/"
-      key = config.sops.secrets."${hostname}_syncthing.priv.pem".path;
+      key = config.sops.secrets."${hostname}/syncthing.priv.pem".path;
       cert = "${const.secretsDir}/${hostname}_syncthing.pub.pem";
       settings = {
         devices = device.mobiles // device.desktops // device.servers;
@@ -58,50 +58,52 @@ in
             desktops = builtins.attrNames device.desktops;
             servers = builtins.attrNames device.servers;
 
-            prefix = "${config.home.homeDirectory or (throw "Are you forget to add corresponding entires for server")}/Proteus";
+            prefix = "${
+              config.home.homeDirectory or (throw "Are you forget to add corresponding entires for server") + "/Proteus"
+            }";
           in
           lib.mkMerge [
             (lib.mkIf (!isNixOSModule) {
               Secrets = {
-                path = lib.mkDefault "${prefix}/Secrets";
+                path = lib.mkDefault "${prefix + "/Secrets"}";
                 devices = desktops;
               };
             })
             (lib.mkIf (builtins.elem hostname (builtins.attrNames device._desktops)) {
               Projects-Ref = {
-                path = lib.mkDefault "${prefix}/Projects-Ref/";
+                path = lib.mkDefault "${prefix + "/Projects-Ref/"}";
                 devices = desktops;
               };
               Re2026Jul26 = {
-                path = lib.mkDefault "${prefix}/Re2026Jul26/";
+                path = lib.mkDefault "${prefix + "/Re2026Jul26/"}";
                 devices = desktops;
               };
             })
             (lib.mkIf (!pkgs.stdenv.hostPlatform.isDarwin) {
               Games = {
-                path = lib.mkDefault "${prefix}/Games";
+                path = lib.mkDefault "${prefix + "/Games"}";
                 devices = lib.subtractLists (builtins.attrNames device.darwins) desktops ++ servers;
               };
             })
             {
               Documents = {
-                path = lib.mkDefault "${prefix}/Documents";
+                path = lib.mkDefault "${prefix + "/Documents"}";
                 devices = all;
               };
               Statistics = {
-                path = lib.mkDefault "${prefix}/Statistics";
+                path = lib.mkDefault "${prefix + "/Statistics"}";
                 devices = all;
               };
               KeePassXC = {
-                path = lib.mkDefault "${prefix}/KeePassXC";
+                path = lib.mkDefault "${prefix + "/KeePassXC"}";
                 devices = all;
               };
               Pictures = {
-                path = lib.mkDefault "${prefix}/Pictures";
+                path = lib.mkDefault "${prefix + "/Pictures"}";
                 devices = all;
               };
               Projects = {
-                path = lib.mkDefault "${prefix}/Projects";
+                path = lib.mkDefault "${prefix + "/Projects"}";
                 devices = desktops ++ servers;
               };
             }

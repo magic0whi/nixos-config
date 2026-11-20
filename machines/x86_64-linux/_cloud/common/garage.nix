@@ -13,12 +13,12 @@ in
 
   sops.secrets =
     let
-      sopsFile = const.secretsDir + "/services/garage_cloud.sops.yaml";
+      sopsFile = const.secretsDir + "/Cloud/garage.sops.yaml";
     in
     {
-      garage_rpc_secret = { inherit sopsFile; };
+      garage-ui_client_secret = { inherit sopsFile; };
       garage_admin_token = { inherit sopsFile; };
-      garage_ui_oidc_client_secret = { inherit sopsFile; };
+      garage_rpc_secret = { inherit sopsFile; };
     };
 
   services.garage.settings = {
@@ -29,7 +29,7 @@ in
   };
 
   virtualisation.oci-containers.containers.garage-ui.environment = {
-    GARAGE_UI_AUTH_OIDC_CLIENT_ID = "garage-ui-gcp";
+    GARAGE_UI_AUTH_OIDC_CLIENT_ID = "garage-ui_gcp";
     # sing-box occupies 443, Traefik websecure listens on 8443. OIDC redirect URI is derived from root URL
     GARAGE_UI_SERVER_ROOT_URL = "https://${hostname}.garage.${const.domain}${config.services.traefik.staticConfigOptions.entryPoints.websecure.address}";
   };

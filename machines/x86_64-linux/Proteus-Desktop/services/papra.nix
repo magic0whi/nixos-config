@@ -5,8 +5,11 @@
   config,
   ...
 }:
+let
+  hostname = config.networking.hostName;
+in
 {
-  vars.hostAddrs.${config.networking.hostName}.easytier.subdomains =
+  vars.hostAddrs.${hostname}.easytier.subdomains =
     let
       subs = [ "papra" ];
     in
@@ -17,12 +20,12 @@
   sops =
     let
       restartUnits = [ "${config.virtualisation.oci-containers.containers.papra.serviceName}.service" ];
-      sopsFile = const.secretsDir + "/services/papra.sops.yaml";
+      sopsFile = const.secretsDir + "/${hostname}/papra.sops.yaml";
     in
     {
       secrets = {
         papra_auth_secret = { inherit sopsFile restartUnits; };
-        papra_oidc_client_secret = { inherit sopsFile restartUnits; };
+        papra_client_secret = { inherit sopsFile restartUnits; };
       };
       templates."papra.env" = {
         inherit restartUnits;
@@ -35,7 +38,7 @@
               type = "oidc";
               discoveryUrl = "https://auth.${const.domain}/.well-known/openid-configuration";
               clientId = "papra";
-              clientSecret = config.sops.placeholder.papra_oidc_client_secret;
+              clientSecret = config.sops.placeholder.papra_client_secret;
               scopes = [
                 "openid"
                 "profile"

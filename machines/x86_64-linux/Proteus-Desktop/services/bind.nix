@@ -97,7 +97,7 @@ let
     );
 in
 {
-  vars.hostAddrs.${config.networking.hostName}.easytier.subdomains =
+  vars.hostAddrs.${hostname}.easytier.subdomains =
     let
       subs = [
         "@"

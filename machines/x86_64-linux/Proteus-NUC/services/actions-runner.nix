@@ -16,8 +16,8 @@ in
   # Note this is different with `nixpgs#forgejo-cli`.
   # The token will not change until regenerate it. To regenerate the token, go through WebUI -> Site
   # administration -> Actions -> Runners, click the edit and check the "Regenerate token" box, them save
-  sops.secrets.forgejo_runner_token = {
-    sopsFile = const.secretsDir + "/services/forgejo-runner.sops.yaml";
+  sops.secrets.forgejo-runner_token = {
+    sopsFile = const.secretsDir + "/${config.networking.hostName}/forgejo-runner.sops.yaml";
     restartUnits = map (u: "${u}.service") runner_units;
   };
 
@@ -52,7 +52,7 @@ in
     let
       default_instance = {
         enable = true;
-        secrets.server.connections.default.token_url = config.sops.secrets.forgejo_runner_token.path;
+        secrets.server.connections.default.token_url = config.sops.secrets.forgejo-runner_token.path;
         # https://gitea.com/gitea/act_runner/src/commit/40dcee0991c3bd33b657bb77aa1f2f46d69cc0e2/internal/pkg/config/config.example.yaml
         settings = {
           cache = {
@@ -96,7 +96,6 @@ in
       instances = {
         x86_64 = default_instance;
         # arm64 = lib.recursiveUpdate default_instance {
-        #   name = "${config.networking.hostName}-runner-arm64";
         #   labels = ["ubuntu-24.04-arm:docker://node:20-bookworm"];
         #   settings = {
         #     runner.capacity = 1;
@@ -105,7 +104,6 @@ in
         #   };
         # };
         # riscv64 = lib.recursiveUpdate default_instance {
-        #   name = "${config.networking.hostName}-runner-riscv64";
         #   labels = ["ubuntu-24.04-riscv64:docker://custom-node-riscv64:22.22.0"];
         #   settings = {
         #     runner.capacity = 1;

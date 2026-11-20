@@ -24,7 +24,7 @@ in
 
   sops =
     let
-      sopsFile = const.secretsDir + "/services/immich.sops.yaml";
+      sopsFile = const.secretsDir + "/${hostname}/immich.sops.yaml";
       restartUnits = [
         "immich-machine-learning.service"
         "immich-server.service"
@@ -33,7 +33,7 @@ in
     {
       secrets = {
         immich_db_password = { inherit sopsFile restartUnits; };
-        immich_oauth_secret = {
+        immich_client_secret = {
           inherit sopsFile restartUnits;
           owner = config.services.immich.user;
         };
@@ -69,7 +69,7 @@ in
         issuerUrl = "https://auth.${const.domain}";
         clientId = "immich";
         # NixOS will dynamically inject the contents of this file at runtime through `utils.genJqSecretsReplacement`
-        clientSecret._secret = config.sops.secrets.immich_oauth_secret.path;
+        clientSecret._secret = config.sops.secrets.immich_client_secret.path;
         autoLaunch = true;
       };
     };

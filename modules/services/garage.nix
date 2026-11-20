@@ -52,7 +52,7 @@ in
           inherit restartUnits;
           sopsFile = const.secretsDir + "/services/prometheus-exporter.sops.yaml";
         };
-        garage_ui_oidc_client_secret.restartUnits = [
+        garage-ui_client_secret.restartUnits = [
           "${config.virtualisation.oci-containers.containers.garage-ui.serviceName}.service"
         ];
       };
@@ -68,7 +68,7 @@ in
         restartUnits = [ "${config.virtualisation.oci-containers.containers.garage-ui.serviceName}.service" ];
         content = mylib.toEnv {
           GARAGE_UI_GARAGE_ADMIN_TOKEN = config.sops.placeholder.garage_admin_token;
-          GARAGE_UI_AUTH_OIDC_CLIENT_SECRET = config.sops.placeholder.garage_ui_oidc_client_secret;
+          GARAGE_UI_AUTH_OIDC_CLIENT_SECRET = config.sops.placeholder.garage-ui_client_secret;
         };
       };
     };

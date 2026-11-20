@@ -28,7 +28,7 @@ in
     allowedUDPPorts = [ 443 ]; # QUIC
   };
   sops.secrets."traefik_server.priv.pem" = {
-    sopsFile = "${const.secretsDir}/proteus_server.priv.pem.sops";
+    sopsFile = const.secretsDir + "/www/proteus_server.priv.pem.sops";
     format = "binary";
     owner = config.systemd.services.traefik.serviceConfig.User;
     restartUnits = [ "traefik.service" ];
@@ -66,7 +66,7 @@ in
     # Dynamic configuration defines routing rules, backend services, and certificate management.
     dynamicConfigOptions =
       let
-        server_pub_crt = "${const.secretsDir}/proteus_server.pub.pem";
+        server_pub_crt = const.secretsDir + "/www/proteus_server.pub.pem";
       in
       {
         # Establish the default fallback certificate.

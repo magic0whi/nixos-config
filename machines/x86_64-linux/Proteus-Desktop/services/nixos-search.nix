@@ -6,6 +6,7 @@
   ...
 }:
 let
+  hostname = config.networking.hostName;
   certs_dir = "/var/lib/opensearch/config/certs"; # peer certificates
   sec_cfg =
     let
@@ -64,7 +65,7 @@ let
                         verify_hostnames = false;
                         # Java's X509 parser rejects the BEGIN TRUSTED CERTIFICATE
                         # (OpenSSL AUX) blocks in security.pki.caBundle
-                        pemtrustedcas_filepath = "${const.secretsDir}/proteus_ca.pub.pem";
+                        pemtrustedcas_filepath = const.secretsDir + "/www/proteus_ca.pub.pem";
                       };
                     };
                   };
@@ -216,12 +217,12 @@ let
     };
 in
 {
-  vars.hostAddrs.${config.networking.hostName}.easytier.subdomains = {
+  vars.hostAddrs.${hostname}.easytier.subdomains = {
     A = [ "nixos-search" ];
     AAAA = [ "nixos-search" ];
   };
   sops.secrets.osdash_client_secret = {
-    sopsFile = const.secretsDir + "/services/osdash.sops.yaml";
+    sopsFile = const.secretsDir + "/${hostname}/osdash.sops.yaml";
     restartUnits = [ "opensearch.service" ];
   };
 

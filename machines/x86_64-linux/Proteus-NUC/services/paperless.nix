@@ -22,7 +22,7 @@ in
     };
   sops =
     let
-      sopsFile = const.secretsDir + "/services/paperless.sops.yaml";
+      sopsFile = const.secretsDir + "/${hostname}/paperless.sops.yaml";
       restartUnits = [
         "paperless-scheduler.service"
         "paperless-task-queue.service"
@@ -34,7 +34,7 @@ in
       secrets = {
         paperless_db_password = { inherit sopsFile restartUnits; };
         paperless_admin_password = { inherit sopsFile restartUnits; };
-        paperless_authelia_secret = { inherit sopsFile restartUnits; };
+        paperless_client_secret = { inherit sopsFile restartUnits; };
       };
       templates."paperless.env" = {
         inherit restartUnits;
@@ -51,7 +51,7 @@ in
                 client_id = "paperless";
                 name = "Authelia";
                 provider_id = "authelia";
-                secret = config.sops.placeholder.paperless_authelia_secret;
+                secret = config.sops.placeholder.paperless_client_secret;
                 settings.server_url = "https://auth.${const.domain}/.well-known/openid-configuration";
               };
             }

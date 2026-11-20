@@ -21,7 +21,7 @@ in
     {
       secrets = {
         niks3_db_password = {
-          sopsFile = const.secretsDir + "/services/niks3.sops.yaml";
+          sopsFile = const.secretsDir + "/${hostname}/niks3.sops.yaml";
           inherit restartUnits;
         };
         niks3_cache_access_key = { inherit sopsFile restartUnits owner; };

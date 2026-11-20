@@ -27,23 +27,23 @@ in
   sops =
     let
       restartUnits = [ "grafana.service" ];
-      sopsFile = const.secretsDir + "/services/grafana.sops.yaml";
+      sopsFile = const.secretsDir + "/${hostname}/grafana.sops.yaml";
     in
     {
       secrets = {
-        grafana_oauth_client_secret = { inherit restartUnits sopsFile; };
+        grafana_client_secret = { inherit restartUnits sopsFile; };
         grafana_db_password = { inherit restartUnits sopsFile; };
-        grafana_secret_key = { inherit restartUnits sopsFile; };
+        grafana_app_secret = { inherit restartUnits sopsFile; };
         prometheus_password = {
           inherit restartUnits;
-          sopsFile = const.secretsDir + "/services/prometheus.sops.yaml";
+          sopsFile = const.secretsDir + "/${hostname}/prometheus.sops.yaml";
         };
       };
       templates."grafana.env" = {
         content = mylib.toEnv {
-          GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET = config.sops.placeholder.grafana_oauth_client_secret;
+          GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET = config.sops.placeholder.grafana_client_secret;
           GRAFANA_DB_PASSWORD = config.sops.placeholder.grafana_db_password;
-          GRAFANA_SECRET_KEY = config.sops.placeholder.grafana_secret_key;
+          GRAFANA_SECRET_KEY = config.sops.placeholder.grafana_app_secret;
           PROMETHEUS_PASSWORD = config.sops.placeholder.prometheus_password;
         };
         inherit restartUnits;

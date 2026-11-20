@@ -18,20 +18,20 @@ in
   };
   sops.secrets =
     let
-      sopsFile = const.secretsDir + "/services/authelia.sops.yaml";
+      sopsFile = const.secretsDir + "/${hostname}/authelia.sops.yaml";
       owner = config.services.authelia.instances.main.user;
     in
     {
       authelia_jwt_secret = { inherit sopsFile owner restartUnits; };
-      authelia_ldap_password = { inherit sopsFile owner restartUnits; };
-      authelia_oidc_hmac = { inherit sopsFile owner restartUnits; };
-      authelia_session_secret = { inherit sopsFile owner restartUnits; };
-      authelia_storage_encryption_key = { inherit sopsFile owner restartUnits; };
+      authelia_ldap_bind_password = { inherit sopsFile owner restartUnits; };
+      authelia_oidc_hmac_secret = { inherit sopsFile owner restartUnits; };
       "authelia_oidc_rsa.pem" = {
         inherit owner restartUnits;
-        sopsFile = const.secretsDir + "/services/authelia_oidc_rsa.pem.sops";
+        sopsFile = const.secretsDir + "/${hostname}/authelia_oidc_rsa.pem.sops";
         format = "binary";
       };
+      authelia_session_secret = { inherit sopsFile owner restartUnits; };
+      authelia_storage_encryption_key = { inherit sopsFile owner restartUnits; };
     };
   systemd.services =
     let
@@ -48,18 +48,18 @@ in
     secrets = {
       # To generate those secrets, run
       # nix run nixpkgs#authelia -- crypto rand --length 64 session_secret.txt storage_encryption_key.txt jwt_secret.txt
-      jwtSecretFile = config.sops.secrets."authelia_jwt_secret".path;
-      sessionSecretFile = config.sops.secrets."authelia_session_secret".path;
-      storageEncryptionKeyFile = config.sops.secrets."authelia_storage_encryption_key".path;
-      oidcHmacSecretFile = config.sops.secrets."authelia_oidc_hmac".path;
+      jwtSecretFile = config.sops.secrets.authelia_jwt_secret.path;
+      oidcHmacSecretFile = config.sops.secrets.authelia_oidc_hmac_secret.path;
       oidcIssuerPrivateKeyFile = config.sops.secrets."authelia_oidc_rsa.pem".path;
+      sessionSecretFile = config.sops.secrets.authelia_session_secret.path;
+      storageEncryptionKeyFile = config.sops.secrets.authelia_storage_encryption_key.path;
     };
     # LDAP Password Injection. Using `_FILE` suffix tells Authelia to read the contents of the secret path
     environmentVariables = {
       # Render to `settings.authentication_backend.ldap.password`
-      AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD_FILE = config.sops.secrets."authelia_ldap_password".path;
+      AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD_FILE = config.sops.secrets.authelia_ldap_bind_password.path;
       # Render to `settings.storage.postgres.password`
-      AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE = config.sops.secrets."authelia_ldap_password".path;
+      AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE = config.sops.secrets.authelia_ldap_bind_password.path;
     };
     # https://github.com/authelia/authelia/blob/8a7b642dd78f29c76d126b6f53806472b2a360bd/config.template.yml
     settings =

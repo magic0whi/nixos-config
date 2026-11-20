@@ -6,15 +6,16 @@
 }:
 let
   mount_path = const.storage2Path;
+  hostname = config.networking.hostName;
 in
 {
-  vars.hostAddrs.${config.networking.hostName}.easytier.subdomains = {
+  vars.hostAddrs.${hostname}.easytier.subdomains = {
     A = [ "aria2" ];
     AAAA = [ "aria2" ];
   };
   systemd.services.aria2.unitConfig.RequiresMountsFor = [ mount_path ];
   sops.secrets.aria2_rpc_secret = {
-    sopsFile = const.secretsDir + "/services/aria2.sops.yaml";
+    sopsFile = const.secretsDir + "/${hostname}/aria2.sops.yaml";
     restartUnits = [ "aria2.service" ];
   };
 

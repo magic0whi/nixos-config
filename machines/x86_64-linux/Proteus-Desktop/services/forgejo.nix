@@ -20,7 +20,7 @@ in
     };
   sops =
     let
-      sopsFile = const.secretsDir + "/services/forgejo.sops.yaml";
+      sopsFile = const.secretsDir + "/${hostname}/forgejo.sops.yaml";
     in
     {
       secrets = {
@@ -29,7 +29,7 @@ in
           restartUnits = [ "forgejo.service" ];
           # owner = config.services.forgejo.user;
         };
-        forgejo_authelia_secret = {
+        forgejo_client_secret = {
           inherit sopsFile;
           restartUnits = [ "forgejo.service" ];
           owner = config.services.forgejo.user;
@@ -104,7 +104,7 @@ in
         done
 
         # Read the secret from your age file
-        OIDC_SECRET=$(cat ${config.sops.secrets.forgejo_authelia_secret.path})
+        OIDC_SECRET="$(<"${config.sops.secrets.forgejo_client_secret.path}")"
 
         # The environment variables (FORGEJO_WORK_DIR, etc.) are already injected by systemd.
         # `forgejo` is injected in `systemd.services.forgejo.path`

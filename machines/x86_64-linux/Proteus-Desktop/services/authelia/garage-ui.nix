@@ -3,7 +3,7 @@
   services.authelia.instances.main.settings.identity_providers.oidc.clients =
     let
       mk_client = name: port: secret: {
-        client_id = "garage-ui-${lib.toLower name}";
+        client_id = "garage-ui_${lib.toLower name}";
         client_name = "Garage UI (${name})";
         client_secret = secret;
         redirect_uris = map (hostname: "https://${hostname}.garage.${const.domain}${port}/auth/oidc/callback") (
