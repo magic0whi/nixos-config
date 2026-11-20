@@ -45,8 +45,11 @@ in
       };
     };
 
-  systemd.services.niks3.environment.NIKS3_DB_FILE = config.sops.templates.niks3_db_dsn.path;
-
+  systemd.services.niks3 = {
+    environment.NIKS3_DB_FILE = config.sops.templates.niks3_db_dsn.path;
+    wants = [ "authelia-online.service" ];
+    after = [ "authelia-online.service" ];
+  };
   services.niks3 = {
     enable = true;
     httpAddr = "127.0.0.1:5751";
