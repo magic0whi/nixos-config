@@ -134,6 +134,16 @@
             unit = "  ";
           };
         }
+        {
+          name = "yaml";
+          formatter = {
+            command = "prettier";
+            args = [
+              "--parser"
+              "yaml"
+            ];
+          };
+        }
       ];
       language-server = {
         yaml-language-server.config.yaml.format.singleQuote = true;
@@ -158,7 +168,7 @@
             hiddenFalsePositives.en-US = [
               ''{"rule": "UPPERCASE_SENTENCE_START", "sentence": "^[a-z][a-z0-9-_]+$"}''
             ];
-            dictionary = fromTOML (builtins.readFile "${const.secretsDir}/ltex_dict.toml");
+            dictionary = fromTOML (builtins.readFile ./ltex_dict.toml);
           };
         };
         texlab.config.texlab = {
