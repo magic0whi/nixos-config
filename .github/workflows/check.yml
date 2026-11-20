@@ -26,8 +26,9 @@ jobs:
       - name: Run nix flake check
         run: |
           input_overrides=(
-            # The skills repo is private; CI only needs the input to evaluate.
+            # Private inputs; CI only needs them to evaluate.
             --override-input agent-skills path:./.github/stubs/agent-skills
+            --override-input nixos-secrets path:./.github/stubs/nixos-secrets
           )
           if [[ "$GITHUB_SERVER_URL" == "https://github.com" ]]; then
             input_overrides+=(

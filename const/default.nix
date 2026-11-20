@@ -1,7 +1,10 @@
-args@{
+{
   lib,
   pkgs,
   mylib,
+  secretsDir,
+  nixosConfigurations,
+  darwinConfigurations,
   ...
 }:
 rec {
@@ -11,7 +14,7 @@ rec {
   nixosStateVersion = "26.05";
   darwinStateVersion = 7;
   githubUsername = "magic0whi";
-  secretsDir = mylib.relToRoot "secrets";
+  inherit secretsDir;
 
   city = "Suzhou, China";
   timeZone = "Asia/Hong_Kong";
@@ -97,7 +100,14 @@ rec {
 
   domain = "proteus.eu.org";
   cloudDomain = "proteus11451.online";
-  networking = import ./networking.nix args;
+  networking = import ./networking.nix {
+    inherit
+      lib
+      mylib
+      nixosConfigurations
+      darwinConfigurations
+      ;
+  };
 
   syncthing = ./syncthing.nix; # Usage: imports = [ const.syncthing ];
 

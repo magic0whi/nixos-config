@@ -644,6 +644,22 @@
         "type": "github"
       }
     },
+    "nixos-secrets": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1795181288,
+        "narHash": "sha256-Vd2fvkwiSg6F5QC1go/3x5ph4vZA7vt/Nth+e1+/Yvk=",
+        "ref": "refs/heads/main",
+        "rev": "ec66206d26aa08e7be3586bf00559c4f64d91eef",
+        "revCount": 233,
+        "type": "git",
+        "url": "ssh://forgejo@git.proteus.eu.org/proteus/nixos-secrets"
+      },
+      "original": {
+        "type": "git",
+        "url": "ssh://forgejo@git.proteus.eu.org/proteus/nixos-secrets"
+      }
+    },
     "nixpak": {
       "inputs": {
         "flake-parts": "flake-parts_2",
@@ -867,6 +883,7 @@
         "niks3": "niks3",
         "nix-darwin": "nix-darwin",
         "nixos-hardware": "nixos-hardware",
+        "nixos-secrets": "nixos-secrets",
         "nixpak": "nixpak",
         "nixpkgs": "nixpkgs_2",
         "nixvim": "nixvim",
