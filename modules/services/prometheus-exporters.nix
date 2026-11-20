@@ -14,6 +14,7 @@ in
 {
   vars =
     let
+      # NOTE: bind doesn't allow underscore `_` in domain
       subs = map (name: "${name}-${hostname}.exporter") exporter_list;
     in
     {
@@ -42,14 +43,14 @@ in
 
   services.traefik.dynamicConfigOptions.http = lib.mkMerge (
     map (name: {
-      routers."prometheus-exporter-${name}" = {
+      routers."prometheus-exporter_${name}" = {
         rule = "Host(`${name}-${hostname}.exporter.${const.domain}`)";
         entryPoints = [ "websecure" ];
         middlewares = [ "authelia-auth" ];
-        service = "prometheus-exporter-${name}";
+        service = "prometheus-exporter_${name}";
         tls = { };
       };
-      services."prometheus-exporter-${name}".loadBalancer.servers = lib.singleton {
+      services."prometheus-exporter_${name}".loadBalancer.servers = lib.singleton {
         url = "http://127.0.0.1:${toString config.services.prometheus.exporters.${name}.port}";
       };
     }) exporter_list

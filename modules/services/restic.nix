@@ -11,7 +11,7 @@ in
 {
   sops =
     let
-      sopsFile = const.secretsDir + "/services/restic_${hostname}.sops.yaml";
+      sopsFile = const.secretsDir + "/${hostname}/restic.sops.yaml";
       restartUnits = [ "prometheus-restic-exporter.service" ];
       owner = config.services.restic.backups.main.user;
     in
@@ -52,14 +52,14 @@ in
     user = config.sops.secrets.restic_password.owner;
   };
   services.traefik.dynamicConfigOptions.http = {
-    routers.prometheus-exporter-restic = {
+    routers.prometheus-exporter_restic = {
       rule = "Host(`restic-${hostname}.exporter.${const.domain}`)";
       entryPoints = [ "websecure" ];
       middlewares = [ "authelia-auth" ];
-      service = "prometheus-exporter-restic";
+      service = "prometheus-exporter_restic";
       tls = { };
     };
-    services.prometheus-exporter-restic.loadBalancer.servers = lib.singleton {
+    services.prometheus-exporter_restic.loadBalancer.servers = lib.singleton {
       url = "http://127.0.0.1:${toString config.services.prometheus.exporters.restic.port}";
     };
   };
