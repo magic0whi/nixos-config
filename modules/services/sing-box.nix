@@ -4,6 +4,9 @@
   const,
   ...
 }:
+let
+  hostname = config.networking.hostName;
+in
 {
   networking.firewall = {
     allowedTCPPorts = [
@@ -73,7 +76,7 @@
         type = "acme";
         # Per-node domain, since shared wildcard would hit the Let's Encrypt duplicate certificate rate limit (5 per
         # week) when all nodes request it
-        domain = [ "${config.networking.hostName}.${const.cloudDomain}" ];
+        domain = [ "${hostname}.${const.cloudDomain}" ];
         data_directory = "/var/lib/sing-box/acme"; # StateDirectory, persisted by impermanence
         inherit (const) email;
         dns01_challenge = {
