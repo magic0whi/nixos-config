@@ -357,7 +357,7 @@ in
           # `cp` preserves the permission from /nix/store
           chmod 600 "$RUNTIME_DIRECTORY/config.yml"
 
-          SECRET_VAL=$(cat $CREDENTIALS_DIRECTORY/osdash_client_secret)
+          SECRET_VAL="$(<"$CREDENTIALS_DIRECTORY/osdash_client_secret")"
           cat "$RUNTIME_DIRECTORY/config.yml" | ${pkgs.sd}/bin/sd "@OIDC_CLIENT_SECRET@" "$SECRET_VAL" | ${pkgs.moreutils}/bin/sponge "$RUNTIME_DIRECTORY/config.yml"
 
           # Wait for yellow status

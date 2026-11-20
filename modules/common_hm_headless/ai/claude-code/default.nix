@@ -5,7 +5,7 @@
   ...
 }:
 {
-  sops.secrets.claude_code_oauth_token.sopsFile = const.secretsDir + "/services/claude-code.sops.yaml";
+  sops.secrets.claude-code_token.sopsFile = const.secretsDir + "/services/claude-code.sops.yaml";
 
   # MCP header secrets (sops + env exports) live in ../mcp.nix, shared with opencode.
 
@@ -16,8 +16,8 @@
   programs.zsh.initContent = lib.mkAfter (
     with config.sops.secrets;
     ''
-      if [[ -r ${claude_code_oauth_token.path} ]]; then
-        export CLAUDE_CODE_OAUTH_TOKEN="$(<${claude_code_oauth_token.path})"
+      if [[ -r ${claude-code_token.path} ]]; then
+        export CLAUDE_CODE_OAUTH_TOKEN="$(<"${claude-code_token.path}")"
       fi
     ''
   );

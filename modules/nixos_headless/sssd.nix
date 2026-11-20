@@ -11,7 +11,7 @@
       restartUnits = [ "sssd.service" ];
     in
     {
-      secrets.sssd_ldap_default_authtok = {
+      secrets.sssd_ldap_bind_password = {
         inherit restartUnits;
         sopsFile = const.secretsDir + "/services/sssd.sops.yaml";
       };
@@ -20,7 +20,7 @@
         # https://github.com/NixOS/nixpkgs/blob/15f4ee454b1dce334612fa6843b3e05cf546efab/nixos/modules/services/misc/sssd.nix#L111-L113
         content = mylib.toEnv {
           # SSSD needs escape if the password has special symbols
-          SSSD_LDAP_DEFAULT_AUTHTOK = mylib.escapeStr config.sops.placeholder.sssd_ldap_default_authtok;
+          SSSD_LDAP_DEFAULT_AUTHTOK = mylib.escapeStr config.sops.placeholder.sssd_ldap_bind_password;
         };
       };
     };

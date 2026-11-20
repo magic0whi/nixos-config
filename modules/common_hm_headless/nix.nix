@@ -16,7 +16,7 @@
         sopsFile = const.secretsDir + "/services/niks3_shared.sops.yaml";
       in
       {
-        github_access_tokens.sopsFile = const.secretsDir + "/services/github.sops.yaml";
+        github_token.sopsFile = const.secretsDir + "/services/github.sops.yaml";
         "nix_secret.key" = {
           sopsFile = "${const.secretsDir}/nix_secret.key.sops";
           format = "binary";
@@ -36,7 +36,7 @@
         };
       };
       "nix-access-tokens.conf".content = mylib.toConf {
-        access-tokens = "github.com=${config.sops.placeholder.github_access_tokens}";
+        access-tokens = "github.com=${config.sops.placeholder.github_token}";
       };
     };
   };

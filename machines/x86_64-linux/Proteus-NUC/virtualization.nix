@@ -199,7 +199,7 @@ in
         #   restore_baseline() {
         #     [ -f "$STATE_FILE" ] || exit 0
         #     local baseline
-        #     baseline="$(cat "$STATE_FILE")"
+        #     baseline="$(<"$STATE_FILE")"
 
         #     # Restore exactly to what it was before starting this VM
         #     set_target "$baseline"

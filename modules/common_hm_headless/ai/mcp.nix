@@ -12,25 +12,25 @@
       sopsFile = const.secretsDir + "/services/mcp.sops.yaml";
     in
     {
-      mcp_context7_key = { inherit sopsFile; };
-      mcp_github_key = { inherit sopsFile; };
-      mcp_forgejo_access_token = { inherit sopsFile; };
-      mcp_paperless_api_key = { inherit sopsFile; };
-      mcp_exa_key = { inherit sopsFile; };
-      mcp_firecrawl-mcp_oidc_client_secret = { inherit sopsFile; };
+      mcp_context7_token = { inherit sopsFile; };
+      mcp_github_token = { inherit sopsFile; };
+      mcp_forgejo_token = { inherit sopsFile; };
+      mcp_paperless_token = { inherit sopsFile; };
+      mcp_exa_token = { inherit sopsFile; };
+      mcp_firecrawl_client_secret = { inherit sopsFile; };
     };
 
   programs.zsh.initContent = lib.mkAfter (
     with config.sops.secrets;
     ''
-      if [[ -r ${mcp_context7_key.path} ]]; then
-        export MCP_CONTEXT7_KEY="$(<${mcp_context7_key.path})"
+      if [[ -r ${mcp_context7_token.path} ]]; then
+        export MCP_CONTEXT7_KEY="$(<"${mcp_context7_token.path}")"
       fi
-      if [[ -r ${mcp_github_key.path} ]]; then
-        export MCP_GITHUB_KEY="$(<${mcp_github_key.path})"
+      if [[ -r ${mcp_github_token.path} ]]; then
+        export MCP_GITHUB_KEY="$(<"${mcp_github_token.path}")"
       fi
-      if [[ -r ${mcp_exa_key.path} ]]; then
-        export MCP_EXA_KEY="$(<${mcp_exa_key.path})"
+      if [[ -r ${mcp_exa_token.path} ]]; then
+        export MCP_EXA_KEY="$(<"${mcp_exa_token.path}")"
       fi
     ''
   );
@@ -55,7 +55,7 @@
             export FIRECRAWL_API_KEY="$(
               ${lib.getExe mypkg.fetch-authelia-token} \
                 --client-id firecrawl-mcp \
-                --client-secret-file ${lib.escapeShellArg config.sops.secrets.mcp_firecrawl-mcp_oidc_client_secret.path} \
+                --client-secret-file ${lib.escapeShellArg config.sops.secrets.mcp_firecrawl_client_secret.path} \
                 --resource ${lib.escapeShellArg "https://firecrawl.${const.domain}"} \
                 --auth-url ${lib.escapeShellArg "https://auth.${const.domain}"}
             )"
@@ -73,14 +73,14 @@
           "--url"
           "https://git.proteus.eu.org/"
         ];
-        env.FORGEJO_ACCESS_TOKEN.file = config.sops.secrets.mcp_forgejo_access_token.path;
+        env.FORGEJO_ACCESS_TOKEN.file = config.sops.secrets.mcp_forgejo_token.path;
       };
       paperless = {
         command = lib.getExe mypkg.paperless-mcp;
         env = {
           PAPERLESS_URL = "https://paperless.${const.domain}";
           PAPERLESS_PUBLIC_URL = "https://paperless.${const.domain}";
-          PAPERLESS_API_KEY.file = config.sops.secrets.mcp_paperless_api_key.path;
+          PAPERLESS_API_KEY.file = config.sops.secrets.mcp_paperless_token.path;
           # Restrict filesystem-mode uploads via `post_document` (colon-separated)
           PAPERLESS_MCP_UPLOAD_PATHS = lib.concatStringsSep ":" [
             "${config.home.homeDirectory}/Downloads"
