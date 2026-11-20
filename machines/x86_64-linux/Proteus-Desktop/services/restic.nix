@@ -3,35 +3,12 @@
   config,
   machineConfigs,
   const,
-  mylib,
   ...
 }:
 let
   hostname = config.networking.hostName;
 in
 {
-  sops =
-    let
-      sopsFile = const.secretsDir + "/services/restic_${hostname}.sops.yaml";
-      restartUnits = [ "prometheus-restic-exporter.service" ];
-      owner = config.services.restic.backups.main.user;
-    in
-    {
-      # Restic repository encryption password
-      secrets = {
-        restic_password = { inherit sopsFile restartUnits owner; };
-        restic_s3_main_access_key = { inherit sopsFile restartUnits; };
-        restic_s3_main_secret_key = { inherit sopsFile restartUnits; };
-      };
-      templates."restic_main.env" = {
-        inherit restartUnits owner;
-        content = mylib.toEnv {
-          AWS_ACCESS_KEY_ID = config.sops.placeholder.restic_s3_main_access_key;
-          AWS_SECRET_ACCESS_KEY = config.sops.placeholder.restic_s3_main_secret_key;
-        };
-      };
-    };
-
   services.restic.backups.main =
     let
       hostname_s3_main = "Proteus-NixOS-1";
