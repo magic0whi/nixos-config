@@ -61,9 +61,7 @@ in
         \endif
       '';
     in
-    [
-      ''
-        ${config.services.postgresql.package}/bin/psql -d "${machine_config.immich.services.immich.database.name}" -f "${sqlFile}"
-      ''
-    ];
+    lib.singleton ''
+      ${config.services.postgresql.package}/bin/psql -d "${machine_config.immich.services.immich.database.name}" -f "${sqlFile}"
+    '';
 }

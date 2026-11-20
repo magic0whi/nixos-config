@@ -169,7 +169,6 @@ in
         group = "storage";
       };
     };
-  systemd.services.postgresqlBackup.serviceConfig.ExecStartPost = [
-    "+${pkgs.coreutils}/bin/chmod -R g+r ${config.services.postgresqlBackup.location}"
-  ];
+  systemd.services.postgresqlBackup.serviceConfig.ExecStartPost =
+    lib.singleton "+${pkgs.coreutils}/bin/chmod -R g+r ${config.services.postgresqlBackup.location}";
 }
