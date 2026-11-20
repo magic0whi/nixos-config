@@ -102,12 +102,8 @@
         guiOverlays = [
           inputs.noctalia-greeter.overlays.default
         ]
-        ++ map (file: import file) (
-          map mylib.relToRoot [
-            "modules/overlays/localsend.nix"
-            "modules/overlays/nixpaks"
-          ]
-        );
+        ++ map (file: import file) (map mylib.relToRoot [ "modules/overlays/localsend.nix" ])
+        ++ [ (import (mylib.relToRoot "modules/overlays/nixpaks") inputs.nixpak) ];
       };
     };
 

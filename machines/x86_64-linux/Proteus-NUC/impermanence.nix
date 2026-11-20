@@ -21,7 +21,9 @@
     "Proteus"
 
     # IM
-    # ".config/QQ"
-    # ".xwechat"
+    # ".var/app/com.qq.QQ" # if nixpaks.qq is installed
+    # nixpak keeps all of WeChat's state (`HOME`, XDG dirs) in its private
+    # per-app directory, see modules/overlays/nixpaks/modules/xdg-storage.nix
+    ".var/app/com.tencent.WeChat"
   ];
 }

@@ -33,11 +33,7 @@
     # freerdp
 
     ## Custom Hardened Packages
-    # nixpaks.qq
-    # nixpaks.qq-desktop-item
-    # nixpaks.wechat-uos
-    # nixpaks.wechat-uos-desktop-item
-    # wechat-uos
+    # nixpaks.wechat
 
     ## Games
     # nix-gaming.packages.${pkgs.stdenv.hostPlatform.system}.osu-laser-bin

@@ -9,6 +9,8 @@
     act # Run your GitHub Actions locally
     witr
     intel-undervolt
+
+    nixpaks.wechat
   ];
   home.persistence."/persistent".directories = [ "${xdgRel.configHome}/libreoffice" ];
   programs.antigravity-cli.enable = true;
