@@ -51,10 +51,10 @@ in
             ];
           };
           "cn=schema".includes = with pkgs; [
-            "${openldap}/etc/schema/core.ldif"
-            "${openldap}/etc/schema/cosine.ldif"
-            "${const.secretsDir}/rfc2307bis.ldif"
-            "${openldap}/etc/schema/inetorgperson.ldif"
+            (openldap + "/etc/schema/core.ldif")
+            (openldap + "/etc/schema/cosine.ldif")
+            ./rfc2307bis.ldif
+            (openldap + "/etc/schema/inetorgperson.ldif")
           ];
           "olcDatabase={0}config".attrs = {
             objectClass = "olcDatabaseConfig";

@@ -53,7 +53,7 @@ creation_rules:
   #       age: [*Proteus-NUC, *Proteus-Desktop, *Proteus-MBP14M4P]
   ## END Common
   ## BEGIN Proteus-NUC
-  - path_regex: secrets/secureboot_(PK|KEK|db)\.key\.sops$
+  - path_regex: secrets/secureboot/(PK|KEK|db)\.key\.sops$
     key_groups: [{ pgp: [*openpgp], age: [*Proteus-NUC] }]
   ## END Proteus-NUC
   ## BEGIN Proteus-Desktop
