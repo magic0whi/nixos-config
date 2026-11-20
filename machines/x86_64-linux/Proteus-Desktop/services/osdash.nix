@@ -6,13 +6,13 @@
   ...
 }:
 let
-  opensearch_dashboards_port = 5601;
+  osdash_port = 5601;
 
 in
 {
   vars.hostAddrs.${config.networking.hostName}.easytier.subdomains =
     let
-      subs = [ "opensearch-dashboards" ];
+      subs = [ "osdash" ];
     in
     {
       A = subs;
@@ -20,20 +20,21 @@ in
     };
   sops =
     let
-      restartUnits = [ "${config.virtualisation.oci-containers.containers.opensearch-dashboards.serviceName}.service" ];
+      restartUnits = [ "${config.virtualisation.oci-containers.containers.osdash.serviceName}.service" ];
+      sopsFile = const.secretsDir + "/services/osdash.sops.yaml";
     in
     {
-      secrets.opensearch_dashboards_password = {
-        sopsFile = const.secretsDir + "/services/opensearch-dashboards.sops.yaml";
-        inherit restartUnits;
+      secrets = {
+        osdash_client_secret = { inherit sopsFile restartUnits; };
+        # osdash_password = { inherit sopsFile restartUnits; };
       };
-      templates."opensearch_dashboards.yml" = {
+      templates."osdash.yml" = {
         inherit restartUnits;
         owner = const.username; # sops-nix don't support specify uid while the image hardcoded 1000
         # https://github.com/opensearch-project/OpenSearch-Dashboards/blob/3.6.0/config/opensearch_dashboards.yml
         content = mylib.toYAML {
           server = {
-            name = "opensearch_dashboards";
+            name = config.networking.hostName;
             host = "0.0.0.0";
             port = 5601;
             customResponseHeaders.Access-Control-Allow-Credentials = true;
@@ -46,7 +47,7 @@ in
             hosts = [ "https://nixos-search.${const.domain}/backend" ];
             username = "kibanaserver";
             # NOTE opensearch-dashboards don't suppport urlencode
-            password = config.sops.placeholder.opensearch_dashboards_password;
+            # password = config.sops.placeholder.osdash_password;
             requestHeadersAllowlist = [
               "securitytenant"
               "Authorization"
@@ -66,9 +67,9 @@ in
             auth.type = "openid";
             openid = {
               connect_url = "https://auth.${const.domain}/.well-known/openid-configuration";
-              base_redirect_url = "https://opensearch-dashboards.proteus.eu.org";
-              client_id = "opensearch-dashboards";
-              client_secret = config.sops.placeholder.opensearch-dashboards_client_secret;
+              base_redirect_url = "https://osdash.${const.domain}";
+              client_id = "osdash";
+              client_secret = config.sops.placeholder.osdash_client_secret;
               scope = "openid profile email groups";
               # root_ca = "/etc/ssl/certs/ca-certificates.crt";
             };
@@ -78,28 +79,24 @@ in
     };
   virtualisation.oci-containers = {
     backend = "docker";
-    containers.opensearch-dashboards = {
+    containers.osdash = {
       image = "opensearchproject/opensearch-dashboards:3.6.0";
-      ports = [ "127.0.0.1:${toString opensearch_dashboards_port}:5601" ];
+      ports = [ "127.0.0.1:${toString osdash_port}:5601" ];
       # Cannot use NODE_USE_SYSTEM_CA=1, Node 20.18.3 < 22.15 / 23.9
       environment.NODE_EXTRA_CA_CERTS = "/etc/ssl/certs/ca-certificates.crt";
       volumes = [
         "${config.security.pki.caBundle}:/etc/ssl/certs/ca-certificates.crt:ro"
-        "${
-          config.sops.templates."opensearch_dashboards.yml".path
-        }:/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml:ro"
+        "${config.sops.templates."osdash.yml".path}:/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml:ro"
       ];
     };
   };
   services.traefik.dynamicConfigOptions.http = {
-    routers.opensearch-dashboards = {
-      rule = "Host(`opensearch-dashboards.${const.domain}`)";
+    routers.osdash = {
+      rule = "Host(`osdash.${const.domain}`)";
       entryPoints = [ "websecure" ];
-      service = "opensearch-dashboards";
+      service = "osdash";
       tls = { };
     };
-    services.opensearch-dashboards.loadBalancer.servers = lib.singleton {
-      url = "http://127.0.0.1:${toString opensearch_dashboards_port}";
-    };
+    services.osdash.loadBalancer.servers = lib.singleton { url = "http://127.0.0.1:${toString osdash_port}"; };
   };
 }

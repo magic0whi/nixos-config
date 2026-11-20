@@ -94,7 +94,7 @@ creation_rules:
   - path_regex: secrets/services/authelia_oidc_rsa\.pem\.sops$
     key_groups: [{ pgp: [*openpgp], age: [*Proteus-Desktop] }]
   # Desktop-only services
-  - path_regex: secrets/services/(aria2|atuin|bind|firecrawl|forgejo|homebox|hostapd|nextcloud|opensearch-dashboards|papra|postgresql)\.sops\.yaml$
+  - path_regex: secrets/services/(aria2|atuin|bind|firecrawl|forgejo|homebox|hostapd|nextcloud|osdash|papra|postgresql)\.sops\.yaml$
     key_groups: [{ pgp: [*openpgp], age: [*Proteus-Desktop] }]
   # NUC-only services
   - path_regex: secrets/services/(forgejo-runner|hass|immich|paperless)\.sops\.yaml$

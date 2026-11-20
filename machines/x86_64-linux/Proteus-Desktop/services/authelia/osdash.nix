@@ -11,10 +11,10 @@
       ];
     };
     clients = lib.singleton {
-      client_id = "opensearch-dashboards";
+      client_id = "osdash";
       client_name = "OpenSearch Dashboards";
       client_secret = "$pbkdf2-sha512$310000$ABGWSADqYSUeeF5ZDQlhNg$c4aee7uOMUwHOHv5myhhu.VNxwEBhBnNUAI1DjutkmICQ33W1QnJA0k8cQkpEOubCa5jGrFC.e6Un4QuKnu0YQ";
-      redirect_uris = [ "https://opensearch-dashboards.${const.domain}/auth/openid/login" ];
+      redirect_uris = [ "https://osdash.${const.domain}/auth/openid/login" ];
       scopes = [
         "openid"
         "profile"

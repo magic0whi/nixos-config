@@ -55,8 +55,8 @@ let
                       subject_key = "preferred_username";
                       roles_key = "groups";
                       openid_connect_url = "https://auth.${const.domain}/.well-known/openid-configuration";
-                      frontend_url = "https://opensearch-dashboards.${const.domain}";
-                      client_id = "opensearch-dashboards";
+                      frontend_url = "https://osdash.${const.domain}";
+                      client_id = "osdash";
                       client_secret = "@OIDC_CLIENT_SECRET@"; # Placeholder for `sd`
                       openid_connect_idp = {
                         enable_ssl = true;
@@ -220,8 +220,8 @@ in
     A = [ "nixos-search" ];
     AAAA = [ "nixos-search" ];
   };
-  sops.secrets.opensearch-dashboards_client_secret = {
-    sopsFile = const.secretsDir + "/services/opensearch-dashboards.sops.yaml";
+  sops.secrets.osdash_client_secret = {
+    sopsFile = const.secretsDir + "/services/osdash.sops.yaml";
     restartUnits = [ "opensearch.service" ];
   };
 
@@ -324,7 +324,7 @@ in
       serviceConfig = {
         RuntimeDirectory = "opensearch";
         RuntimeDirectoryMode = "0700";
-        LoadCredential = "opensearch-dashboards_client_secret:${config.sops.secrets.opensearch-dashboards_client_secret.path}";
+        LoadCredential = "osdash_client_secret:${config.sops.secrets.osdash_client_secret.path}";
       };
       preStart = lib.mkBefore ''
         if [ ! -d "${certs_dir}" ]; then
@@ -356,7 +356,7 @@ in
           # `cp` preserves the permission from /nix/store
           chmod 600 "$RUNTIME_DIRECTORY/config.yml"
 
-          SECRET_VAL=$(cat $CREDENTIALS_DIRECTORY/opensearch-dashboards_client_secret)
+          SECRET_VAL=$(cat $CREDENTIALS_DIRECTORY/osdash_client_secret)
           cat "$RUNTIME_DIRECTORY/config.yml" | ${pkgs.sd}/bin/sd "@OIDC_CLIENT_SECRET@" "$SECRET_VAL" | ${pkgs.moreutils}/bin/sponge "$RUNTIME_DIRECTORY/config.yml"
 
           # Wait for yellow status
