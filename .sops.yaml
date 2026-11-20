@@ -75,7 +75,7 @@ creation_rules:
     key_groups: [{ pgp: [*openpgp] }]
   ## END Trusted Machines
   ## BEGIN Cloud
-  - path_regex: secrets/Cloud/(ddclient|garage_cloud)\.sops\.yaml$
+  - path_regex: secrets/Cloud/(ddclient|garage)\.sops\.yaml$
     key_groups: [{ pgp: [*openpgp], age: *cloud }]
   ## END Cloud
   ## BEGIN Services
