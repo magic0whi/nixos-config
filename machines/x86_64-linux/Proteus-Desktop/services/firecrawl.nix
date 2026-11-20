@@ -45,7 +45,7 @@ in
 
   sops =
     let
-      sopsFile = "${const.secretsDir}/${hostname}.sops.yaml";
+      sopsFile = const.secretsDir + "/services/firecrawl.sops.yaml";
       postgres_units = [
         "${containers.firecrawl-api.serviceName}.service"
         "${containers.firecrawl-postgres.serviceName}.service"

@@ -17,7 +17,7 @@
   sops =
     let
       restartUnits = [ "${config.virtualisation.oci-containers.containers.papra.serviceName}.service" ];
-      sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
+      sopsFile = const.secretsDir + "/services/papra.sops.yaml";
     in
     {
       secrets = {

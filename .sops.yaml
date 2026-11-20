@@ -45,8 +45,6 @@ anchors:
     - *Proteus-NixOS-6
 creation_rules:
   ## BEGIN Common
-  - path_regex: secrets/common\.sops\.yaml$
-    key_groups: [{ pgp: [*openpgp], age: *all }]
   - path_regex: secrets/proteus_server\.priv\.pem\.sops$
     key_groups: [{ pgp: [*openpgp], age: *all }]
   # - path_regex: secrets/sb_test\.json\.sops$
@@ -54,19 +52,11 @@ creation_rules:
   #     - pgp: [*openpgp]
   #       age: [*Proteus-NUC, *Proteus-Desktop, *Proteus-MBP14M4P]
   ## END Common
-  ## BEGIN Cloud Common
-  - path_regex: secrets/cloud\.sops\.yaml$
-    key_groups: [{ pgp: [*openpgp], age: *cloud }]
-  ## END Cloud Common
   ## BEGIN Proteus-NUC
-  - path_regex: secrets/Proteus-NUC\.sops\.yaml$
-    key_groups: [{ pgp: [*openpgp], age: [*Proteus-NUC] }]
   - path_regex: secrets/secureboot_(PK|KEK|db)\.key\.sops$
     key_groups: [{ pgp: [*openpgp], age: [*Proteus-NUC] }]
   ## END Proteus-NUC
   ## BEGIN Proteus-Desktop
-  - path_regex: secrets/Proteus-Desktop\.sops\.yaml$
-    key_groups: [{ pgp: [*openpgp], age: [*Proteus-Desktop] }]
   - path_regex: secrets/Proteus-Desktop_syncthing\.priv\.pem\.sops$
     key_groups: [{ pgp: [*openpgp], age: [*Proteus-Desktop] }]
   ## END Proteus-Desktop
@@ -74,9 +64,10 @@ creation_rules:
   # NOTE: a regular user doesn't have access to host ssh key
   - path_regex: secrets/nix_secret\.key\.sops$
     key_groups: [{ pgp: [*openpgp], age: [*Proteus-Desktop] }]
-  - path_regex: secrets/Proteus-Desktop_shared\.sops\.yaml$
-    key_groups: [{ pgp: [*openpgp], age: *trusted }]
-  - path_regex: secrets/(common_hm\.sops\.yaml|oracle_secret\.pem\.sops|gcloud_project-[0-9]+\.secret\.json\.sops)$
+  # Cloud provider credentials for home-manager CLIs (not services)
+  - path_regex: secrets/(gcloud|oracle)\.sops\.yaml$
+    key_groups: [{ pgp: [*openpgp] }]
+  - path_regex: secrets/(oracle_secret\.pem\.sops|gcloud_project-[0-9]+\.secret\.json\.sops)$
     key_groups: [{ pgp: [*openpgp] }]
   ## END Trusted Machines
   ## BEGIN Syncthing (HM)
@@ -85,11 +76,11 @@ creation_rules:
   # TIP: To edit, run
   # SOPS_AGE_KEY=$(nix run nixpkgs#ssh-to-age -- -private-key -i ~/Secrets/Backup/proteus@agenix-recovery.ssh.priv.key) sops -- edit secrets/syncthing_proteus-nuc.priv.pem.age
   - path_regex: secrets/Proteus-(NUC|MBP14M4P)_syncthing\.priv\.pem\.sops$
-    key_groups: [pgp: [*openpgp]]
+    key_groups: [{ pgp: [*openpgp] }]
   ## END Syncthing (HM)
   ## BEGIN Services
   - path_regex: secrets/services/ddclient\.sops\.yaml$
-    key_groups: [{ pgp: [*openpgp], age: *cloud}]
+    key_groups: [{ pgp: [*openpgp], age: *cloud }]
   # TODO: MBP's prometheus-exporter lands in a follow-up; *all covers it early.
   - path_regex: secrets/services/(easytier|prometheus-exporter|sing-box|sssd)\.sops\.yaml$
     key_groups: [{ pgp: [*openpgp], age: *all }]
@@ -102,4 +93,21 @@ creation_rules:
     key_groups: [{ pgp: [*openpgp], age: *trusted }]
   - path_regex: secrets/services/authelia_oidc_rsa\.pem\.sops$
     key_groups: [{ pgp: [*openpgp], age: [*Proteus-Desktop] }]
-  ## END Services
+  # Desktop-only services
+  - path_regex: secrets/services/(aria2|atuin|bind|firecrawl|forgejo|homebox|hostapd|nextcloud|opensearch-dashboards|papra|postgresql)\.sops\.yaml$
+    key_groups: [{ pgp: [*openpgp], age: [*Proteus-Desktop] }]
+  # NUC-only services
+  - path_regex: secrets/services/(forgejo-runner|hass|immich|paperless)\.sops\.yaml$
+    key_groups: [{ pgp: [*openpgp], age: [*Proteus-NUC] }]
+  # Restic: the repo password and S3 credentials differ per host
+  - path_regex: secrets/services/restic_Proteus-Desktop\.sops\.yaml$
+    key_groups: [{ pgp: [*openpgp], age: [*Proteus-Desktop] }]
+  - path_regex: secrets/services/restic_Proteus-NUC\.sops\.yaml$
+    key_groups: [{ pgp: [*openpgp], age: [*Proteus-NUC] }]
+  # Cloud garage cluster
+  - path_regex: secrets/services/garage_cloud\.sops\.yaml$
+    key_groups: [{ pgp: [*openpgp], age: *cloud }]
+  # Home-manager services: dev machines only, no age recipient
+  - path_regex: secrets/services/(anki|claude-code|github|llama-server|mcp)\.sops\.yaml$
+    key_groups: [{ pgp: [*openpgp] }]
+## END Services

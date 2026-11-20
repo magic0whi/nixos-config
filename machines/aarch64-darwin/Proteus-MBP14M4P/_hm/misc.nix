@@ -6,7 +6,8 @@
   ...
 }:
 {
-  sops.secrets.llama-server_api_token.sopsFile = "${const.secretsDir}/common_hm.sops.yaml";
+  ## BEGIN llama-server.nix
+  sops.secrets.llama-server_api_token.sopsFile = const.secretsDir + "/services/llama-server.sops.yaml";
 
   # Unified memory caps at an 8B Q4 (~5 GB) as the always-on default; a 14B Q4
   # needs ~9 GB and is a deliberate swap, not a second service.
@@ -48,7 +49,7 @@
       StandardErrorPath = "${config.home.homeDirectory}/Library/Logs/llama-server.log";
     };
   };
-
+  ## END llama-server.nix
   ## BEGIN aerospace.nix
   programs.aerospace.settings.workspace-to-monitor-force-assignment = {
     "7" = [ "C340SCA" ];

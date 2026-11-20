@@ -20,7 +20,7 @@ let
       pkgs.anki;
 in
 {
-  sops.secrets.anki_sync_key = { };
+  sops.secrets.anki_sync_key.sopsFile = const.secretsDir + "/services/anki.sops.yaml";
   # Installed directly until `programs.anki.enable` is switched on below.
   home.packages = lib.optionals (!config.programs.anki.enable) [ anki_pkg ];
 

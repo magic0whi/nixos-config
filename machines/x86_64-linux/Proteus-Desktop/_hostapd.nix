@@ -19,7 +19,7 @@ in
   boot.requiredKernelModules = [ "rtl8812au" ];
 
   sops.secrets.proteus_ap_password = {
-    sopsFile = "${const.secretsDir}/Proteus-Desktop.sops.yaml";
+    sopsFile = const.secretsDir + "/services/hostapd.sops.yaml";
     restartUnits = [ "hostapd.service" ];
   };
   services.hostapd = {

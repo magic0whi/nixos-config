@@ -13,7 +13,7 @@ in
 
   sops.secrets =
     let
-      sopsFile = "${const.secretsDir}/cloud.sops.yaml";
+      sopsFile = const.secretsDir + "/services/garage_cloud.sops.yaml";
     in
     {
       garage_rpc_secret = { inherit sopsFile; };

@@ -159,7 +159,6 @@
             "${headless}/nix.nix"
             "${headless}/nvim"
             "${headless}/packages.nix"
-            "${headless}/secrets.nix"
             "${headless}/ssh.nix"
             "${headless}/syncthing.nix"
             "${headless}/zellij.nix"

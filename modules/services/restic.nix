@@ -11,7 +11,7 @@ in
 {
   sops =
     let
-      sopsFile = "${const.secretsDir}/${hostname}.sops.yaml";
+      sopsFile = const.secretsDir + "/services/restic_${hostname}.sops.yaml";
       restartUnits = [ "prometheus-restic-exporter.service" ];
       owner = config.services.restic.backups.main.user;
     in

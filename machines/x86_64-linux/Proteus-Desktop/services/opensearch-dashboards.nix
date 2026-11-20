@@ -24,7 +24,7 @@ in
     in
     {
       secrets.opensearch_dashboards_password = {
-        sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
+        sopsFile = const.secretsDir + "/services/opensearch-dashboards.sops.yaml";
         inherit restartUnits;
       };
       templates."opensearch_dashboards.yml" = {

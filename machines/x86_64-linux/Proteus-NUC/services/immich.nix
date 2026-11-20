@@ -24,7 +24,7 @@ in
 
   sops =
     let
-      sopsFile = "${const.secretsDir}/${hostname}.sops.yaml";
+      sopsFile = const.secretsDir + "/services/immich.sops.yaml";
       restartUnits = [
         "immich-machine-learning.service"
         "immich-server.service"

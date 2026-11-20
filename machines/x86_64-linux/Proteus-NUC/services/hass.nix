@@ -25,7 +25,7 @@ in
     {
       secrets = lib.genAttrs [ "hass_oidc_secret" "hass_latitude" "hass_longitude" ] (_: {
         inherit restartUnits;
-        sopsFile = "${const.secretsDir}/${hostname}.sops.yaml";
+        sopsFile = const.secretsDir + "/services/hass.sops.yaml";
       });
       templates."hass_secrets.yaml" = {
         inherit restartUnits;

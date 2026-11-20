@@ -22,7 +22,7 @@ in
     };
   sops =
     let
-      sopsFile = "${const.secretsDir}/${hostname}.sops.yaml";
+      sopsFile = const.secretsDir + "/services/paperless.sops.yaml";
       restartUnits = [
         "paperless-scheduler.service"
         "paperless-task-queue.service"

@@ -1,6 +1,11 @@
-{ config, lib, ... }:
 {
-  sops.secrets.claude_code_oauth_token = { };
+  config,
+  const,
+  lib,
+  ...
+}:
+{
+  sops.secrets.claude_code_oauth_token.sopsFile = const.secretsDir + "/services/claude-code.sops.yaml";
 
   # MCP header secrets (sops + env exports) live in ../mcp.nix, shared with opencode.
 

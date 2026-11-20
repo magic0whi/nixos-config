@@ -26,7 +26,7 @@ in
   sops =
     let
       restartUnits = [ "homebox.service" ];
-      sopsFile = "${const.secretsDir}/${hostname}.sops.yaml";
+      sopsFile = const.secretsDir + "/services/homebox.sops.yaml";
     in
     {
       secrets = {

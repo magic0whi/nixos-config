@@ -14,7 +14,7 @@ in
   };
   systemd.services.aria2.unitConfig.RequiresMountsFor = [ mount_path ];
   sops.secrets.aria2_rpc_secret = {
-    sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
+    sopsFile = const.secretsDir + "/services/aria2.sops.yaml";
     restartUnits = [ "aria2.service" ];
   };
 

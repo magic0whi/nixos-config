@@ -20,7 +20,7 @@ in
     };
   sops =
     let
-      sopsFile = "${const.secretsDir}/${hostname}.sops.yaml";
+      sopsFile = const.secretsDir + "/services/forgejo.sops.yaml";
     in
     {
       secrets = {

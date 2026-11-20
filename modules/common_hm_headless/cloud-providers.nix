@@ -8,6 +8,8 @@
   ...
 }:
 let
+  gcloud_sops_file = "${const.secretsDir}/gcloud.sops.yaml";
+  oracle_sops_file = "${const.secretsDir}/oracle.sops.yaml";
   projects = [
     "0"
     "1"
@@ -24,12 +26,12 @@ in
           format = "binary";
           path = "${config.xdg.configHome}/gcloud/project-${num}.secret.json";
         };
-        "config_account_project-${num}" = { };
-        "config_projectid_project-${num}" = { };
-        oracle_user_ocid = { };
-        oracle_fingerprint = { };
-        oracle_tenancy = { };
-        oracle_region = { };
+        "config_account_project-${num}".sopsFile = gcloud_sops_file;
+        "config_projectid_project-${num}".sopsFile = gcloud_sops_file;
+        oracle_user_ocid.sopsFile = oracle_sops_file;
+        oracle_fingerprint.sopsFile = oracle_sops_file;
+        oracle_tenancy.sopsFile = oracle_sops_file;
+        oracle_region.sopsFile = oracle_sops_file;
         "oracle_secret.pem" = {
           sopsFile = "${const.secretsDir}/oracle_secret.pem.sops";
           format = "binary";

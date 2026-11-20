@@ -31,7 +31,7 @@ in
     };
   sops.secrets =
     let
-      sopsFile = "${const.secretsDir}/${hostname}.sops.yaml";
+      sopsFile = const.secretsDir + "/services/nextcloud.sops.yaml";
     in
     {
       nextcloud_db_password = { inherit sopsFile restartUnits; };

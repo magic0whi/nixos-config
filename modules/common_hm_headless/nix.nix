@@ -16,7 +16,7 @@
         sopsFile = const.secretsDir + "/services/niks3_shared.sops.yaml";
       in
       {
-        github_access_tokens = { };
+        github_access_tokens.sopsFile = const.secretsDir + "/services/github.sops.yaml";
         "nix_secret.key" = {
           sopsFile = "${const.secretsDir}/nix_secret.key.sops";
           format = "binary";

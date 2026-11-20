@@ -221,7 +221,7 @@ in
     AAAA = [ "nixos-search" ];
   };
   sops.secrets.opensearch-dashboards_client_secret = {
-    sopsFile = "${const.secretsDir}/${config.networking.hostName}.sops.yaml";
+    sopsFile = const.secretsDir + "/services/opensearch-dashboards.sops.yaml";
     restartUnits = [ "opensearch.service" ];
   };
 

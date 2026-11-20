@@ -7,14 +7,18 @@
   ...
 }:
 {
-  sops.secrets = {
-    mcp_context7_key = { };
-    mcp_github_key = { };
-    mcp_forgejo_access_token = { };
-    mcp_paperless_api_key = { };
-    mcp_exa_key = { };
-    firecrawl-mcp_oidc_client_secret.sopsFile = "${const.secretsDir}/${const.networking.findFirstHostBySubdomain "firecrawl"}_shared.sops.yaml";
-  };
+  sops.secrets =
+    let
+      sopsFile = const.secretsDir + "/services/mcp.sops.yaml";
+    in
+    {
+      mcp_context7_key = { inherit sopsFile; };
+      mcp_github_key = { inherit sopsFile; };
+      mcp_forgejo_access_token = { inherit sopsFile; };
+      mcp_paperless_api_key = { inherit sopsFile; };
+      mcp_exa_key = { inherit sopsFile; };
+      mcp_firecrawl-mcp_oidc_client_secret = { inherit sopsFile; };
+    };
 
   programs.zsh.initContent = lib.mkAfter (
     with config.sops.secrets;
@@ -51,7 +55,7 @@
             export FIRECRAWL_API_KEY="$(
               ${lib.getExe mypkg.fetch-authelia-token} \
                 --client-id firecrawl-mcp \
-                --client-secret-file ${lib.escapeShellArg config.sops.secrets.firecrawl-mcp_oidc_client_secret.path} \
+                --client-secret-file ${lib.escapeShellArg config.sops.secrets.mcp_firecrawl-mcp_oidc_client_secret.path} \
                 --resource ${lib.escapeShellArg "https://firecrawl.${const.domain}"} \
                 --auth-url ${lib.escapeShellArg "https://auth.${const.domain}"}
             )"
