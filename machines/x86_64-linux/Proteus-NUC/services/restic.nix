@@ -41,7 +41,7 @@ in
       hostname_s3_gcp = "Proteus-NixOS-3";
       machine_cfg_s3_gcp = machineConfigs.${hostname_s3_gcp}.config;
 
-      shared = const.mkResticBackupsCfg config;
+      shared = const.mkDefaultResticCfg config;
     in
     {
       main = {

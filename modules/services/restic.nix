@@ -64,5 +64,5 @@ in
     };
   };
 
-  services.restic.backups.main = const.mkResticBackupsCfg config;
+  services.restic.backups.main = const.mkDefaultResticCfg config;
 }

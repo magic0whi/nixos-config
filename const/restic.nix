@@ -3,7 +3,7 @@
 # - To retrieve latest snapshots:
 #   restic-<Hostname> latest --target /tmp/restic-restore
 #   restic-<Hostname> <Snapshot ID> --target /tmp/restic-restore
-lib: username: backup_time: config: {
+lib: username: backupTime: config: {
   user = username; # Default root, set to primary user to ease the use of `restic-<Hostname>` command
   initialize = true; # Create the repository if it doesn’t exist
   passwordFile = config.sops.secrets.restic_password.path; # Password for restic backup itself
@@ -20,7 +20,7 @@ lib: username: backup_time: config: {
   checkOpts = [ "--with-cache" ]; # Reuse existing cache
   # Run backup + prune + check weekly (Sundays at 3 AM)
   timerConfig = {
-    OnCalendar = lib.mkDefault backup_time;
+    OnCalendar = lib.mkDefault backupTime;
     # RandomizedDelaySec = "30m"; # Jitter
     Persistent = lib.mkDefault true; # Run immediately if system was off at scheduled time
   };

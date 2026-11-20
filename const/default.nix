@@ -101,5 +101,5 @@ rec {
 
   syncthing = ./syncthing.nix; # Usage: imports = [ const.syncthing ];
 
-  mkResticBackupsCfg = import ./restic.nix lib username backupTimes.restic;
+  mkDefaultResticCfg = import ./restic.nix lib username backupTimes.restic;
 }
