@@ -28,15 +28,26 @@
     "01-secureboot-GUID"."${config.boot.lanzaboote.pkiBundle}/GUID"."L+".argument = toString (
       pkgs.writeText "secureboot_GUID" "29fd7ac6-d1a3-4043-9f87-fe35fcb6b679"
     );
-    "01-secureboot-PK-key"."${config.boot.lanzaboote.pkiBundle}/keys/PK/PK.pem"."L+".argument = toString (
+    # NOTE:
+    # Don't simply convert bare path using `toString` for options don't allow `types.path` as it doesn't
+    # materialize the path to a real store object:
+    #   toString (secrets + "/www/x.pem") # "/nix/store/smvmd...-source/secrets/www/x.pem" ctx = {}
+    #   "${secrets + "/www/x.pem"}"       # "/nix/store/a84skj...-proteus_server.pub.pem"  ctx = {"/nix/store/a84skj…": {path = true;}}
+    # (measured with builtins.getContext)
+    # Store references are built from string context, which prevent it from being GCed
+    #
+    # Optimize: ${const.secretsDir} copies the whole dir, while ${const.secretsDir + /path/to/file} copies one file
+
+    # ${const.secretsDir} copies the whole dir, while ${const.secretsDir + /path/to/file} copies one file
+    "01-secureboot-PK-key"."${config.boot.lanzaboote.pkiBundle}/keys/PK/PK.pem"."L+".argument = "${
       const.secretsDir + "/secureboot/PK.pem"
-    );
-    "01-secureboot-KEK-key"."${config.boot.lanzaboote.pkiBundle}/keys/KEK/KEK.pem"."L+".argument = toString (
+    }";
+    "01-secureboot-KEK-key"."${config.boot.lanzaboote.pkiBundle}/keys/KEK/KEK.pem"."L+".argument = "${
       const.secretsDir + "/secureboot/KEK.pem"
-    );
-    "01-secureboot-db-key"."${config.boot.lanzaboote.pkiBundle}/keys/db/db.pem"."L+".argument = toString (
+    }";
+    "01-secureboot-db-key"."${config.boot.lanzaboote.pkiBundle}/keys/db/db.pem"."L+".argument = "${
       const.secretsDir + "/secureboot/db.pem"
-    );
+    }";
   };
 
   environment.systemPackages = [ pkgs.sbctl ]; # For debugging and troubleshooting Secure Boot.
