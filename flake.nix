@@ -7,8 +7,6 @@
     # nixpkgs.url = "path:/Users/proteus/Proteus/Projects-Ref/nosync/nixpkgs";
     # Take sing-box from a newer nixpkgs
     # nixpkgs-sing-box.url = "github:NixOS/nixpkgs/f9a75f41be3a74eab55d3a7679d34ad6cc0da977";
-    # Take opencode 2.3.0 from a newer nixpkgs (bump: PR #587786)
-    nixpkgs-opencode.url = "github:NixOS/nixpkgs/97e1a088c8eea4b04750beee9eb5b26d990aa1d6";
     # Pinned as of 2026-10-29, branch: master
     home-manager = {
       url = "github:nix-community/home-manager/82ce401aa350502897c3f2e85f384d61cd3b0b6d";

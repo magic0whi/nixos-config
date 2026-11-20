@@ -20,8 +20,6 @@
         helix.overlays.default
         # Take sing-box from a newer nixpkgs
         # (_: prev: { inherit (nixpkgs-sing-box.legacyPackages.${prev.stdenv.hostPlatform.system}) sing-box; })
-        # Take opencode 2.3.0 from a newer nixpkgs
-        (_: prev: { inherit (nixpkgs-opencode.legacyPackages.${prev.stdenv.hostPlatform.system}) opencode; })
       ];
       seat = map mylib.relToRoot [
         "${common}/fonts.nix"
