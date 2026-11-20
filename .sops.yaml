@@ -51,7 +51,7 @@ creation_rules:
   - path_regex: secrets/www/proteus_server\.priv\.pem\.sops$
     key_groups: [{ pgp: [*openpgp], age: *all }]
   ## BEGIN Proteus-Desktop
-  - path_regex: secrets/Proteus-Desktop/(aria2|atuin|authelia|bind|firecrawl|forgejo|garage|grafana|homebox|hostapd|nextcloud|niks3|osdash|papra|plane|postgresql|prometheus|restic)\.sops\.yaml$
+  - path_regex: secrets/Proteus-Desktop/(aria2|atuin|authelia|bind|firecrawl|forgejo|garage|grafana|homebox|hostapd|nextcloud|niks3|osdash|papra|plane|psql|prometheus|restic)\.sops\.yaml$
     key_groups: [{ pgp: [*openpgp], age: [*Proteus-Desktop] }]
   - path_regex: secrets/Proteus-Desktop/(authelia_oidc_rsa|syncthing\.priv)\.pem\.sops$
     key_groups: [{ pgp: [*openpgp], age: [*Proteus-Desktop] }]

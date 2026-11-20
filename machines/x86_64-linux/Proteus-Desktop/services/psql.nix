@@ -51,7 +51,7 @@ in
       };
       psql_ldap_bind_password = {
         inherit restartUnits;
-        sopsFile = const.secretsDir + "/${hostname}/postgresql.sops.yaml";
+        sopsFile = const.secretsDir + "/${hostname}/psql.sops.yaml";
       };
     };
   # Ref: https://github.com/NixOS/nixpkgs/blob/549bd84d6279f9852cae6225e372cc67fb91a4c1/nixos/modules/services/databases/postgresql.nix#L684
