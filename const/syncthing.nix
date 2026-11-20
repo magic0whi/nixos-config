@@ -1,8 +1,8 @@
 # This files share between NixOS modules and Home Manager Modules
 args@{
+  mySecrets,
   config,
   lib,
-  const,
   pkgs,
   ...
 }:
@@ -33,7 +33,7 @@ in
   sops.secrets."${hostname}/syncthing.priv.pem" = lib.mkMerge [
     (lib.optionalAttrs isNixOSModule { restartUnits = [ "syncthing.service" ]; })
     {
-      sopsFile = const.secretsDir + "/${hostname}/syncthing.priv.pem.sops";
+      sopsFile = mySecrets + "/${hostname}/syncthing.priv.pem.sops";
       format = "binary"; # Required when loading raw files instead of yaml/json structures
       # sops-nix doesn't have restartUnits for home manager
       # https://github.com/ryantm/agenix/issues/84
@@ -49,7 +49,7 @@ in
       enable = true;
       # nix run nixpkgs#syncthing -- generate --config myconfig/"
       key = config.sops.secrets."${hostname}/syncthing.priv.pem".path;
-      cert = "${const.secretsDir + "/${hostname}/syncthing.pub.pem"}";
+      cert = "${mySecrets + "/${hostname}/syncthing.pub.pem"}";
       settings = {
         devices = device.mobiles // device.desktops // device.servers;
         folders =

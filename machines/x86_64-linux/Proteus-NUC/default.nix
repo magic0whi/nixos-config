@@ -1,9 +1,9 @@
 {
+  const,
+  features,
   machineConfigs,
   mylib,
   mypkg,
-  const,
-  features,
 
   NixVirt,
   agent-skills,
@@ -12,6 +12,7 @@
   i915-sriov-dkms,
   nixpkgs,
   nixvim,
+  mySecrets,
   ...
 }:
 let
@@ -41,6 +42,7 @@ let
           deploy-rs
           dev-flake
           nixvim
+          mySecrets
           ;
       };
       modules =

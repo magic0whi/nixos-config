@@ -1,6 +1,6 @@
 {
+  mySecrets,
   config,
-  const,
   lib,
   mylib,
   pkgs,
@@ -8,8 +8,8 @@
   ...
 }:
 let
-  gcloud_sops_file = const.secretsDir + "/cloud-providers/gcloud.sops.yaml";
-  oracle_sops_file = const.secretsDir + "/cloud-providers/oracle.sops.yaml";
+  gcloud_sops_file = mySecrets + "/cloud-providers/gcloud.sops.yaml";
+  oracle_sops_file = mySecrets + "/cloud-providers/oracle.sops.yaml";
   projects = [
     "0"
     "1"
@@ -22,7 +22,7 @@ in
     secrets = lib.mkMerge (
       (map (num: {
         "gcloud_project-${num}_secret" = {
-          sopsFile = const.secretsDir + "/cloud-providers/gcloud_project-${num}.secret.json.sops";
+          sopsFile = mySecrets + "/cloud-providers/gcloud_project-${num}.secret.json.sops";
           format = "binary";
           path = config.xdg.configHome + "/gcloud/project-${num}.secret.json";
         };
@@ -36,7 +36,7 @@ in
         oracle_region.sopsFile = oracle_sops_file;
 
         "oracle_secret.pem" = {
-          sopsFile = const.secretsDir + "/cloud-providers/oracle_secret.pem.sops";
+          sopsFile = mySecrets + "/cloud-providers/oracle_secret.pem.sops";
           format = "binary";
         };
       }

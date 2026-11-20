@@ -1,5 +1,6 @@
 # TIP: To add other nodes: `garage -h $ID@127.0.0.1:3901 node connect "<node-id>@<node-domain>:3901"`
 {
+  mySecrets,
   config,
   const,
   ...
@@ -13,7 +14,7 @@ in
 
   sops.secrets =
     let
-      sopsFile = const.secretsDir + "/Cloud/garage.sops.yaml";
+      sopsFile = mySecrets + "/Cloud/garage.sops.yaml";
     in
     {
       garage-ui_client_secret = { inherit sopsFile; };

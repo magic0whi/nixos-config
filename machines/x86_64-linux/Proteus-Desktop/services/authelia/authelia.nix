@@ -1,4 +1,5 @@
 {
+  mySecrets,
   config,
   lib,
   mylib,
@@ -18,7 +19,7 @@ in
   };
   sops.secrets =
     let
-      sopsFile = const.secretsDir + "/${hostname}/authelia.sops.yaml";
+      sopsFile = mySecrets + "/${hostname}/authelia.sops.yaml";
       owner = config.services.authelia.instances.main.user;
     in
     {
@@ -27,7 +28,7 @@ in
       authelia_oidc_hmac_secret = { inherit sopsFile owner restartUnits; };
       "authelia_oidc_rsa.pem" = {
         inherit owner restartUnits;
-        sopsFile = const.secretsDir + "/${hostname}/authelia_oidc_rsa.pem.sops";
+        sopsFile = mySecrets + "/${hostname}/authelia_oidc_rsa.pem.sops";
         format = "binary";
       };
       authelia_session_secret = { inherit sopsFile owner restartUnits; };

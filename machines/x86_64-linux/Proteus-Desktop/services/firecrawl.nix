@@ -5,6 +5,7 @@
 #
 # NOTE: This uses Firecrawl's own `nuq-postgres` image, which ships pg_cron and the nuq queue schema pre-initialized.
 {
+  mySecrets,
   config,
   const,
   lib,
@@ -45,7 +46,7 @@ in
 
   sops =
     let
-      sopsFile = const.secretsDir + "/${hostname}/firecrawl.sops.yaml";
+      sopsFile = mySecrets + "/${hostname}/firecrawl.sops.yaml";
       postgres_units = [
         "${containers.firecrawl-api.serviceName}.service"
         "${containers.firecrawl-postgres.serviceName}.service"

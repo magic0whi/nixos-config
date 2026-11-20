@@ -1,4 +1,5 @@
 {
+  mySecrets,
   config,
   const,
   mylib,
@@ -13,12 +14,12 @@
   sops = {
     secrets =
       let
-        sopsFile = const.secretsDir + "/services/niks3_shared.sops.yaml";
+        sopsFile = mySecrets + "/services/niks3_shared.sops.yaml";
       in
       {
-        github_token.sopsFile = const.secretsDir + "/services/github.sops.yaml";
+        github_token.sopsFile = mySecrets + "/services/github.sops.yaml";
         "nix_secret.key" = {
-          sopsFile = "${const.secretsDir + "/nix_secret.key.sops"}";
+          sopsFile = "${mySecrets + "/nix_secret.key.sops"}";
           format = "binary";
           path = "${config.xdg.configHome}/nix/secret.key";
         };

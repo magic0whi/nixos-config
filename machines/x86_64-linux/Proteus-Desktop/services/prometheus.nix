@@ -1,4 +1,5 @@
 {
+  mySecrets,
   config,
   const,
   lib,
@@ -16,11 +17,11 @@ in
     {
       prometheus-exporter_token = {
         inherit owner;
-        sopsFile = const.secretsDir + "/services/prometheus-exporter.sops.yaml";
+        sopsFile = mySecrets + "/services/prometheus-exporter.sops.yaml";
       };
       prometheus_password = {
         inherit owner;
-        sopsFile = const.secretsDir + "/${hostname}/prometheus.sops.yaml";
+        sopsFile = mySecrets + "/${hostname}/prometheus.sops.yaml";
       };
     };
 

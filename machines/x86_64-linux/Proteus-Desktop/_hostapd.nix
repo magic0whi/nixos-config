@@ -1,7 +1,7 @@
 {
+  mySecrets,
   config,
   lib,
-  const,
   ...
 }:
 let
@@ -19,7 +19,7 @@ in
   boot.requiredKernelModules = [ "rtl8812au" ];
 
   sops.secrets.proteus_ap_password = {
-    sopsFile = const.secretsDir + "/${hostname}/hostapd.sops.yaml";
+    sopsFile = mySecrets + "/${hostname}/hostapd.sops.yaml";
     restartUnits = [ "hostapd.service" ];
   };
   services.hostapd = {

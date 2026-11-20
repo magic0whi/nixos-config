@@ -17,6 +17,7 @@
 #   END \$\$;"
 # 3. zstd -d -c /srv/Backups/psql/all.prev.sql.zstd | psql "host=psql.proteus.eu.org port=5432 user=postgres dbname=postgres sslmode=require" 2> restore_errors.log
 {
+  mySecrets,
   config,
   lib,
   machineConfigs,
@@ -45,13 +46,13 @@ in
     {
       "psql_server.priv.pem" = {
         inherit restartUnits;
-        sopsFile = const.secretsDir + "/www/proteus_server.priv.pem.sops";
+        sopsFile = mySecrets + "/www/proteus_server.priv.pem.sops";
         format = "binary";
         owner = config.systemd.services.postgresql.serviceConfig.User;
       };
       psql_ldap_bind_password = {
         inherit restartUnits;
-        sopsFile = const.secretsDir + "/${hostname}/psql.sops.yaml";
+        sopsFile = mySecrets + "/${hostname}/psql.sops.yaml";
       };
     };
   # Ref: https://github.com/NixOS/nixpkgs/blob/549bd84d6279f9852cae6225e372cc67fb91a4c1/nixos/modules/services/databases/postgresql.nix#L684
@@ -99,7 +100,7 @@ in
     settings = {
       ssl = true;
       ssl_min_protocol_version = "TLSv1.3";
-      ssl_cert_file = "${const.secretsDir + "/www/proteus_server.pub.pem"}";
+      ssl_cert_file = "${mySecrets + "/www/proteus_server.pub.pem"}";
       ssl_key_file = config.sops.secrets."psql_server.priv.pem".path;
       hba_file = lib.mkForce config.sops.templates."pg_hba_auth.conf".path;
     };

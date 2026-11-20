@@ -12,6 +12,7 @@
 # g bucket website --allow nix-cache # Allow bucket-as-website
 # ```
 {
+  mySecrets,
   config,
   lib,
   mylib,
@@ -50,7 +51,7 @@ in
         garage_admin_token = { inherit restartUnits; };
         prometheus-exporter_token = {
           inherit restartUnits;
-          sopsFile = const.secretsDir + "/services/prometheus-exporter.sops.yaml";
+          sopsFile = mySecrets + "/services/prometheus-exporter.sops.yaml";
         };
         garage-ui_client_secret.restartUnits = [
           "${config.virtualisation.oci-containers.containers.garage-ui.serviceName}.service"

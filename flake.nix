@@ -140,7 +140,7 @@
       url = "git+ssh://forgejo@git.proteus.eu.org/proteus/agent-skills";
       flake = false;
     };
-    nixos-secrets = {
+    mySecrets = {
       url = "git+ssh://forgejo@git.proteus.eu.org/proteus/nixos-secrets";
       # url = "path:/home/proteus/Proteus/Projects/OSS/nixos-secrets";
       flake = false;

@@ -1,4 +1,5 @@
 {
+  mySecrets,
   config,
   lib,
   const,
@@ -65,7 +66,7 @@ let
                         verify_hostnames = false;
                         # Java's X509 parser rejects the BEGIN TRUSTED CERTIFICATE
                         # (OpenSSL AUX) blocks in security.pki.caBundle
-                        pemtrustedcas_filepath = const.secretsDir + "/www/proteus_ca.pub.pem";
+                        pemtrustedcas_filepath = mySecrets + "/www/proteus_ca.pub.pem";
                       };
                     };
                   };
@@ -222,7 +223,7 @@ in
     AAAA = [ "nixos-search" ];
   };
   sops.secrets.osdash_client_secret = {
-    sopsFile = const.secretsDir + "/${hostname}/osdash.sops.yaml";
+    sopsFile = mySecrets + "/${hostname}/osdash.sops.yaml";
     restartUnits = [ "opensearch.service" ];
   };
 

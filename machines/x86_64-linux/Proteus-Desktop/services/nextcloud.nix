@@ -1,4 +1,5 @@
 {
+  mySecrets,
   config,
   const,
   pkgs,
@@ -31,7 +32,7 @@ in
     };
   sops.secrets =
     let
-      sopsFile = const.secretsDir + "/${hostname}/nextcloud.sops.yaml";
+      sopsFile = mySecrets + "/${hostname}/nextcloud.sops.yaml";
     in
     {
       nextcloud_db_password = { inherit sopsFile restartUnits; };

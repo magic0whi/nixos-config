@@ -1,4 +1,5 @@
 {
+  mySecrets,
   const,
   config,
   mylib,
@@ -47,7 +48,7 @@ in
 
   sops =
     let
-      sopsFile = const.secretsDir + "/${hostname}/plane.sops.yaml";
+      sopsFile = mySecrets + "/${hostname}/plane.sops.yaml";
 
       backend_units = with restart_units; [
         plane-api

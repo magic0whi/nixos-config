@@ -5,6 +5,7 @@
   const,
   features,
   nixpkgs,
+  mySecrets,
   ...
 }:
 groupDir:
@@ -24,6 +25,7 @@ let
               machineConfigs
               ;
             machinePath = groupDir + "/${name}";
+            specialArgs = { inherit mySecrets; };
             overlays = with features; common.baseOverlays;
             modules =
               (with features; common.base ++ common.services ++ nixos.base)

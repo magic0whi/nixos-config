@@ -1,4 +1,5 @@
 {
+  mySecrets,
   config,
   const,
   mylib,
@@ -13,7 +14,7 @@
     {
       secrets.sssd_ldap_bind_password = {
         inherit restartUnits;
-        sopsFile = const.secretsDir + "/services/sssd.sops.yaml";
+        sopsFile = mySecrets + "/services/sssd.sops.yaml";
       };
       templates."sssd.env" = {
         inherit restartUnits;

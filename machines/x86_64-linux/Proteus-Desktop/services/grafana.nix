@@ -1,4 +1,5 @@
 {
+  mySecrets,
   const,
   # pkgs,
   config,
@@ -27,7 +28,7 @@ in
   sops =
     let
       restartUnits = [ "grafana.service" ];
-      sopsFile = const.secretsDir + "/${hostname}/grafana.sops.yaml";
+      sopsFile = mySecrets + "/${hostname}/grafana.sops.yaml";
     in
     {
       secrets = {
@@ -36,7 +37,7 @@ in
         grafana_app_secret = { inherit restartUnits sopsFile; };
         prometheus_password = {
           inherit restartUnits;
-          sopsFile = const.secretsDir + "/${hostname}/prometheus.sops.yaml";
+          sopsFile = mySecrets + "/${hostname}/prometheus.sops.yaml";
         };
       };
       templates."grafana.env" = {

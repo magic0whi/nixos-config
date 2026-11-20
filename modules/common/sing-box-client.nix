@@ -1,4 +1,5 @@
 {
+  mySecrets,
   config,
   lib,
   mylib,
@@ -22,10 +23,10 @@ in
       )
       {
         # "sing-box_config.json" = {
-        #   sopsFile = "${const.secretsDir + "/sing-box_config.json.sops"}";
+        #   sopsFile = "${mySecrets + "/sing-box_config.json.sops"}";
         #   format = "binary";
         # };
-        sing-box_anytls_password.sopsFile = const.secretsDir + "/services/sing-box.sops.yaml";
+        sing-box_anytls_password.sopsFile = mySecrets + "/services/sing-box.sops.yaml";
       };
 
   services = lib.mkMerge [
@@ -44,6 +45,7 @@ in
             lib
             mylib
             const
+            mySecrets
             pkgs
             ;
         };

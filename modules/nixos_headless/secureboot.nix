@@ -1,7 +1,7 @@
 {
+  mySecrets,
   config,
   lib,
-  const,
   pkgs,
   ...
 }:
@@ -9,17 +9,17 @@
   # This makes sbctl requires `--disable-landlock` to work
   sops.secrets = {
     "secureboot_PK.key" = {
-      sopsFile = const.secretsDir + "/secureboot/PK.key.sops";
+      sopsFile = mySecrets + "/secureboot/PK.key.sops";
       path = config.boot.lanzaboote.pkiBundle + "/keys/PK/PK.key";
       format = "binary";
     };
     "secureboot_KEK.key" = {
-      sopsFile = const.secretsDir + "/secureboot/KEK.key.sops";
+      sopsFile = mySecrets + "/secureboot/KEK.key.sops";
       path = config.boot.lanzaboote.pkiBundle + "/keys/KEK/KEK.key";
       format = "binary";
     };
     "secureboot_db.key" = {
-      sopsFile = const.secretsDir + "/secureboot/db.key.sops";
+      sopsFile = mySecrets + "/secureboot/db.key.sops";
       path = config.boot.lanzaboote.pkiBundle + "/keys/db/db.key";
       format = "binary";
     };
@@ -36,17 +36,17 @@
     # (measured with builtins.getContext)
     # Store references are built from string context, which prevent it from being GCed
     #
-    # Optimize: ${const.secretsDir} copies the whole dir, while ${const.secretsDir + /path/to/file} copies one file
+    # Optimize: ${mySecrets} copies the whole dir, while ${mySecrets + /path/to/file} copies one file
 
-    # ${const.secretsDir} copies the whole dir, while ${const.secretsDir + /path/to/file} copies one file
+    # ${mySecrets} copies the whole dir, while ${mySecrets + /path/to/file} copies one file
     "01-secureboot-PK-key"."${config.boot.lanzaboote.pkiBundle}/keys/PK/PK.pem"."L+".argument = "${
-      const.secretsDir + "/secureboot/PK.pem"
+      mySecrets + "/secureboot/PK.pem"
     }";
     "01-secureboot-KEK-key"."${config.boot.lanzaboote.pkiBundle}/keys/KEK/KEK.pem"."L+".argument = "${
-      const.secretsDir + "/secureboot/KEK.pem"
+      mySecrets + "/secureboot/KEK.pem"
     }";
     "01-secureboot-db-key"."${config.boot.lanzaboote.pkiBundle}/keys/db/db.pem"."L+".argument = "${
-      const.secretsDir + "/secureboot/db.pem"
+      mySecrets + "/secureboot/db.pem"
     }";
   };
 

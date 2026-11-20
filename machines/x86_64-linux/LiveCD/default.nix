@@ -3,6 +3,7 @@
   mypkg,
   const,
   features,
+  mySecrets,
 
   deploy-rs,
   impermanence,
@@ -21,7 +22,7 @@ let
         const
         ;
       machinePath = ./.;
-      specialArgs = { inherit deploy-rs; };
+      specialArgs = { inherit deploy-rs mySecrets; };
       overlays = with features; common.baseOverlays ++ nixos.seat.guiOverlays;
       modules =
         let

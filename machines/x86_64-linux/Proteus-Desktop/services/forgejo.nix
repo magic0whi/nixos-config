@@ -1,4 +1,5 @@
 {
+  mySecrets,
   config,
   lib,
   const,
@@ -20,7 +21,7 @@ in
     };
   sops =
     let
-      sopsFile = const.secretsDir + "/${hostname}/forgejo.sops.yaml";
+      sopsFile = mySecrets + "/${hostname}/forgejo.sops.yaml";
     in
     {
       secrets = {

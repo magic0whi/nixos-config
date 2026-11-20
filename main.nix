@@ -29,7 +29,6 @@ let
           mylib
           lib
           ;
-        secretsDir = inputs.nixos-secrets + "/secrets";
         inherit (self) nixosConfigurations darwinConfigurations;
       };
       mylib =

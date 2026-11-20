@@ -1,4 +1,5 @@
 {
+  mySecrets,
   config,
   const,
   lib,
@@ -9,7 +10,7 @@
 {
   sops.secrets =
     let
-      sopsFile = const.secretsDir + "/services/mcp.sops.yaml";
+      sopsFile = mySecrets + "/services/mcp.sops.yaml";
     in
     {
       mcp_context7_token = { inherit sopsFile; };

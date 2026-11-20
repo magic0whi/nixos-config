@@ -1,13 +1,13 @@
 {
+  mySecrets,
   config,
-  const,
   lib,
   pkgs,
   ...
 }:
 {
   ## BEGIN llama-server.nix
-  sops.secrets.llama-server_api_token.sopsFile = const.secretsDir + "/services/llama-server.sops.yaml";
+  sops.secrets.llama-server_api_token.sopsFile = mySecrets + "/services/llama-server.sops.yaml";
 
   # Unified memory caps at an 8B Q4 (~5 GB) as the always-on default; a 14B Q4
   # needs ~9 GB and is a deliberate swap, not a second service.

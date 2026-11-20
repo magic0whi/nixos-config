@@ -1,4 +1,5 @@
 {
+  mySecrets,
   config,
   const,
   lib,
@@ -30,7 +31,7 @@
   sops.secrets =
     let
       sharedCfg = {
-        sopsFile = const.secretsDir + "/Cloud/ddclient.sops.yaml";
+        sopsFile = mySecrets + "/Cloud/ddclient.sops.yaml";
         restartUnits = [ "ddclient.service" ];
       };
     in

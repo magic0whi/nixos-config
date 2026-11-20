@@ -1,4 +1,5 @@
 {
+  mySecrets,
   config,
   const,
   lib,
@@ -26,7 +27,7 @@ in
   sops =
     let
       restartUnits = [ "homebox.service" ];
-      sopsFile = const.secretsDir + "/${hostname}/homebox.sops.yaml";
+      sopsFile = mySecrets + "/${hostname}/homebox.sops.yaml";
     in
     {
       secrets = {

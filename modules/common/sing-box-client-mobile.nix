@@ -3,6 +3,7 @@
   lib,
   mylib,
   const,
+  mySecrets,
   pkgs,
   ...
 }:
@@ -21,6 +22,7 @@ in
           lib
           mylib
           const
+          mySecrets
           pkgs
           ;
         isDarwin = false;
@@ -37,6 +39,7 @@ in
           lib
           mylib
           const
+          mySecrets
           pkgs
           ;
         isDarwin = false;

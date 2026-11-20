@@ -9,6 +9,7 @@
   agent-skills,
   deploy-rs,
   dev-flake,
+  mySecrets,
   nix-darwin,
   nixvim,
   ...
@@ -31,6 +32,7 @@ let
           agent-skills
           deploy-rs
           dev-flake
+          mySecrets
           nixvim
           ;
       };

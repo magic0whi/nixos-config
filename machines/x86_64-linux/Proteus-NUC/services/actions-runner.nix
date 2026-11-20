@@ -1,4 +1,5 @@
 {
+  mySecrets,
   config,
   lib,
   const,
@@ -17,7 +18,7 @@ in
   # The token will not change until regenerate it. To regenerate the token, go through WebUI -> Site
   # administration -> Actions -> Runners, click the edit and check the "Regenerate token" box, them save
   sops.secrets.forgejo-runner_token = {
-    sopsFile = const.secretsDir + "/${config.networking.hostName}/forgejo-runner.sops.yaml";
+    sopsFile = mySecrets + "/${config.networking.hostName}/forgejo-runner.sops.yaml";
     restartUnits = map (u: "${u}.service") runner_units;
   };
 

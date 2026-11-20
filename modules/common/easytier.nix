@@ -1,4 +1,5 @@
 {
+  mySecrets,
   mylib,
   config,
   const,
@@ -18,7 +19,7 @@ in
     in
     {
       secrets.easytier_network_secret = lib.mkMerge [
-        { sopsFile = const.secretsDir + "/services/easytier.sops.yaml"; }
+        { sopsFile = mySecrets + "/services/easytier.sops.yaml"; }
         mkRestartUnits
       ];
       templates."easytier.env" = lib.mkMerge [

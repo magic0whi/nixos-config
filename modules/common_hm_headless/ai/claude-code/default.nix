@@ -1,12 +1,12 @@
 {
+  mySecrets,
   agent-skills,
   config,
-  const,
   lib,
   ...
 }:
 {
-  sops.secrets.claude-code_token.sopsFile = const.secretsDir + "/services/claude-code.sops.yaml";
+  sops.secrets.claude-code_token.sopsFile = mySecrets + "/services/claude-code.sops.yaml";
 
   # MCP header secrets (sops + env exports) live in ../mcp.nix, shared with opencode.
 

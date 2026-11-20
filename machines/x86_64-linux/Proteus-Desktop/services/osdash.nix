@@ -1,4 +1,5 @@
 {
+  mySecrets,
   config,
   const,
   lib,
@@ -21,7 +22,7 @@ in
   sops =
     let
       restartUnits = [ "${config.virtualisation.oci-containers.containers.osdash.serviceName}.service" ];
-      sopsFile = const.secretsDir + "/${hostname}/osdash.sops.yaml";
+      sopsFile = mySecrets + "/${hostname}/osdash.sops.yaml";
     in
     {
       secrets = {

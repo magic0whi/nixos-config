@@ -1,4 +1,5 @@
 {
+  mySecrets,
   mylib,
   lib,
   const,
@@ -20,7 +21,7 @@ in
   sops =
     let
       restartUnits = [ "${config.virtualisation.oci-containers.containers.papra.serviceName}.service" ];
-      sopsFile = const.secretsDir + "/${hostname}/papra.sops.yaml";
+      sopsFile = mySecrets + "/${hostname}/papra.sops.yaml";
     in
     {
       secrets = {

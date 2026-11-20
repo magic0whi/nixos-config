@@ -1,6 +1,11 @@
-{ const, config, ... }:
 {
-  sops.secrets.niks3_api_token.sopsFile = const.secretsDir + "/services/niks3_shared.sops.yaml";
+  mySecrets,
+  const,
+  config,
+  ...
+}:
+{
+  sops.secrets.niks3_api_token.sopsFile = mySecrets + "/services/niks3_shared.sops.yaml";
   services.niks3-auto-upload = {
     enable = true;
     serverUrl = "https://niks3.${const.domain}";

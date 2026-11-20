@@ -1,4 +1,5 @@
 {
+  mySecrets,
   config,
   const,
   mylib,
@@ -21,7 +22,7 @@ in
     {
       secrets.atuin_db_password = {
         inherit restartUnits;
-        sopsFile = const.secretsDir + "/${hostname}/atuin.sops.yaml";
+        sopsFile = mySecrets + "/${hostname}/atuin.sops.yaml";
       };
       templates."atuin.env" = {
         inherit restartUnits;

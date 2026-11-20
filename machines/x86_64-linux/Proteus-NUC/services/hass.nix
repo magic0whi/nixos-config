@@ -1,4 +1,5 @@
 {
+  mySecrets,
   config,
   const,
   lib,
@@ -25,7 +26,7 @@ in
     {
       secrets = lib.genAttrs [ "hass_client_secret" "hass_latitude" "hass_longitude" ] (_: {
         inherit restartUnits;
-        sopsFile = const.secretsDir + "/${hostname}/hass.sops.yaml";
+        sopsFile = mySecrets + "/${hostname}/hass.sops.yaml";
       });
       templates."hass_secrets.yaml" = {
         inherit restartUnits;

@@ -2,7 +2,6 @@
   lib,
   pkgs,
   mylib,
-  secretsDir,
   nixosConfigurations,
   darwinConfigurations,
   ...
@@ -14,7 +13,6 @@ rec {
   nixosStateVersion = "26.05";
   darwinStateVersion = 7;
   githubUsername = "magic0whi";
-  inherit secretsDir;
 
   city = "Suzhou, China";
   timeZone = "Asia/Hong_Kong";

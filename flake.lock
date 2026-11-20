@@ -24,11 +24,11 @@
     "agent-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1795180235,
-        "narHash": "sha256-J23JrAzXqqUYFx+L7URJq8wfO0108QYVogDk+zxBHE4=",
+        "lastModified": 1795184648,
+        "narHash": "sha256-NNUwEPUtOkioCQPlkd2pyfhQGk/dms5t3y5/Lz0KbDQ=",
         "ref": "refs/heads/main",
-        "rev": "8cc6f859c70ca0f157c3c4a69eb3258b3c086da1",
-        "revCount": 1500,
+        "rev": "c5d650409851314cc424c737dbaffef3064db2a6",
+        "revCount": 1501,
         "type": "git",
         "url": "ssh://forgejo@git.proteus.eu.org/proteus/agent-skills"
       },
@@ -534,6 +534,22 @@
         "type": "github"
       }
     },
+    "mySecrets": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1795184606,
+        "narHash": "sha256-KOQIxFClnLfZePi3cFrf4VaH2wNfc7Pb/7inycvqok8=",
+        "ref": "refs/heads/main",
+        "rev": "b7b840af4a3cdca0d4dea4025aa2ce9911dd06f7",
+        "revCount": 235,
+        "type": "git",
+        "url": "ssh://forgejo@git.proteus.eu.org/proteus/nixos-secrets"
+      },
+      "original": {
+        "type": "git",
+        "url": "ssh://forgejo@git.proteus.eu.org/proteus/nixos-secrets"
+      }
+    },
     "niks3": {
       "inputs": {
         "nixpkgs": [
@@ -642,22 +658,6 @@
         "repo": "nixos-hardware",
         "rev": "b6ca87f78ec5bafc4b2aef7b29803dcf419266af",
         "type": "github"
-      }
-    },
-    "nixos-secrets": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1795181288,
-        "narHash": "sha256-Vd2fvkwiSg6F5QC1go/3x5ph4vZA7vt/Nth+e1+/Yvk=",
-        "ref": "refs/heads/main",
-        "rev": "ec66206d26aa08e7be3586bf00559c4f64d91eef",
-        "revCount": 233,
-        "type": "git",
-        "url": "ssh://forgejo@git.proteus.eu.org/proteus/nixos-secrets"
-      },
-      "original": {
-        "type": "git",
-        "url": "ssh://forgejo@git.proteus.eu.org/proteus/nixos-secrets"
       }
     },
     "nixpak": {
@@ -880,10 +880,10 @@
         "lanzaboote": "lanzaboote",
         "lix": "lix",
         "lix-module": "lix-module",
+        "mySecrets": "mySecrets",
         "niks3": "niks3",
         "nix-darwin": "nix-darwin",
         "nixos-hardware": "nixos-hardware",
-        "nixos-secrets": "nixos-secrets",
         "nixpak": "nixpak",
         "nixpkgs": "nixpkgs_2",
         "nixvim": "nixvim",

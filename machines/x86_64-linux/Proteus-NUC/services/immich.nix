@@ -1,4 +1,5 @@
 {
+  mySecrets,
   config,
   lib,
   const,
@@ -24,7 +25,7 @@ in
 
   sops =
     let
-      sopsFile = const.secretsDir + "/${hostname}/immich.sops.yaml";
+      sopsFile = mySecrets + "/${hostname}/immich.sops.yaml";
       restartUnits = [
         "immich-machine-learning.service"
         "immich-server.service"

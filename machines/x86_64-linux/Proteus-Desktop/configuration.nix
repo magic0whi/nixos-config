@@ -3,6 +3,7 @@
   lib,
   mylib,
   const,
+  mySecrets,
   pkgs,
   ...
 }:
@@ -50,6 +51,7 @@ in
         lib
         mylib
         const
+        mySecrets
         pkgs
         ;
       # Disable FakeIP-only mode as I run hostapd on this machine

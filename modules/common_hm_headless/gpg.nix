@@ -1,4 +1,5 @@
 {
+  mySecrets,
   lib,
   const,
   pkgs,
@@ -15,7 +16,7 @@
     publicKeys = [
       {
         source = builtins.path {
-          path = const.secretsDir + "/${const.email}.pub.asc"; # email contains illegal character '@'
+          path = mySecrets + "/${const.email}.pub.asc"; # email contains illegal character '@'
           name = "${const.username}.pub.asc";
         };
         trust = 5; # Ultimate trust

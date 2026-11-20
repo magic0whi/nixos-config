@@ -1,4 +1,5 @@
 {
+  mySecrets,
   const,
   config,
   ...
@@ -9,7 +10,7 @@ in
 {
   sops.secrets."monero_server.priv.pem" = {
     restartUnits = [ "monero.service" ];
-    sopsFile = const.secretsDir + "/www/proteus_server.priv.pem.sops";
+    sopsFile = mySecrets + "/www/proteus_server.priv.pem.sops";
     format = "binary";
     owner = config.systemd.services.monero.serviceConfig.User;
   };
@@ -47,7 +48,7 @@ in
       rpc-restricted-bind-port=18081
       rpc-ssl=enabled # Force TLS on RPC connections
       rpc-ssl-private-key=${config.sops.secrets."monero_server.priv.pem".path}
-      rpc-ssl-certificate=${const.secretsDir + "/www/proteus_server.pub.pem"}
+      rpc-ssl-certificate=${mySecrets + "/www/proteus_server.pub.pem"}
     '';
     prune = true; # Pruning saves 2/3 of disk space w/o degrading functionality but contributes less to the network
     rpc = {

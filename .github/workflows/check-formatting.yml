@@ -24,7 +24,7 @@ jobs:
           input_overrides=(
             # Private inputs; CI only needs them to evaluate.
             --override-input agent-skills path:./.github/stubs/agent-skills
-            --override-input nixos-secrets path:./.github/stubs/nixos-secrets
+            --override-input mySecrets path:./.github/stubs/mySecrets
           )
           if [[ "$GITHUB_SERVER_URL" == "https://github.com" ]]; then
             input_overrides+=(
