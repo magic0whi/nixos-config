@@ -49,7 +49,7 @@ in
       enable = true;
       # nix run nixpkgs#syncthing -- generate --config myconfig/"
       key = config.sops.secrets."${hostname}/syncthing.priv.pem".path;
-      cert = "${const.secretsDir}/${hostname}_syncthing.pub.pem";
+      cert = "${const.secretsDir + "/${hostname}/syncthing.pub.pem"}";
       settings = {
         devices = device.mobiles // device.desktops // device.servers;
         folders =

@@ -14,7 +14,7 @@
     # https://www.gnupg.org/gph/en/manual/x334.html
     publicKeys = [
       {
-        source = "${const.secretsDir}/${const.email}.pub.asc";
+        source = "${const.secretsDir + "/${const.email}.pub.asc"}";
         trust = 5; # Ultimate trust
       }
     ];

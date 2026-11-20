@@ -18,7 +18,7 @@
       {
         github_token.sopsFile = const.secretsDir + "/services/github.sops.yaml";
         "nix_secret.key" = {
-          sopsFile = "${const.secretsDir}/nix_secret.key.sops";
+          sopsFile = "${const.secretsDir + "/nix_secret.key.sops"}";
           format = "binary";
           path = "${config.xdg.configHome}/nix/secret.key";
         };

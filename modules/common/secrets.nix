@@ -1,4 +1,5 @@
 {
+  # const,
   config,
   pkgs,
   ...
@@ -6,7 +7,7 @@
 {
   environment.systemPackages = [ pkgs.sops ];
   # Comment-out as all sops secrets declare an explicit sopsFile now.
-  # sops.defaultSopsFile = "${const.secretsDir}/common.sops.yaml";
+  # sops.defaultSopsFile = "${const.secretsDir + "/common.sops.yaml"}";
   # sops-nix starts very early (before impermanence mount)
   sops.age.sshKeyPaths =
     if (config.environment ? persistence && config.environment.persistence != { }) then
