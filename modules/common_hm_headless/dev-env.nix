@@ -50,6 +50,7 @@
       bash-language-server
       vscode-json-languageserver
       yaml-language-server
+      yamlfmt
       nixfmt-rs
       nixd
       taplo # TOML LSP
