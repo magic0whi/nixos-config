@@ -8,7 +8,10 @@ documents that actually need OCR:
 * scans whose pages are one big image and whose text layer is sparse (a
   previously OCR'd scan) — taken over and the old layer replaced
 * born-digital PDFs (text, no page-filling image) — never, the built-in
-  Tesseract parser keeps handling those exactly as before
+  Tesseract parser keeps handling those exactly as before. A "text layer"
+  that only consists of unmapped glyphs (U+FFFF/U+FFFD, typical of Type 3
+  fonts with a broken ToUnicode CMap) does not count as text, so those
+  documents are OCR'd here instead of keeping the garbage layer.
 
 Documents where RapidOCR finds no CJK are kept by default; set
 ``PAPERLESS_RAPIDOCR_CJK_FALLBACK=1`` to hand Latin-only scans back to
@@ -74,7 +77,7 @@ class RapidOcrDocumentParser(RasterisedDocumentParser):
     """RapidOCR implementation of the Paperless parser protocol."""
 
     name = "RapidOCR (PaddleOCR PP-OCRv4, ONNX)"
-    version = "0.3.2"
+    version = "0.3.3"
     author = "nixos-configs"
     url = "https://github.com/RapidAI/RapidOCR"
 

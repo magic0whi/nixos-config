@@ -21,6 +21,9 @@ logger = logging.getLogger("paperless.parsing.rapidocr")
 
 CJK_RE = re.compile(r"[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]")
 WORD_RE = re.compile(r"\w", re.UNICODE)
+# Glyphs with no usable ToUnicode mapping extract as U+FFFF (MuPDF) or U+FFFD
+# (poppler). A layer made only of these is not text at all.
+JUNK_CHAR_RE = re.compile("[\ufffd\ufffe\uffff]")
 
 CJK_FONT = "china-s"  # MuPDF built-in Droid Sans Fallback (covers zh-Hans/zh-Hant)
 DEFAULT_DPI = 300
@@ -120,7 +123,12 @@ class OcrResult:
 
 @dataclass
 class PdfProfile:
-    """Cheap summary used to decide whether a PDF is a scan or born-digital."""
+    """Cheap summary used to decide whether a PDF is a scan or born-digital.
+
+    *text_chars* only counts extractable characters: replacement and unmapped
+    glyphs are ignored, so a broken text layer (Type 3 fonts, missing
+    ToUnicode) does not make the document look born-digital.
+    """
 
     pages: int
     text_chars: int
@@ -136,6 +144,11 @@ class PdfProfile:
         return self.image_cover >= 0.5 and (self.text_chars / max(1, self.pages)) < 800
 
 
+def _extractable_chars(page: "pymupdf.Page") -> int:
+    """Length of *page*'s text layer without whitespace or unmapped glyphs."""
+    return len(JUNK_CHAR_RE.sub("", re.sub(r"\s+", "", page.get_text())))
+
+
 def pdf_profile(path: Path, *, pages: int = 3) -> PdfProfile:
     """Summarise text density and image coverage of the first *pages* pages."""
     try:
@@ -147,7 +160,7 @@ def pdf_profile(path: Path, *, pages: int = 3) -> PdfProfile:
             cover = 0.0
             for index in range(limit):
                 page = doc[index]
-                chars += len(re.sub(r"\s+", "", page.get_text()))
+                chars += _extractable_chars(page)
                 page_area = abs(page.rect.width * page.rect.height) or 1.0
                 for info in page.get_image_info():
                     ratio = abs(pymupdf.Rect(info["bbox"]).get_area()) / page_area
