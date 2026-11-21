@@ -189,7 +189,7 @@ lib.mkMerge (
               "172.31.255.253/30"
               "fdfe:dcba:9876::1/126"
             ];
-            stack = "gvisor";
+            stack = "mixed";
             auto_route = true;
             # strict_route = true;
 
