@@ -19,19 +19,23 @@
       mcp_paperless_token = { inherit sopsFile; };
       mcp_exa_token = { inherit sopsFile; };
       mcp_firecrawl_client_secret = { inherit sopsFile; };
+      mcp_super-productivity_token = { inherit sopsFile; };
     };
 
   programs.zsh.initContent = lib.mkAfter (
     with config.sops.secrets;
     ''
       if [[ -r ${mcp_context7_token.path} ]]; then
-        export MCP_CONTEXT7_KEY="$(<"${mcp_context7_token.path}")"
+        export MCP_CONTEXT7_TOKEN="$(<"${mcp_context7_token.path}")"
       fi
       if [[ -r ${mcp_github_token.path} ]]; then
-        export MCP_GITHUB_KEY="$(<"${mcp_github_token.path}")"
+        export MCP_GITHUB_TOKEN="$(<"${mcp_github_token.path}")"
       fi
       if [[ -r ${mcp_exa_token.path} ]]; then
-        export MCP_EXA_KEY="$(<"${mcp_exa_token.path}")"
+        export MCP_EXA_TOKEN="$(<"${mcp_exa_token.path}")"
+      fi
+      if [[ -r ${mcp_super-productivity_token.path} ]]; then
+        export MCP_SUPER_PRODUCTIVITY_KEY="$(<"${mcp_super-productivity_token.path}")"
       fi
     ''
   );
@@ -41,11 +45,11 @@
     servers = {
       context7 = {
         url = "https://mcp.context7.com/mcp";
-        headers.CONTEXT7_API_KEY = "{env:MCP_CONTEXT7_KEY}";
+        headers.CONTEXT7_API_KEY = "{env:MCP_CONTEXT7_TOKEN}";
       };
       github = {
         url = "https://api.githubcopilot.com/mcp";
-        headers.Authorization = "Bearer {env:MCP_GITHUB_KEY}";
+        headers.Authorization = "Bearer {env:MCP_GITHUB_TOKEN}";
       };
       anki.url = "http://127.0.0.1:3141/";
       firecrawl = {
@@ -92,7 +96,11 @@
       };
       exa = {
         url = "https://mcp.exa.ai/mcp?tools=web_search_exa,web_fetch_exa,web_search_advanced_exa";
-        headers.Authorization = "Bearer {env:MCP_EXA_KEY}";
+        headers.Authorization = "Bearer {env:MCP_EXA_TOKEN}";
+      };
+      super-productivity = {
+        url = "http://127.0.0.1:3876/mcp";
+        headers.Authorization = "Bearer {env:MCP_SUPER_PRODUCTIVITY_KEY}";
       };
     };
   };
