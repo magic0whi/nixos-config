@@ -52,6 +52,7 @@ in
       };
       experimental.cache_file.enabled = true; # Keep downloaded rule-sets across restarts
       dns = {
+        strategy = "ipv4_only";
         servers = lib.singleton {
           tag = "Default";
           type = "tls";
@@ -133,13 +134,6 @@ in
               "asn-china-telecom-as140292"
               "asn-china-telecom-as4812"
             ];
-          }
-          # Reject all IPv6 requests
-          {
-            action = "reject";
-            no_drop = true;
-            ip_version = 6;
-            # ip_cidr = [ "::/0" ];
           }
           # Block China domains
           {
