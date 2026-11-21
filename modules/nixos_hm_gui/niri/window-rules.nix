@@ -23,11 +23,7 @@ let
 
     # Terminal applications - open in workspace 1, with blur
     {
-      action = ''
-        open-on-workspace "${wsAt 1}"
-        // open-maximized true
-        // background-effect { blur true; }
-      '';
+      action = ''open-on-workspace "${wsAt 1}"'';
       matches = [
         ''
           // Ghostty 1.4 has native blur via ext-background-effect
