@@ -2,7 +2,9 @@
   const,
   lib,
   mylib,
+  dnsServerCfg,
   ruleSetCfg,
+  selectorCfg,
   ...
 }:
 let
@@ -11,7 +13,7 @@ let
   no_sniff_pri = pri * const.sb.routeSniffPri;
   sniff_pri = pri * (2000 - const.sb.routeSniffPri) + const.sb.routeSniffPri;
 
-  out = "Default";
+  out = "Custom";
   rules = [
     {
       domain = [
@@ -21,6 +23,7 @@ let
       domain_suffix = [
         "redteago.com"
         "shuzijumin.com"
+        "altstore.io"
 
         "braze-images.com" # Braze: in-app message image CDN
         "cloudfront.com" # AWS CDN
@@ -32,7 +35,23 @@ let
   ];
 in
 {
-  dns.rules = lib.mkOrder fakeip_pri (mylib.mkSbRules true out rules);
+  dns = {
+    servers = lib.singleton (
+      dnsServerCfg.direct
+      // {
+        tag = out;
+        detour = out;
+      }
+    );
+    rules = lib.mkOrder fakeip_pri (mylib.mkSbRules true out rules);
+  };
+  outbounds = lib.singleton (
+    selectorCfg
+    // {
+      tag = out;
+      default = "Default";
+    }
+  );
   route = {
     rules =
       let

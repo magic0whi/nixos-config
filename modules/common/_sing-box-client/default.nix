@@ -57,7 +57,7 @@ lib.mkMerge (
         timestamp = false;
       };
       dns = {
-        final = if isRouter then "Direct" else "Default";
+        final = "Default";
         # Let real-IP connections without SNI (e.g. SSH to proxy nodes) still match domain rules
         reverse_mapping = isRouter;
         servers = lib.mkOrder (0.1 * 2000) [
@@ -219,7 +219,7 @@ lib.mkMerge (
       route = {
         auto_detect_interface = lib.mkDefault true;
         default_domain_resolver = "Bootstrap";
-        final = if isRouter then "Direct" else "Default";
+        final = "Default";
         # The default rule uses the following matching logic:
         # (domain || domain_suffix || domain_keyword || domain_regex || geosite || geoip || ip_cidr || ip_is_private) &&
         # (port || port_range) &&

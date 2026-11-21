@@ -186,7 +186,7 @@
         };
         media = {
           hide_album_art = true;
-          max_length = 500;
+          max_length = 300;
           hide_when_no_media = true;
         };
         taskbar = {
