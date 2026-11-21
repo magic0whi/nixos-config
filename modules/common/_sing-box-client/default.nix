@@ -53,7 +53,7 @@ lib.mkMerge (
     })
     {
       log = {
-        level = "warn";
+        level = "fatal";
         timestamp = false;
       };
       dns = {

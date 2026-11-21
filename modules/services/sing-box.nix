@@ -47,7 +47,7 @@ in
     enable = true;
     settings = {
       log = {
-        level = "warn";
+        level = "fatal";
         timestamp = false;
       };
       experimental.cache_file.enabled = true; # Keep downloaded rule-sets across restarts
