@@ -55,6 +55,7 @@
       taplo # TOML LSP
       kdlfmt
       beancount-language-server
+      prettier
     ])
     ++ (with dev-flake.devShells.${pkgs.stdenv.system}.latex; nativeBuildInputs ++ buildInputs)
     # NOTE: Requires bootstrap GHC
