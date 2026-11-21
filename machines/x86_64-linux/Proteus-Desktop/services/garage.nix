@@ -1,11 +1,10 @@
 {
   mySecrets,
-  const,
   config,
   ...
 }:
 let
-  mount_path = "/mnt/storage/garage";
+  mount_point = config.disko.devices.zpool.storage.datasets.garage.mountpoint;
 in
 {
   sops.secrets =
@@ -30,20 +29,23 @@ in
   # };
 
   systemd.services.garage = {
-    unitConfig.RequiresMountsFor = [ mount_path ];
+    unitConfig = {
+      RequiresMountsFor = [ mount_point ];
+      ConditionPathIsMountPoint = [ mount_point ];
+    };
     serviceConfig = {
       SupplementaryGroups = [ "storage" ];
       # `DynamicUser=true` implies `ProtectSystem=strict`
       # `metadata_dir` is added defaultly, ref:
       # https://github.com/NixOS/nixpkgs/blob/15f4ee454b1dce334612fa6843b3e05cf546efab/nixos/modules/services/web-servers/garage.nix#L127-L149
-      ReadWritePaths = [ "${mount_path + "/snapshots"}" ];
+      ReadWritePaths = [ "${mount_point + "/snapshots"}" ];
     };
   };
 
   services.garage.settings = {
     # metadata_dir = "${const.storagePath}/garage/meta"; # Garage recommends placing metadata on SSD
-    metadata_snapshots_dir = mount_path + "/snapshots";
-    data_dir = mount_path + "/data";
+    metadata_snapshots_dir = mount_point + "/snapshots";
+    data_dir = mount_point + "/data";
     s3_api.s3_region = "cn-east1-a";
   };
 
