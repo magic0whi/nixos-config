@@ -24,7 +24,7 @@
         font-family = const.monospace.name;
         font-size = 12;
 
-        scrollback-limit = 20000;
+        scrollback-limit = 20 * 1024; # Units is bytes
 
         background-opacity = 0.93;
         background-blur = true;
