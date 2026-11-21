@@ -8,6 +8,12 @@
 let
   rpc_port = 3901;
   hostname = config.networking.hostName;
+
+  # The btrfs filesystem sits directly on the partition (OCI) or inside a LUKS
+  # container (GCP)
+  mount_point =
+    (with config.disko.devices.disk.main.content.partitions.root; content.subvolumes or content.content.subvolumes)
+    ."@garage".mountpoint;
 in
 {
   networking.firewall.allowedTCPPorts = [ rpc_port ];
@@ -22,11 +28,34 @@ in
       garage_rpc_secret = { inherit sopsFile; };
     };
 
+  # Non-default paths mean the NixOS module wires them through ReadWritePaths instead of
+  # StateDirectory, so the dirs must exist with the right ownership before garage starts
+  systemd.tmpfiles.settings."10-garage-create-dir" = {
+    ${config.services.garage.settings.metadata_dir}.d = {
+      group = "storage";
+      mode = "2775"; # setgid, so Garage-created subdirs inherit the group
+    };
+    ${config.services.garage.settings.data_dir}.d = {
+      group = "storage";
+      mode = "2775";
+    };
+  };
+
+  systemd.services.garage = {
+    unitConfig = {
+      RequiresMountsFor = [ mount_point ];
+      ConditionPathIsMountPoint = [ mount_point ];
+    };
+    serviceConfig.SupplementaryGroups = [ "storage" ];
+  };
+
   services.garage.settings = {
     rpc_bind_addr = "[::]:${toString rpc_port}";
     rpc_public_addr = "${hostname}.${const.cloudDomain}:${toString rpc_port}";
     s3_api.s3_region = "us-east-1"; # the default name, should keep same across the cluster
     replication_factor = 2; # allows one node die
+    metadata_dir = mount_point + "/meta";
+    data_dir = mount_point + "/data";
   };
 
   virtualisation.oci-containers.containers.garage-ui.environment = {
