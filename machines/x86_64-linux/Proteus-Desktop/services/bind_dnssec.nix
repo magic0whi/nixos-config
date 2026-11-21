@@ -1,7 +1,8 @@
 {
-  mySecrets,
   config,
+  const,
   lib,
+  mySecrets,
   pkgs,
   ...
 }:
@@ -64,7 +65,7 @@
           "bind_domain_zone_priv" = {
             inherit restartUnits owner mode;
             content = shared_priv_cfg + "PrivateKey: ${config.sops.placeholder.bind_domain_zone_priv}\n" + shared_priv_timestamp;
-            path = "${config.services.bind.directory}/Kproteus.eu.org.+015+40751.private";
+            path = "${config.services.bind.directory}/K${const.domain}.+015+40751.private";
           };
           "bind_et_v4_rev_zone_priv" = {
             inherit restartUnits owner mode;
@@ -82,8 +83,8 @@
   systemd.services.bind.preStart =
     let
       zones_pubs = [
-        (pkgs.writeText "Kproteus.eu.org.+015+40751.key" ''
-          proteus.eu.org. 3600 IN DNSKEY 257 3 15 f1EhcwJnyqstgxFUySK5m650d2fg+w8DLh8FNwVKHTc=
+        (pkgs.writeText "K${const.domain}.+015+40751.key" ''
+          ${const.domain}. 3600 IN DNSKEY 257 3 15 f1EhcwJnyqstgxFUySK5m650d2fg+w8DLh8FNwVKHTc=
         '')
         (pkgs.writeText "K0.0.10.in-addr.arpa.+015+03009.key" ''
           0.0.10.in-addr.arpa. 3600 IN DNSKEY 257 3 15 r3yhoiw0ch3YhWpvVNneJ9hTuxwfrc9rl+dJVbm+hMQ=

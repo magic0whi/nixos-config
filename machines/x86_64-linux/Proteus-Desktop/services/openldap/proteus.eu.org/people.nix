@@ -23,7 +23,7 @@
   givenName: Proteus
   title: Qiansan
   mail: ${const.email}
-  labeledURI: https://misc.s3-pub.proteus.eu.org/siameseemoji_agadmqeaaspumeu.png
+  labeledURI: https://misc.s3-pub.${const.domain}/siameseemoji_agadmqeaaspumeu.png
   loginShell: /bin/zsh
   uidNumber: ${toString config.users.users.${const.username}.uid}
   gidNumber: ${toString config.users.groups.users.gid}

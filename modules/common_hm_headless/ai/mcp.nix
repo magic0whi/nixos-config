@@ -76,7 +76,7 @@
           "--transport"
           "stdio"
           "--url"
-          "https://git.proteus.eu.org/"
+          "https://git.${const.domain}/"
         ];
         env.FORGEJO_ACCESS_TOKEN.file = config.sops.secrets.mcp_forgejo_token.path;
       };
