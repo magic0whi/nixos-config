@@ -537,11 +537,11 @@
     "mySecrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1795222785,
-        "narHash": "sha256-ZP9Rzhvl2NNH78vT/aMLTl1BwpGn/ZFLGYUeMz1879w=",
+        "lastModified": 1795239998,
+        "narHash": "sha256-6Vd3O4Ozf3UuoKPjewRfj1MYuOisfVebmm2o1exyFEU=",
         "ref": "refs/heads/main",
-        "rev": "f45129027c2f502855d2bea574094e0eb43d34e9",
-        "revCount": 236,
+        "rev": "336df23d036c78d778692141c124c1b3c1e684cf",
+        "revCount": 237,
         "type": "git",
         "url": "ssh://forgejo@git.proteus.eu.org/proteus/nixos-secrets"
       },

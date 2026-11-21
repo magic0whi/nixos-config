@@ -122,14 +122,20 @@ lib.mkMerge (
           store_fakeip = true; # Keep FakeIP mapping across restart
           store_dns = true;
         };
-        clash_api = {
-          default_mode = "rule";
-          external_controller = "127.0.0.1:9091";
-          external_ui = "ui";
-          external_ui_download_detour = "Auto";
-          external_ui_download_url = "https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip";
-          secret = "";
-        };
+      };
+      services = lib.singleton {
+        type = "api";
+        inherit (const.sb.api) listen;
+        listen_port = const.sb.api.port;
+        secret._secret = config.sops.secrets.sing-box_api_secret.path;
+        dashboard =
+          if isMobile then
+            {
+              enabled = true;
+              http_client = "Default";
+            }
+          else
+            pkgs.sing-box-dashboard;
       };
       inbounds = [
         {

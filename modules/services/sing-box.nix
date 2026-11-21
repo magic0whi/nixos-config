@@ -2,13 +2,22 @@
   mySecrets,
   config,
   lib,
+  pkgs,
   const,
   ...
 }:
 let
   hostname = config.networking.hostName;
+  sub = "${hostname}.sb";
 in
 {
+  # The API must not sit behind Authelia forward-auth: native gRPC clients would receive the login redirect instead of
+  # a gRPC status. Its `secret` (Bearer token) is the only credential.
+  vars.hostAddrs.${hostname}.easytier.subdomains = lib.mkIf config.services.traefik.enable {
+    A = [ sub ];
+    AAAA = [ sub ];
+  };
+
   networking.firewall = {
     allowedTCPPorts = [
       443
@@ -23,12 +32,11 @@ in
   sops.secrets =
     let
       restartUnits = [ "sing-box.service" ];
+      sopsFile = mySecrets + "/services/sing-box.sops.yaml";
     in
     {
-      sing-box_anytls_password = {
-        inherit restartUnits;
-        sopsFile = mySecrets + "/services/sing-box.sops.yaml";
-      };
+      sing-box_anytls_password = { inherit restartUnits sopsFile; };
+      sing-box_api_secret = { inherit restartUnits sopsFile; };
       # Shared with ddclient (Cloudflare "Edit zone DNS" token), used for ACME DNS-01
       ddclient_cloudflare_password = {
         inherit restartUnits;
@@ -98,6 +106,13 @@ in
           enabled = true;
           certificate_provider = "ACME";
         };
+      };
+      services = lib.singleton {
+        type = "api";
+        inherit (const.sb.api) listen;
+        listen_port = const.sb.api.port;
+        secret._secret = config.sops.secrets.sing-box_api_secret.path;
+        dashboard = pkgs.sing-box-dashboard;
       };
       outbounds = lib.singleton {
         tag = "Direct";
@@ -178,5 +193,32 @@ in
   services.traefik = lib.mkIf config.services.traefik.enable {
     # staticConfigOptions.log.level = "DEBUG";
     staticConfigOptions.entryPoints.websecure.address = ":8443";
+    dynamicConfigOptions.http = {
+      # `application/grpc-web*` must not match the gRPC router, hence `[;+]|$` instead of a plain prefix.
+      routers = {
+        sb = {
+          rule = "Host(`${sub}.${const.domain}`)";
+          entryPoints = [ "websecure" ];
+          priority = 1;
+          service = "sb";
+          tls = { };
+        };
+        sb-grpc = {
+          rule = "Host(`${sub}.${const.domain}`) && HeaderRegexp(`Content-Type`, `^application/grpc([;+]|$)`)";
+          entryPoints = [ "websecure" ];
+          priority = 2; # Higher priority
+          service = "sb-grpc";
+          tls = { };
+        };
+      };
+      services =
+        let
+          addr = with const.sb.api; "${listen}:${toString port}";
+        in
+        {
+          sb.loadBalancer.servers = [ { url = "http://${addr}"; } ];
+          sb-grpc.loadBalancer.servers = [ { url = "h2c://${addr}"; } ];
+        };
+    };
   };
 }

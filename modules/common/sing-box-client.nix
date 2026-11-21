@@ -12,6 +12,9 @@ let
 in
 {
   sops.secrets =
+    let
+      sopsFile = mySecrets + "/services/sing-box.sops.yaml";
+    in
     # Add conditional restartUnits to the secrets
     builtins.mapAttrs
       (
@@ -26,7 +29,8 @@ in
         #   sopsFile = "${mySecrets + "/sing-box_config.json.sops"}";
         #   format = "binary";
         # };
-        sing-box_anytls_password.sopsFile = mySecrets + "/services/sing-box.sops.yaml";
+        sing-box_anytls_password = { inherit sopsFile; };
+        sing-box_api_secret = { inherit sopsFile; };
       };
 
   services = lib.mkMerge [

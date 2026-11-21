@@ -74,6 +74,10 @@ rec {
   ];
 
   sb = {
+    api = {
+      listen = "127.0.0.1";
+      port = 9091;
+    };
     # DNS rules ordered before this get real IPs; rules ordered after it only see non-A/AAAA queries
     dnsFakeIpPri = 0.20 * 2000;
     # NOTE: domain match rules should AFTER the sniff rule
