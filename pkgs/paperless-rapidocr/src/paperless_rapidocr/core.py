@@ -19,7 +19,6 @@ from PIL import ImageOps
 
 logger = logging.getLogger("paperless.parsing.rapidocr")
 
-CJK_RE = re.compile(r"[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]")
 WORD_RE = re.compile(r"\w", re.UNICODE)
 # Glyphs with no usable ToUnicode mapping extract as U+FFFF (MuPDF) or U+FFFD
 # (poppler). A layer made only of these is not text at all.
@@ -112,36 +111,30 @@ def get_engine():
 @dataclass
 class OcrResult:
     text: str
-    cjk_chars: int
     letters: int
     pages: int
-
-    @property
-    def cjk_ratio(self) -> float:
-        return self.cjk_chars / self.letters if self.letters else 0.0
 
 
 @dataclass
 class PdfProfile:
-    """Cheap summary used to decide whether a PDF is a scan or born-digital.
+    """Cheap summary of a PDF's existing text layer.
 
     *text_chars* only counts extractable characters: replacement and unmapped
     glyphs are ignored, so a broken text layer (Type 3 fonts, missing
-    ToUnicode) does not make the document look born-digital.
+    ToUnicode) does not count as text.
+
+    *invisible_text* is true when the layer was added by OCR (glyphs painted
+    with text render mode 3), as opposed to a born-digital PDF where the text
+    is the visible content itself.
     """
 
     pages: int
     text_chars: int
-    image_cover: float
+    invisible_text: bool
 
     @property
     def has_text(self) -> bool:
         return self.text_chars >= 64
-
-    @property
-    def looks_like_scan(self) -> bool:
-        """A page-filling image plus little text = a scan with a text layer."""
-        return self.image_cover >= 0.5 and (self.text_chars / max(1, self.pages)) < 800
 
 
 def _extractable_chars(page: "pymupdf.Page") -> int:
@@ -149,32 +142,48 @@ def _extractable_chars(page: "pymupdf.Page") -> int:
     return len(JUNK_CHAR_RE.sub("", re.sub(r"\s+", "", page.get_text())))
 
 
+def _is_invisible_text(page: "pymupdf.Page") -> bool:
+    """True when every glyph on *page* is drawn in render mode 3 (OCR layer)."""
+    try:
+        spans = page.get_texttrace()
+    except Exception:
+        return False
+    return bool(spans) and all(span.get("type") == 3 for span in spans)
+
+
 def pdf_profile(path: Path, *, pages: int = 3) -> PdfProfile:
-    """Summarise text density and image coverage of the first *pages* pages."""
+    """Summarise the text layer of the first *pages* pages."""
     try:
         with pymupdf.open(path) as doc:
             if not doc.is_pdf:
-                return PdfProfile(pages=0, text_chars=0, image_cover=0.0)
+                return PdfProfile(pages=0, text_chars=0, invisible_text=False)
             limit = min(pages, doc.page_count)
             chars = 0
-            cover = 0.0
+            with_text = 0
+            invisible = 0
             for index in range(limit):
                 page = doc[index]
-                chars += _extractable_chars(page)
-                page_area = abs(page.rect.width * page.rect.height) or 1.0
-                for info in page.get_image_info():
-                    ratio = abs(pymupdf.Rect(info["bbox"]).get_area()) / page_area
-                    cover = max(cover, ratio)
+                page_chars = _extractable_chars(page)
+                chars += page_chars
+                if page_chars:
+                    with_text += 1
+                    invisible += _is_invisible_text(page)
     except Exception:
-        return PdfProfile(pages=0, text_chars=0, image_cover=0.0)
-    return PdfProfile(pages=limit, text_chars=chars, image_cover=cover)
+        return PdfProfile(pages=0, text_chars=0, invisible_text=False)
+    return PdfProfile(
+        pages=limit,
+        text_chars=chars,
+        invisible_text=with_text > 0 and invisible == with_text,
+    )
 
 
-def pdf_has_text(path: Path, *, pages: int = 3, min_chars: int = 64) -> bool:
-    """True when a PDF already carries real (born-digital) text."""
-    profile = pdf_profile(path, pages=pages)
-    return profile.text_chars >= min_chars
-
+def pdf_native_text(path: Path) -> str:
+    """Extract a PDF's own text layer, dropping unmapped glyphs."""
+    parts: list[str] = []
+    with pymupdf.open(path) as doc:
+        for page in doc:
+            parts.append(JUNK_CHAR_RE.sub("", page.get_text()))
+    return "\n".join(part for part in parts if part.strip())
 
 
 def _reading_order(lines: list) -> list:
@@ -281,7 +290,6 @@ def ocr_document(
     letters = len(WORD_RE.findall(text))
     return OcrResult(
         text=text,
-        cjk_chars=len(CJK_RE.findall(text)),
         letters=letters,
         pages=limit,
     )

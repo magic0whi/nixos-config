@@ -2,8 +2,6 @@
 # RapidOCR parser plugin. Runtime knobs are environment variables; set them
 # with `services.paperless.settings`
 #   PAPERLESS_RAPIDOCR_DISABLED = 1      # disable RapidOCR, Tesseract only
-#   PAPERLESS_RAPIDOCR_SKIP_TEXT = 1     # leave scans with a text layer alone
-#   PAPERLESS_RAPIDOCR_CJK_FALLBACK = 1  # Latin-only scans -> Tesseract
 #   PAPERLESS_RAPIDOCR_GPU = 0           # force CPU (CUDA is used when available)
 #   PAPERLESS_RAPIDOCR_DPI = 300         # OCR/text-layer render DPI
 #   PAPERLESS_RAPIDOCR_THREADS = 4       # ONNX intra-op threads (default min(4, cpus))
@@ -13,7 +11,7 @@
 }:
 pythonPackages.buildPythonPackage {
   pname = "paperless-rapidocr";
-  version = "0.3.3";
+  version = "0.4.0";
   format = "pyproject";
 
   src = ./.;
