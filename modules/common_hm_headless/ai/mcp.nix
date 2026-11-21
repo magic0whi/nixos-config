@@ -35,7 +35,7 @@
         export MCP_EXA_TOKEN="$(<"${mcp_exa_token.path}")"
       fi
       if [[ -r ${mcp_super-productivity_token.path} ]]; then
-        export MCP_SUPER_PRODUCTIVITY_KEY="$(<"${mcp_super-productivity_token.path}")"
+        export MCP_SUPER_PRODUCTIVITY_TOKEN="$(<"${mcp_super-productivity_token.path}")"
       fi
     ''
   );
@@ -100,7 +100,7 @@
       };
       super-productivity = {
         url = "http://127.0.0.1:3876/mcp";
-        headers.Authorization = "Bearer {env:MCP_SUPER_PRODUCTIVITY_KEY}";
+        headers.Authorization = "Bearer {env:MCP_SUPER_PRODUCTIVITY_TOKEN}";
       };
     };
   };
