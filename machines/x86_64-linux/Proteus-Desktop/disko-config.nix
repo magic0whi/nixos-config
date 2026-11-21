@@ -187,6 +187,17 @@ in
             mountOptions = [ "nofail" ];
             options.canmount = "on";
           };
+          datasets.garage = {
+            type = "zfs_fs";
+            mountpoint = "/mnt/storage/garage";
+            mountOptions = [ "nofail" ];
+            options = {
+              canmount = "on";
+              compression = "off";
+              atime = "off";
+              recordsize = "1M"; # matches Garage's default 1 MiB block_size
+            };
+          };
         };
         # 2 SATAs RAID-0
         storage2 = {

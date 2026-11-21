@@ -1,10 +1,12 @@
-# TODO use a dedicated dataset, as data on garage already compressed
 {
   mySecrets,
   const,
   config,
   ...
 }:
+let
+  mount_path = "/mnt/storage/garage";
+in
 {
   sops.secrets =
     let
@@ -28,20 +30,20 @@
   # };
 
   systemd.services.garage = {
-    unitConfig.RequiresMountsFor = [ const.storagePath ];
+    unitConfig.RequiresMountsFor = [ mount_path ];
     serviceConfig = {
       SupplementaryGroups = [ "storage" ];
       # `DynamicUser=true` implies `ProtectSystem=strict`
       # `metadata_dir` is added defaultly, ref:
       # https://github.com/NixOS/nixpkgs/blob/15f4ee454b1dce334612fa6843b3e05cf546efab/nixos/modules/services/web-servers/garage.nix#L127-L149
-      ReadWritePaths = [ "${const.storagePath}/garage/snapshots" ];
+      ReadWritePaths = [ "${mount_path + "/snapshots"}" ];
     };
   };
 
   services.garage.settings = {
     # metadata_dir = "${const.storagePath}/garage/meta"; # Garage recommends placing metadata on SSD
-    metadata_snapshots_dir = "${const.storagePath}/garage/snapshots";
-    data_dir = "${const.storagePath}/garage/data";
+    metadata_snapshots_dir = mount_path + "/snapshots";
+    data_dir = mount_path + "/data";
     s3_api.s3_region = "cn-east1-a";
   };
 
