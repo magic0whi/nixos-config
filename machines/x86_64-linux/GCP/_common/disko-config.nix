@@ -45,6 +45,15 @@
               mountpoint = "/persistent";
               inherit mountOptions;
             };
+            # NOTE: btrfs compression is fs-wide (see the @swap note) so it's
+            # disabled for this subvolume via the `compression` property instead
+            "@garage" = {
+              mountpoint = "/mnt/garage";
+              mountOptions = [
+                "discard=async"
+                "noatime"
+              ];
+            };
             "@swap" = {
               mountpoint = "/.swapvol";
               # NOTE: You can't set per-subvolume nodatacow, nodatasum, or compress using mount options
@@ -62,6 +71,14 @@
               };
             };
           };
+        # `btrfs subvolume create` can't set the compression property
+        postCreateHook = ''
+          MOUNT_POINT=$(mktemp -d)
+          mount "$device" "$MOUNT_POINT" -o subvol=@garage
+          btrfs property set "$MOUNT_POINT" compression none
+          umount "$MOUNT_POINT"
+          rmdir "$MOUNT_POINT"
+        '';
         # mountpoint = "/btrfs-root";
         # swap = { # swapfiles under `/btrfs-root`
         #   swapfile.size = "20M";
