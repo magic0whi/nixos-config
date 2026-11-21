@@ -113,6 +113,11 @@ in
       # Paperless-ngx 3.0 allows duplicate documents to be consumed by default except when this setting is enabled
       PAPERLESS_CONSUMER_DELETE_DUPLICATES = true;
 
+      # No mail accounts are configured, so don't schedule the default
+      # every-10-minutes mail poll (it leaves a "Mail Fetch" task behind each run).
+      # Remove this if mail fetching is ever set up.
+      PAPERLESS_EMAIL_TASK_CRON = "disable";
+
       PAPERLESS_MAX_IMAGE_PIXELS = 400000000; # Default: 178,956,970 px
       PAPERLESS_OCR_MAX_IMAGE_PIXELS = 400000000;
     };
