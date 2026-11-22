@@ -1,17 +1,30 @@
 {
-  mySecrets,
   config,
   const,
-  pkgs,
   lib,
+  machineConfigs,
+  mySecrets,
+  mylib,
+  pkgs,
   ...
 }:
 let
   hostname = config.networking.hostName;
   hostname_psql = const.networking.findFirstHostBySubdomain "psql";
 
+  # Garage S3 external storage, backed by the `nextcloud` bucket on the cloud Garage cluster (Proteus-NixOS-0..3)
+  # NOTE: any cluster node serves the whole cluster, so the first node is picked as the endpoint
+  hostname_s3 = "Proteus-NixOS-0";
+  machine_cfg_s3 = machineConfigs.${hostname_s3}.config;
+  s3_bucket = "nextcloud";
+  s3_endpoint_host = "${hostname_s3}.s3.${const.domain}";
+  # sing-box occupies :443 on cloud nodes, Traefik websecure listens on :8443
+  s3_endpoint_port = mylib.getUriPort machine_cfg_s3.services.traefik.staticConfigOptions.entryPoints.websecure.address;
+  s3_region = machine_cfg_s3.services.garage.settings.s3_api.s3_region;
+
   nextcloud_port = 8081;
-  restartUnits = [
+
+  nextcloud_units = [
     "nextcloud-setup.service"
     "nextcloud-cron.service"
     "nextcloud-update-plugins.service"
@@ -35,13 +48,32 @@ in
       sopsFile = mySecrets + "/${hostname}/nextcloud.sops.yaml";
     in
     {
-      nextcloud_db_password = { inherit sopsFile restartUnits; };
-      nextcloud_client_secret = { inherit sopsFile restartUnits; };
+      nextcloud_db_password = {
+        inherit sopsFile;
+        restartUnits = nextcloud_units;
+      };
+      nextcloud_client_secret = {
+        inherit sopsFile;
+        restartUnits = nextcloud_units;
+      };
+      nextcloud_s3_access_key = {
+        inherit sopsFile;
+        # NOTE: owned by nextcloud because `nextcloud-occ` runs PHP as the nextcloud user,
+        # and `files_external:config --value-from-file` reads the file from PHP
+        owner = "nextcloud";
+        # Re-run the mount setup script to sync rotated credentials into Nextcloud
+        restartUnits = [ "nextcloud-custom-config.service" ];
+      };
+      nextcloud_s3_secret_key = {
+        inherit sopsFile;
+        owner = "nextcloud";
+        restartUnits = [ "nextcloud-custom-config.service" ];
+      };
     };
   systemd.services = lib.mkMerge [
     (
       let
-        clean_units = map (s: lib.removeSuffix ".service" s) restartUnits;
+        clean_units = map (s: lib.removeSuffix ".service" s) nextcloud_units;
       in
       lib.genAttrs clean_units (_: {
         # Add RequiresMountsFor to wait for storage mounted
@@ -72,7 +104,7 @@ in
           nextcloud-occ app:disable photos # I use immich instead
           nextcloud-occ app:disable updatenotification
 
-          nextcloud-occ app:enable files_external # Enable External Storage to mount Syncthing shared folders
+          nextcloud-occ app:enable files_external # Enable External Storage to mount Syncthing shared folders and Garage S3
           # Define the list of Syncthing folders to mount
           declare -A external_mounts=(
             [KeePassXC]="${const.storagePath}/share/KeePassXC"
@@ -95,6 +127,30 @@ in
               nextcloud-occ files_external:applicable --add-user=proteus "$MOUNT_ID"
             fi
           done
+
+          # Garage S3 (bucket `${s3_bucket}`) on the cloud Garage cluster
+          S3_MOUNT_POINT="Garage S3"
+          S3_MOUNT_ID=$(nextcloud-occ files_external:list --output=json | jq -r --arg mp "/$S3_MOUNT_POINT" '.[] | select(.mount_point == $mp) | .mount_id')
+          if [ -n "$S3_MOUNT_ID" ] && [ "$S3_MOUNT_ID" != "null" ]; then
+            echo "Garage S3 external mount exists (id: $S3_MOUNT_ID), syncing credentials..."
+          else
+            echo "Creating Garage S3 external mount..."
+            S3_MOUNT_ID=$(nextcloud-occ files_external:create \
+              "$S3_MOUNT_POINT" \
+              'amazons3' \
+              'amazons3::accesskey' \
+              -c bucket="${s3_bucket}" \
+              -c hostname="${s3_endpoint_host}" \
+              -c port="${toString s3_endpoint_port}" \
+              -c region="${s3_region}" \
+              -c use_ssl=true \
+              -c use_path_style=true \
+              --applicable-user=proteus \
+              --output=json)
+          fi
+          # Sync credentials from the sops secrets on every run, so rotating the Garage key only requires updating the sops file
+          nextcloud-occ files_external:config "$S3_MOUNT_ID" key ${config.sops.secrets.nextcloud_s3_access_key.path} --value-from-file
+          nextcloud-occ files_external:config "$S3_MOUNT_ID" secret ${config.sops.secrets.nextcloud_s3_secret_key.path} --value-from-file
         '';
       };
     }
