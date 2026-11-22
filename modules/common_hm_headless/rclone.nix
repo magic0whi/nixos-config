@@ -23,6 +23,11 @@
           user = const.username;
         };
         secrets.pass = config.sops.secrets.rclone_nextcloud_password.path;
+        # Mount the whole Nextcloud at ~/Nextcloud on login
+        mounts."" = {
+          enable = true;
+          mountPoint = config.home.homeDirectory + "/Nextcloud";
+        };
       };
       # garage-desktop = {
       #   config = {

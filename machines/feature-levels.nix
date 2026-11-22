@@ -144,7 +144,7 @@
             "${headless}/ai"
             "${headless}/cloud-providers.nix"
             "${headless}/dev-env.nix"
-            "${headless}/file_sharing.nix"
+            "${headless}/rclone.nix"
             "${headless}/git.nix"
             "${headless}/gpg.nix"
             "${headless}/nix.nix"
