@@ -17,12 +17,12 @@ default:
 [group('nix')]
 [linux]
 test name:
-    nom build --show-trace --verbose -o /tmp/result .#nixosConfigurations.{{ name }}.config.system.build.toplevel
+    nom build --show-trace --verbose --no-link .#nixosConfigurations.{{ name }}.config.system.build.toplevel
 
 [group('nix')]
 [macos]
 test name:
-    nom build --show-trace --verbose -o /tmp/result .#darwinConfigurations.{{ name }}.config.system.build.toplevel
+    nom build --show-trace --verbose --no-link .#darwinConfigurations.{{ name }}.config.system.build.toplevel
 
 # Update all the flake inputs
 [group('nix')]
