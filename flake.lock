@@ -24,11 +24,11 @@
     "agent-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1795255980,
-        "narHash": "sha256-Et48CrjdxqLow2jNbHf+2S3bTOVQ9nW36KH2B87Epv8=",
+        "lastModified": 1795349889,
+        "narHash": "sha256-AZudxLOhARhjVewdJ6Y/5TPiOVxT+hekseYVPvY/W2I=",
         "ref": "refs/heads/main",
-        "rev": "e35162dcb836c76c9e1c38e127cf7eb64fff1484",
-        "revCount": 1505,
+        "rev": "dae743118acc706d7341f7c0d0a25b7180bc3fa6",
+        "revCount": 1506,
         "type": "git",
         "url": "ssh://forgejo@git.proteus.eu.org/proteus/agent-skills"
       },
