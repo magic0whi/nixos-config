@@ -27,7 +27,7 @@ let
       ];
     }
     {
-      out = "Default";
+      out = "Custom";
       rules = lib.singleton {
         domain_suffix = [
           "adobesign.com" # Document sign
