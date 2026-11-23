@@ -24,11 +24,11 @@
     "agent-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1795415018,
-        "narHash": "sha256-nDAukrUFeWxispvg5lz6LB8GbkIwSw6nLD7zdhstido=",
+        "lastModified": 1795430498,
+        "narHash": "sha256-PWcObEd3PIIHyJTBfAzw4ulnUWle5rD+ffIQoWoJVjA=",
         "ref": "refs/heads/main",
-        "rev": "a15eb7f236edbe05fad8f79a33b9e7cfd72755f4",
-        "revCount": 1507,
+        "rev": "b8c01b9b601cd9f6109f80391bee6cb070ebd3e8",
+        "revCount": 1508,
         "type": "git",
         "url": "ssh://forgejo@git.proteus.eu.org/proteus/agent-skills"
       },
@@ -537,11 +537,11 @@
     "mySecrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1795349844,
-        "narHash": "sha256-HeceC1yPghcYW2JE76gb20gHv3fRydZI0mus7QgNsZs=",
+        "lastModified": 1795431236,
+        "narHash": "sha256-QM8KZ/7aA9axu3+TpEfD08Jpf6gfGiZQVKdgKUe1/Qc=",
         "ref": "refs/heads/main",
-        "rev": "289925ae5d8832f37cb72a6c5fc86b4c7c668523",
-        "revCount": 239,
+        "rev": "54f4a2474d0744780118bb3f4a090c4912db68de",
+        "revCount": 240,
         "type": "git",
         "url": "ssh://forgejo@git.proteus.eu.org/proteus/nixos-secrets"
       },
