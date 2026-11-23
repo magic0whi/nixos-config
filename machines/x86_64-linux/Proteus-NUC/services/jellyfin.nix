@@ -10,7 +10,7 @@
     };
   services.jellyfin =
     let
-      use_nvidia = true;
+      use_nvidia = config.home-manager.users.${const.username}.hardware.nvidia.sync;
     in
     {
       enable = true;
