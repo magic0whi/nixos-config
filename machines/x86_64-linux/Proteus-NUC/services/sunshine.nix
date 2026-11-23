@@ -74,6 +74,9 @@ in
         else
           "/dev/dri/${const.igpu_sym_name}";
       origin_web_ui_allowed = "pc";
+      # Traefik proxies the Web UI from this origin; the browser's Origin header
+      # must be allow-listed or state-changing API requests fail the CSRF check
+      csrf_allowed_origins = "https://sunshine.${const.domain}";
     };
   };
   services.traefik.dynamicConfigOptions.http = {
