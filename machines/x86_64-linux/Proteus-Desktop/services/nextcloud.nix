@@ -12,7 +12,7 @@ let
   hostname = config.networking.hostName;
   hostname_psql = const.networking.findFirstHostBySubdomain "psql";
 
-  # Garage S3 external storage, backed by the `nextcloud` bucket on the cloud Garage cluster (Proteus-NixOS-0..3)
+  # Garage S3 external storage, backed by the `nextcloud` bucket on the cloud Garage cluster
   # NOTE: any cluster node serves the whole cluster, so the first node is picked as the endpoint
   hostname_s3 = "Proteus-NixOS-0";
   machine_cfg_s3 = machineConfigs.${hostname_s3}.config;
