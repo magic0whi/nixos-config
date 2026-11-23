@@ -21,6 +21,7 @@ let
         "opencode.ai"
       ];
     }
+    { domain_suffix = "context7.com"; }
     {
       rule_set = [
         "geosite-anthropic"
