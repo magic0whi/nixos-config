@@ -120,7 +120,6 @@
           language-servers = [
             "marksman"
             "ltex"
-            "lsp-ai"
           ];
         }
         {
