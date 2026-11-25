@@ -8,7 +8,14 @@
         projectRootFile = "flake.nix"; # Used to find the project root
         programs.nixfmt = {
           enable = true;
-          width = 120;
+          width =
+            (import ./const/default.nix {
+              lib = null;
+              pkgs = null;
+              mylib = null;
+              nixosConfigurations = null;
+              darwinConfigurations = null;
+            }).lineWidth;
           package = pkgs.nixfmt-rs;
           priority = 0;
         };

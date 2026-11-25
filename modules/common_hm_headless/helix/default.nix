@@ -87,7 +87,7 @@
           auto-format = true;
           formatter = {
             command = "nixfmt";
-            args = [ "--width=120" ];
+            args = [ "--width=${toString const.lineWidth}" ];
           };
         }
         {
@@ -134,6 +134,18 @@
           };
         }
         {
+          name = "typst";
+          auto-format = true;
+          formatter = {
+            command = "typstyle";
+            args = [
+              "--line-width"
+              "${toString const.lineWidth}"
+            ];
+          };
+          language-servers = [ "tinymist" ];
+        }
+        {
           name = "yaml";
           formatter = {
             command = "prettier";
@@ -146,14 +158,18 @@
       ];
       language-server = {
         yaml-language-server.config.yaml.format.singleQuote = true;
-        # Typst live preview, open http://127.0.0.1:23635 in a browser
-        # Ref: https://myriad-dreamin.github.io/tinymist/feature/preview.html#label-Running%20preview%20server%20in%20background%20(Since%20Tinymist%20v0.13.6)
-        tinymist.config.preview.background = {
-          enabled = true;
-          args = [
-            "--data-plane-host=127.0.0.1:23635"
-            "--invert-colors=never"
-          ];
+        tinymist.config = {
+          # Default formatter is typstyle
+          formatterPrintWidth = const.lineWidth;
+          # Typst live preview, open http://127.0.0.1:23635 in a browser
+          # Ref: https://myriad-dreamin.github.io/tinymist/feature/preview.html#label-Running%20preview%20server%20in%20background%20(Since%20Tinymist%20v0.13.6)
+          preview.background = {
+            enabled = true;
+            args = [
+              "--data-plane-host=127.0.0.1:23635"
+              "--invert-colors=never"
+            ];
+          };
         };
         beancount-language-server.config = {
           journal_file = "main.bean";
@@ -171,9 +187,9 @@
           };
         };
         texlab.config.texlab = {
-          # formatterLineLength = 120;
-          # latexFormatter = "tex-fmt"; # Use formatter on texlab causes lose cursor position
-          # Lint
+          # NOTE: Use formatter on texlab causes lose cursor position lint
+          # formatterLineLength = const.lineWidth;
+          # latexFormatter = "tex-fmt";
           chktex = {
             onOpenAndSave = true;
             onEdit = true;

@@ -1,8 +1,9 @@
 {
-  lib,
-  pkgs,
+  const,
   dev-flake,
+  lib,
   mylib,
+  pkgs,
   ...
 }:
 {
@@ -16,8 +17,8 @@
   # programs.tex-fmt = {
   #   enable = true;
   #   settings = {
-  #     wraplen = 120;
-  #     wrapmin = 120;
+  #     wraplen = const.lineWidth;
+  #     wrapmin = const.lineWidth;
   #     format-tables = true;
   #   };
   # };
@@ -27,7 +28,7 @@
         defaultIndent: "  "
         modifyLineBreaks:
           textWrapOptions:
-            columns: 120
+            columns: ${toString const.lineWidth}
         # Format the witharrows environment
         lookForAlignDelims:
           DispWithArrows: 1
@@ -56,6 +57,10 @@
       kdlfmt
       beancount-language-server
       prettier
+
+      typst
+      tinymist
+      typstyle
     ])
     ++ (with dev-flake.devShells.${pkgs.stdenv.system}.latex; nativeBuildInputs ++ buildInputs)
     # NOTE: Requires bootstrap GHC

@@ -13,6 +13,7 @@ rec {
   nixosStateVersion = "26.05";
   darwinStateVersion = 7;
   githubUsername = "magic0whi";
+  lineWidth = 120;
 
   city = "Suzhou, China";
   timeZone = "Asia/Hong_Kong";
