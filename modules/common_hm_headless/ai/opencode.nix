@@ -19,6 +19,7 @@
     enableMcpIntegration = true;
     context = builtins.readFile (agent-skills + "/AGENTS.md");
     skills = agent-skills + "/skills";
+    cli.debug.turn_tokens = "verbose";
   };
 
   # OpenCode auto-discovers plugins in `$XDG_CONFIG_HOME/opencode/plugins`.
