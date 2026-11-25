@@ -33,6 +33,7 @@ let
       NODE_EXTRA_CA_CERTS = "/etc/ssl/certs/ca-certificates.crt";
       # Cannot use NODE_USE_SYSTEM_CA=1, in that container there is no /etc/ssl at all
     };
+    # NOTE: the Chromium in the API container does not use the system CA bundle. Always pass `skipTlsVerification: true` for local sites
     volumes = [ "${config.security.pki.caBundle}:/etc/ssl/certs/ca-certificates.crt:ro" ];
   };
 in
