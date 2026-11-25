@@ -167,7 +167,7 @@
             hiddenFalsePositives.en-US = [
               ''{"rule": "UPPERCASE_SENTENCE_START", "sentence": "^[a-z][a-z0-9-_]+$"}''
             ];
-            dictionary = fromTOML (builtins.readFile ./ltex_dict.toml);
+            dictionary = fromTOML (builtins.readFile ./ltex-dict.toml);
           };
         };
         texlab.config.texlab = {

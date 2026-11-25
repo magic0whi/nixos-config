@@ -1,4 +1,9 @@
 en-US = [
+  "ripgrep",
+  "primops",
+  "Noogle",
+  "attrset",
+  "Paperless-ngx",
   "MYBank",
   "Firecrawl",
   "nixpkgs",
