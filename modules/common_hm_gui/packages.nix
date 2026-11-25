@@ -4,6 +4,9 @@
   xdgRel,
   ...
 }:
+let
+  isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
+in
 {
   networking.firewall =
     let
@@ -45,7 +48,7 @@
       # Video/audio tools
       # cava # For visualizing audio
     ])
-    ++ lib.optionals (!pkgs.stdenv.hostPlatform.isDarwin) (
+    ++ lib.optionals (!isDarwin) (
       with pkgs;
       [
         blender # 3D modeling, currently broken on darwin
@@ -57,10 +60,12 @@
 
         super-productivity
       ]
-    );
+    )
+    ++ [ (if isDarwin then pkgs.libreoffice-bin else pkgs.libreoffice) ];
   home.persistence."/persistent".directories = [
     "${xdgRel.configHome}/blender"
     "${xdgRel.configHome}/feishin"
+    "${xdgRel.configHome}/libreoffice"
     "${xdgRel.configHome}/superProductivity"
   ];
   programs = {

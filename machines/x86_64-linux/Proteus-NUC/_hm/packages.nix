@@ -1,10 +1,9 @@
-{ pkgs, xdgRel, ... }:
+{ pkgs, ... }:
 {
   home.packages = with pkgs; [
     (nvtopPackages.intel.override { nvidia = true; })
     minicom # embedded development
     chezmoi
-    libreoffice
     qpdf
     act # Run your GitHub Actions locally
     witr
@@ -12,7 +11,6 @@
 
     nixpaks.wechat
   ];
-  home.persistence."/persistent".directories = [ "${xdgRel.configHome}/libreoffice" ];
   programs.antigravity-cli.enable = true;
   programs.obsidian.enable = true;
 }
