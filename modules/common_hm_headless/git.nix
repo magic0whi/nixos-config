@@ -60,7 +60,9 @@
       };
       alias =
         let
-          log_fmt = "--pretty=${lib.escapeShellArg "format:%C(green)%G? %C(yellow)%h%C(auto)%d %s %C(blue)[%cn]%C(reset)"}";
+          log_fmt = "--pretty=${lib.escapeShellArg "format:%C(green) %C(yellow)%h%C(auto)%d %s %C(blue)[%cn]%C(reset)"}";
+          # git spawns gpg --verify for every commit. with is slow
+          log_fmt_gpg = "--pretty=${lib.escapeShellArg "format:%C(green)%G? %C(yellow)%h%C(auto)%d %s %C(blue)[%cn]%C(reset)"}";
         in
         {
           # Custom aliases for git
@@ -75,8 +77,11 @@
           # - %h: abbreviated commit hash. e.g. 'c4f4c1f'
           # - %s: subject. e.g. 'feat: consolidate configs and enhance shell in NixOS/Darwin'
           ls = "log --graph ${log_fmt}";
+          lsg = "log --graph ${log_fmt_gpg}";
           ll = "log --graph --numstat ${log_fmt}";
+          llg = "log --graph --numstat ${log_fmt_gpg}";
           la = "log --graph --all ${log_fmt}";
+          lag = "log --graph --all ${log_fmt_gpg}";
           cm = "commit -m"; # Commit via `git cm <message>`
           ca = "commit -am"; # Commit all changes via `git ca <message>`
           dc = "diff --cached";
