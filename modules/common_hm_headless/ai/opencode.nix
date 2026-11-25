@@ -1,4 +1,8 @@
-{ agent-skills, xdgRel, ... }:
+{
+  agent-skills,
+  xdgRel,
+  ...
+}:
 {
   home.persistence."/persistent".directories = [
     "${xdgRel.configHome}/opencode"
@@ -15,5 +19,11 @@
     enableMcpIntegration = true;
     context = builtins.readFile (agent-skills + "/AGENTS.md");
     skills = agent-skills + "/skills";
+  };
+
+  # OpenCode auto-discovers plugins in `$XDG_CONFIG_HOME/opencode/plugins`.
+  xdg.configFile."opencode/plugins" = {
+    source = agent-skills + "/plugins";
+    recursive = true;
   };
 }
