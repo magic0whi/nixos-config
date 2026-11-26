@@ -213,6 +213,8 @@ in
           # Disable due to conflict with cycleWindowSecondarySpanForward, default
           # "Option+Shift+R"
           raiseAllFloatingWindows = "Unassigned";
+          # Default keybind Control+Option+Space conflict with IME switch
+          openCommandPalette = "Unassigned";
         }
         // lib.listToAttrs (
           lib.concatMap (i: [
