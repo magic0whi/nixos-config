@@ -143,7 +143,10 @@
               "${toString const.lineWidth}"
             ];
           };
-          language-servers = [ "tinymist" ];
+          language-servers = [
+            "tinymist"
+            "ltex"
+          ];
         }
         {
           name = "yaml";
