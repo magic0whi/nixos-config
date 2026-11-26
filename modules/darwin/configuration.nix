@@ -61,14 +61,8 @@
     };
     keyboard = {
       enableKeyMapping = true;
-      remapCapsLockToEscape = true; # Remap caps lock to escape, useful for vim users
-      userKeyMapping = [
-        # Remap escape to caps lock
-        {
-          HIDKeyboardModifierMappingSrc = 30064771113;
-          HIDKeyboardModifierMappingDst = 30064771129;
-        }
-      ];
+      # Swap caps lock and escape, useful for vim users
+      swapCapsLockAndEscape = true;
     };
   };
   # https://github.com/nix-darwin/nix-darwin/issues/905#issuecomment-3691729456
