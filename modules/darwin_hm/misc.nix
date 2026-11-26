@@ -63,18 +63,19 @@
       });
     }
   '';
-  ## BEGIN jankyborders.nix
-  # Highlight focused windows with colored borders
-  services.jankyborders = {
-    enable = true;
-    settings = {
-      active_color = "0xffe1e3e4";
-      # https://github.com/FelixKratz/JankyBorders/issues/181
-      # inactive_color = "0xff494d64";
-      width = 5.0;
-    };
-  };
-  ## END jankyborders.nix
+  # TODO: omniwm already do border jobs
+  # ## BEGIN jankyborders.nix
+  # # Highlight focused windows with colored borders
+  # services.jankyborders = {
+  #   enable = true;
+  #   settings = {
+  #     active_color = "0xffe1e3e4";
+  #     # https://github.com/FelixKratz/JankyBorders/issues/181
+  #     # inactive_color = "0xff494d64";
+  #     width = 5.0;
+  #   };
+  # };
+  # ## END jankyborders.nix
   ## BEGIN xdg.nix
   xdg.enable = true; # Enable management of XDG base directories on macOS
   ## END xdg.nix

@@ -128,6 +128,13 @@
       url = "github:helix-editor/helix/a714a818a3a4f6dd5aad3b003a78692f90a1703f";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # Pinned as of 2026-11-25
+    # Let settings merged with the packaged version's own default settings.toml,
+    # so only the custom settings are need to specify
+    omniwm = {
+      url = "github:mst-mkt/omniwm.nix/80e609061cc09d6df1724dacafe606f0070c4ee2";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     dev-flake = {
       url = "git+https://git.proteus.eu.org/proteus/dev-flake";
       inputs = {

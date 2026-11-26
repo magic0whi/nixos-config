@@ -825,6 +825,27 @@
         "type": "github"
       }
     },
+    "omniwm": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1794252450,
+        "narHash": "sha256-bAp50eEYuf2kR/BeH57jhgByj0NIUB76n0WWgsR1G2I=",
+        "owner": "mst-mkt",
+        "repo": "omniwm.nix",
+        "rev": "80e609061cc09d6df1724dacafe606f0070c4ee2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "mst-mkt",
+        "repo": "omniwm.nix",
+        "rev": "80e609061cc09d6df1724dacafe606f0070c4ee2",
+        "type": "github"
+      }
+    },
     "pre-commit": {
       "inputs": {
         "flake-compat": "flake-compat_2",
@@ -889,6 +910,7 @@
         "nixvim": "nixvim",
         "noctalia": "noctalia",
         "noctalia-greeter": "noctalia-greeter",
+        "omniwm": "omniwm",
         "sops-nix": "sops-nix",
         "treefmt-nix": "treefmt-nix"
       }

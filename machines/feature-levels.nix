@@ -182,6 +182,6 @@
         "${gui}/xdg.nix"
       ];
 
-    darwin = map mylib.relToRoot [ "modules/darwin_hm" ];
+    darwin = [ inputs.omniwm.homeManagerModules.default ] ++ map mylib.relToRoot [ "modules/darwin_hm" ];
   };
 }

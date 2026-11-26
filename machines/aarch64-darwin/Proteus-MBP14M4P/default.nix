@@ -12,6 +12,7 @@
   mySecrets,
   nix-darwin,
   nixvim,
+  omniwm,
   ...
 }:
 let
@@ -35,6 +36,7 @@ let
           mySecrets
           nixvim
           ;
+        omniwmLib = omniwm.lib;
       };
       modules = (with features.common; base ++ seat) ++ features.darwin;
       hmModules = (with features.hm.common; base ++ seat) ++ features.hm.darwin;
