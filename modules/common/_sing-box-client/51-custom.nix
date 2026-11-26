@@ -31,7 +31,12 @@ let
         "cachix.org"
       ];
     }
-    { rule_set = [ "geosite-gfw" ]; }
+    {
+      rule_set = [
+        "geosite-ctrip!cn"
+        "geosite-gfw"
+      ];
+    }
   ];
 in
 {
@@ -66,6 +71,10 @@ in
         inherit (ruleSetCfg) urlPrefix defaultCfg;
       in
       map (rule_set: defaultCfg // rule_set) [
+        {
+          tag = "geosite-ctrip!cn";
+          url = "${urlPrefix}/geo/geosite/ctrip@!cn.srs";
+        }
         {
           tag = "geosite-gfw";
           url = "${urlPrefix}/geo/geosite/gfw.srs";
