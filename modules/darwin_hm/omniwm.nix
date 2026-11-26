@@ -119,7 +119,7 @@ in
           moveColumnToWorkspaceUp = "${mod}+Shift+P";
 
           "openCommandPalette.applications" = "${mod}+Space";
-          "openCommandPalette.clipboard" = "${mod}+V";
+          "openCommandPalette.clipboard" = "${alt}+V";
           "openApp.com.mitchellh.ghostty" = "${mod}+Q";
           # Finder here, since OmniWM shortcuts cannot spawn a command.
           "openApp.com.apple.finder" = "${mod}+E";
