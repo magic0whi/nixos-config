@@ -99,7 +99,7 @@ in
       Mod+W repeat=false { close-window; }
       Mod+F { maximize-column; }
       Mod+Shift+F hotkey-overlay-title="Fullscreen Column" { fullscreen-window; }
-      Mod+Alt+F hotkey-overlay-title="Toggle Floating" { toggle-window-floating; }
+      Mod+Shift+T hotkey-overlay-title="Toggle Floating" { toggle-window-floating; }
       // NOTE: niri lacks sticky/pinned feature
       // https://niri-wm.github.io/niri/FAQ.html#can-i-make-a-window-sticky-pinned-always-on-top-appear-on-all-workspaces
       // Mod+G { toggle-pin-window; }
