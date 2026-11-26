@@ -1,6 +1,8 @@
 {
+  config,
   const,
   lib,
+  pkgs,
   omniwmLib,
   ...
 }:
@@ -8,6 +10,45 @@ let
   ctrl = "Control";
   mod = "Command";
   alt = "Option";
+
+  # The bar layout, profile overrides and per-widget options live in
+  # ~/.config/omniwm/shell/shell.toml, which OmniWM also rewrites for edits
+  # made in Settings > Styles & Widgets. Deploy it as a writable copy from
+  # here, like `settings.toml`, so GUI edits last until this file changes.
+  shell_settings = (pkgs.formats.toml { }).generate "omniwm-shell.toml" {
+    profile = "default";
+    profiles.default = {
+      theme = "catppuccin";
+      leading = [
+        "app-menu"
+        "clock"
+        "system-stats"
+        "media"
+        "active-window"
+      ];
+      center = [ "workspaces" ];
+      trailing = [
+        "notifications"
+        "battery-details"
+        "volume"
+        "wifi"
+        "control-center"
+        "omniwm"
+      ];
+      workspaceBar = {
+        hideEmptyWorkspaces = true;
+        deduplicateAppIcons = true;
+        showItemBackgrounds = true;
+        transparentBackground = true;
+      };
+      widgets = {
+        active-window.maxWidth = 250.0;
+        battery-details.percent = "inside";
+        clock.date = false;
+        workspaces.indicator = "dots";
+      };
+    };
+  };
 in
 {
   programs.omniwm = {
@@ -65,6 +106,48 @@ in
           monitorAssignment.type = if i < 5 then "main" else "secondary";
         }) const.workspaces
       );
+
+      appRules =
+        let
+          to_ws =
+            ws_name:
+            let
+              idx = lib.lists.findFirstIndex (name: name == ws_name) (-1) const.workspaces;
+            in
+            assert lib.assertMsg (idx >= 0) "omniwm: const.workspaces has no workspace named ${ws_name}";
+            toString (idx + 1);
+        in
+        [
+          # 1terminal
+          (omniwmLib.appRule "com.mitchellh.ghostty" { assignToWorkspace = to_ws "1terminal"; })
+
+          # 2browser
+          (omniwmLib.appRule "org.mozilla.firefox" { assignToWorkspace = to_ws "2browser"; })
+          (omniwmLib.appRule "com.google.Chrome" { assignToWorkspace = to_ws "2browser"; })
+
+          # 3chat - niri matches Telegram by title because its Linux app-id differs
+          (omniwmLib.appRule "ru.keepcoder.Telegram" { assignToWorkspace = to_ws "3chat"; })
+          (omniwmLib.appRule "com.tencent.xinWeChat" { assignToWorkspace = to_ws "3chat"; })
+          (omniwmLib.appRule "com.tencent.qq" { assignToWorkspace = to_ws "3chat"; })
+
+          # 4gaming
+          (omniwmLib.appRule "com.valvesoftware.steam" { assignToWorkspace = to_ws "4gaming"; })
+          (omniwmLib.appRule "com.heroicgameslauncher.hgl" { assignToWorkspace = to_ws "4gaming"; })
+
+          # 5music
+          (omniwmLib.appRule "org.jeffvli.feishin" { assignToWorkspace = to_ws "5music"; })
+
+          # 6file
+          (omniwmLib.appRule "net.ankiweb.dtop" { assignToWorkspace = to_ws "6file"; })
+
+          # 7design
+          (omniwmLib.appRule "com.super-productivity.app" { assignToWorkspace = to_ws "7design"; })
+
+          # 8vm - the macOS counterparts of qemu and virt-manager
+          (omniwmLib.appRule "com.utmapp.UTM" { assignToWorkspace = to_ws "8vm"; })
+
+          # 0other
+        ];
 
       hotkeys = omniwmLib.hotkeys (
         {
@@ -143,4 +226,15 @@ in
       );
     };
   };
+
+  home.activation.omniwmShellSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    target="${config.xdg.configHome}/omniwm/shell/shell.toml"
+    if ! ${pkgs.diffutils}/bin/cmp -s ${shell_settings} "$target" 2>/dev/null; then
+      $DRY_RUN_CMD mkdir -p "$(dirname "$target")"
+      if [ -f "$target" ]; then
+        $DRY_RUN_CMD cp -f "$target" "$target.bak"
+      fi
+      $DRY_RUN_CMD install -m 0644 ${shell_settings} "$target"
+    fi
+  '';
 }
