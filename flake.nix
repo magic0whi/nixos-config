@@ -109,7 +109,7 @@
       url = "github:noctalia-dev/noctalia-greeter/af0bf4b1e1c40738db917b04c9c0563b4f718953";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    dns = {
+    dns-nix = {
       url = "git+https://git.proteus.eu.org/proteus/dns.nix";
       # url = "path:/home/proteus/Proteus/Projects-Ref/nosync/dns.nix";
       inputs.nixpkgs.follows = "nixpkgs";

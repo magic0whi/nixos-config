@@ -7,7 +7,7 @@
 
   niks3,
   nixpkgs,
-  dns,
+  dns-nix,
   mySecrets,
   ...
 }:
@@ -23,7 +23,7 @@ let
         const
         ;
       machinePath = ./.;
-      specialArgs = { inherit dns mySecrets; };
+      specialArgs = { inherit dns-nix mySecrets; };
       overlays = (with features; common.baseOverlays);
       modules =
         (with features.common; base)

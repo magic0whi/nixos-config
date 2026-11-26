@@ -2,13 +2,13 @@
   config,
   lib,
   const,
-  dns,
+  dns-nix,
   pkgs,
   ...
 }:
 let
   hostname = config.networking.hostName;
-  inherit (dns.util.${pkgs.stdenv.system}) writeZone;
+  inherit (dns-nix.util.${pkgs.stdenv.system}) writeZone;
   shared_head_cfg = {
     useOrigin = true;
     SOA = {
@@ -68,7 +68,7 @@ let
         acc ++ lib.optionals (type != "AAAA") (gen_ptr_targets subs)
       ) [ ];
 
-      mk_host_octet = v4: builtins.head (dns.lib.mkIPv4ReverseRecord' depth v4);
+      mk_host_octet = v4: builtins.head (dns-nix.lib.mkIPv4ReverseRecord' depth v4);
     in
     lib.concatMapAttrs (
       _: host:
@@ -87,7 +87,7 @@ let
         acc ++ lib.optionals (type != "A") (gen_ptr_targets subs)
       ) [ ];
 
-      mk_host_hex = v6: builtins.head (dns.lib.mkIPv6ReverseRecord' depth v6);
+      mk_host_hex = v6: builtins.head (dns-nix.lib.mkIPv6ReverseRecord' depth v6);
     in
     lib.concatMapAttrs (
       _: host:
@@ -179,7 +179,7 @@ in
           mk_ipv4_reverse_zone =
             depth: nic_name:
             let
-              name = lib.last (dns.lib.mkIPv4ReverseRecord' depth config.vars.hostAddrs.${hostname}.${nic_name}.ipv4NoCidr);
+              name = lib.last (dns-nix.lib.mkIPv4ReverseRecord' depth config.vars.hostAddrs.${hostname}.${nic_name}.ipv4NoCidr);
             in
             shared_zone_cfg
             // {
@@ -192,7 +192,7 @@ in
           mk_ipv6_reverse_zone =
             depth: nic_name:
             let
-              name = lib.last (dns.lib.mkIPv6ReverseRecord' depth config.vars.hostAddrs.${hostname}.${nic_name}.ipv6NoCidr);
+              name = lib.last (dns-nix.lib.mkIPv6ReverseRecord' depth config.vars.hostAddrs.${hostname}.${nic_name}.ipv6NoCidr);
             in
             shared_zone_cfg
             // {
