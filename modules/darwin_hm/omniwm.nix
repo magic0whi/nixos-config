@@ -33,6 +33,7 @@ in
         # softens and lengthens the motion but cannot add niri's slight overshoot.
         animationSpeed = 0.65;
       };
+      clipboard.historyEnabled = true;
       focus = {
         crossesMonitorAtEdge = true;
         moveCrossesMonitorAtEdge = true;
@@ -117,7 +118,7 @@ in
           moveColumnToWorkspaceDown = "${mod}+Shift+N";
           moveColumnToWorkspaceUp = "${mod}+Shift+P";
 
-          openCommandPalette = "${mod}+Space";
+          "openCommandPalette.applications" = "${mod}+Space";
           "openCommandPalette.clipboard" = "${mod}+V";
           "openApp.com.mitchellh.ghostty" = "${mod}+Q";
           # Finder here, since OmniWM shortcuts cannot spawn a command.
