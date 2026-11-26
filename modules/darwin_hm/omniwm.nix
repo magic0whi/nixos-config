@@ -175,7 +175,7 @@ in
           moveColumnToFirst = "${mod}+Shift+Home";
           moveColumnToLast = "${mod}+Shift+End";
 
-          centerVisibleColumns = "${mod}+C";
+          centerVisibleColumns = "${alt}+C";
           toggleColumnTabbed = "${mod}+D";
           consumeWindowIntoColumn = "${mod}+Comma";
           expelWindowFromColumn = "${mod}+Period";
