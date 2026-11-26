@@ -32,7 +32,7 @@ up:
 # Update specific input
 # Usage: just upp nixpkgs
 [group('nix')]
-upp input:
+upp +input:
     nix flake update {{ input }}
 
 # List all generations of the system profile
