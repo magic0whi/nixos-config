@@ -22,7 +22,7 @@
         ];
 
         font-family = const.monospace.name;
-        font-size = 12;
+        font-size = if pkgs.stdenv.isDarwin then 14 else 12;
 
         scrollback-limit = 20 * 1024; # Units is bytes
 
