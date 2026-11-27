@@ -215,6 +215,9 @@ in
           raiseAllFloatingWindows = "Unassigned";
           # Default keybind Control+Option+Space conflict with IME switch
           openCommandPalette = "Unassigned";
+          # Conflict with OpenCode's session tab next/prev
+          "focus.down" = "Unassigned";
+          "focus.up" = "Unassigned";
         }
         // lib.listToAttrs (
           lib.concatMap (i: [
