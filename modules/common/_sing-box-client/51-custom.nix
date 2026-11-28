@@ -26,7 +26,10 @@ let
         "altstore.io"
 
         "braze-images.com" # Braze: in-app message image CDN
-        "cloudfront.com" # AWS CDN
+
+        # AWS CDN
+        "cloudfront.com"
+        "cloudfront.net"
 
         "cachix.org"
       ];

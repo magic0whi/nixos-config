@@ -66,6 +66,7 @@ let
         "remitly.io"
         "remitly-3pjs.com"
         "remit.ly"
+        "dqyag3aekzepn.cloudfront.net"
 
         "skrill.com"
 
