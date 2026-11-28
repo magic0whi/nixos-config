@@ -45,6 +45,8 @@ let
       };
     };
   };
+
+  http_client = const.sb.ruleSetCfg.defaultCfg.http_client;
 in
 lib.mkMerge (
   [
@@ -132,7 +134,7 @@ lib.mkMerge (
           if isMobile then
             {
               enabled = true;
-              http_client = "Default";
+              inherit http_client;
             }
           else
             pkgs.sing-box-dashboard;
@@ -219,8 +221,8 @@ lib.mkMerge (
         )
       ];
       http_clients = lib.singleton {
-        tag = "Default";
-        detour = "Default";
+        tag = http_client;
+        detour = http_client; # Auto works poor
       };
       route = {
         auto_detect_interface = lib.mkDefault true;

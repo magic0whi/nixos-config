@@ -88,7 +88,7 @@ rec {
       defaultCfg = {
         type = "remote";
         format = "binary";
-        http_client = "Default"; # Auto works poor
+        http_client = "Custom";
       };
     };
   };
