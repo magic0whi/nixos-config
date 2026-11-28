@@ -23,6 +23,7 @@ let
         "launchdarkly.com" # LaunchDarkly: feature flags (may gate app features, don't block)
         "medallia.com" # Medallia: customer feedback surveys & experience analytics
         "online-metrix.net" # LexisNexis ThreatMetrix: device fingerprinting & fraud scoring
+        "siftscience.com" # Sift: device fingerprinting & fraud scoring (cdn.siftscience.com)
 
         "statsig.com" # Statsig: feature flags / experiments (rotating domains, don't block)
         "statsigapi.net" # Statsig: events + config API
