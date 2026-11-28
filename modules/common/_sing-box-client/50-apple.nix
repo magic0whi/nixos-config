@@ -40,7 +40,7 @@ in
       let
         mkSbRules = mylib.mkSbRules true;
       in
-      lib.mkOrder fakeip_pri (builtins.concatMap (rule: mkSbRules rule.out rule.rules) super_rules);
+      lib.mkOrder fakeip_pri (builtins.concatMap (rules: mkSbRules rules.out rules.rules) super_rules);
   };
   outbounds = map (
     rule:
@@ -57,7 +57,7 @@ in
       in
       lib.mkMerge (
         [ (lib.mkOrder no_sniff_pri (mkSbRules out [ { rule_set = [ "geoip-apple" ]; } ])) ]
-        ++ (map (rule: lib.mkOrder sniff_pri (mkSbRules rule.out rule.rules)) super_rules)
+        ++ (map (rules: lib.mkOrder sniff_pri (mkSbRules rules.out rules.rules)) super_rules)
       );
     rule_set =
       let

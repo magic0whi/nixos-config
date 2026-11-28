@@ -13,27 +13,28 @@ let
   sniff_pri = pri * (2000 - const.sb.routeSniffPri) + const.sb.routeSniffPri;
 
   out = "HSBC";
-  super_rules = [
+  rules = [
     {
-      inherit out;
-      rules = [
-        {
-          domain_suffix = [
-            "checkfreeweb.com" # HSBC US Bank-to-Bank
-            "firstdata.com" # HSBC US credit card
-          ];
-        }
-        { rule_set = "geosite-hsbc"; }
+      domain_suffix = [
+        "checkfreeweb.com" # HSBC US Bank-to-Bank
+        "firstdata.com" # HSBC US credit card
+        "d3ksttzjeov72n.cloudfront.net" # firstdata
+
+        # Third-party services
+        "adobesign.com" # Document sign
+        "mdes.mastercard.com" # Mastercard MDES / 3-D Secure
+        "liveperson.com" # LivePerson chat assets
+        "tiqcdn.com" # Tealium tag manager
+        "tealiumiq.com" # Tealium collect / visitor service
+        "c-hsbc.lytics.io" # Lytics CDP (HSBC-specific)
+        "walkme.com" # WalkMe in-app guidance
       ];
     }
     {
-      out = "Custom";
-      rules = lib.singleton {
-        domain_suffix = [
-          "adobesign.com" # Document sign
-          "d3ksttzjeov72n.cloudfront.net" # firstdata
-        ];
-      };
+      rule_set = [
+        "geosite-hsbc"
+        "geosite-liveperson"
+      ];
     }
   ];
 in
@@ -46,7 +47,7 @@ in
         detour = out;
       }
     );
-    rules = lib.mkOrder fakeip_pri (builtins.concatMap (rules: mylib.mkSbRules true rules.out rules.rules) super_rules);
+    rules = lib.mkOrder fakeip_pri (mylib.mkSbRules true out rules);
   };
   outbounds = lib.singleton (
     selectorCfg
@@ -56,13 +57,20 @@ in
     }
   );
   route = {
-    rules = lib.mkOrder sniff_pri (builtins.concatMap (rules: mylib.mkSbRules false rules.out rules.rules) super_rules);
-    rule_set = lib.singleton (
-      ruleSetCfg.defaultCfg
-      // {
-        tag = "geosite-hsbc";
-        url = "${ruleSetCfg.urlPrefix}/geo/geosite/hsbc.srs";
-      }
-    );
+    rules = lib.mkOrder sniff_pri (mylib.mkSbRules false out rules);
+    rule_set =
+      let
+        inherit (ruleSetCfg) urlPrefix defaultCfg;
+      in
+      map (rule_set: defaultCfg // rule_set) [
+        {
+          tag = "geosite-hsbc";
+          url = "${urlPrefix}/geo/geosite/hsbc.srs";
+        }
+        {
+          tag = "geosite-liveperson";
+          url = "${urlPrefix}/geo/geosite/liveperson.srs";
+        }
+      ];
   };
 }
