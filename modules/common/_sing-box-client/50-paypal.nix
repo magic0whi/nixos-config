@@ -14,8 +14,16 @@ let
 
   out = "PayPal";
   rules = [
+    # Marqeta: card issuing/processing (PayPal/Venmo debit cards)
     { domain_suffix = "marqeta.com"; }
     { rule_set = "geosite-paypal"; }
+    {
+      domain_suffix = [
+        "paypal.co.uk"
+        "paypal-api.arkoselabs.com" # Arkose Labs: PayPal fraud/bot challenge
+        "paypal-api.arkose.com.cn" # Arkose Labs: PayPal China fallback
+      ];
+    }
   ];
 in
 {
