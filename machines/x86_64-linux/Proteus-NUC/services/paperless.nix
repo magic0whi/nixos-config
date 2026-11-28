@@ -201,8 +201,8 @@ in
           # PrivateDevices replaces /dev with a minimal set; the real nodes
           # cannot be re-added by DeviceAllow, so it must stay off.
           PrivateDevices = lib.mkForce false;
-          DevicePolicy = lib.mkForce "closed";
-          DeviceAllow = lib.mkForce [
+          DevicePolicy = "closed";
+          DeviceAllow = [
             "char-nvidia rw"
             "char-nvidiactl rw"
             "char-nvidia-modeset rw"
