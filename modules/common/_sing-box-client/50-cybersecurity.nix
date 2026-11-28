@@ -19,6 +19,7 @@ let
       domain_suffix = [
         "awswaf.com" # AWS WAF: bot-control challenge / token SDK
         "braze.com" # Braze: marketing & push SDK (stores IP-derived location)
+        "appdynamics.com" # Cisco AppDynamics: agent CDN
         "eum-appdynamics.com" # Cisco AppDynamics: app performance monitoring
         "launchdarkly.com" # LaunchDarkly: feature flags (may gate app features, don't block)
         "medallia.com" # Medallia: customer feedback surveys & experience analytics

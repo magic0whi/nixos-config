@@ -69,6 +69,8 @@ let
         "dqyag3aekzepn.cloudfront.net"
 
         "skrill.com"
+        "skrill.co.uk"
+        "paysafe.com" # Paysafe/Skrill KYC & API
 
         "lemfi.com"
         "lemonade.finance"
